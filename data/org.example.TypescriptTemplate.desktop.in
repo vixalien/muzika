@@ -1,0 +1,8 @@
+[Desktop Entry]
+Name=gnome-typescript-template
+Exec=org.example.TypescriptTemplate
+Icon=org.example.TypescriptTemplate
+Terminal=false
+Type=Application
+Categories=GTK;
+StartupNotify=true

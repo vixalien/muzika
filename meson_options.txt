@@ -1,0 +1,13 @@
+option(
+        'profile',
+        type: 'combo',
+        choices: [
+                'default',
+                'development'
+        ],
+        value: 'default'
+)
+option(
+        'offline-mirror',
+        type: 'string'
+)

@@ -1,0 +1,6 @@
+data/org.example.TypescriptTemplate.desktop.in
+data/org.example.TypescriptTemplate.appdata.xml.in
+data/org.example.TypescriptTemplate.gschema.xml
+src/main.js
+src/window.js
+src/window.ui
