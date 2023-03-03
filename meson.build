@@ -7,6 +7,8 @@ project('gnome-typescript-template',
 i18n = import('i18n')
 gnome = import('gnome')
 
+pkgdatadir = join_paths(get_option('datadir'), meson.project_name())
+
 gjs_dep = dependency('gjs-1.0', version: '>= 1.54.0')
 gjs_console = gjs_dep.get_variable(pkgconfig: 'gjs_console')
 yarn = find_program('yarn', required: true)
