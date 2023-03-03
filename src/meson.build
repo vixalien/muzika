@@ -36,10 +36,16 @@ bin_conf.set('libdir', join_paths(get_option('prefix'), get_option('libdir')))
 bin_conf.set('datadir', join_paths(get_option('prefix'), get_option('datadir')))
 bin_conf.set('resource_path', '/org/example/TypescriptTemplate')
 
-app = configure_file(
+app_launcher = configure_file(
   input: 'org.example.TypescriptTemplate.in',
   output: 'org.example.TypescriptTemplate',
   configuration: bin_conf,
   install: true,
   install_dir: get_option('bindir')
+)
+
+run_target(
+  'devel',
+  command: [gjs_console, '-m', app_launcher],
+  depends: [src_res, data_res, compile_local_schemas]
 )
