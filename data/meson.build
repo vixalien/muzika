@@ -25,15 +25,39 @@ if appstream_util.found()
   test('Validate appstream file', appstream_util, args: ['validate', appstream_file])
 endif
 
-install_data('org.example.TypescriptTemplate.gschema.xml',
+gsettings_schema = 'org.example.TypescriptTemplate.gschema.xml'
+
+local_schemas = configure_file(
+  copy: true,
+  input: gsettings_schema,
+  output: gsettings_schema
+)
+
+install_data(gsettings_schema,
   install_dir: join_paths(get_option('datadir'), 'glib-2.0/schemas')
 )
 
 compile_schemas = find_program('glib-compile-schemas', required: false)
+
+compile_local_schemas = custom_target(
+  'compile_local_schemas',
+  input: local_schemas,
+  output: 'gschemas.compiled',
+  command: [compile_schemas, meson.current_build_dir()]
+)
+
 if compile_schemas.found()
   test('Validate schema file',
        compile_schemas,
        args: ['--strict', '--dry-run', meson.current_source_dir()])
 endif
+
+data_res = gnome.compile_resources(
+  'org.example.TypescriptTemplate.data',
+  'org.example.TypescriptTemplate.data.gresource.xml',
+  gresource_bundle: true,
+  install: true,
+  install_dir: pkgdatadir,
+)
 
 subdir('icons')

@@ -1,4 +1,3 @@
-pkgdatadir = join_paths(get_option('datadir'), meson.project_name())
 gnome = import('gnome')
 
 sources = files(
@@ -28,14 +27,6 @@ src_res = gnome.compile_resources(
   install_dir: pkgdatadir,
 )
 
-data_res = gnome.compile_resources(
-  'org.example.TypescriptTemplate.data',
-  'org.example.TypescriptTemplate.data.gresource.xml',
-  gresource_bundle: true,
-  install: true,
-  install_dir: pkgdatadir,
-)
-
 bin_conf = configuration_data()
 bin_conf.set('GJS', gjs_console)
 bin_conf.set('PACKAGE_VERSION', meson.project_version())
@@ -45,10 +36,16 @@ bin_conf.set('libdir', join_paths(get_option('prefix'), get_option('libdir')))
 bin_conf.set('datadir', join_paths(get_option('prefix'), get_option('datadir')))
 bin_conf.set('resource_path', '/org/example/TypescriptTemplate')
 
-configure_file(
+app_launcher = configure_file(
   input: 'org.example.TypescriptTemplate.in',
   output: 'org.example.TypescriptTemplate',
   configuration: bin_conf,
   install: true,
   install_dir: get_option('bindir')
+)
+
+run_target(
+  'devel',
+  command: [gjs_console, '-m', app_launcher],
+  depends: [src_res, data_res, compile_local_schemas]
 )
