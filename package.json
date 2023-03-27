@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "Template for writing GNOME applications in TypeScript",
   "main": "src/main.ts",
+  "type": "module",
   "repository": "https://gitlab.gnome.org/BrainBlasted/gnome-typescript-template",
   "author": "Christopher Davis <christopherdavis@gnome.org>",
   "license": "MIT",
@@ -12,10 +13,12 @@
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^5.33.0",
     "@typescript-eslint/parser": "^5.33.0",
-    "eslint": "^8.21.0"
+    "esbuild": "^0.17.14",
+    "eslint": "^8.21.0",
+    "minimist": "^1.2.8"
   },
   "scripts": {
-    "build": "tsc --strict",
+    "build": "node lib/build.js",
     "typecheck": "tsc --strict --noEmit"
   }
 }

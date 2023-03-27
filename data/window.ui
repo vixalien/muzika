@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <interface>
-  <template class="Gjs_Window" parent="AdwApplicationWindow">
+  <template class="Gjs__Window" parent="AdwApplicationWindow">
     <property name="default-width">600</property>
     <property name="default-height">300</property>
     <child>

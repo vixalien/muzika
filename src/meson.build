@@ -1,27 +1,29 @@
 gnome = import('gnome')
 
-sources = files(
+sources = [
   'main.ts',
   'window.ts',
-)
+]
 
-tsc_out = meson.project_build_root() / 'tsc-out'
+outputs = []
+foreach source : sources
+	outputs += source.replace('.ts', '.js')
+endforeach
 
 typescript = custom_target(
   'typescript-compile',
-  input: sources,
+  input: files(sources),
   build_by_default: true,
   build_always_stale: true,
-  command: [ yarn, yarn_args, 'run', 'build', '--outDir', tsc_out ],
+  command: [ yarn, yarn_args, 'run', 'build', '--out', meson.project_build_root() / '@OUTDIR@', '--cwd', meson.project_build_root(), '@INPUT@', ],
   depends: yarn_deps,
-  output: ['tsc-output'],
+  output: outputs,
 )
 
 src_res = gnome.compile_resources(
   'org.example.TypescriptTemplate.src',
   'org.example.TypescriptTemplate.src.gresource.xml',
   dependencies: typescript,
-  source_dir: tsc_out,
   gresource_bundle: true,
   install: true,
   install_dir: pkgdatadir,
