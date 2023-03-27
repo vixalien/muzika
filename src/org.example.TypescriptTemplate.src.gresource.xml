@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <gresources>
   <gresource prefix="/org/example/TypescriptTemplate/js">
+    <file>fetch.js</file>
     <file>main.js</file>
+    <file>muse.js</file>
     <file>window.js</file>
   </gresource>
 </gresources>

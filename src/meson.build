@@ -1,7 +1,9 @@
 gnome = import('gnome')
 
 sources = [
+  'fetch.ts',
   'main.ts',
+  'muse.ts',
   'window.ts',
 ]
 
