@@ -15,7 +15,7 @@ typescript = custom_target(
   input: files(sources),
   build_by_default: true,
   build_always_stale: true,
-  command: [ yarn, yarn_args, 'run', 'build', '--out', meson.project_build_root() / '@OUTDIR@', '--cwd', meson.project_build_root(), '@INPUT@', ],
+  command: [ yarn, yarn_args, 'run', 'build', '--out', meson.project_build_root() / '@OUTDIR@', '--cwd', meson.project_build_root(), '@INPUT@','--src', meson.project_source_root() ],
   depends: yarn_deps,
   output: outputs,
 )

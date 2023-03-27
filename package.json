@@ -8,6 +8,7 @@
   "author": "Christopher Davis <christopherdavis@gnome.org>",
   "license": "MIT",
   "dependencies": {
+    "libmuse": "../muse/npm/",
     "typescript": "^4.7.4"
   },
   "devDependencies": {
