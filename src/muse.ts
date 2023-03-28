@@ -161,11 +161,11 @@ class CustomFetch extends FetchClient {
         return new GResponse(JSON.stringify(cached_json));
       }
     } catch (error) {
-      console.error("Failed to load cache", error);
+      // console.error("Failed to load cache", error);
     }
     // end caching
 
-    const response = await super.request(path, options);
+    const response = await super.request(path, options) as GResponse;
 
     // store into cache
     if (cache) {
@@ -177,7 +177,11 @@ class CustomFetch extends FetchClient {
         // );
 
         cached_file.replace_contents(
-          JSON.stringify(await response.json(), null, 2),
+          JSON.stringify(
+            await response.clone().then((response) => response.json()),
+            null,
+            2,
+          ),
           null,
           false,
           Gio.FileCreateFlags.NONE,

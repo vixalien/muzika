@@ -253,7 +253,7 @@ export class HomePage extends Gtk.Box {
 
           this.check_height_and_load();
         })
-        .catch(console.error);
+        .catch((e) => console.error(e.toString()));
     } else if (this.home.continuation) {
       this._loading.loading = true;
 
@@ -267,7 +267,8 @@ export class HomePage extends Gtk.Box {
           this.append_contents(new_home.results);
 
           this.check_height_and_load();
-        });
+        })
+        .catch((e) => console.error(e.toString()));
     } else {
       return null;
     }

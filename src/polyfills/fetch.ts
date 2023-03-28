@@ -133,8 +133,16 @@ export class GResponse {
     return this._url;
   }
 
-  clone() {
-    return new GResponse(this._stream, {
+  async clone() {
+    const bytes = await this.gBytes();
+
+    this._bodyUsed = false;
+
+    this._stream = Gio.MemoryInputStream.new_from_bytes(bytes);
+
+    const stream = Gio.MemoryInputStream.new_from_bytes(bytes);
+
+    return new GResponse(stream, {
       status: this._status,
       statusText: this._statusText,
       headers: this._headers,
@@ -156,7 +164,6 @@ export class GResponse {
       GLib.PRIORITY_DEFAULT,
       null,
     );
-
     const bytes = outputStream.steal_as_bytes();
     return bytes;
   }
