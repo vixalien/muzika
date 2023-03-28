@@ -1,24 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <interface>
   <requires lib="gtk" version="4.0"/>
-  <template class="SongCard" parent="GtkBox">
+  <template class="PlaylistCard" parent="GtkBox">
     <property name="orientation">vertical</property>
     <property name="spacing">6</property>
     <child>
       <object class="GtkOverlay">
         <child type="overlay">
           <object class="GtkButton" id="play_button">
-            <property name="halign">center</property>
-            <property name="valign">center</property>
+            <property name="halign">end</property>
+            <property name="valign">end</property>
+            <property name="margin-bottom">6</property>
+            <property name="margin-end">6</property>
             <style>
               <class name="circular"/>
               <class name="osd"/>
-              <class name="song-play-button"/>
             </style>
             <child>
               <object class="GtkImage">
                 <property name="icon-name">media-playback-start-symbolic</property>
-                <property name="icon-size">large</property>
               </object>
             </child>
           </object>
@@ -50,6 +50,7 @@
             <property name="wrap">true</property>
             <property name="wrap-mode">char</property>
             <property name="ellipsize">end</property>
+            <property name="label">Playlist name</property>
             <style>
               <class name="heading"/>
             </style>
@@ -66,20 +67,24 @@
               </object>
             </child>
             <child>
-              <object class="GtkBox" id="artists">
+              <object class="GtkBox" id="description">
                 <property name="overflow">hidden</property>
                 <property name="spacing">6</property>
                 <child>
-                  <object class="GtkLabel" id="artist_label">
-                    <property name="label"></property>
+                  <object class="GtkLabel" id="description_label">
+                    <property name="label">Ed Sheeran, Lewis Capaldi, Alicia Keys, Gabrielle</property>
                     <property name="halign">start</property>
+                    <property name="lines">2</property>
+                    <property name="wrap">true</property>
+                    <property name="wrap-mode">char</property>
+                    <property name="ellipsize">end</property>
                     <property name="cursor">
                       <object class="GdkCursor">
                         <property name="name">pointer</property>
                       </object>
                     </property>
                     <style>
-                      <class name="link"/>
+                      <class name="dim-label"/>
                     </style>
                   </object>
                 </child>

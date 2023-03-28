@@ -3,7 +3,13 @@ import GObject from "gi://GObject";
 
 import { Loading } from "./loading.js";
 
-import { get_home, Home, MixedContent, ParsedSong } from "../muse.js";
+import {
+  get_home,
+  Home,
+  MixedContent,
+  ParsedPlaylist,
+  ParsedSong,
+} from "../muse.js";
 
 export class SongCard extends Gtk.Box {
   static {
@@ -41,6 +47,44 @@ export class SongCard extends Gtk.Box {
     this._title.set_label(song.title);
     this._artist_label.set_label(song.artists[0].name);
     this._explicit.set_visible(true);
+  }
+}
+
+export class PlaylistCard extends Gtk.Box {
+  static {
+    GObject.registerClass({
+      GTypeName: "PlaylistCard",
+      Template:
+        "resource:///org/example/TypescriptTemplate/components/playlistcard.ui",
+      InternalChildren: [
+        "play_button",
+        "image",
+        "title",
+        "explicit",
+        "description_label",
+      ],
+    }, this);
+  }
+
+  playlist?: ParsedPlaylist;
+
+  _play_button!: Gtk.Button;
+  _image!: Gtk.Image;
+  _title!: Gtk.Label;
+  _explicit!: Gtk.Image;
+  _description_label!: Gtk.Label;
+
+  constructor() {
+    super({
+      orientation: Gtk.Orientation.VERTICAL,
+    });
+  }
+
+  set_playlist(playlist: ParsedPlaylist) {
+    this.playlist = playlist;
+
+    this._title.set_label(playlist.title);
+    this._description_label.set_label(playlist.description ?? "");
   }
 }
 
@@ -88,11 +132,21 @@ export class Carousel extends Gtk.Box {
 
       for (const item of content.contents) {
         if (!item) continue;
-        if (item.type !== "song") continue;
 
-        const card = new SongCard();
-        card.set_song(item as ParsedSong);
-        this._scrolled_box.append(card);
+        let card;
+
+        switch (item.type) {
+          case "song":
+            card = new SongCard();
+            card.set_song(item as ParsedSong);
+            break;
+          case "playlist":
+            card = new PlaylistCard();
+            card.set_playlist(item as ParsedPlaylist);
+            break;
+        }
+
+        if (card) this._scrolled_box.append(card);
       }
     }
   }
