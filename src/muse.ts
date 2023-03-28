@@ -20,13 +20,20 @@ import "./polyfills/fetch.js";
 // base64
 import "./polyfills/base64.js";
 
+//////////// libmuse
+
+export * from "libmuse";
+
 //////////// store
 
 // types
 
 /// @ts-expect-error
 import { Store } from "libmuse/store.js";
+/// @ts-expect-error
+import { FetchClient, RequestInit } from "libmuse/request.js";
 import { setup } from "libmuse";
+import { GResponse } from "./polyfills/fetch.js";
 
 const decoder = new TextDecoder();
 
@@ -94,11 +101,101 @@ export class GioFileStore extends (Store as any) {
   }
 }
 
+const encoder = new TextEncoder();
+
+async function hash(string: string) {
+  // use the subtle crypto API to generate a 512 bit hash
+  // return the hash as a hex string
+  const hash = GLib.Checksum.new(GLib.ChecksumType.SHA256);
+
+  hash.update(string);
+
+  const digest = encoder.encode(hash.get_string());
+
+  return Array.from(digest)
+    .map((b) => b.toString(16).padStart(2, "0"))
+    .join("");
+}
+
+class CustomFetch extends FetchClient {
+  cache_dir = Gio.file_new_for_path(
+    GLib.build_filenamev([GLib.get_user_data_dir(), pkg.name, "cache"]),
+  );
+
+  constructor() {
+    super();
+
+    console.log("caching data at", this.cache_dir.get_path());
+
+    // console.log("exists", !this.cache_dir.get_parent()!.query_exists(null));
+
+    if (!this.cache_dir.query_exists(null)) {
+      this.cache_dir.make_directory_with_parents(null);
+    }
+  }
+
+  async request(path: string, options: RequestInit) {
+    console.debug("REQUEST", options.method, path);
+
+    // caching
+    const cache_name = `${await hash(
+      JSON.stringify({ ...options.data, ...options.params, path } || {}),
+    )}.json`;
+
+    const cache = !path.startsWith("like/");
+
+    const cached_file = Gio.file_new_for_path(GLib.build_filenamev([
+      this.cache_dir.get_path()!,
+      cache_name,
+    ]));
+
+    try {
+      const cached_contents = decoder.decode(
+        cached_file.load_contents(null)[1],
+      );
+
+      const cached_json = JSON.parse(cached_contents);
+
+      if (cache && cached_json) {
+        console.debug("CACHED", options.method, path);
+        return new GResponse(JSON.stringify(cached_json));
+      }
+    } catch (error) {
+      console.error("Failed to load cache", error);
+    }
+    // end caching
+
+    const response = await super.request(path, options);
+
+    // store into cache
+    if (cache) {
+      try {
+        // await Deno.mkdir("store/cache", { recursive: true });
+        // await Deno.writeTextFile(
+        //   cache_path,
+        //   JSON.stringify(await response.clone().json(), null, 2),
+        // );
+
+        cached_file.replace_contents(
+          JSON.stringify(await response.json(), null, 2),
+          null,
+          false,
+          Gio.FileCreateFlags.NONE,
+          null,
+        );
+      } catch (error) {
+        console.error("Failed to cache", error.toString());
+        // not json probably: ignore
+      }
+    }
+
+    return response;
+  }
+}
+
 setup({
   /// @ts-expect-error
   store: new GioFileStore(),
+  /// @ts-expect-error
+  client: new CustomFetch(),
 });
-
-//////////// libmuse
-
-export * from "libmuse";

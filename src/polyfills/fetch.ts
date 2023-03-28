@@ -27,6 +27,155 @@ export interface FetchOptions {
 }
 
 const encoder = new TextEncoder();
+const decoder = new TextDecoder();
+
+export interface GResponseOptions {
+  status?: number;
+  statusText?: string;
+  headers?: Record<string, string> | Headers | [string, string][];
+  url?: string;
+  redirected?: boolean;
+}
+
+export class GResponse {
+  private _stream: Gio.InputStream;
+  private _bodyUsed: boolean;
+  private _headers: Headers;
+  private _status: number;
+  private _statusText: string;
+  private _ok: boolean;
+  private _type: string;
+  private _url: string;
+  private _redirected: boolean;
+
+  constructor(
+    body?: Gio.InputStream | ArrayBuffer | DataView | Uint8Array | string,
+    options?: GResponseOptions,
+  ) {
+    let stream: Gio.InputStream;
+
+    if (body instanceof Gio.InputStream) {
+      stream = body;
+    } else if (body instanceof Uint8Array) {
+      stream = Gio.MemoryInputStream.new_from_bytes(
+        GLib.Bytes.new(body),
+      );
+    } else if (body instanceof ArrayBuffer) {
+      // first convert to Uint8Array
+      stream = Gio.MemoryInputStream.new_from_bytes(
+        GLib.Bytes.new(new Uint8Array(body)),
+      );
+    } else if (body instanceof DataView) {
+      // first convert to Uint8Array
+      stream = Gio.MemoryInputStream.new_from_bytes(
+        GLib.Bytes.new(new Uint8Array(body.buffer)),
+      );
+    } else if (typeof body === "string") {
+      stream = Gio.MemoryInputStream.new_from_bytes(
+        GLib.Bytes.new(encoder.encode(body)),
+      );
+    } else {
+      stream = Gio.MemoryInputStream.new_from_bytes(
+        GLib.Bytes.new(new Uint8Array()),
+      );
+    }
+
+    this._stream = stream;
+    this._bodyUsed = false;
+    this._headers = new Headers(options?.headers || {});
+    this._status = options?.status || 200;
+    this._statusText = options?.statusText || "OK";
+    this._ok = this._status >= 200 && this._status < 300;
+    this._type = "basic";
+    this._url = options?.url || "";
+    this._redirected = options?.redirected || false;
+  }
+
+  get body() {
+    if (this._bodyUsed) {
+      throw new Error("body already used");
+    }
+
+    this._bodyUsed = true;
+
+    return this._stream;
+  }
+
+  get bodyUsed() {
+    return this._bodyUsed;
+  }
+
+  get headers() {
+    return this._headers;
+  }
+
+  get ok() {
+    return this._ok;
+  }
+
+  get redirected() {
+    return this._redirected;
+  }
+
+  get status() {
+    return this._status;
+  }
+
+  get statusText() {
+    return this._statusText;
+  }
+
+  get type() {
+    return this._type;
+  }
+
+  get url() {
+    return this._url;
+  }
+
+  clone() {
+    return new GResponse(this._stream, {
+      status: this._status,
+      statusText: this._statusText,
+      headers: this._headers,
+      url: this._url,
+      redirected: this._redirected,
+    });
+  }
+
+  async gBytes() {
+    const outputStream = Gio.MemoryOutputStream.new_resizable();
+
+    await promiseTask(
+      outputStream,
+      "splice_async",
+      "splice_finish",
+      this.body,
+      Gio.OutputStreamSpliceFlags.CLOSE_TARGET |
+        Gio.OutputStreamSpliceFlags.CLOSE_SOURCE,
+      GLib.PRIORITY_DEFAULT,
+      null,
+    );
+
+    const bytes = outputStream.steal_as_bytes();
+    return bytes;
+  }
+
+  async arrayBuffer() {
+    const bytes = await this.gBytes();
+    return bytes.toArray().buffer;
+  }
+
+  async text() {
+    const bytes = await this.gBytes();
+    return decoder.decode(bytes.toArray());
+  }
+
+  async json() {
+    const text = await this.text();
+    return JSON.parse(text);
+  }
+}
 
 export async function fetch(url: string | URL, options: FetchOptions = {}) {
   if (typeof url !== "string" && ("href" in (url as URL))) {
@@ -70,46 +219,12 @@ export async function fetch(url: string | URL, options: FetchOptions = {}) {
   ) as Gio.InputStream;
 
   const { status_code, reason_phrase } = message;
-  const ok = status_code >= 200 && status_code < 300;
 
-  return {
+  return new GResponse(inputStream, {
     status: status_code,
     statusText: reason_phrase,
-    ok,
-    type: "basic",
-    async json() {
-      const text = await this.text();
-      return JSON.parse(text);
-    },
-    async text() {
-      const gBytes = await this.gBytes();
-      return new TextDecoder().decode(gBytes.toArray());
-    },
-    async arrayBuffer() {
-      const gBytes = await this.gBytes();
-      return gBytes.toArray().buffer;
-    },
-    body() {
-      return inputStream;
-    },
-    async gBytes() {
-      const outputStream = Gio.MemoryOutputStream.new_resizable();
-
-      await promiseTask(
-        outputStream,
-        "splice_async",
-        "splice_finish",
-        inputStream,
-        Gio.OutputStreamSpliceFlags.CLOSE_TARGET |
-          Gio.OutputStreamSpliceFlags.CLOSE_SOURCE,
-        GLib.PRIORITY_DEFAULT,
-        null,
-      );
-
-      const bytes = outputStream.steal_as_bytes();
-      return bytes;
-    },
-  };
+    url: uri.to_string(),
+  });
 }
 
 // @ts-ignore

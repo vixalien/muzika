@@ -10,6 +10,7 @@ import {
   ParsedPlaylist,
   ParsedSong,
 } from "../muse.js";
+import { load_image, WebImage } from "./webimage.js";
 
 export class SongCard extends Gtk.Box {
   static {
@@ -23,6 +24,7 @@ export class SongCard extends Gtk.Box {
         "title",
         "explicit",
         "artist_label",
+        "image",
       ],
     }, this);
   }
@@ -30,7 +32,7 @@ export class SongCard extends Gtk.Box {
   song?: ParsedSong;
 
   _play_button!: Gtk.Button;
-  _image!: Gtk.Image;
+  _image!: WebImage;
   _title!: Gtk.Label;
   _explicit!: Gtk.Image;
   _artist_label!: Gtk.Label;
@@ -47,6 +49,8 @@ export class SongCard extends Gtk.Box {
     this._title.set_label(song.title);
     this._artist_label.set_label(song.artists[0].name);
     this._explicit.set_visible(true);
+
+    // load_image(this._image, song.thumbnails[0].url);
   }
 }
 

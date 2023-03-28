@@ -1,6 +1,7 @@
 import Soup from "gi://Soup?version=3.0";
 import GLib from "gi://GLib";
 import Gio from "gi://Gio";
+import GObject from "gi://GObject";
 import GdkPixbuf from "gi://GdkPixbuf";
 import Gtk from "gi://Gtk?version=4.0";
 
@@ -34,18 +35,36 @@ async function getInputStream(url) {
 
 */
 
-import { fetch } from "../polyfills/fetch";
+import { fetch } from "../polyfills/fetch.js";
 
 export class WebImage extends Gtk.Image {
+  static {
+    GObject.registerClass({
+      GTypeName: "WebImage",
+    }, this);
+  }
+
   load(url: string) {
     fetch(url, {
       method: "GET",
     }).then(async (response) => {
       const pixbuf = await GdkPixbuf.Pixbuf.new_from_stream_async(
-        response.body(),
+        response.body,
         null,
       );
       this.set_from_pixbuf(pixbuf);
     });
   }
+}
+
+export function load_image(image: Gtk.Image, url: string) {
+  fetch(url, {
+    method: "GET",
+  }).then(async (response) => {
+    const pixbuf = await GdkPixbuf.Pixbuf.new_from_stream_async(
+      response.body,
+      null,
+    );
+    image.set_from_pixbuf(pixbuf);
+  });
 }
