@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+  <requires lib="gtk" version="4.0" />
+  <template class="Carousel" parent="GtkBox">
+    <property name="spacing">6</property>
+    <property name="orientation">vertical</property>
+    <child>
+      <object class="GtkBox" id="titles">
+        <property name="orientation">vertical</property>
+        <child>
+          <object class="GtkLabel" id="subtitle">
+            <property name="label"></property>
+            <property name="halign">start</property>
+            <style>
+              <class name="dim-label" />
+            </style>
+          </object>
+        </child>
+        <child>
+          <object class="GtkLabel" id="title">
+            <property name="label"></property>
+            <property name="halign">start</property>
+            <style>
+              <class name="title-2" />
+            </style>
+          </object>
+        </child>
+      </object>
+    </child>
+    <child>
+      <object class="GtkSeparator">
+        <style>
+          <class name="spacer" />
+        </style>
+      </object>
+    </child>
+    <child>
+      <object class="GtkScrolledWindow" id="scrolled">
+        <property name="propagate-natural-height">true</property>
+        <property name="vscrollbar-policy">never</property>
+        <property name="margin-bottom">6</property>
+        <child>
+          <object class="GtkBox" id="scrolled_box">
+            <property name="spacing">12</property>
+          </object>
+        </child>
+      </object>
+    </child>
+    <child>
+      <object class="GtkBox" id="text">
+        <property name="visible">false</property>
+        <child>
+          <object class="GtkLabel" id="text_label">
+            <property name="wrap">true</property>
+            <property name="label"></property>
+          </object>
+        </child>
+      </object>
+    </child>
+  </template>
+</interface>

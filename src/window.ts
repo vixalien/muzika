@@ -23,22 +23,29 @@
  * SPDX-License-Identifier: MIT
  */
 
-import GObject from 'gi://GObject';
-import Gtk from 'gi://Gtk?version=4.0';
-import Adw from 'gi://Adw';
+import GObject from "gi://GObject";
+import Gtk from "gi://Gtk?version=4.0";
+import Adw from "gi://Adw";
+
+import { HomePage } from "./components/home.js";
 
 export class Window extends Adw.ApplicationWindow {
-    static {
-        GObject.registerClass(
-            {
-                Template: 'resource:///org/example/TypescriptTemplate/window.ui',
-                InternalChildren: ['label'],
-            },
-            this,
-        );
-    }
+  static {
+    GObject.registerClass(
+      {
+        Template: "resource:///org/example/TypescriptTemplate/window.ui",
+        InternalChildren: ["box"],
+      },
+      this,
+    );
+  }
 
-    constructor(params?: Partial<Adw.ApplicationWindow.ConstructorProperties>) {
-        super(params);
-    }
+  _box!: Gtk.Box;
+
+  constructor(params?: Partial<Adw.ApplicationWindow.ConstructorProperties>) {
+    super(params);
+
+    const home = new HomePage();
+    this._box.append(home);
+  }
 }

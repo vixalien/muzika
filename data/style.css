@@ -1,0 +1,12 @@
+.thumbnail {
+  border-radius: 12px;
+}
+
+.song-play-button {
+  padding: 12px;
+}
+
+label.link:hover {
+  color: @accent_color;
+  text-decoration: underline;
+}

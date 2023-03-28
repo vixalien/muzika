@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+  <requires lib="gtk" version="4.0"/>
+  <template class="Loading" parent="GtkBox">
+    <property name="visible">true</property>
+    <property name="hexpand">true</property>
+    <property name="halign">center</property>
+    <property name="margin-top">12</property>
+    <property name="margin-bottom">12</property>
+    <child>
+      <object class="GtkSpinner">
+        <property name="width-request">32</property>
+        <property name="spinning">true</property>
+      </object>
+    </child>
+  </template>
+</interface>

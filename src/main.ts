@@ -27,12 +27,6 @@ import GObject from "gi://GObject";
 import Gio from "gi://Gio";
 import Adw from "gi://Adw";
 
-import { get_home } from "./muse.js";
-
-get_home()
-  .then(console.log)
-  .catch(console.error);
-
 import { Window } from "./window.js";
 
 export class Application extends Adw.Application {

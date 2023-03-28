@@ -29,7 +29,7 @@ export interface FetchOptions {
 const encoder = new TextEncoder();
 
 export async function fetch(url: string | URL, options: FetchOptions = {}) {
-  if (("href" in (url as URL))) {
+  if (typeof url !== "string" && ("href" in (url as URL))) {
     url = (url as URL).href;
   }
 
@@ -67,7 +67,7 @@ export async function fetch(url: string | URL, options: FetchOptions = {}) {
     message,
     null,
     null,
-  );
+  ) as Gio.InputStream;
 
   const { status_code, reason_phrase } = message;
   const ok = status_code >= 200 && status_code < 300;
@@ -79,7 +79,6 @@ export async function fetch(url: string | URL, options: FetchOptions = {}) {
     type: "basic",
     async json() {
       const text = await this.text();
-      console.log("text", text);
       return JSON.parse(text);
     },
     async text() {
@@ -89,6 +88,9 @@ export async function fetch(url: string | URL, options: FetchOptions = {}) {
     async arrayBuffer() {
       const gBytes = await this.gBytes();
       return gBytes.toArray().buffer;
+    },
+    body() {
+      return inputStream;
     },
     async gBytes() {
       const outputStream = Gio.MemoryOutputStream.new_resizable();
@@ -109,3 +111,6 @@ export async function fetch(url: string | URL, options: FetchOptions = {}) {
     },
   };
 }
+
+// @ts-ignore
+window.fetch = fetch;

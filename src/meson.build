@@ -1,7 +1,11 @@
 gnome = import('gnome')
 
 sources = [
-  'fetch.ts',
+  'components/loading.ts',
+  'components/home.ts',
+  'components/webimage.ts',
+  'polyfills/base64.ts',
+  'polyfills/fetch.ts',
   'main.ts',
   'muse.ts',
   'window.ts',
@@ -9,6 +13,10 @@ sources = [
 
 outputs = []
 foreach source : sources
+  if '/' in source
+    continue
+  endif
+
 	outputs += source.replace('.ts', '.js')
 endforeach
 

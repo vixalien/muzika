@@ -17,12 +17,8 @@
           </object>
         </child>
         <child>
-          <object class="GtkLabel" id="label">
-            <property name="label">Hello, World!</property>
+          <object class="GtkBox" id="box">
             <property name="vexpand">true</property>
-            <style>
-              <class name="title-1"/>
-            </style>
           </object>
         </child>
       </object>
