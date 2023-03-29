@@ -3,6 +3,7 @@
   <gresource prefix="/org/example/TypescriptTemplate">
     <file>style.css</file>
     <file preprocess="xml-stripblanks">components/albumcard.ui</file>
+    <file preprocess="xml-stripblanks">components/artistcard.ui</file>
     <file preprocess="xml-stripblanks">components/carousel.ui</file>
     <file preprocess="xml-stripblanks">components/flatsong.ui</file>
     <file preprocess="xml-stripblanks">components/loading.ui</file>
@@ -10,5 +11,8 @@
     <file preprocess="xml-stripblanks">components/songcard.ui</file>
     <file preprocess="xml-stripblanks">window.ui</file>
     <file preprocess="xml-stripblanks">gtk/help-overlay.ui</file>
+  </gresource>
+  <gresource prefix="/org/example/TypescriptTemplate/icons/scalable/actions/">
+    <file preprocess="xml-stripblanks" alias="music-artist-symbolic.svg">icons/music-artist-symbolic.svg</file>
   </gresource>
 </gresources>

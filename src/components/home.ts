@@ -12,6 +12,7 @@ import {
   ParsedAlbum,
   ParsedPlaylist,
   ParsedSong,
+  RelatedArtist,
 } from "../muse.js";
 import { load_image, WebImage } from "./webimage.js";
 
@@ -135,6 +136,40 @@ export class PlaylistCard extends Gtk.Box {
 
     this._title.set_label(playlist.title);
     this._description_label.set_label(playlist.description ?? "");
+  }
+}
+
+export class ArtistCard extends Gtk.Box {
+  static {
+    GObject.registerClass({
+      GTypeName: "ArtistCard",
+      Template:
+        "resource:///org/example/TypescriptTemplate/components/artistcard.ui",
+      InternalChildren: [
+        "image",
+        "title",
+        "subtitle",
+      ],
+    }, this);
+  }
+
+  artist?: RelatedArtist;
+
+  _image!: Gtk.Image;
+  _title!: Gtk.Label;
+  _subtitle!: Gtk.Label;
+
+  constructor() {
+    super({
+      orientation: Gtk.Orientation.VERTICAL,
+    });
+  }
+
+  set_artist(artist: RelatedArtist) {
+    this.artist = artist;
+
+    this._title.set_label(artist.name);
+    this._subtitle.set_label(artist.subscribers ?? "");
   }
 }
 
@@ -272,6 +307,13 @@ export class Carousel extends Gtk.Box {
               card = new PlaylistCard();
               card.set_playlist(item);
               break;
+            case "artist":
+              card = new ArtistCard();
+              card.set_artist(item);
+              break;
+            default:
+              console.warn("Invalid item in carousel", item.type);
+              continue;
           }
 
           if (card) this._scrolled_box.append(card);

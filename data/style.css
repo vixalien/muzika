@@ -19,12 +19,18 @@ label.link:hover {
   border-radius: 0;
 }
 
-.on-hover, .hover-parent .hover-child {
+.on-hover,
+.hover-parent .hover-child {
   opacity: 0;
   transition: .25s opacity;
   background-color: alpha(currentColor, .15);
 }
 
-.on-hover:hover, .hover-parent:hover .hover-child {
+.on-hover:hover,
+.hover-parent:hover .hover-child {
   opacity: 1;
+}
+
+.rounded {
+  border-radius: 50%;
 }
