@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <interface>
   <requires lib="gtk" version="4.0"/>
-  <template class="SongCard" parent="GtkBox">
+  <template class="AlbumCard" parent="GtkBox">
     <property name="valign">start</property>
     <child>
       <object class="GtkBox">
@@ -10,23 +10,6 @@
         <property name="spacing">6</property>
         <child>
           <object class="GtkOverlay">
-            <child type="overlay">
-              <object class="GtkButton" id="play_button">
-                <property name="halign">center</property>
-                <property name="valign">center</property>
-                <style>
-                  <class name="circular"/>
-                  <class name="osd"/>
-                  <class name="song-play-button"/>
-                </style>
-                <child>
-                  <object class="GtkImage">
-                    <property name="icon-name">media-playback-start-symbolic</property>
-                    <property name="icon-size">large</property>
-                  </object>
-                </child>
-              </object>
-            </child>
             <child>
               <object class="GtkBox" id="image_box">
                 <style>
@@ -74,6 +57,23 @@
                 <child>
                   <object class="GtkBox" id="subtitle_box">
                     <property name="spacing">6</property>
+                    <child>
+                      <object class="GtkLabel" id="album_type">
+                        <property name="label">Album</property>
+                        <style>
+                          <class name="dim-label"/>
+                        </style>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkLabel" id="separator">
+                        <property name="label">·</property>
+                        <style>
+                          <class name="dim-label"/>
+                          <class name="heading"/>
+                        </style>
+                      </object>
+                    </child>
                     <child>
                       <object class="GtkLabel" id="subtitle">
                         <property name="label"></property>

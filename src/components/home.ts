@@ -9,6 +9,7 @@ import {
   get_home,
   Home,
   MixedContent,
+  ParsedAlbum,
   ParsedPlaylist,
   ParsedSong,
 } from "../muse.js";
@@ -51,6 +52,49 @@ export class SongCard extends Gtk.Box {
     this._title.set_label(song.title);
     this._subtitle.set_label(song.artists[0].name);
     this._explicit.set_visible(song.isExplicit);
+
+    // load_image(this._image, song.thumbnails[0].url);
+  }
+}
+
+export class AlbumCard extends Gtk.Box {
+  static {
+    GObject.registerClass({
+      GTypeName: "AlbumCard",
+      Template:
+        "resource:///org/example/TypescriptTemplate/components/albumcard.ui",
+      InternalChildren: [
+        "image",
+        "title",
+        "explicit",
+        "subtitle",
+        "album_type",
+        "image",
+      ],
+    }, this);
+  }
+
+  album?: ParsedAlbum;
+
+  _image!: WebImage;
+  _title!: Gtk.Label;
+  _explicit!: Gtk.Image;
+  _subtitle!: Gtk.Label;
+  _album_type!: Gtk.Label;
+
+  constructor() {
+    super({
+      orientation: Gtk.Orientation.VERTICAL,
+    });
+  }
+
+  set_album(album: ParsedAlbum) {
+    this.album = album;
+
+    this._title.set_label(album.title);
+    this._subtitle.set_label(album.artists[0].name);
+    this._explicit.set_visible(album.isExplicit);
+    this._album_type.set_label(album.album_type);
 
     // load_image(this._image, song.thumbnails[0].url);
   }
@@ -218,11 +262,15 @@ export class Carousel extends Gtk.Box {
           switch (item.type) {
             case "song":
               card = new SongCard();
-              card.set_song(item as ParsedSong);
+              card.set_song(item);
+              break;
+            case "album":
+              card = new AlbumCard();
+              card.set_album(item);
               break;
             case "playlist":
               card = new PlaylistCard();
-              card.set_playlist(item as ParsedPlaylist);
+              card.set_playlist(item);
               break;
           }
 
