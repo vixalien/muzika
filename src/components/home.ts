@@ -25,7 +25,7 @@ export class SongCard extends Gtk.Box {
         "image",
         "title",
         "explicit",
-        "artist_label",
+        "subtitle",
         "image",
       ],
     }, this);
@@ -37,7 +37,7 @@ export class SongCard extends Gtk.Box {
   _image!: WebImage;
   _title!: Gtk.Label;
   _explicit!: Gtk.Image;
-  _artist_label!: Gtk.Label;
+  _subtitle!: Gtk.Label;
 
   constructor() {
     super({
@@ -49,7 +49,7 @@ export class SongCard extends Gtk.Box {
     this.song = song;
 
     this._title.set_label(song.title);
-    this._artist_label.set_label(song.artists[0].name);
+    this._subtitle.set_label(song.artists[0].name);
     this._explicit.set_visible(song.isExplicit);
 
     // load_image(this._image, song.thumbnails[0].url);
