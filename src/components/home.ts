@@ -263,6 +263,8 @@ export class HomePage extends Gtk.Box {
     this._clamp = new Adw.Clamp({
       margin_top: 12,
       margin_bottom: 12,
+      maximum_size: 1000,
+      tightening_threshold: 800,
     });
     this._clamp.set_child(this._box);
 
