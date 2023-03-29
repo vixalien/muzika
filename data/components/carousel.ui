@@ -23,7 +23,7 @@
             <property name="label"></property>
             <property name="halign">start</property>
             <style>
-              <class name="title-2"/>
+              <class name="title-1"/>
             </style>
           </object>
         </child>

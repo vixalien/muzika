@@ -285,6 +285,10 @@ export class HomePage extends Gtk.Box {
       const carousel = new Carousel();
       carousel.show_content(content);
       carousel.insert_before(this._box, this._loading);
+
+      const spacer = new Gtk.Separator();
+      spacer.add_css_class("spacer");
+      spacer.insert_before(this._box, this._loading);
     }
   }
 
