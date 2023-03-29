@@ -119,7 +119,7 @@ async function hash(string: string) {
 
 class CustomFetch extends FetchClient {
   cache_dir = Gio.file_new_for_path(
-    GLib.build_filenamev([GLib.get_user_data_dir(), pkg.name, "cache"]),
+    GLib.build_filenamev([GLib.get_user_cache_dir(), pkg.name, "cache"]),
   );
 
   constructor() {
