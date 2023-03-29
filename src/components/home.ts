@@ -5,6 +5,7 @@ import Adw from "gi://Adw";
 import { Loading } from "./loading.js";
 
 import {
+  FlatSong,
   get_home,
   Home,
   MixedContent,
@@ -49,7 +50,7 @@ export class SongCard extends Gtk.Box {
 
     this._title.set_label(song.title);
     this._artist_label.set_label(song.artists[0].name);
-    this._explicit.set_visible(true);
+    this._explicit.set_visible(song.isExplicit);
 
     // load_image(this._image, song.thumbnails[0].url);
   }
@@ -90,6 +91,54 @@ export class PlaylistCard extends Gtk.Box {
 
     this._title.set_label(playlist.title);
     this._description_label.set_label(playlist.description ?? "");
+  }
+}
+
+export class FlatSongCard extends Gtk.Box {
+  static {
+    GObject.registerClass({
+      GTypeName: "FlatSongCard",
+      Template:
+        "resource:///org/example/TypescriptTemplate/components/flatsong.ui",
+      InternalChildren: [
+        "play_button",
+        "image",
+        "title",
+        "explicit",
+        "subtitle",
+        "image",
+      ],
+    }, this);
+  }
+
+  song?: FlatSong;
+
+  _play_button!: Gtk.Button;
+  _image!: WebImage;
+  _title!: Gtk.Label;
+  _explicit!: Gtk.Image;
+  _subtitle!: Gtk.Label;
+
+  constructor() {
+    super({
+      orientation: Gtk.Orientation.VERTICAL,
+    });
+  }
+
+  set_song(song: FlatSong) {
+    this.song = song;
+
+    this._title.set_label(song.title);
+
+    if (song.artists && song.artists.length > 0) {
+      this._subtitle.set_label(song.artists[0].name);
+    } else {
+      this._subtitle.set_label("");
+    }
+
+    this._explicit.set_visible(song.isExplicit);
+
+    // load_image(this._image, song.thumbnails[0].url);
   }
 }
 
@@ -135,23 +184,50 @@ export class Carousel extends Gtk.Box {
       this._text.set_visible(false);
       this._scrolled.set_visible(true);
 
-      for (const item of content.contents) {
-        if (!item) continue;
+      if (content.display == "list") {
+        // this is a grid of 4 items vertical, scroll to the right
+        const flow = Gtk.FlowBox.new();
+        flow.set_orientation(Gtk.Orientation.VERTICAL);
+        flow.set_selection_mode(Gtk.SelectionMode.NONE);
+        flow.set_homogeneous(true);
+        flow.set_max_children_per_line(4);
+        flow.set_min_children_per_line(4);
+        flow.set_column_spacing(12);
+        flow.set_row_spacing(12);
 
-        let card;
+        for (const item of content.contents) {
+          if (!item) continue;
 
-        switch (item.type) {
-          case "song":
-            card = new SongCard();
-            card.set_song(item as ParsedSong);
-            break;
-          case "playlist":
-            card = new PlaylistCard();
-            card.set_playlist(item as ParsedPlaylist);
-            break;
+          if (item.type !== "flat-song") {
+            console.warn("Invalid item in list", item);
+            continue;
+          } else {
+            const card = new FlatSongCard();
+            card.set_song(item);
+            flow.append(card);
+          }
         }
 
-        if (card) this._scrolled_box.append(card);
+        this._scrolled_box.append(flow);
+      } else {
+        for (const item of content.contents) {
+          if (!item) continue;
+
+          let card;
+
+          switch (item.type) {
+            case "song":
+              card = new SongCard();
+              card.set_song(item as ParsedSong);
+              break;
+            case "playlist":
+              card = new PlaylistCard();
+              card.set_playlist(item as ParsedPlaylist);
+              break;
+          }
+
+          if (card) this._scrolled_box.append(card);
+        }
       }
     }
   }

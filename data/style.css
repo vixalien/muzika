@@ -10,3 +10,21 @@ label.link:hover {
   color: @accent_color;
   text-decoration: underline;
 }
+
+.br-12 {
+  border-radius: 12px;
+}
+
+.no-br {
+  border-radius: 0;
+}
+
+.on-hover, .hover-parent .hover-child {
+  opacity: 0;
+  transition: .25s opacity;
+  background-color: alpha(currentColor, .15);
+}
+
+.on-hover:hover, .hover-parent:hover .hover-child {
+  opacity: 1;
+}
