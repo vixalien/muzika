@@ -269,10 +269,9 @@ export class HomePage extends Gtk.Box {
     this._scrolled = new Gtk.ScrolledWindow({ vexpand: true, hexpand: true });
     this._scrolled.set_child(this._clamp);
     this._scrolled.connect("edge-reached", (_, pos) => {
-      this.load_more();
-      // if (pos === Gtk.PositionType.BOTTOM) {
-      //   this.load_home();
-      // }
+      if (pos === Gtk.PositionType.BOTTOM) {
+        this.load_home();
+      }
     });
 
     this.append(this._scrolled);
