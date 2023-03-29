@@ -1,5 +1,6 @@
 import Gtk from "gi://Gtk?version=4.0";
 import GObject from "gi://GObject";
+import Adw from "gi://Adw";
 
 import { Loading } from "./loading.js";
 
@@ -163,6 +164,7 @@ export class HomePage extends Gtk.Box {
     }, this);
   }
   _scrolled: Gtk.ScrolledWindow;
+  _clamp: Adw.Clamp;
   _box: Gtk.Box;
   _loading: Loading;
 
@@ -182,8 +184,14 @@ export class HomePage extends Gtk.Box {
 
     this._box.append(this._loading);
 
+    this._clamp = new Adw.Clamp({
+      margin_top: 12,
+      margin_bottom: 12,
+    });
+    this._clamp.set_child(this._box);
+
     this._scrolled = new Gtk.ScrolledWindow({ vexpand: true, hexpand: true });
-    this._scrolled.set_child(this._box);
+    this._scrolled.set_child(this._clamp);
     this._scrolled.connect("edge-reached", (_, pos) => {
       this.load_more();
       // if (pos === Gtk.PositionType.BOTTOM) {

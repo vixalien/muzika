@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <interface>
-  <requires lib="gtk" version="4.0"/>
+  <requires lib="gtk" version="4.0" />
   <template class="SongCard" parent="GtkBox">
     <property name="orientation">vertical</property>
+    <property name="vexpand">true</property>
     <property name="spacing">6</property>
     <child>
       <object class="GtkOverlay">
@@ -11,9 +12,9 @@
             <property name="halign">center</property>
             <property name="valign">center</property>
             <style>
-              <class name="circular"/>
-              <class name="osd"/>
-              <class name="song-play-button"/>
+              <class name="circular" />
+              <class name="osd" />
+              <class name="song-play-button" />
             </style>
             <child>
               <object class="GtkImage">
@@ -26,7 +27,7 @@
         <child>
           <object class="GtkBox" id="image_box">
             <style>
-              <class name="thumbnail"/>
+              <class name="thumbnail" />
             </style>
             <child>
               <object class="GtkImage" id="image">
@@ -51,7 +52,7 @@
             <property name="wrap-mode">char</property>
             <property name="ellipsize">end</property>
             <style>
-              <class name="heading"/>
+              <class name="heading" />
             </style>
           </object>
         </child>
@@ -79,7 +80,7 @@
                       </object>
                     </property>
                     <style>
-                      <class name="link"/>
+                      <class name="link" />
                     </style>
                   </object>
                 </child>

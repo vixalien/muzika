@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <interface>
-  <requires lib="gtk" version="4.0"/>
+  <requires lib="gtk" version="4.0" />
   <template class="PlaylistCard" parent="GtkBox">
     <property name="orientation">vertical</property>
+    <property name="vexpand">true</property>
     <property name="spacing">6</property>
     <child>
       <object class="GtkOverlay">
@@ -13,8 +14,8 @@
             <property name="margin-bottom">6</property>
             <property name="margin-end">6</property>
             <style>
-              <class name="circular"/>
-              <class name="osd"/>
+              <class name="circular" />
+              <class name="osd" />
             </style>
             <child>
               <object class="GtkImage">
@@ -26,7 +27,7 @@
         <child>
           <object class="GtkBox" id="image_box">
             <style>
-              <class name="thumbnail"/>
+              <class name="thumbnail" />
             </style>
             <child>
               <object class="GtkImage" id="image">
@@ -52,7 +53,7 @@
             <property name="ellipsize">end</property>
             <property name="label">Playlist name</property>
             <style>
-              <class name="heading"/>
+              <class name="heading" />
             </style>
           </object>
         </child>
@@ -84,7 +85,7 @@
                       </object>
                     </property>
                     <style>
-                      <class name="dim-label"/>
+                      <class name="dim-label" />
                     </style>
                   </object>
                 </child>
