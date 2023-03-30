@@ -6,23 +6,23 @@
     <child>
       <object class="GtkBox">
         <property name="width-request">320</property>
-        <property name="spacing">6</property>
+        <property name="spacing">12</property>
         <property name="hexpand">false</property>
         <property name="valign">center</property>
+        <property name="cursor">
+          <object class="GdkCursor">
+            <property name="name">pointer</property>
+          </object>
+        </property>
         <style>
           <class name="hover-parent"/>
         </style>
         <child>
           <object class="GtkOverlay">
             <style>
-              <class name="br-12"/>
+              <class name="br-6"/>
             </style>
             <property name="overflow">hidden</property>
-            <property name="cursor">
-              <object class="GdkCursor">
-                <property name="name">pointer</property>
-              </object>
-            </property>
             <child type="overlay">
               <object class="GtkButton" id="play_button">
                 <property name="halign">fill</property>
@@ -45,7 +45,7 @@
                 <child>
                   <object class="GtkImage" id="image">
                     <property name="icon-name">image-missing-symbolic</property>
-                    <property name="pixel-size">60</property>
+                    <property name="pixel-size">54</property>
                   </object>
                 </child>
               </object>
