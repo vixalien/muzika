@@ -217,7 +217,7 @@ export class FlatSongCard extends Gtk.Box {
 
     this._explicit.set_visible(song.isExplicit);
 
-    // load_image(this._image, song.thumbnails[0].url);
+    load_image(this._image, song.thumbnails[0].url)
   }
 }
 

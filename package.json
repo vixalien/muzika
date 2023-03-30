@@ -9,7 +9,8 @@
   "license": "MIT",
   "dependencies": {
     "libmuse": "../muse/npm/",
-    "typescript": "^4.7.4"
+    "typescript": "^4.7.4",
+    "web-streams-polyfill": "^3.2.1"
   },
   "devDependencies": {
     "@types/core-js": "^2.5.5",

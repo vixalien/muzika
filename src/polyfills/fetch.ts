@@ -2,6 +2,21 @@ import Soup from "gi://Soup?version=3.0";
 import GLib from "gi://GLib";
 import Gio from "gi://Gio";
 
+// streams polyfill
+import "web-streams-polyfill";
+
+Gio._promisify(
+  Soup.Session.prototype,
+  "send_async",
+  "send_finish",
+);
+
+Gio._promisify(
+  Gio.InputStream.prototype,
+  "read_bytes_async",
+  "read_bytes_finish",
+);
+
 export function promiseTask(
   object: any,
   method: any,
@@ -38,8 +53,7 @@ export interface GResponseOptions {
 }
 
 export class GResponse {
-  private _stream: Gio.InputStream;
-  private _bodyUsed: boolean;
+  private _body: ReadableStream;
   private _headers: Headers;
   private _status: number;
   private _statusText: string;
@@ -49,39 +63,33 @@ export class GResponse {
   private _redirected: boolean;
 
   constructor(
-    body?: Gio.InputStream | ArrayBuffer | DataView | Uint8Array | string,
+    body?: ReadableStream | ArrayBuffer | DataView | Uint8Array | string,
     options?: GResponseOptions,
   ) {
-    let stream: Gio.InputStream;
+    let stream: ReadableStream;
 
-    if (body instanceof Gio.InputStream) {
+    if (body instanceof ReadableStream) {
       stream = body;
-    } else if (body instanceof Uint8Array) {
-      stream = Gio.MemoryInputStream.new_from_bytes(
-        GLib.Bytes.new(body),
-      );
-    } else if (body instanceof ArrayBuffer) {
-      // first convert to Uint8Array
-      stream = Gio.MemoryInputStream.new_from_bytes(
-        GLib.Bytes.new(new Uint8Array(body)),
-      );
-    } else if (body instanceof DataView) {
-      // first convert to Uint8Array
-      stream = Gio.MemoryInputStream.new_from_bytes(
-        GLib.Bytes.new(new Uint8Array(body.buffer)),
-      );
-    } else if (typeof body === "string") {
-      stream = Gio.MemoryInputStream.new_from_bytes(
-        GLib.Bytes.new(encoder.encode(body)),
-      );
     } else {
-      stream = Gio.MemoryInputStream.new_from_bytes(
-        GLib.Bytes.new(new Uint8Array()),
-      );
+      stream = new ReadableStream({
+        start(controller) {
+          if (body instanceof ArrayBuffer) {
+            controller.enqueue(new Uint8Array(body));
+          } else if (body instanceof DataView) {
+            controller.enqueue(new Uint8Array(body.buffer));
+          } else if (body instanceof Uint8Array) {
+            controller.enqueue(body);
+          } else if (typeof body === "string") {
+            controller.enqueue(encoder.encode(body));
+          } else {
+            controller.enqueue(new Uint8Array());
+          }
+          controller.close();
+        },
+      });
     }
 
-    this._stream = stream;
-    this._bodyUsed = false;
+    this._body = stream;
     this._headers = new Headers(options?.headers || {});
     this._status = options?.status || 200;
     this._statusText = options?.statusText || "OK";
@@ -92,17 +100,11 @@ export class GResponse {
   }
 
   get body() {
-    if (this._bodyUsed) {
-      throw new Error("body already used");
-    }
-
-    this._bodyUsed = true;
-
-    return this._stream;
+    return this._body;
   }
 
   get bodyUsed() {
-    return this._bodyUsed;
+    return this._body.locked;
   }
 
   get headers() {
@@ -134,15 +136,11 @@ export class GResponse {
   }
 
   async clone() {
-    const bytes = await this.gBytes();
+    const streams = this.body.tee();
 
-    this._bodyUsed = false;
+    this._body = streams[0];
 
-    this._stream = Gio.MemoryInputStream.new_from_bytes(bytes);
-
-    const stream = Gio.MemoryInputStream.new_from_bytes(bytes);
-
-    return new GResponse(stream, {
+    return new GResponse(streams[1], {
       status: this._status,
       statusText: this._statusText,
       headers: this._headers,
@@ -151,31 +149,29 @@ export class GResponse {
     });
   }
 
-  async gBytes() {
-    const outputStream = Gio.MemoryOutputStream.new_resizable();
-
-    await promiseTask(
-      outputStream,
-      "splice_async",
-      "splice_finish",
-      this.body,
-      Gio.OutputStreamSpliceFlags.CLOSE_TARGET |
-        Gio.OutputStreamSpliceFlags.CLOSE_SOURCE,
-      GLib.PRIORITY_DEFAULT,
-      null,
-    );
-    const bytes = outputStream.steal_as_bytes();
-    return bytes;
-  }
-
   async arrayBuffer() {
-    const bytes = await this.gBytes();
-    return bytes.toArray().buffer;
+    const reader = this._body.getReader();
+    let chunks: Uint8Array[] = [];
+
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      chunks.push(value);
+    }
+
+    const bytes = new Uint8Array(chunks.reduce((a, b) => a + b.length, 0));
+    let offset = 0;
+    for (const chunk of chunks) {
+      bytes.set(chunk, offset);
+      offset += chunk.length;
+    }
+
+    return bytes.buffer;
   }
 
   async text() {
-    const bytes = await this.gBytes();
-    return decoder.decode(bytes.toArray());
+    const bytes = await this.arrayBuffer();
+    return decoder.decode(bytes);
   }
 
   async json() {
@@ -184,12 +180,30 @@ export class GResponse {
   }
 }
 
+const SOUP_CACHE_DIR = Gio.file_new_for_path(
+  GLib.build_filenamev([GLib.get_user_cache_dir(), pkg.name, "soup-cache"]),
+);
+
+if (!SOUP_CACHE_DIR.query_exists(null)) {
+  SOUP_CACHE_DIR.make_directory_with_parents(null);
+}
+
+console.log("caching soup requests at", SOUP_CACHE_DIR.get_path());
+
+const SESSION = Soup.Session.new();
+
+const cache = Soup.Cache.new(
+  SOUP_CACHE_DIR.get_path()!,
+  Soup.CacheType.SHARED,
+);
+
+SESSION.add_feature(cache);
+
 export async function fetch(url: string | URL, options: FetchOptions = {}) {
   if (typeof url !== "string" && ("href" in (url as URL))) {
     url = (url as URL).href;
   }
 
-  const session = new Soup.Session();
   const method = options.method?.toUpperCase() || "GET";
 
   const uri = GLib.Uri.parse(url as string, GLib.UriFlags.NONE);
@@ -216,21 +230,45 @@ export async function fetch(url: string | URL, options: FetchOptions = {}) {
     );
   }
 
-  const inputStream = await promiseTask(
-    session,
-    "send_async",
-    "send_finish",
+  const inputStream = await SESSION.send_async(
     message,
+    GLib.PRIORITY_DEFAULT,
     null,
-    null,
-  ) as Gio.InputStream;
+  );
 
-  const { status_code, reason_phrase } = message;
+  return new Promise<GResponse>((resolve, reject) => {
+    const response_headers = message.get_response_headers();
+    const headers = new Headers();
 
-  return new GResponse(inputStream, {
-    status: status_code,
-    statusText: reason_phrase,
-    url: uri.to_string(),
+    response_headers.foreach((name, value) => {
+      headers.append(name, value);
+    });
+
+    const stream = new ReadableStream({
+      async pull(controller) {
+        return inputStream.read_bytes_async(
+          4096,
+          GLib.PRIORITY_DEFAULT,
+          null,
+        ).then((result) => {
+          if (result.get_size() === 0) {
+            controller.close();
+            return;
+          }
+
+          controller.enqueue(result.toArray());
+        });
+      },
+    });
+
+    const response = new GResponse(stream, {
+      status: message.status_code,
+      statusText: message.reason_phrase,
+      headers,
+      url: url as string,
+    });
+
+    resolve(response);
   });
 }
 
