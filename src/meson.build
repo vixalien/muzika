@@ -6,6 +6,7 @@ sources = [
   'components/webimage.ts',
   'polyfills/base64.ts',
   'polyfills/fetch.ts',
+  'util/hash.ts',
   'main.ts',
   'muse.ts',
   'window.ts',

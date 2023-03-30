@@ -192,10 +192,12 @@ console.log("caching soup requests at", SOUP_CACHE_DIR.get_path());
 
 const SESSION = Soup.Session.new();
 
-const cache = Soup.Cache.new(
+export const cache = Soup.Cache.new(
   SOUP_CACHE_DIR.get_path()!,
   Soup.CacheType.SHARED,
 );
+
+cache.load();
 
 SESSION.add_feature(cache);
 

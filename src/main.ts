@@ -26,8 +26,10 @@
 import GObject from "gi://GObject";
 import Gio from "gi://Gio";
 import Adw from "gi://Adw";
+import GLib from "gi://GLib";
 
 import { Window } from "./window.js";
+import { cache } from "./polyfills/fetch.js";
 
 export class Application extends Adw.Application {
   private window?: Window;
@@ -66,6 +68,25 @@ export class Application extends Adw.Application {
       aboutWindow.present();
     });
     this.add_action(show_about_action);
+
+    GLib.unix_signal_add(
+      GLib.PRIORITY_DEFAULT,
+      // SIGINT
+      2,
+      () => {
+        cache.dump();
+
+        this.release();
+
+        return GLib.SOURCE_REMOVE;
+      },
+    );
+  }
+
+  public vfunc_shutdown(): void {
+    cache.dump();
+
+    super.vfunc_shutdown();
   }
 
   public vfunc_activate(): void {

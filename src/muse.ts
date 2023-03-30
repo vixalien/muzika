@@ -34,6 +34,7 @@ import { Store } from "libmuse/store.js";
 import { FetchClient, RequestInit } from "libmuse/request.js";
 import { setup } from "libmuse";
 import { GResponse } from "./polyfills/fetch.js";
+import { hash } from "./util/hash.js";
 
 const decoder = new TextDecoder();
 
@@ -101,22 +102,6 @@ export class GioFileStore extends (Store as any) {
   }
 }
 
-const encoder = new TextEncoder();
-
-async function hash(string: string) {
-  // use the subtle crypto API to generate a 512 bit hash
-  // return the hash as a hex string
-  const hash = GLib.Checksum.new(GLib.ChecksumType.SHA256);
-
-  hash.update(string);
-
-  const digest = encoder.encode(hash.get_string());
-
-  return Array.from(digest)
-    .map((b) => b.toString(16).padStart(2, "0"))
-    .join("");
-}
-
 class CustomFetch extends FetchClient {
   cache_dir = Gio.file_new_for_path(
     GLib.build_filenamev([GLib.get_user_cache_dir(), pkg.name, "cache"]),
@@ -138,9 +123,11 @@ class CustomFetch extends FetchClient {
     console.debug("REQUEST", options.method, path);
 
     // caching
-    const cache_name = `${await hash(
-      JSON.stringify({ ...options.data, ...options.params, path } || {}),
-    )}.json`;
+    const cache_name = `${
+      hash(
+        JSON.stringify({ ...options.data, ...options.params, path } || {}),
+      )
+    }.json`;
 
     const cache = !path.startsWith("like/");
 

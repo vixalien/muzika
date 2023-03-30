@@ -6,6 +6,7 @@
     <file>components/webimage.js</file>
     <file>polyfills/base64.js</file>
     <file>polyfills/fetch.js</file>
+    <file>util/hash.js</file>
     <file>main.js</file>
     <file>muse.js</file>
     <file>window.js</file>
