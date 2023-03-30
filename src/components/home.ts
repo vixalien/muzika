@@ -14,7 +14,7 @@ import {
   ParsedSong,
   RelatedArtist,
 } from "../muse.js";
-import { load_image, WebImage } from "./webimage.js";
+import { load_image, load_thumbnails, WebImage } from "./webimage.js";
 
 export class SongCard extends Gtk.Box {
   static {
@@ -54,7 +54,7 @@ export class SongCard extends Gtk.Box {
     this._subtitle.set_label(song.artists[0].name);
     this._explicit.set_visible(song.isExplicit);
 
-    // load_image(this._image, song.thumbnails[0].url);
+    load_thumbnails(this._image, song.thumbnails, 160);
   }
 }
 
@@ -97,7 +97,7 @@ export class AlbumCard extends Gtk.Box {
     this._explicit.set_visible(album.isExplicit);
     this._album_type.set_label(album.album_type);
 
-    // load_image(this._image, song.thumbnails[0].url);
+    load_thumbnails(this._image, album.thumbnails, 160);
   }
 }
 
@@ -136,6 +136,8 @@ export class PlaylistCard extends Gtk.Box {
 
     this._title.set_label(playlist.title);
     this._description_label.set_label(playlist.description ?? "");
+
+    load_thumbnails(this._image, playlist.thumbnails, 160);
   }
 }
 
@@ -170,6 +172,8 @@ export class ArtistCard extends Gtk.Box {
 
     this._title.set_label(artist.name);
     this._subtitle.set_label(artist.subscribers ?? "");
+
+    load_thumbnails(this._image, artist.thumbnails, 160);
   }
 }
 
@@ -217,7 +221,7 @@ export class FlatSongCard extends Gtk.Box {
 
     this._explicit.set_visible(song.isExplicit);
 
-    load_image(this._image, song.thumbnails[0].url)
+    load_thumbnails(this._image, song.thumbnails, 48);
   }
 }
 

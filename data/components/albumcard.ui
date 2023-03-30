@@ -1,8 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <interface>
-  <requires lib="gtk" version="4.0"/>
+  <requires lib="gtk" version="4.0" />
   <template class="AlbumCard" parent="GtkBox">
     <property name="valign">start</property>
+    <style>
+      <class name="hover-parent" />
+    </style>
     <child>
       <object class="GtkBox">
         <property name="orientation">vertical</property>
@@ -10,10 +13,32 @@
         <property name="spacing">6</property>
         <child>
           <object class="GtkOverlay">
+            <style>
+              <class name="br-6" />
+            </style>
+            <property name="overflow">hidden</property>
+            <child type="overlay">
+              <object class="GtkButton" id="play_button">
+                <property name="halign">end</property>
+                <property name="valign">end</property>
+                <property name="margin-bottom">6</property>
+                <property name="margin-end">6</property>
+                <style>
+                  <class name="circular" />
+                  <class name="osd" />
+                  <class name="hover-child" />
+                </style>
+                <child>
+                  <object class="GtkImage">
+                    <property name="icon-name">media-playback-start-symbolic</property>
+                  </object>
+                </child>
+              </object>
+            </child>
             <child>
               <object class="GtkBox" id="image_box">
                 <style>
-                  <class name="thumbnail"/>
+                  <class name="thumbnail" />
                 </style>
                 <child>
                   <object class="GtkImage" id="image">
@@ -40,7 +65,7 @@
                 <property name="wrap">true</property>
                 <property name="wrap-mode">char</property>
                 <style>
-                  <class name="heading"/>
+                  <class name="heading" />
                 </style>
               </object>
             </child>
@@ -61,7 +86,7 @@
                       <object class="GtkLabel" id="album_type">
                         <property name="label">Album</property>
                         <style>
-                          <class name="dim-label"/>
+                          <class name="dim-label" />
                         </style>
                       </object>
                     </child>
@@ -69,8 +94,8 @@
                       <object class="GtkLabel" id="separator">
                         <property name="label">·</property>
                         <style>
-                          <class name="dim-label"/>
-                          <class name="heading"/>
+                          <class name="dim-label" />
+                          <class name="heading" />
                         </style>
                       </object>
                     </child>
@@ -82,7 +107,7 @@
                         <property name="ellipsize">end</property>
                         <property name="xalign">0</property>
                         <style>
-                          <class name="dim-label"/>
+                          <class name="dim-label" />
                         </style>
                       </object>
                     </child>

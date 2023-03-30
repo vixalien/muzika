@@ -23,7 +23,6 @@ label.link:hover {
 .hover-parent .hover-child {
   opacity: 0;
   transition: .25s opacity;
-  background-color: alpha(currentColor, .15);
 }
 
 .on-hover:hover,

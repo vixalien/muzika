@@ -1,8 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <interface>
-  <requires lib="gtk" version="4.0"/>
+  <requires lib="gtk" version="4.0" />
   <template class="PlaylistCard" parent="GtkBox">
     <property name="valign">start</property>
+    <style>
+      <class name="hover-parent" />
+    </style>
     <child>
       <object class="GtkBox">
         <property name="orientation">vertical</property>
@@ -10,6 +13,10 @@
         <property name="spacing">6</property>
         <child>
           <object class="GtkOverlay">
+            <style>
+              <class name="br-6" />
+            </style>
+            <property name="overflow">hidden</property>
             <child type="overlay">
               <object class="GtkButton" id="play_button">
                 <property name="halign">end</property>
@@ -17,8 +24,9 @@
                 <property name="margin-bottom">6</property>
                 <property name="margin-end">6</property>
                 <style>
-                  <class name="circular"/>
-                  <class name="osd"/>
+                  <class name="circular" />
+                  <class name="osd" />
+                  <class name="hover-child" />
                 </style>
                 <child>
                   <object class="GtkImage">
@@ -30,7 +38,7 @@
             <child>
               <object class="GtkBox" id="image_box">
                 <style>
-                  <class name="thumbnail"/>
+                  <class name="thumbnail" />
                 </style>
                 <child>
                   <object class="GtkImage" id="image">
@@ -55,7 +63,7 @@
                 <property name="lines">2</property>
                 <property name="xalign">0</property>
                 <style>
-                  <class name="heading"/>
+                  <class name="heading" />
                 </style>
               </object>
             </child>
@@ -80,7 +88,7 @@
                         <property name="ellipsize">end</property>
                         <property name="xalign">0</property>
                         <style>
-                          <class name="dim-label"/>
+                          <class name="dim-label" />
                         </style>
                       </object>
                     </child>
