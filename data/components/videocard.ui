@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+  <requires lib="gtk" version="4.0"/>
+  <template class="VideoCard" parent="GtkBox">
+    <property name="valign">start</property>
+    <child>
+      <object class="GtkBox">
+        <property name="orientation">vertical</property>
+        <property name="hexpand">false</property>
+        <property name="spacing">6</property>
+        <child>
+          <object class="GtkOverlay">
+            <style>
+              <class name="br-6"/>
+            </style>
+            <property name="overflow">hidden</property>
+            <child type="overlay">
+              <object class="GtkButton" id="play_button">
+                <property name="hexpand">true</property>
+                <style>
+                  <class name="flat"/>
+                  <class name="song-play-button"/>
+                </style>
+                <child>
+                  <object class="GtkImage">
+                    <property name="icon-name">media-playback-start-symbolic</property>
+                    <property name="icon-size">large</property>
+                  </object>
+                </child>
+              </object>
+            </child>
+            <child>
+              <object class="GtkBox" id="image_box">
+                <style>
+                  <class name="thumbnail"/>
+                </style>
+                <child>
+                  <object class="GtkOverlay">
+                    <child>
+                      <object class="GtkImage" id="fallback">
+                        <property name="icon-name">image-missing-symbolic</property>
+                        <property name="pixel-size">160</property>
+                        <property name="width-request">285</property>
+                      </object>
+                    </child>
+                    <child type="overlay">
+                      <object class="GtkPicture" id="image">
+                        <property name="height-request">160</property>
+                        <property name="width-request">285</property>
+                        <property name="content-fit">cover</property>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+              </object>
+            </child>
+          </object>
+        </child>
+        <child>
+          <object class="GtkBox" id="meta">
+            <property name="orientation">vertical</property>
+            <property name="spacing">3</property>
+            <child>
+              <object class="GtkLabel" id="title">
+                <property name="label"></property>
+                <property name="hexpand">true</property>
+                <property name="max-width-chars">1</property>
+                <property name="ellipsize">end</property>
+                <property name="lines">2</property>
+                <property name="xalign">0</property>
+                <property name="wrap">true</property>
+                <property name="wrap-mode">char</property>
+                <style>
+                  <class name="heading"/>
+                </style>
+              </object>
+            </child>
+            <child>
+              <object class="GtkBox" id="second-line">
+                <property name="spacing">6</property>
+                <child>
+                  <object class="GtkImage" id="explicit">
+                    <property name="visible">false</property>
+                    <property name="valign">start</property>
+                    <property name="icon-name">network-cellular-edge-symbolic</property>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkBox" id="subtitle_box">
+                    <property name="spacing">6</property>
+                    <child>
+                      <object class="GtkLabel" id="channel">
+                        <property name="label"></property>
+                        <style>
+                          <class name="dim-label"/>
+                        </style>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkLabel" id="separator">
+                        <property name="label">·</property>
+                        <style>
+                          <class name="dim-label"/>
+                          <class name="heading"/>
+                        </style>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkLabel" id="subtitle">
+                        <property name="label"></property>
+                        <style>
+                          <class name="dim-label"/>
+                        </style>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+              </object>
+            </child>
+          </object>
+        </child>
+      </object>
+    </child>
+  </template>
+</interface>

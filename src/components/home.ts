@@ -14,7 +14,7 @@ import {
   ParsedSong,
   RelatedArtist,
 } from "../muse.js";
-import { load_image, load_thumbnails, WebImage } from "./webimage.js";
+import { load_image, load_thumbnails } from "./webimage.js";
 
 export class SongCard extends Gtk.Box {
   static {
@@ -36,7 +36,7 @@ export class SongCard extends Gtk.Box {
   song?: ParsedSong;
 
   _play_button!: Gtk.Button;
-  _image!: WebImage;
+  _image!: Gtk.Image;
   _title!: Gtk.Label;
   _explicit!: Gtk.Image;
   _subtitle!: Gtk.Label;
@@ -77,7 +77,7 @@ export class AlbumCard extends Gtk.Box {
 
   album?: ParsedAlbum;
 
-  _image!: WebImage;
+  _image!: Gtk.Image;
   _title!: Gtk.Label;
   _explicit!: Gtk.Image;
   _subtitle!: Gtk.Label;
@@ -98,6 +98,49 @@ export class AlbumCard extends Gtk.Box {
     this._album_type.set_label(album.album_type);
 
     load_thumbnails(this._image, album.thumbnails, 160);
+  }
+}
+
+export class VideoCard extends Gtk.Box {
+  static {
+    GObject.registerClass({
+      GTypeName: "VideoCard",
+      Template:
+        "resource:///org/example/TypescriptTemplate/components/videocard.ui",
+      InternalChildren: [
+        "image",
+        "title",
+        "explicit",
+        "subtitle",
+        "channel",
+        "image",
+      ],
+    }, this);
+  }
+
+  video?: ParsedSong;
+
+  _image!: Gtk.Picture;
+  _title!: Gtk.Label;
+  _explicit!: Gtk.Image;
+  _subtitle!: Gtk.Label;
+  _channel!: Gtk.Label;
+
+  constructor() {
+    super({
+      orientation: Gtk.Orientation.VERTICAL,
+    });
+  }
+
+  set_video(video: ParsedSong) {
+    this.video = video;
+
+    this._title.set_label(video.title);
+    this._subtitle.set_label(video.views ?? "");
+    this._explicit.set_visible(video.isExplicit);
+    this._channel.set_label(video.artists[0].name ?? "");
+
+    load_thumbnails(this._image, video.thumbnails, 160);
   }
 }
 
@@ -197,7 +240,7 @@ export class FlatSongCard extends Gtk.Box {
   song?: FlatSong;
 
   _play_button!: Gtk.Button;
-  _image!: WebImage;
+  _image!: Gtk.Image;
   _title!: Gtk.Label;
   _explicit!: Gtk.Image;
   _subtitle!: Gtk.Label;
@@ -302,6 +345,10 @@ export class Carousel extends Gtk.Box {
             case "song":
               card = new SongCard();
               card.set_song(item);
+              break;
+            case "video":
+              card = new VideoCard();
+              card.set_video(item);
               break;
             case "album":
               card = new AlbumCard();

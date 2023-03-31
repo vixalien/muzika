@@ -35,10 +35,14 @@ import { fetch } from "../polyfills/fetch.js";
 import { Thumbnail } from "libmuse";
 
 export function load_thumbnails(
-  image: Gtk.Image,
+  image: Gtk.Image | Gtk.Picture,
   thumbnails: Thumbnail[],
-  required_size: number,
+  options: number | LoadOptions,
 ) {
+  const required_size = typeof options === "number"
+    ? options
+    : options.width || options.height || 0;
+
   // choose the best thumbnail
   // by choosing the thumbnail with the smallest size that is larger than required_size
 
@@ -57,10 +61,23 @@ export function load_thumbnails(
     best_thumbnail = sorted_thumbnails[sorted_thumbnails.length - 1];
   }
 
-  return load_image(image, best_thumbnail.url);
+  return load_image(
+    image,
+    best_thumbnail.url,
+    typeof options !== "number" ? options : {},
+  );
 }
 
-export function load_image(image: Gtk.Image, href: string) {
+export interface LoadOptions {
+  width?: number;
+  height?: number;
+}
+
+export function load_image(
+  image: Gtk.Image | Gtk.Picture,
+  href: string,
+  options: LoadOptions = {},
+) {
   const url = new URL(href);
 
   fetch(url, {
@@ -72,6 +89,21 @@ export function load_image(image: Gtk.Image, href: string) {
     loader.write(new Uint8Array(buffer));
     loader.close();
 
-    image.set_from_pixbuf(loader.get_pixbuf());
+    let pixbuf = loader.get_pixbuf()!;
+
+    if (options.width && options.height) {
+      pixbuf = pixbuf?.scale_simple(
+        options.width,
+        options.height,
+        // crop
+        GdkPixbuf.InterpType.HYPER,
+      )!;
+    }
+
+    if (image instanceof Gtk.Picture) {
+      image.set_pixbuf(pixbuf);
+    } else {
+      image.set_from_pixbuf(pixbuf);
+    }
   }).catch((e) => console.error(e.name, e.message));
 }
