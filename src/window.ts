@@ -28,6 +28,7 @@ import Gtk from "gi://Gtk?version=4.0";
 import Adw from "gi://Adw";
 
 import { HomePage } from "./components/home.js";
+import { PlaylistPage } from "./components/playlist.js";
 
 export class Window extends Adw.ApplicationWindow {
   static {
@@ -45,7 +46,8 @@ export class Window extends Adw.ApplicationWindow {
   constructor(params?: Partial<Adw.ApplicationWindow.ConstructorProperties>) {
     super(params);
 
-    const home = new HomePage();
-    this._box.append(home);
+    const artist_page = new PlaylistPage();
+    artist_page.load_playlist("PLCwfwQhurMOsNTcOUOs0ORFn79l5h4ikp");
+    this._box.append(artist_page);
   }
 }

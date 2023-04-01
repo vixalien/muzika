@@ -292,7 +292,9 @@ export class Carousel extends Gtk.Box {
   _text!: Gtk.Label;
   _text_label!: Gtk.Label;
 
-  show_content(content: MixedContent) {
+  show_content<Content extends Partial<MixedContent>>(
+    content: Content & Pick<MixedContent, "contents">,
+  ) {
     this._title.set_label(content.title ?? "");
 
     if (content.subtitle) {

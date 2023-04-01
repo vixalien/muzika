@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <gresources>
   <gresource prefix="/org/example/TypescriptTemplate/js">
+    <file>components/playlist.js</file>
     <file>components/home.js</file>
     <file>components/loading.js</file>
     <file>components/webimage.js</file>

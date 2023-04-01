@@ -15,21 +15,41 @@ label.link:hover {
   border-radius: 6px;
 }
 
+.br-12 {
+  border-radius: 12px;
+}
+
 .no-br {
   border-radius: 0;
 }
 
 .on-hover,
-.hover-parent .hover-child {
+.hover-parent .hover-child,
+.focus-parent .focus-child {
   opacity: 0;
   transition: .25s opacity;
 }
 
 .on-hover:hover,
-.hover-parent:hover .hover-child {
+.hover-parent:hover .hover-child,
+.focus-parent:focus-within .focus-child,
+.focus-parent:focus:focus-visible .focus-child {
   opacity: 1;
 }
 
 .rounded {
   border-radius: 50%;
+}
+
+.small-pill {
+  padding: 10px;
+}
+
+/* playlist item */
+.playlist-item .image {
+  border-radius: 3px;
+}
+
+.playlist-item:not(:focus):not(:focus-visible):nth-child(2n+1) {
+  background-color: alpha(@card_bg_color, .4);
 }

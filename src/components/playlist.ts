@@ -1,0 +1,262 @@
+import Gtk from "gi://Gtk?version=4.0";
+import GObject from "gi://GObject";
+import Adw from "gi://Adw";
+
+import { Loading } from "./loading.js";
+
+import {
+  get_more_playlist_tracks,
+  get_playlist,
+  ParsedPlaylist,
+  Playlist,
+  PlaylistItem,
+} from "../muse.js";
+import { load_thumbnails } from "./webimage.js";
+import { Carousel } from "./home.js";
+
+export class PlaylistPage extends Gtk.Box {
+  static {
+    GObject.registerClass({
+      GTypeName: "PlaylistPage",
+      Template:
+        "resource:///org/example/TypescriptTemplate/components/playlist.ui",
+      InternalChildren: [
+        "image",
+        "title",
+        "author",
+        "explicit",
+        "year",
+        "description",
+        "trackCount",
+        "duration",
+        "content",
+        "scrolled",
+      ],
+    }, this);
+  }
+
+  playlist?: Playlist;
+
+  _image!: Gtk.Picture;
+  _title!: Gtk.Label;
+  _author!: Gtk.Label;
+  _explicit!: Gtk.Image;
+  _year!: Gtk.Label;
+  _description!: Gtk.Label;
+  _trackCount!: Gtk.Label;
+  _duration!: Gtk.Label;
+  _content!: Gtk.Box;
+  _scrolled!: Gtk.ScrolledWindow;
+
+  list_box: Gtk.ListBox;
+
+  _loading: Loading;
+  // _box: Gtk.Box;
+  // _clamp: Adw.Clamp;
+  // _scrolled: Gtk.ScrolledWindow;
+
+  constructor() {
+    super({
+      orientation: Gtk.Orientation.VERTICAL,
+    });
+
+    // this._box = new Gtk.Box({
+    //   orientation: Gtk.Orientation.VERTICAL,
+    //   spacing: 12,
+    // });
+
+    // this._clamp = new Adw.Clamp({
+    //   margin_top: 12,
+    //   margin_bottom: 12,
+    //   maximum_size: 1000,
+    //   tightening_threshold: 800,
+    // });
+    // this._clamp.set_child(this._box);
+
+    // this._scrolled = new Gtk.ScrolledWindow({ vexpand: true, hexpand: true });
+    // this._scrolled.set_child(this._clamp);
+
+    // this.append(this._scrolled);
+
+    this.list_box = Gtk.ListBox.new();
+    this.list_box.add_css_class("background");
+
+    this._loading = new Loading();
+
+    this._content.append(this.list_box);
+    this._content.append(this._loading);
+
+    this._content.set_orientation(Gtk.Orientation.VERTICAL);
+
+    this._scrolled.connect("edge-reached", (_, pos) => {
+      if (pos === Gtk.PositionType.BOTTOM) {
+        this.load_more();
+      }
+    });
+  }
+
+  // clear_box() {
+  //   let child = this._box.get_first_child();
+
+  //   while (child) {
+  //     this._box.remove(child);
+
+  //     child = this._box.get_first_child();
+  //   }
+  // }
+
+  append_tracks(tracks: PlaylistItem[]) {
+    for (const track of tracks) {
+      const card = new PlaylistItemCard();
+
+      card.set_item(track);
+
+      this.list_box.append(card);
+    }
+  }
+
+  show_related(related: ParsedPlaylist[]) {
+    const carousel = new Carousel({
+      margin_top: 24,
+    });
+
+    carousel.show_content({
+      title: "Related playlists",
+      contents: related.map((related) => ({ type: "playlist", ...related })),
+    });
+
+    this._content.append(carousel);
+  }
+
+  show_playlist(playlist: Playlist) {
+    this._loading.loading = false;
+
+    // this.clear_box();
+
+    load_thumbnails(this._image, playlist.thumbnails, 240);
+
+    if (playlist.description) {
+      this._description.set_visible(true);
+      this._description.set_label(playlist.description);
+    } else {
+      this._description.set_visible(false);
+    }
+
+    this._title.set_label(playlist.title);
+    this._author.set_label(playlist.author?.name ?? "");
+    this._explicit.set_visible(false);
+    this._trackCount.set_label(playlist.trackCount.toString() + " songs");
+    this._year.set_label(playlist.year ?? "Unknown year");
+    this._duration.set_label(secondsToDuration(playlist.duration_seconds));
+
+    if (playlist.related) {
+      this.show_related(playlist.related);
+    }
+
+    this.append_tracks(playlist.tracks);
+  }
+
+  async load_playlist(channelId: string) {
+    this._loading.loading = true;
+
+    try {
+      this.playlist = await get_playlist(channelId, {
+        related: true,
+      });
+      this.show_playlist(this.playlist);
+    } catch (e) {
+      return console.error((e as any).toString());
+    }
+  }
+
+  no_more = false;
+
+  get isLoading() {
+    return this._loading.loading;
+  }
+
+  set isLoading(value: boolean) {
+    this._loading.loading = value;
+  }
+
+  async load_more() {
+    if (this.isLoading || this.no_more) return;
+    this.isLoading = true;
+
+    if (!this.playlist) return;
+
+    if (this.playlist.continuation) {
+      const more = await get_more_playlist_tracks(this.playlist.id, {
+        continuation: this.playlist.continuation,
+        limit: 100,
+      });
+
+      this.isLoading = false;
+
+      this.playlist.continuation = more.continuation;
+      this.playlist.tracks.push(...more.tracks);
+
+      this.append_tracks(more.tracks);
+    } else {
+      this.isLoading = false;
+      this.no_more = true;
+    }
+  }
+}
+
+export class PlaylistItemCard extends Gtk.ListBoxRow {
+  static {
+    GObject.registerClass({
+      GTypeName: "PlaylistItem",
+      Template:
+        "resource:///org/example/TypescriptTemplate/components/playlistitem.ui",
+      InternalChildren: [
+        "play_button",
+        "image",
+        "title",
+        "explicit",
+        "subtitle",
+        "image",
+      ],
+    }, this);
+  }
+
+  item?: PlaylistItem;
+
+  _play_button!: Gtk.Button;
+  _image!: Gtk.Image;
+  _title!: Gtk.Label;
+  _explicit!: Gtk.Image;
+  _subtitle!: Gtk.Label;
+
+  constructor() {
+    super({});
+  }
+
+  set_item(item: PlaylistItem) {
+    this.item = item;
+
+    this._title.set_label(item.title);
+
+    if (item.artists && item.artists.length > 0) {
+      this._subtitle.set_label(item.artists[0].name);
+    } else {
+      this._subtitle.set_label("");
+    }
+
+    this._explicit.set_visible(item.isExplicit);
+
+    load_thumbnails(this._image, item.thumbnails, 48);
+  }
+}
+
+function secondsToDuration(seconds: number) {
+  const minutes = Math.floor(seconds / 60);
+  const hours = Math.floor(minutes / 60);
+
+  const secondsStr = (seconds % 60).toString().padStart(2, "0");
+  const minutesStr = (minutes % 60).toString().padStart(2, "0");
+  const hoursStr = hours.toString().padStart(2, "0");
+
+  return `${hoursStr}:${minutesStr}:${secondsStr}`;
+}

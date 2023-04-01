@@ -7,7 +7,9 @@
     <file preprocess="xml-stripblanks">components/carousel.ui</file>
     <file preprocess="xml-stripblanks">components/flatsong.ui</file>
     <file preprocess="xml-stripblanks">components/loading.ui</file>
+    <file preprocess="xml-stripblanks">components/playlist.ui</file>
     <file preprocess="xml-stripblanks">components/playlistcard.ui</file>
+    <file preprocess="xml-stripblanks">components/playlistitem.ui</file>
     <file preprocess="xml-stripblanks">components/songcard.ui</file>
     <file preprocess="xml-stripblanks">components/videocard.ui</file>
     <file preprocess="xml-stripblanks">window.ui</file>
