@@ -47,7 +47,7 @@ export class Window extends Adw.ApplicationWindow {
     super(params);
 
     const artist_page = new PlaylistPage();
-    artist_page.load_playlist("PLCwfwQhurMOsNTcOUOs0ORFn79l5h4ikp");
+    artist_page.load_playlist("RDCLAK5uy_mSn-M-lIm2IdR8jiJpnYnbwO8BUCTAjX0");
     this._box.append(artist_page);
   }
 }

@@ -6,7 +6,9 @@
     <file preprocess="xml-stripblanks">components/artistcard.ui</file>
     <file preprocess="xml-stripblanks">components/carousel.ui</file>
     <file preprocess="xml-stripblanks">components/flatsong.ui</file>
+    <file preprocess="xml-stripblanks">components/largeplaylistheader.ui</file>
     <file preprocess="xml-stripblanks">components/loading.ui</file>
+    <file preprocess="xml-stripblanks">components/miniplaylistheader.ui</file>
     <file preprocess="xml-stripblanks">components/playlist.ui</file>
     <file preprocess="xml-stripblanks">components/playlistcard.ui</file>
     <file preprocess="xml-stripblanks">components/playlistitem.ui</file>

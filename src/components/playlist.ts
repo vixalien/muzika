@@ -3,6 +3,7 @@ import GObject from "gi://GObject";
 import Adw from "gi://Adw";
 
 import { Loading } from "./loading.js";
+import { PlaylistHeader } from "./playlistheader.js";
 
 import {
   get_more_playlist_tracks,
@@ -21,12 +22,7 @@ export class PlaylistPage extends Gtk.Box {
       Template:
         "resource:///org/example/TypescriptTemplate/components/playlist.ui",
       InternalChildren: [
-        "image",
-        "title",
-        "author",
-        "explicit",
-        "year",
-        "description",
+        "inner_box",
         "trackCount",
         "duration",
         "content",
@@ -37,18 +33,14 @@ export class PlaylistPage extends Gtk.Box {
 
   playlist?: Playlist;
 
-  _image!: Gtk.Picture;
-  _title!: Gtk.Label;
-  _author!: Gtk.Label;
-  _explicit!: Gtk.Image;
-  _year!: Gtk.Label;
-  _description!: Gtk.Label;
+  _inner_box!: Gtk.Box;
   _trackCount!: Gtk.Label;
   _duration!: Gtk.Label;
   _content!: Gtk.Box;
   _scrolled!: Gtk.ScrolledWindow;
 
   list_box: Gtk.ListBox;
+  header: PlaylistHeader;
 
   _loading: Loading;
   // _box: Gtk.Box;
@@ -59,6 +51,8 @@ export class PlaylistPage extends Gtk.Box {
     super({
       orientation: Gtk.Orientation.VERTICAL,
     });
+
+    this.header = new PlaylistHeader();
 
     // this._box = new Gtk.Box({
     //   orientation: Gtk.Orientation.VERTICAL,
@@ -83,6 +77,7 @@ export class PlaylistPage extends Gtk.Box {
 
     this._loading = new Loading();
 
+    this._inner_box.prepend(this.header);
     this._content.append(this.list_box);
     this._content.append(this._loading);
 
@@ -133,20 +128,18 @@ export class PlaylistPage extends Gtk.Box {
 
     // this.clear_box();
 
-    load_thumbnails(this._image, playlist.thumbnails, 240);
+    this.header.load_thumbnails(playlist.thumbnails);
+    this.header.set_description(playlist.description);
+    this.header.set_title(playlist.title);
+    this.header.set_explicit(false);
+    this.header.set_genre("Playlist");
+    this.header.set_year(playlist.year ?? "Unknown year");
 
-    if (playlist.description) {
-      this._description.set_visible(true);
-      this._description.set_label(playlist.description);
-    } else {
-      this._description.set_visible(false);
+    if (playlist.author) {
+      this.header.add_author(playlist.author);
     }
 
-    this._title.set_label(playlist.title);
-    this._author.set_label(playlist.author?.name ?? "");
-    this._explicit.set_visible(false);
     this._trackCount.set_label(playlist.trackCount.toString() + " songs");
-    this._year.set_label(playlist.year ?? "Unknown year");
     this._duration.set_label(secondsToDuration(playlist.duration_seconds));
 
     if (playlist.related) {
