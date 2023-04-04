@@ -11,6 +11,7 @@
         <child>
           <object class="GtkImage" id="image">
             <property name="valign">start</property>
+            <property name="halign">center</property>
             <property name="pixel-size">240</property>
             <property name="overflow">hidden</property>
             <property name="icon-name">image-missing-symbolic</property>
