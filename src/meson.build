@@ -1,8 +1,10 @@
 gnome = import('gnome')
 
 sources = [
-  'components/loading.ts',
+  'components/artist.ts',
+  'components/artistheader.ts',
   'components/home.ts',
+  'components/loading.ts',
   'components/playlist.ts',
   'components/playlistheader.ts',
   'components/webimage.ts',

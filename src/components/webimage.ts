@@ -1,5 +1,7 @@
 import GdkPixbuf from "gi://GdkPixbuf";
 import Gtk from "gi://Gtk?version=4.0";
+import Gdk from "gi://Gdk?version=4.0";
+import Adw from "gi://Adw";
 
 /*
 const IMAGE_URL = "https://cataas.com/cat";
@@ -34,8 +36,41 @@ async function getInputStream(url) {
 import { fetch } from "../polyfills/fetch.js";
 import { Thumbnail } from "libmuse";
 
+export function get_square_thumbnails(thumbnails: Thumbnail[]) {
+  const fixed: Thumbnail[] = [];
+
+  for (const thumbnail of thumbnails) {
+    const regex =
+      /https:\/\/lh3.googleusercontent.com\/i-\S+=w(\d+)-h(\d+)-p-l90-rj/;
+    const match = regex.exec(thumbnail.url);
+
+    if (match) {
+      const width = Number.parseInt(match[1]);
+      const height = Number.parseInt(match[2]);
+
+      if (width === height) {
+        fixed.push(thumbnail);
+      } else {
+        const smallest = Math.min(width, height);
+        const new_url = thumbnail.url.replace(
+          /=w\d+-h\d+/,
+          `=w${smallest}-h${smallest}`,
+        );
+
+        fixed.push({
+          url: new_url,
+          width: smallest,
+          height: smallest,
+        });
+      }
+    }
+  }
+
+  return fixed;
+}
+
 export function load_thumbnails(
-  image: Gtk.Image | Gtk.Picture,
+  image: Gtk.Image | Gtk.Picture | Adw.Avatar,
   thumbnails: Thumbnail[],
   options: number | LoadOptions,
 ) {
@@ -46,7 +81,11 @@ export function load_thumbnails(
   // choose the best thumbnail
   // by choosing the thumbnail with the smallest size that is larger than required_size
 
-  const sorted_thumbnails = thumbnails.sort((a, b) => a.width - b.width);
+  let sorted_thumbnails = thumbnails.sort((a, b) => a.width - b.width);
+
+  if (typeof options != "number" && options.square) {
+    sorted_thumbnails = get_square_thumbnails(sorted_thumbnails);
+  }
 
   let best_thumbnail: Thumbnail | null = null;
 
@@ -64,19 +103,20 @@ export function load_thumbnails(
   return load_image(
     image,
     best_thumbnail.url,
-    typeof options !== "number" ? options : {},
+    typeof options !== "number" ? options : { width: options },
   );
 }
 
 export interface LoadOptions {
-  width?: number;
+  width: number;
   height?: number;
+  square?: boolean;
 }
 
 export function load_image(
-  image: Gtk.Image | Gtk.Picture,
+  image: Gtk.Image | Gtk.Picture | Adw.Avatar,
   href: string,
-  options: LoadOptions = {},
+  options: LoadOptions,
 ) {
   const url = new URL(href);
 
@@ -102,8 +142,11 @@ export function load_image(
 
     if (image instanceof Gtk.Picture) {
       image.set_pixbuf(pixbuf);
-    } else {
+    } else if (image instanceof Gtk.Image) {
       image.set_from_pixbuf(pixbuf);
+    } else if (image instanceof Adw.Avatar) {
+      const texture = Gdk.Texture.new_for_pixbuf(pixbuf);
+      image.set_custom_image(texture);
     }
   }).catch((e) => console.error(e.name, e.message));
 }

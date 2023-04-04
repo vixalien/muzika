@@ -27,8 +27,7 @@ import GObject from "gi://GObject";
 import Gtk from "gi://Gtk?version=4.0";
 import Adw from "gi://Adw";
 
-import { HomePage } from "./components/home.js";
-import { PlaylistPage } from "./components/playlist.js";
+import { ArtistPage } from "./components/artist.js";
 
 export class Window extends Adw.ApplicationWindow {
   static {
@@ -46,8 +45,8 @@ export class Window extends Adw.ApplicationWindow {
   constructor(params?: Partial<Adw.ApplicationWindow.ConstructorProperties>) {
     super(params);
 
-    const artist_page = new PlaylistPage();
-    artist_page.load_playlist("RDCLAK5uy_mSn-M-lIm2IdR8jiJpnYnbwO8BUCTAjX0");
+    const artist_page = new ArtistPage();
+    artist_page.load_artist("UCzARU-Ev3-yyu3LovaxxaaA");
     this._box.append(artist_page);
   }
 }

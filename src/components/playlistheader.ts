@@ -20,6 +20,8 @@ export class MiniPlaylistHeader extends Gtk.Box {
         "year",
         "description",
         "author_box",
+        "submeta",
+        "avatar",
       ],
     }, this);
   }
@@ -31,6 +33,8 @@ export class MiniPlaylistHeader extends Gtk.Box {
   _year!: Gtk.Label;
   _genre!: Gtk.Label;
   _description!: Gtk.Label;
+  _submeta!: Gtk.Box;
+  _avatar!: Adw.Avatar;
 }
 
 export class LargePlaylistHeader extends Gtk.Box {
@@ -47,6 +51,8 @@ export class LargePlaylistHeader extends Gtk.Box {
         "year",
         "description",
         "author_box",
+        "submeta",
+        "avatar",
       ],
     }, this);
   }
@@ -58,6 +64,8 @@ export class LargePlaylistHeader extends Gtk.Box {
   _year!: Gtk.Label;
   _genre!: Gtk.Label;
   _description!: Gtk.Label;
+  _submeta!: Gtk.Box;
+  _avatar!: Adw.Avatar;
 }
 
 export class PlaylistHeader extends Gtk.Box {

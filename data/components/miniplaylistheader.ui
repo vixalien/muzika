@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <interface>
-  <requires lib="gtk" version="4.0" />
+  <requires lib="gtk" version="4.0"/>
   <template class="MiniPlaylistHeader" parent="GtkBox">
     <child>
       <object class="GtkBox" id="header">
@@ -10,14 +10,19 @@
         <property name="orientation">vertical</property>
         <child>
           <object class="GtkImage" id="image">
-            <property name="valign">start</property>
-            <property name="halign">center</property>
             <property name="pixel-size">240</property>
             <property name="overflow">hidden</property>
             <property name="icon-name">image-missing-symbolic</property>
             <style>
-              <class name="br-6" />
+              <class name="br-6"/>
             </style>
+          </object>
+        </child>
+        <child>
+          <object class="AdwAvatar" id="avatar">
+            <property name="size">240</property>
+            <property name="text">Avatar</property>
+            <property name="visible">false</property>
           </object>
         </child>
         <child>
@@ -32,7 +37,7 @@
                   <object class="GtkLabel" id="title">
                     <property name="label">Title</property>
                     <style>
-                      <class name="title-1" />
+                      <class name="title-1"/>
                     </style>
                   </object>
                 </child>
@@ -45,12 +50,12 @@
               </object>
             </child>
             <child>
-              <object class="GtkBox">
+              <object class="GtkBox" id="submeta">
                 <property name="halign">center</property>
                 <property name="margin-top">3</property>
                 <property name="spacing">6</property>
                 <style>
-                  <class name="dim-label" />
+                  <class name="dim-label"/>
                 </style>
                 <child>
                   <object class="GtkImage" id="explicit">
@@ -92,8 +97,8 @@
                       </object>
                     </child>
                     <style>
-                      <class name="pill" />
-                      <class name="suggested-action" />
+                      <class name="pill"/>
+                      <class name="suggested-action"/>
                     </style>
                   </object>
                 </child>
@@ -106,7 +111,7 @@
                       </object>
                     </child>
                     <style>
-                      <class name="pill" />
+                      <class name="pill"/>
                     </style>
                   </object>
                 </child>
@@ -114,9 +119,9 @@
                   <object class="GtkToggleButton" id="menu">
                     <property name="icon-name">view-more-symbolic</property>
                     <style>
-                      <class name="flat" />
-                      <class name="pill" />
-                      <class name="small-pill" />
+                      <class name="flat"/>
+                      <class name="pill"/>
+                      <class name="small-pill"/>
                     </style>
                   </object>
                 </child>
@@ -130,7 +135,7 @@
                 <property name="ellipsize">end</property>
                 <property name="label">Description</property>
                 <style>
-                  <class name="dim-label" />
+                  <class name="dim-label"/>
                 </style>
               </object>
             </child>
