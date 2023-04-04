@@ -74,8 +74,6 @@ export class Application extends Adw.Application {
       // SIGINT
       2,
       () => {
-        cache.dump();
-
         this.release();
 
         return GLib.SOURCE_REMOVE;
