@@ -11,12 +11,20 @@ label.link:hover {
   text-decoration: underline;
 }
 
+.padding-3 {
+  padding: 3px;
+}
+
 .padding-6 {
   padding: 6px;
 }
 
 .br-6 {
   border-radius: 6px;
+}
+
+.br-9 {
+  border-radius: 9px;
 }
 
 .br-12 {

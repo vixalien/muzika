@@ -9,13 +9,9 @@
         <property name="spacing">12</property>
         <property name="hexpand">false</property>
         <property name="valign">center</property>
-        <property name="cursor">
-          <object class="GdkCursor">
-            <property name="name">pointer</property>
-          </object>
-        </property>
         <style>
           <class name="hover-parent"/>
+          <class name="padding-3"/>
         </style>
         <child>
           <object class="GtkOverlay">
@@ -45,7 +41,7 @@
                 <child>
                   <object class="GtkImage" id="image">
                     <property name="icon-name">image-missing-symbolic</property>
-                    <property name="pixel-size">54</property>
+                    <property name="pixel-size">48</property>
                   </object>
                 </child>
               </object>
