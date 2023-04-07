@@ -87,8 +87,6 @@ export class ArtistPage extends Gtk.Box {
 
     this.append_top_songs(artist.songs.results);
 
-    console.log("adding", artist.albums);
-
     this.add_carousel("Albums", artist.albums);
     this.add_carousel("Singles", artist.singles);
     this.add_carousel("Videos", artist.videos);
