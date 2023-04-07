@@ -117,7 +117,7 @@ export class PlaylistPage extends Gtk.Box {
 
     carousel.show_content({
       title: "Related playlists",
-      contents: related.map((related) => ({ type: "playlist", ...related })),
+      contents: related,
     });
 
     this._content.append(carousel);

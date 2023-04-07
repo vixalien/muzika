@@ -16,17 +16,9 @@
                   <class name="thumbnail"/>
                 </style>
                 <child>
-                  <object class="GtkFrame">
+                  <object class="AdwAvatar" id="avatar">
                     <property name="overflow">hidden</property>
-                    <style>
-                      <class name="rounded"/>
-                    </style>
-                    <child>
-                      <object class="GtkImage" id="image">
-                        <property name="icon-name">music-artist-symbolic</property>
-                        <property name="pixel-size">160</property>
-                      </object>
-                    </child>
+                    <property name="size">160</property>
                   </object>
                 </child>
               </object>

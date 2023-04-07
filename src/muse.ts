@@ -23,6 +23,7 @@ import "./polyfills/base64.js";
 //////////// libmuse
 
 export * from "libmuse";
+export type { Category } from "libmuse/types/parsers/browsing.js"
 
 //////////// store
 

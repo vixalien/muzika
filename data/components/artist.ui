@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+  <requires lib="gtk" version="4.0" />
+  <template class="ArtistPage" parent="GtkBox">
+    <child>
+      <object class="GtkScrolledWindow" id="scrolled">
+        <property name="vexpand">true</property>
+        <property name="hexpand">true</property>
+        <property name="hscrollbar-policy">never</property>
+        <child>
+          <object class="AdwClamp">
+            <property name="margin-top">24</property>
+            <property name="margin-bottom">24</property>
+            <property name="margin-start">12</property>
+            <property name="margin-end">12</property>
+            <property name="tightening-threshold">800</property>
+            <property name="maximum-size">1000</property>
+            <child>
+              <object class="GtkBox" id="inner_box">
+                <property name="spacing">24</property>
+                <property name="orientation">vertical</property>
+                <child>
+                  <object class="GtkBox" id="content"></object>
+                </child>
+              </object>
+            </child>
+          </object>
+        </child>
+      </object>
+    </child>
+  </template>
+</interface>

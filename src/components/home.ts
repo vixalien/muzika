@@ -93,7 +93,7 @@ export class AlbumCard extends Gtk.Box {
     this.album = album;
 
     this._title.set_label(album.title);
-    this._subtitle.set_label(album.artists[0].name);
+    if (album.artists[0]) this._subtitle.set_label(album.artists[0].name);
     this._explicit.set_visible(album.isExplicit);
     this._album_type.set_label(album.album_type);
 
@@ -191,7 +191,7 @@ export class ArtistCard extends Gtk.Box {
       Template:
         "resource:///org/example/TypescriptTemplate/components/artistcard.ui",
       InternalChildren: [
-        "image",
+        "avatar",
         "title",
         "subtitle",
       ],
@@ -200,7 +200,7 @@ export class ArtistCard extends Gtk.Box {
 
   artist?: RelatedArtist;
 
-  _image!: Gtk.Image;
+  _avatar!: Adw.Avatar;
   _title!: Gtk.Label;
   _subtitle!: Gtk.Label;
 
@@ -215,8 +215,9 @@ export class ArtistCard extends Gtk.Box {
 
     this._title.set_label(artist.name);
     this._subtitle.set_label(artist.subscribers ?? "");
+    this._avatar.set_name(artist.name);
 
-    load_thumbnails(this._image, artist.thumbnails, 160);
+    load_thumbnails(this._avatar, artist.thumbnails, 160);
   }
 }
 
@@ -348,7 +349,7 @@ export class Carousel extends Gtk.Box {
               card = new SongCard();
               card.set_song(item);
               break;
-            case "video":
+            case "inline-video":
               card = new VideoCard();
               card.set_video(item);
               break;
