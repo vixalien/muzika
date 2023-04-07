@@ -121,7 +121,7 @@ export class VideoCard extends Gtk.Box {
     }, this);
   }
 
-  video?: ParsedVideo;
+  video?: ParsedVideo | ParsedSong;
 
   _image!: Gtk.Picture;
   _title!: Gtk.Label;
@@ -145,40 +145,8 @@ export class VideoCard extends Gtk.Box {
 
     load_thumbnails(this._image, video.thumbnails, 160);
   }
-}
 
-export class InlineVideoCard extends Gtk.Box {
-  static {
-    GObject.registerClass({
-      GTypeName: "InlineVideoCard",
-      Template:
-        "resource:///org/example/TypescriptTemplate/components/videocard.ui",
-      InternalChildren: [
-        "image",
-        "title",
-        "explicit",
-        "subtitle",
-        "channel",
-        "image",
-      ],
-    }, this);
-  }
-
-  video?: ParsedSong;
-
-  _image!: Gtk.Picture;
-  _title!: Gtk.Label;
-  _explicit!: Gtk.Image;
-  _subtitle!: Gtk.Label;
-  _channel!: Gtk.Label;
-
-  constructor() {
-    super({
-      orientation: Gtk.Orientation.VERTICAL,
-    });
-  }
-
-  set_video(video: ParsedSong) {
+  set_inline_video(video: ParsedSong) {
     this.video = video;
 
     this._title.set_label(video.title);
@@ -353,26 +321,32 @@ export class Carousel<
       Template:
         "resource:///org/example/TypescriptTemplate/components/carousel.ui",
       InternalChildren: [
-        "scrolled",
-        // "scrolled_box",
         "title",
         "subtitle",
         "text",
         "text_label",
         "list_view",
+        "grid_view",
+        "grid_scrolled",
+        "list_scrolled",
+        "scrolled_box",
       ],
     }, this);
   }
 
   content?: Content;
 
-  _scrolled!: Gtk.ScrolledWindow;
-  // _scrolled_box!: Gtk.Box;
+  _scrolled_box!: Gtk.Box;
+  _grid_scrolled!: Gtk.ScrolledWindow;
+  _list_scrolled!: Gtk.ScrolledWindow;
   _title!: Gtk.Label;
   _subtitle!: Gtk.Label;
   _text!: Gtk.Label;
   _text_label!: Gtk.Label;
   _list_view!: Gtk.ListView;
+  _grid_view!: Gtk.GridView;
+
+  grid = false;
 
   model = Gio.ListStore.new(GObject.TYPE_OBJECT);
 
@@ -380,13 +354,27 @@ export class Carousel<
     super();
 
     this._list_view.remove_css_class("view");
+    this._grid_view.remove_css_class("view");
+  }
+
+  setup(grid = false) {
+    this.grid = grid;
 
     const factory = Gtk.SignalListItemFactory.new();
     factory.connect("bind", this.bind_cb.bind(this));
 
-    this._list_view.factory = factory;
-    this._list_view.model = Gtk.NoSelection.new(this.model);
-    this._list_view.connect("activate", this.activate_cb.bind(this));
+    if (grid) {
+      this._grid_scrolled.visible = true;
+      this._list_scrolled.visible = false;
+
+      this._grid_view.factory = factory;
+      this._grid_view.model = Gtk.NoSelection.new(this.model);
+      this._grid_view.connect("activate", this.activate_cb.bind(this));
+    } else {
+      this._list_view.factory = factory;
+      this._list_view.model = Gtk.NoSelection.new(this.model);
+      this._list_view.connect("activate", this.activate_cb.bind(this));
+    }
   }
 
   bind_cb(factory: Gtk.ListItemFactory, list_item: Gtk.ListItem) {
@@ -395,37 +383,46 @@ export class Carousel<
 
     let card;
 
-    switch (item.type) {
-      case "song":
-        card = new SongCard();
+    if (this.grid) {
+      if (item.type !== "flat-song") {
+        console.warn("Invalid item in list", item);
+      } else {
+        card = new FlatSongCard();
         card.set_song(item);
-        break;
-      case "inline-video":
-        card = new InlineVideoCard();
-        card.set_video(item);
-        break;
-      case "video":
-        card = new VideoCard();
-        card.set_video(item);
-        break;
-      case "album":
-        card = new AlbumCard();
-        card.set_album(item);
-        break;
-      case "playlist":
-        card = new PlaylistCard();
-        card.set_playlist(item);
-        break;
-      case "artist":
-        card = new ArtistCard();
-        card.set_artist(item);
-        break;
-      default:
-        console.warn("Invalid item in carousel", item.type);
+      }
+    } else {
+      switch (item.type) {
+        case "song":
+          card = new SongCard();
+          card.set_song(item);
+          break;
+        case "inline-video":
+          card = new VideoCard();
+          card.set_inline_video(item);
+          break;
+        case "video":
+          card = new VideoCard();
+          card.set_video(item);
+          break;
+        case "album":
+          card = new AlbumCard();
+          card.set_album(item);
+          break;
+        case "playlist":
+          card = new PlaylistCard();
+          card.set_playlist(item);
+          break;
+        case "artist":
+          card = new ArtistCard();
+          card.set_artist(item);
+          break;
+        default:
+          console.warn("Invalid item in carousel", item.type);
+      }
     }
 
     if (card) {
-      card.add_css_class("padding-6");
+      if (!this.grid) card.add_css_class("padding-6");
 
       list_item.set_child(card);
 
@@ -433,6 +430,9 @@ export class Carousel<
 
       if (parent) {
         parent.margin_end = 6;
+        if (this.grid) {
+          parent.margin_bottom = 6;
+        }
         parent.add_css_class("background");
         parent.add_css_class("br-12");
       }
@@ -458,42 +458,19 @@ export class Carousel<
     if (typeof content.contents === "string") {
       this._text.set_label(content.contents);
       this._text.set_visible(true);
-      this._scrolled.set_visible(false);
+      this._scrolled_box.set_visible(false);
     } else {
       this._text.set_visible(false);
-      this._scrolled.set_visible(true);
+      this._scrolled_box.set_visible(true);
 
-      if (content.display == "list") {
-        // this is a grid of 4 items vertical, scroll to the right
-        const flow = Gtk.FlowBox.new();
-        flow.set_orientation(Gtk.Orientation.VERTICAL);
-        flow.set_selection_mode(Gtk.SelectionMode.NONE);
-        flow.set_homogeneous(true);
-        flow.set_max_children_per_line(4);
-        flow.set_min_children_per_line(4);
-        flow.set_column_spacing(12);
-        flow.set_row_spacing(12);
+      this.setup(content.display == "list");
 
-        for (const item of content.contents) {
-          if (!item) continue;
+      this.model.remove_all();
 
-          if (item.type !== "flat-song") {
-            console.warn("Invalid item in list", item);
-            continue;
-          } else {
-            const card = new FlatSongCard();
-            card.set_song(item);
-            flow.append(card);
-          }
-        }
-      } else {
-        this.model.remove_all();
+      for (const item of content.contents) {
+        if (!item) continue;
 
-        for (const item of content.contents) {
-          if (!item) continue;
-
-          this.model.append(MixedItemObject.new(item));
-        }
+        this.model.append(MixedItemObject.new(item));
       }
     }
   }
@@ -543,8 +520,6 @@ export class HomePage extends Gtk.Box {
     });
 
     this.append(this._scrolled);
-
-    this.load_home();
   }
 
   append_contents(result: MixedContent[]) {

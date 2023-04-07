@@ -37,19 +37,47 @@
       </object>
     </child>
     <child>
-      <object class="GtkScrolledWindow" id="scrolled">
-        <property name="propagate-natural-height">true</property>
-        <property name="vscrollbar-policy">never</property>
+      <object class="GtkBox" id="scrolled_box">
+        <property name="hexpand">true</property>
         <child>
-          <object class="GtkListView" id="list_view">
-            <property name="orientation">horizontal</property>
-            <property name="margin-bottom">24</property>
-            <property name="single-click-activate">true</property>
-            <property name="margin-start">12</property>
-            <property name="margin-end">12</property>
-            <style>
-              <class name="background" />
-            </style>
+          <object class="GtkScrolledWindow" id="list_scrolled">
+            <property name="hexpand">true</property>
+            <property name="propagate-natural-height">true</property>
+            <property name="vscrollbar-policy">never</property>
+            <child>
+              <object class="GtkListView" id="list_view">
+                <property name="orientation">horizontal</property>
+                <property name="margin-bottom">24</property>
+                <property name="single-click-activate">true</property>
+                <property name="margin-start">12</property>
+                <property name="margin-end">12</property>
+                <style>
+                  <class name="background" />
+                </style>
+              </object>
+            </child>
+          </object>
+        </child>
+        <child>
+          <object class="GtkScrolledWindow" id="grid_scrolled">
+            <property name="hexpand">true</property>
+            <property name="propagate-natural-height">true</property>
+            <property name="vscrollbar-policy">never</property>
+            <property name="visible">false</property>
+            <child>
+              <object class="GtkGridView" id="grid_view">
+                <property name="margin-bottom">24</property>
+                <property name="single-click-activate">true</property>
+                <property name="margin-start">12</property>
+                <property name="margin-end">12</property>
+                <property name="min-columns">4</property>
+                <property name="max-columns">4</property>
+                <property name="orientation">horizontal</property>
+                <style>
+                  <class name="background" />
+                </style>
+              </object>
+            </child>
           </object>
         </child>
       </object>
