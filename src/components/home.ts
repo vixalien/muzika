@@ -1,6 +1,7 @@
 import Gtk from "gi://Gtk?version=4.0";
 import GObject from "gi://GObject";
 import Adw from "gi://Adw";
+import Gio from "gi://Gio";
 
 import { Loading } from "./loading.js";
 
@@ -9,9 +10,11 @@ import {
   get_home,
   Home,
   MixedContent,
+  MixedItem,
   ParsedAlbum,
   ParsedPlaylist,
   ParsedSong,
+  ParsedVideo,
   RelatedArtist,
 } from "../muse.js";
 import { load_image, load_thumbnails } from "./webimage.js";
@@ -105,6 +108,49 @@ export class VideoCard extends Gtk.Box {
   static {
     GObject.registerClass({
       GTypeName: "VideoCard",
+      Template:
+        "resource:///org/example/TypescriptTemplate/components/videocard.ui",
+      InternalChildren: [
+        "image",
+        "title",
+        "explicit",
+        "subtitle",
+        "channel",
+        "image",
+      ],
+    }, this);
+  }
+
+  video?: ParsedVideo;
+
+  _image!: Gtk.Picture;
+  _title!: Gtk.Label;
+  _explicit!: Gtk.Image;
+  _subtitle!: Gtk.Label;
+  _channel!: Gtk.Label;
+
+  constructor() {
+    super({
+      orientation: Gtk.Orientation.VERTICAL,
+    });
+  }
+
+  set_video(video: ParsedVideo) {
+    this.video = video;
+
+    this._title.set_label(video.title);
+    this._subtitle.set_label(video.views ?? "");
+    this._explicit.set_visible(false);
+    this._channel.set_label(video.artists?.[0].name ?? "Video");
+
+    load_thumbnails(this._image, video.thumbnails, 160);
+  }
+}
+
+export class InlineVideoCard extends Gtk.Box {
+  static {
+    GObject.registerClass({
+      GTypeName: "InlineVideoCard",
       Template:
         "resource:///org/example/TypescriptTemplate/components/videocard.ui",
       InternalChildren: [
@@ -269,7 +315,38 @@ export class FlatSongCard extends Gtk.Box {
   }
 }
 
-export class Carousel extends Gtk.Box {
+export class MixedItemObject extends GObject.Object {
+  static {
+    GObject.registerClass({
+      GTypeName: "MixedItemObject",
+      Properties: {
+        item: GObject.ParamSpec.object(
+          "item",
+          "item",
+          "item",
+          GObject.ParamFlags.READWRITE,
+          GObject.Object.$gtype,
+        ),
+      },
+    }, this);
+  }
+
+  item?: MixedItem;
+
+  constructor() {
+    super();
+  }
+
+  static new(item: MixedItem) {
+    const obj = new MixedItemObject();
+    obj.item = item;
+    return obj;
+  }
+}
+
+export class Carousel<
+  Content extends Partial<MixedContent> & Pick<MixedContent, "contents">,
+> extends Gtk.Box {
   static {
     GObject.registerClass({
       GTypeName: "Carousel",
@@ -277,24 +354,97 @@ export class Carousel extends Gtk.Box {
         "resource:///org/example/TypescriptTemplate/components/carousel.ui",
       InternalChildren: [
         "scrolled",
-        "scrolled_box",
+        // "scrolled_box",
         "title",
         "subtitle",
         "text",
         "text_label",
+        "list_view",
       ],
     }, this);
   }
 
+  content?: Content;
+
   _scrolled!: Gtk.ScrolledWindow;
-  _scrolled_box!: Gtk.Box;
+  // _scrolled_box!: Gtk.Box;
   _title!: Gtk.Label;
   _subtitle!: Gtk.Label;
   _text!: Gtk.Label;
   _text_label!: Gtk.Label;
+  _list_view!: Gtk.ListView;
 
-  show_content<Content extends Partial<MixedContent>>(
-    content: Content & Pick<MixedContent, "contents">,
+  model = Gio.ListStore.new(GObject.TYPE_OBJECT);
+
+  constructor() {
+    super();
+
+    this._list_view.remove_css_class("view");
+
+    const factory = Gtk.SignalListItemFactory.new();
+    factory.connect("bind", this.bind_cb.bind(this));
+
+    this._list_view.factory = factory;
+    this._list_view.model = Gtk.NoSelection.new(this.model);
+    this._list_view.connect("activate", this.activate_cb.bind(this));
+  }
+
+  bind_cb(factory: Gtk.ListItemFactory, list_item: Gtk.ListItem) {
+    const object = list_item.get_item() as MixedItemObject;
+    const item = object.item!;
+
+    let card;
+
+    switch (item.type) {
+      case "song":
+        card = new SongCard();
+        card.set_song(item);
+        break;
+      case "inline-video":
+        card = new InlineVideoCard();
+        card.set_video(item);
+        break;
+      case "video":
+        card = new VideoCard();
+        card.set_video(item);
+        break;
+      case "album":
+        card = new AlbumCard();
+        card.set_album(item);
+        break;
+      case "playlist":
+        card = new PlaylistCard();
+        card.set_playlist(item);
+        break;
+      case "artist":
+        card = new ArtistCard();
+        card.set_artist(item);
+        break;
+      default:
+        console.warn("Invalid item in carousel", item.type);
+    }
+
+    if (card) {
+      card.add_css_class("padding-6");
+
+      list_item.set_child(card);
+
+      const parent = card.get_parent();
+
+      if (parent) {
+        parent.margin_end = 6;
+        parent.add_css_class("background");
+        parent.add_css_class("br-12");
+      }
+    }
+  }
+
+  activate_cb(list_view: Gtk.ListView, position: number) {
+    const item = this.model.get_item(position);
+  }
+
+  show_content(
+    content: Content,
   ) {
     this._title.set_label(content.title ?? "");
 
@@ -336,41 +486,13 @@ export class Carousel extends Gtk.Box {
             flow.append(card);
           }
         }
-
-        this._scrolled_box.append(flow);
       } else {
+        this.model.remove_all();
+
         for (const item of content.contents) {
           if (!item) continue;
 
-          let card;
-
-          switch (item.type) {
-            case "song":
-              card = new SongCard();
-              card.set_song(item);
-              break;
-            case "inline-video":
-              card = new VideoCard();
-              card.set_video(item);
-              break;
-            case "album":
-              card = new AlbumCard();
-              card.set_album(item);
-              break;
-            case "playlist":
-              card = new PlaylistCard();
-              card.set_playlist(item);
-              break;
-            case "artist":
-              card = new ArtistCard();
-              card.set_artist(item);
-              break;
-            default:
-              console.warn("Invalid item in carousel", item.type);
-              continue;
-          }
-
-          if (card) this._scrolled_box.append(card);
+          this.model.append(MixedItemObject.new(item));
         }
       }
     }

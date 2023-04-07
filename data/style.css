@@ -11,6 +11,10 @@ label.link:hover {
   text-decoration: underline;
 }
 
+.padding-6 {
+  padding: 6px;
+}
+
 .br-6 {
   border-radius: 6px;
 }
