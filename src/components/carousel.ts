@@ -2,6 +2,7 @@ import Gtk from "gi://Gtk?version=4.0";
 import GObject from "gi://GObject";
 import Adw from "gi://Adw";
 import Gio from "gi://Gio";
+import GLib from "gi://GLib";
 
 import {
   FlatSong,
@@ -437,8 +438,29 @@ export class Carousel<
     }
   }
 
-  activate_cb(list_view: Gtk.ListView, position: number) {
-    const item = this.model.get_item(position);
+  activate_cb(_list_view: Gtk.ListView, position: number) {
+    const object = this.model.get_item(position) as MixedItemObject;
+    const item = object.item!;
+
+    if (!item) return;
+
+    let uri: string | null = null;
+
+    switch (item.type) {
+      case "playlist":
+        uri = `playlist:${item.playlistId}`;
+        break;
+    }
+
+    if (uri) {
+      const root = this.get_root() as Gtk.Window;
+
+      if (!root) return;
+
+      const app = root.application;
+
+      app.activate_action("navigate", GLib.Variant.new("s", "muzika:" + uri));
+    }
   }
 
   show_content(

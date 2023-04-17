@@ -38,18 +38,38 @@ export class Application extends Adw.Application {
     GObject.registerClass(this);
   }
 
-  constructor() {
-    super({
-      application_id: "org.example.TypescriptTemplate",
-      flags: Gio.ApplicationFlags.DEFAULT_FLAGS,
-    });
-
+  init_actions() {
     const quit_action = new Gio.SimpleAction({ name: "quit" });
     quit_action.connect("activate", () => {
       this.quit();
     });
     this.add_action(quit_action);
     this.set_accels_for_action("app.quit", ["<primary>q"]);
+
+    const navigate_action = Gio.SimpleAction.new(
+      "navigate",
+      GLib.VariantType.new("s"),
+    );
+    navigate_action.connect("activate", (action, param) => {
+      if (!param || !window) return;
+
+      const [url] = param.get_string();
+      if (url) {
+        if (url.startsWith("muzika:")) {
+          this.window?.navigator.navigate(url.slice(7));
+        }
+      }
+    });
+    this.add_action(navigate_action);
+  }
+
+  constructor() {
+    super({
+      application_id: "org.example.TypescriptTemplate",
+      flags: Gio.ApplicationFlags.DEFAULT_FLAGS,
+    });
+
+    this.init_actions();
 
     const show_about_action = new Gio.SimpleAction({ name: "about" });
     show_about_action.connect("activate", () => {
