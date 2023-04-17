@@ -450,6 +450,10 @@ export class Carousel<
       case "playlist":
         uri = `playlist:${item.playlistId}`;
         break;
+      case "artist":
+        uri = `artist:${item.browseId}`;
+        console.log("uri", uri);
+        break;
     }
 
     if (uri) {

@@ -40,11 +40,8 @@ export function get_square_thumbnails(thumbnails: Thumbnail[]) {
   const fixed: Thumbnail[] = [];
 
   for (const thumbnail of thumbnails) {
-    // https://lh3.googleusercontent.com/a-/ACB-R5T582JMVfdC_ALzj8-zG02cm_YkhjRvJGbtSatWEg=w540-h225-l90-rj-dcjaKUJzkH
-    // https://lh3.googleusercontent.com/a-/ACB-R5T582JMVfdC_ALzj8-zG02cm_YkhjRvJGbtSatWEg=w540-h225-l90-rj-gjdskfdsfk
-    // https://lh3.googleusercontent.com/a-/ACB-R5T582JMVfdC_ALzj8-zG02cm_YkhjRvJGbtSatWEg=w540-h225-l90-rj
     const regex =
-      /https:\/\/lh3.googleusercontent.com\/i-\S+=w(\d+)-h(\d+)-p-l90-rj-(?:\w+-)?(\w+)/;
+      /https:\/\/lh3.googleusercontent.com\/\S+=w(\d+)-h(\d+)-p-l90-rj(-(\S+))?/;
     const match = regex.exec(thumbnail.url);
 
     if (match) {
