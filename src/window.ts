@@ -55,7 +55,7 @@ export class Window extends Adw.ApplicationWindow {
     this.navigator = new Navigator(this._stack, this._header_bar);
 
     this.navigator.navigate(
-      "playlist:RDCLAK5uy_nygdXoGdKANvbCAAFJECxxmy9x8illDhc",
+      "artist:UChDCntSDcjLvlocVvIcS3_w",
     );
 
     this.navigator.connect("notify::loading", () => {

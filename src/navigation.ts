@@ -6,6 +6,7 @@ import { match, MatchFunction, MatchResult } from "path-to-regexp";
 import { HomePage } from "./components/home.js";
 import { PlaylistPage } from "./components/playlist.js";
 import { Loading } from "./components/loading.js";
+import { ArtistPage } from "./components/artist.js";
 
 export type EndpointCtx = {
   match: MatchResult<Record<string, string>>;
@@ -40,10 +41,6 @@ export const endpoints: Endpoint<Gtk.Widget>[] = [
     title: "Playlist",
     component: () => new PlaylistPage(),
     async load(component: PlaylistPage, ctx) {
-      if (!ctx.match) {
-        throw new Error("No match");
-      }
-
       await component.load_playlist(ctx.match.params.playlistId);
 
       return {
@@ -51,6 +48,20 @@ export const endpoints: Endpoint<Gtk.Widget>[] = [
       };
     },
   } as Endpoint<PlaylistPage>,
+  {
+    uri: "artist/:channelId",
+    title: "Playlist",
+    component: () => new ArtistPage(),
+    async load(component: ArtistPage, ctx) {
+      await component.load_artist(ctx.match.params.channelId);
+
+      // console.log("artist", component.artist);
+
+      return {
+        title: component.artist?.name,
+      };
+    },
+  } as Endpoint<ArtistPage>,
 ];
 
 export class Navigator extends GObject.Object {
@@ -129,7 +140,6 @@ export class Navigator extends GObject.Object {
     this.loading = true;
 
     response.then((meta = {}) => {
-
       this.loading = false;
       this._header.set_title_widget(
         Gtk.Label.new(meta?.title ?? endpoint.title),
