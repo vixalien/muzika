@@ -28,25 +28,33 @@ import Gtk from "gi://Gtk?version=4.0";
 import Adw from "gi://Adw";
 
 import { HomePage } from "./components/home.js";
+import { Navigator } from "./navigation.js";
 
 export class Window extends Adw.ApplicationWindow {
   static {
     GObject.registerClass(
       {
         Template: "resource:///org/example/TypescriptTemplate/window.ui",
-        InternalChildren: ["box"],
+        InternalChildren: ["stack", "header_bar"],
       },
       this,
     );
   }
 
-  _box!: Gtk.Box;
+  _stack!: Gtk.Stack;
+  _header_bar!: Gtk.HeaderBar;
+
+  navigator: Navigator;
 
   constructor(params?: Partial<Adw.ApplicationWindow.ConstructorProperties>) {
     super(params);
 
-    const home_page = new HomePage();
-    home_page.load_home()
-    this._box.append(home_page);
+    this.navigator = new Navigator(this._stack, this._header_bar);
+
+    this.navigator.navigate("playlist:RDCLAK5uy_mSn-M-lIm2IdR8jiJpnYnbwO8BUCTAjX0");
+
+    // const home_page = new HomePage();
+    // home_page.load_home();
+    // this._box.append(home_page);
   }
 }

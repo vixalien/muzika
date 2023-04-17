@@ -13,6 +13,7 @@
     <file>util/hash.js</file>
     <file>main.js</file>
     <file>muse.js</file>
+    <file>navigation.js</file>
     <file>window.js</file>
   </gresource>
 </gresources>

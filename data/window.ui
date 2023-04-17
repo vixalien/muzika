@@ -17,7 +17,7 @@
           </object>
         </child>
         <child>
-          <object class="GtkBox" id="box">
+          <object class="GtkStack" id="stack">
             <property name="vexpand">true</property>
           </object>
         </child>

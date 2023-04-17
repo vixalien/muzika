@@ -13,6 +13,7 @@ sources = [
   'util/hash.ts',
   'main.ts',
   'muse.ts',
+  'navigation.ts',
   'window.ts',
 ]
 
