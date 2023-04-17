@@ -1,6 +1,6 @@
 import Gtk from "gi://Gtk?version=4.0";
 
-import { Match, match, MatchFunction, MatchResult } from "path-to-regexp";
+import { match, MatchFunction, MatchResult } from "path-to-regexp";
 
 import { HomePage } from "./components/home.js";
 import { PlaylistPage } from "./components/playlist.js";
@@ -80,15 +80,7 @@ export class Navigator {
       }
     }
 
-    let component: Gtk.Widget;
-
-    const got_component = this._stack.get_child_by_name(endpoint.uri);
-    if (got_component) {
-      component = got_component;
-    } else {
-      component = endpoint.component();
-      this._stack.add_named(component, endpoint.uri);
-    }
+    const component = endpoint.component();
 
     const response = endpoint.load(component, {
       match: match as MatchResult<Record<string, string>>,
@@ -111,6 +103,12 @@ export class Navigator {
       this.loading = false;
       this._header.set_title_widget(Gtk.Label.new(endpoint.title));
 
+      const got_component = this._stack.get_child_by_name(endpoint.uri);
+      if (got_component) {
+        this._stack.remove(got_component);
+      }
+
+      this._stack.add_named(component, endpoint.uri);
       this._stack.set_visible_child_name(endpoint.uri);
     });
 
