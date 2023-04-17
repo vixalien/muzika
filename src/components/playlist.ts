@@ -1,6 +1,5 @@
 import Gtk from "gi://Gtk?version=4.0";
 import GObject from "gi://GObject";
-import Adw from "gi://Adw";
 
 import { Loading } from "./loading.js";
 import { PlaylistHeader } from "./playlistheader.js";
@@ -13,7 +12,7 @@ import {
   PlaylistItem,
 } from "../muse.js";
 import { load_thumbnails } from "./webimage.js";
-import { Carousel } from "./home.js";
+import { Carousel } from "./carousel.js";
 
 export class PlaylistPage extends Gtk.Box {
   static {

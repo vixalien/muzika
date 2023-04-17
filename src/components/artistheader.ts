@@ -1,5 +1,4 @@
 import GObject from "gi://GObject";
-import Adw from "gi://Adw";
 
 import { PlaylistHeader } from "./playlistheader.js";
 import { Thumbnail } from "libmuse";

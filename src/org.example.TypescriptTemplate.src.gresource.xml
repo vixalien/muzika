@@ -3,6 +3,7 @@
   <gresource prefix="/org/example/TypescriptTemplate/js">
     <file>components/artist.js</file>
     <file>components/artistheader.js</file>
+    <file>components/carousel.js</file>
     <file>components/home.js</file>
     <file>components/loading.js</file>
     <file>components/playlist.js</file>
