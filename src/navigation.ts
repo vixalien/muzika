@@ -1,4 +1,5 @@
 import Gtk from "gi://Gtk?version=4.0";
+import GObject from "gi://GObject";
 
 import { match, MatchFunction, MatchResult } from "path-to-regexp";
 
@@ -11,11 +12,18 @@ export type EndpointCtx = {
   url: URL;
 };
 
+export type EndpointResponse = {
+  title?: string;
+};
+
 export type Endpoint<C extends Gtk.Widget> = {
   uri: string;
   title: string;
   component: () => C;
-  load: <D extends C>(component: D, ctx: EndpointCtx) => void | Promise<void>;
+  load: <D extends C>(
+    component: D,
+    ctx: EndpointCtx,
+  ) => void | Promise<void | EndpointResponse>;
 };
 
 export const endpoints: Endpoint<Gtk.Widget>[] = [
@@ -31,17 +39,21 @@ export const endpoints: Endpoint<Gtk.Widget>[] = [
     uri: "playlist/:playlistId",
     title: "Playlist",
     component: () => new PlaylistPage(),
-    load(component: PlaylistPage, ctx) {
+    async load(component: PlaylistPage, ctx) {
       if (!ctx.match) {
         throw new Error("No match");
       }
 
-      return component.load_playlist(ctx.match.params.playlistId);
+      await component.load_playlist(ctx.match.params.playlistId);
+
+      return {
+        title: component.playlist?.title,
+      };
     },
   } as Endpoint<PlaylistPage>,
 ];
 
-export class Navigator {
+export class Navigator extends GObject.Object {
   private _stack: Gtk.Stack;
   private _header: Gtk.HeaderBar;
 
@@ -49,7 +61,28 @@ export class Navigator {
 
   loading = false;
 
+  static {
+    GObject.registerClass({
+      Signals: {
+        navigate: {},
+        "load-start": {},
+        "load-end": {},
+      },
+      Properties: {
+        loading: GObject.ParamSpec.boolean(
+          "loading",
+          "Loading",
+          "Whether something is loading currently",
+          GObject.ParamFlags.READWRITE,
+          false,
+        ),
+      },
+    }, this);
+  }
+
   constructor(stack: Gtk.Stack, header: Gtk.HeaderBar) {
+    super();
+
     this._stack = stack;
     this._header = header;
 
@@ -67,6 +100,10 @@ export class Navigator {
     const loading_page = new Loading();
 
     this._stack.add_named(loading_page, "loading");
+  }
+
+  set_title(title: string) {
+    this._header.set_title_widget(Gtk.Label.new(title));
   }
 
   private endpoint(
@@ -91,17 +128,12 @@ export class Navigator {
 
     this.loading = true;
 
-    // show loading page if it takes too long
-    const timeout = setTimeout(() => {
-      this._header.set_title_widget(Gtk.Label.new("Loading..."));
-      this._stack.set_visible_child_name("loading");
-    }, 1000);
-
-    response.then(() => {
-      clearTimeout(timeout);
+    response.then((meta = {}) => {
 
       this.loading = false;
-      this._header.set_title_widget(Gtk.Label.new(endpoint.title));
+      this._header.set_title_widget(
+        Gtk.Label.new(meta?.title ?? endpoint.title),
+      );
 
       const got_component = this._stack.get_child_by_name(endpoint.uri);
       if (got_component) {

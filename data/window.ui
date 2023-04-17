@@ -17,6 +17,13 @@
           </object>
         </child>
         <child>
+          <object class="GtkProgressBar" id="progress">
+            <style>
+              <class name="osd"/>
+            </style>
+          </object>
+        </child>
+        <child>
           <object class="GtkStack" id="stack">
             <property name="vexpand">true</property>
           </object>

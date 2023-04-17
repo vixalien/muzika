@@ -35,7 +35,7 @@ export class Window extends Adw.ApplicationWindow {
     GObject.registerClass(
       {
         Template: "resource:///org/example/TypescriptTemplate/window.ui",
-        InternalChildren: ["stack", "header_bar"],
+        InternalChildren: ["stack", "header_bar", "progress"],
       },
       this,
     );
@@ -43,15 +43,34 @@ export class Window extends Adw.ApplicationWindow {
 
   _stack!: Gtk.Stack;
   _header_bar!: Gtk.HeaderBar;
+  _progress!: Gtk.ProgressBar;
 
   navigator: Navigator;
+
+  interval: number | null = null;
 
   constructor(params?: Partial<Adw.ApplicationWindow.ConstructorProperties>) {
     super(params);
 
     this.navigator = new Navigator(this._stack, this._header_bar);
 
-    this.navigator.navigate("playlist:RDCLAK5uy_mSn-M-lIm2IdR8jiJpnYnbwO8BUCTAjX0");
+    this.navigator.navigate(
+      "playlist:RDCLAK5uy_nygdXoGdKANvbCAAFJECxxmy9x8illDhc",
+    );
+
+    this.navigator.connect("notify::loading", () => {
+      if (this.interval) clearInterval(this.interval);
+
+      if (this.navigator.loading) {
+        this._progress.pulse();
+
+        this.interval = setInterval(() => {
+          this._progress.pulse();
+        }, 1000);
+      } else {
+        this._progress.fraction = 0;
+      }
+    });
 
     // const home_page = new HomePage();
     // home_page.load_home();
