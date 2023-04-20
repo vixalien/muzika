@@ -23,7 +23,7 @@ import "./polyfills/base64.js";
 //////////// libmuse
 
 export * from "libmuse";
-export type { Category } from "libmuse/types/parsers/browsing.js"
+export type { Category } from "libmuse/types/parsers/browsing.js";
 
 //////////// store
 
@@ -176,7 +176,7 @@ class CustomFetch extends FetchClient {
           null,
         );
       } catch (error) {
-        console.error("Failed to cache", error.toString());
+        console.error("Failed to cache", (error as Error).toString());
         // not json probably: ignore
       }
     }
