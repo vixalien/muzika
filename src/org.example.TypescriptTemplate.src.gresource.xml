@@ -5,6 +5,7 @@
     <file>components/artistheader.js</file>
     <file>components/carousel.js</file>
     <file>components/home.js</file>
+    <file>components/load-more.js</file>
     <file>components/loading.js</file>
     <file>components/playlist.js</file>
     <file>components/playlistheader.js</file>

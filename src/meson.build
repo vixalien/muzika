@@ -5,6 +5,7 @@ sources = [
   'components/artistheader.ts',
   'components/carousel.ts',
   'components/home.ts',
+  'components/load-more.ts',
   'components/loading.ts',
   'components/playlist.ts',
   'components/playlistheader.ts',
