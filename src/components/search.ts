@@ -212,7 +212,6 @@ export class SearchSection extends Gtk.Box {
       );
 
       this._more.visible = true;
-      this._more.label = url;
       this._more.action_name = "app.navigate";
       this._more.action_target = GLib.Variant.new(
         "s",
