@@ -6,16 +6,22 @@
       <object class="GtkScrolledWindow" id="scrolled">
         <property name="vexpand">true</property>
         <child>
-          <object class="GtkBox" id="content">
-            <property name="orientation">1</property>
+          <object class="AdwClamp">
+            <property name="tightening-threshold">800</property>
+            <property name="maximum-size">1000</property>
             <child>
-              <object class="GtkBox" id="sections">
+              <object class="GtkBox" id="content">
                 <property name="orientation">1</property>
+                <child>
+                  <object class="GtkBox" id="sections">
+                    <property name="orientation">1</property>
+                  </object>
+                </child>
               </object>
+              <!-- <child>
+                  <object class="Paginator" id="load_more"></object>
+                </child> -->
             </child>
-            <!-- <child>
-              <object class="Paginator" id="load_more"></object>
-            </child> -->
           </object>
         </child>
       </object>
