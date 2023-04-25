@@ -32,6 +32,7 @@ export class InlineCard extends Gtk.ListBoxRow {
         "explicit",
         "label_box",
         "type",
+        "type_box",
         // "second-line",
       ],
     }, this);
@@ -48,19 +49,29 @@ export class InlineCard extends Gtk.ListBoxRow {
   _explicit!: Gtk.Label;
   _label_box!: Gtk.Box;
   _type!: Gtk.Label;
+  _type_box!: Gtk.Box;
   _second_line!: Gtk.Box;
 
   image_size = 48;
+  add_subsequent_middots = false;
 
   content?: SearchContent;
+
+  show_type(show: boolean) {
+    this._type_box.visible = show;
+  }
 
   show_avatar(show: boolean) {
     this._avatar.visible = show;
     this._image_overlay.visible = !show;
   }
 
-  insert_middot() {
-    this._label_box.append(Gtk.Label.new("·"));
+  insert_middot(force = false) {
+    if (this.add_subsequent_middots || force) {
+      this._label_box.append(Gtk.Label.new("·"));
+    } else {
+      this.add_subsequent_middots = true;
+    }
   }
 
   insert_only_text(text: string) {
@@ -135,7 +146,7 @@ export class InlineCard extends Gtk.ListBoxRow {
 
     this._title.label = artist.name;
 
-    this._type.set_visible(false);
+    this.show_type(false);
 
     if (artist.subscribers) {
       this.insert_only_text(`${artist.subscribers} subscribers`);
@@ -168,18 +179,26 @@ export class SearchSection extends Gtk.Box {
 
   args: Parameters<typeof search>;
   show_more: boolean;
+  show_type: boolean;
 
   constructor(
-    options: { args: Parameters<typeof search>; show_more?: boolean },
+    options: {
+      args: Parameters<typeof search>;
+      show_more?: boolean;
+      show_type?: boolean;
+    },
   ) {
     super();
 
     this.args = options.args;
-    this.show_more = options.show_more || false;
+    this.show_more = options.show_more ?? false;
+    this.show_type = options.show_type ?? true;
   }
 
   add_content(content: SearchContent) {
     let card = new InlineCard();
+
+    if (!this.show_type) card.show_type(false);
 
     switch (content.type) {
       case "song":
@@ -274,6 +293,7 @@ export class SearchPage extends Gtk.Box {
       const section = new SearchSection({
         args,
         show_more: results.categories.length > 1,
+        show_type: false,
       });
       section.set_category(category);
       this._sections.append(section);

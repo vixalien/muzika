@@ -95,8 +95,18 @@
                   </object>
                 </child>
                 <child>
-                  <object class="GtkLabel" id="type">
-                    <property name="label">Song</property>
+                  <object class="GtkBox" id="type_box">
+                    <property name="spacing">6</property>
+                    <child>
+                      <object class="GtkLabel" id="type">
+                        <property name="label">Song</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkLabel" id="type_separator">
+                        <property name="label">·</property>
+                      </object>
+                    </child>
                   </object>
                 </child>
                 <child>

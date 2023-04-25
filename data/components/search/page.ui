@@ -13,9 +13,9 @@
                 <property name="orientation">1</property>
               </object>
             </child>
-            <child>
+            <!-- <child>
               <object class="Paginator" id="load_more"></object>
-            </child>
+            </child> -->
           </object>
         </child>
       </object>

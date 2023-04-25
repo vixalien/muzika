@@ -14,6 +14,7 @@
         <child>
           <object class="GtkStack" id="stack">
             <property name="visible-child">button</property>
+            <property name="transition-type">crossfade</property>
             <child>
               <object class="GtkButton" id="button">
                 <style>
