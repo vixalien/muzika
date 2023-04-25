@@ -452,7 +452,6 @@ export class Carousel<
         break;
       case "artist":
         uri = `artist:${item.browseId}`;
-        console.log("uri", uri);
         break;
     }
 
