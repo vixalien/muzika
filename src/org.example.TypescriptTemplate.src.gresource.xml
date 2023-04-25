@@ -8,6 +8,7 @@
     <file>components/loading.js</file>
     <file>components/playlist.js</file>
     <file>components/playlistheader.js</file>
+    <file>components/search.js</file>
     <file>components/webimage.js</file>
     <file>polyfills/base64.js</file>
     <file>polyfills/fetch.js</file>

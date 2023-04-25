@@ -7,6 +7,7 @@ import { HomePage } from "./components/home.js";
 import { PlaylistPage } from "./components/playlist.js";
 import { Loading } from "./components/loading.js";
 import { ArtistPage } from "./components/artist.js";
+import { SearchPage } from "./components/search.js";
 
 export type EndpointCtx = {
   match: MatchResult<Record<string, string>>;
@@ -55,13 +56,22 @@ export const endpoints: Endpoint<Gtk.Widget>[] = [
     async load(component: ArtistPage, ctx) {
       await component.load_artist(ctx.match.params.channelId);
 
-      // console.log("artist", component.artist);
-
       return {
         title: component.artist?.name,
       };
     },
   } as Endpoint<ArtistPage>,
+  {
+    uri: "search/:query",
+    title: "search",
+    component: () => new SearchPage(),
+    async load(component: SearchPage, ctx) {
+      await component.search(
+        ctx.match.params.query,
+        Object.fromEntries(ctx.url.searchParams as any),
+      );
+    },
+  } as Endpoint<SearchPage>,
 ];
 
 export class Navigator extends GObject.Object {
@@ -102,7 +112,7 @@ export class Navigator extends GObject.Object {
     this.match_map = new Map();
 
     for (const endpoint of endpoints) {
-      const fn = match(endpoint.uri);
+      const fn = match(endpoint.uri, {});
       this.match_map.set(fn, endpoint);
     }
   }
@@ -161,7 +171,9 @@ export class Navigator extends GObject.Object {
     // muzika:home to
     // muzika/home
     // only when it's not escaped (i.e not prefixed with \)
-    const path = uri.replace(/(?<!\\):/g, "/");
+    const url = new URL("muzika:" + uri);
+
+    const path = url.pathname.replace(/(?<!\\):/g, "/");
 
     for (const [fn, endpoint] of this.match_map) {
       const match = fn(path);

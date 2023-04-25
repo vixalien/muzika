@@ -8,6 +8,7 @@ sources = [
   'components/loading.ts',
   'components/playlist.ts',
   'components/playlistheader.ts',
+  'components/search.ts',
   'components/webimage.ts',
   'polyfills/base64.ts',
   'polyfills/fetch.ts',
