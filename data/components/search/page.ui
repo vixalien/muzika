@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+  <requires lib="gtk" version="4.0" />
+  <template class="SearchPage" parent="GtkBox">
+    <child>
+      <object class="GtkScrolledWindow" id="scrolled">
+        <property name="vexpand">true</property>
+        <child>
+          <object class="GtkBox" id="content">
+            <property name="orientation">1</property>
+            <child>
+              <object class="GtkBox" id="sections">
+                <property name="orientation">1</property>
+              </object>
+            </child>
+            <child>
+              <object class="Paginator" id="load_more"></object>
+            </child>
+          </object>
+        </child>
+      </object>
+    </child>
+  </template>
+</interface>
