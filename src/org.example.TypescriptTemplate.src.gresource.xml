@@ -1,19 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <gresources>
   <gresource prefix="/org/example/TypescriptTemplate/js">
-    <file>components/artist.js</file>
     <file>components/artistheader.js</file>
     <file>components/carousel.js</file>
-    <file>components/home.js</file>
     <file>components/loading.js</file>
     <file>components/paginator.js</file>
-    <file>components/playlist.js</file>
     <file>components/playlistheader.js</file>
-    <file>components/search.js</file>
     <file>components/webimage.js</file>
+    <file>pages/artist.js</file>
+    <file>pages/home.js</file>
+    <file>pages/playlist.js</file>
+    <file>pages/search.js</file>
     <file>polyfills/base64.js</file>
     <file>polyfills/fetch.js</file>
     <file>util/hash.js</file>
+    <file>endpoints.js</file>
     <file>main.js</file>
     <file>muse.js</file>
     <file>navigation.js</file>

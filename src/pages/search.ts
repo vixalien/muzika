@@ -15,8 +15,8 @@ import {
   SearchSong,
   SearchVideo,
 } from "../muse.js";
-import { load_thumbnails } from "./webimage.js";
-import { Paginator } from "./paginator.js";
+import { load_thumbnails } from "../components/webimage.js";
+import { Paginator } from "../components/paginator.js";
 
 export class InlineCard extends Gtk.ListBoxRow {
   static {
@@ -257,7 +257,7 @@ export class SearchPage extends Gtk.Box {
     GObject.registerClass({
       GTypeName: "SearchPage",
       Template:
-        "resource:///org/example/TypescriptTemplate/components/search/page.ui",
+        "resource:///org/example/TypescriptTemplate/pages/search.ui",
       InternalChildren: ["scrolled", "content", "sections"],
     }, this);
   }

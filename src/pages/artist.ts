@@ -8,16 +8,16 @@ import {
   MixedItem,
   PlaylistItem,
 } from "../muse.js";
-import { ArtistHeader } from "./artistheader.js";
+import { ArtistHeader } from "../components/artistheader.js";
 import { PlaylistItemCard } from "./playlist.js";
-import { Carousel } from "./carousel.js";
+import { Carousel } from "../components/carousel.js";
 
 export class ArtistPage extends Gtk.Box {
   static {
     GObject.registerClass({
       GTypeName: "ArtistPage",
       Template:
-        "resource:///org/example/TypescriptTemplate/components/artist.ui",
+        "resource:///org/example/TypescriptTemplate/pages/artist.ui",
       InternalChildren: [
         "inner_box",
         "content",

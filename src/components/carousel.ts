@@ -21,7 +21,7 @@ export class SongCard extends Gtk.Box {
     GObject.registerClass({
       GTypeName: "SongCard",
       Template:
-        "resource:///org/example/TypescriptTemplate/components/songcard.ui",
+        "resource:///org/example/TypescriptTemplate/components/carousel/songcard.ui",
       InternalChildren: [
         "play_button",
         "image",
@@ -63,7 +63,7 @@ export class AlbumCard extends Gtk.Box {
     GObject.registerClass({
       GTypeName: "AlbumCard",
       Template:
-        "resource:///org/example/TypescriptTemplate/components/albumcard.ui",
+        "resource:///org/example/TypescriptTemplate/components/carousel/albumcard.ui",
       InternalChildren: [
         "image",
         "title",
@@ -106,7 +106,7 @@ export class VideoCard extends Gtk.Box {
     GObject.registerClass({
       GTypeName: "VideoCard",
       Template:
-        "resource:///org/example/TypescriptTemplate/components/videocard.ui",
+        "resource:///org/example/TypescriptTemplate/components/carousel/videocard.ui",
       InternalChildren: [
         "image",
         "title",
@@ -160,7 +160,7 @@ export class PlaylistCard extends Gtk.Box {
     GObject.registerClass({
       GTypeName: "PlaylistCard",
       Template:
-        "resource:///org/example/TypescriptTemplate/components/playlistcard.ui",
+        "resource:///org/example/TypescriptTemplate/components/carousel/playlistcard.ui",
       InternalChildren: [
         "play_button",
         "image",
@@ -200,7 +200,7 @@ export class ArtistCard extends Gtk.Box {
     GObject.registerClass({
       GTypeName: "ArtistCard",
       Template:
-        "resource:///org/example/TypescriptTemplate/components/artistcard.ui",
+        "resource:///org/example/TypescriptTemplate/components/carousel/artistcard.ui",
       InternalChildren: [
         "avatar",
         "title",
@@ -237,7 +237,7 @@ export class FlatSongCard extends Gtk.Box {
     GObject.registerClass({
       GTypeName: "FlatSongCard",
       Template:
-        "resource:///org/example/TypescriptTemplate/components/flatsong.ui",
+        "resource:///org/example/TypescriptTemplate/components/carousel/flatsong.ui",
       InternalChildren: [
         "play_button",
         "image",
@@ -316,7 +316,7 @@ export class Carousel<
     GObject.registerClass({
       GTypeName: "Carousel",
       Template:
-        "resource:///org/example/TypescriptTemplate/components/carousel.ui",
+        "resource:///org/example/TypescriptTemplate/components/carousel/carousel.ui",
       InternalChildren: [
         "title",
         "subtitle",

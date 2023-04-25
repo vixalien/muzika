@@ -2,11 +2,11 @@ import Gtk from "gi://Gtk?version=4.0";
 import GObject from "gi://GObject";
 import Adw from "gi://Adw";
 
-import { Loading } from "./loading.js";
+import { Loading } from "../components/loading.js";
 
 import { get_home, Home, MixedContent } from "../muse.js";
 
-import { Carousel } from "./carousel.js";
+import { Carousel } from "../components/carousel.js";
 
 export class HomePage extends Gtk.Box {
   static {

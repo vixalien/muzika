@@ -3,11 +3,9 @@ import GObject from "gi://GObject";
 
 import { match, MatchFunction, MatchResult } from "path-to-regexp";
 
-import { HomePage } from "./components/home.js";
-import { PlaylistPage } from "./components/playlist.js";
 import { Loading } from "./components/loading.js";
-import { ArtistPage } from "./components/artist.js";
-import { SearchPage } from "./components/search.js";
+
+import { endpoints } from "./endpoints.js";
 
 export type EndpointCtx = {
   match: MatchResult<Record<string, string>>;
@@ -27,52 +25,6 @@ export type Endpoint<C extends Gtk.Widget> = {
     ctx: EndpointCtx,
   ) => void | Promise<void | EndpointResponse>;
 };
-
-export const endpoints: Endpoint<Gtk.Widget>[] = [
-  {
-    uri: "home",
-    title: "Home",
-    component: () => new HomePage(),
-    load(component: HomePage) {
-      return component.load_home();
-    },
-  } as Endpoint<HomePage>,
-  {
-    uri: "playlist/:playlistId",
-    title: "Playlist",
-    component: () => new PlaylistPage(),
-    async load(component: PlaylistPage, ctx) {
-      await component.load_playlist(ctx.match.params.playlistId);
-
-      return {
-        title: component.playlist?.title,
-      };
-    },
-  } as Endpoint<PlaylistPage>,
-  {
-    uri: "artist/:channelId",
-    title: "Playlist",
-    component: () => new ArtistPage(),
-    async load(component: ArtistPage, ctx) {
-      await component.load_artist(ctx.match.params.channelId);
-
-      return {
-        title: component.artist?.name,
-      };
-    },
-  } as Endpoint<ArtistPage>,
-  {
-    uri: "search/:query",
-    title: "search",
-    component: () => new SearchPage(),
-    async load(component: SearchPage, ctx) {
-      await component.search(
-        ctx.match.params.query,
-        Object.fromEntries(ctx.url.searchParams as any),
-      );
-    },
-  } as Endpoint<SearchPage>,
-];
 
 export class Navigator extends GObject.Object {
   private _stack: Gtk.Stack;

@@ -1,8 +1,8 @@
 import Gtk from "gi://Gtk?version=4.0";
 import GObject from "gi://GObject";
 
-import { Loading } from "./loading.js";
-import { PlaylistHeader } from "./playlistheader.js";
+import { Loading } from "../components/loading.js";
+import { PlaylistHeader } from "../components/playlistheader.js";
 
 import {
   get_more_playlist_tracks,
@@ -11,15 +11,15 @@ import {
   Playlist,
   PlaylistItem,
 } from "../muse.js";
-import { load_thumbnails } from "./webimage.js";
-import { Carousel } from "./carousel.js";
+import { load_thumbnails } from "../components/webimage.js";
+import { Carousel } from "../components/carousel.js";
 
 export class PlaylistPage extends Gtk.Box {
   static {
     GObject.registerClass({
       GTypeName: "PlaylistPage",
       Template:
-        "resource:///org/example/TypescriptTemplate/components/playlist.ui",
+        "resource:///org/example/TypescriptTemplate/pages/playlist.ui",
       InternalChildren: [
         "inner_box",
         "trackCount",
@@ -178,10 +178,13 @@ export class PlaylistPage extends Gtk.Box {
     if (!this.playlist) return;
 
     if (this.playlist.continuation) {
-      const more = await get_more_playlist_tracks(this.playlist.id, {
-        continuation: this.playlist.continuation,
-        limit: 100,
-      });
+      const more = await get_more_playlist_tracks(
+        this.playlist.id,
+        this.playlist.continuation,
+        {
+          limit: 100,
+        },
+      );
 
       this.isLoading = false;
 
@@ -201,7 +204,7 @@ export class PlaylistItemCard extends Gtk.ListBoxRow {
     GObject.registerClass({
       GTypeName: "PlaylistItem",
       Template:
-        "resource:///org/example/TypescriptTemplate/components/playlistitem.ui",
+        "resource:///org/example/TypescriptTemplate/components/playlist/playlistitem.ui",
       InternalChildren: [
         "play_button",
         "image",
