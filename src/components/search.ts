@@ -165,11 +165,15 @@ export class SearchSection extends Gtk.Box {
   _content!: Gtk.ListBox;
 
   args: Parameters<typeof search>;
+  show_more: boolean;
 
-  constructor(args: Parameters<typeof search>) {
+  constructor(
+    options: { args: Parameters<typeof search>; show_more?: boolean },
+  ) {
     super();
 
-    this.args = args;
+    this.args = options.args;
+    this.show_more = options.show_more || false;
   }
 
   add_content(content: SearchContent) {
@@ -211,12 +215,14 @@ export class SearchSection extends Gtk.Box {
         },
       );
 
-      this._more.visible = true;
-      this._more.action_name = "app.navigate";
-      this._more.action_target = GLib.Variant.new(
-        "s",
-        url,
-      );
+      if (this.show_more) {
+        this._more.visible = true;
+        this._more.action_name = "app.navigate";
+        this._more.action_target = GLib.Variant.new(
+          "s",
+          url,
+        );
+      }
     }
 
     category.results.forEach((result) => {
@@ -250,7 +256,10 @@ export class SearchPage extends Gtk.Box {
   search(...args: Parameters<typeof search>) {
     return search(...args).then((results) => {
       results.categories.forEach((category) => {
-        const section = new SearchSection(args);
+        const section = new SearchSection({
+          args,
+          show_more: results.categories.length > 1,
+        });
         section.set_category(category);
         this.content.append(section);
       });

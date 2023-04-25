@@ -778,7 +778,7 @@ levn@^0.4.1:
     prelude-ls "^1.2.1"
     type-check "~0.4.0"
 
-libmuse@../muse/npm:
+libmuse@../muse/npm/:
   version "0.0.23"
   dependencies:
     jsonpath-plus "7.2.0"
