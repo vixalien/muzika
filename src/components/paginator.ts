@@ -1,12 +1,12 @@
 import Gtk from "gi://Gtk?version=4.0";
 import GObject from "gi://GObject";
 
-export class LoadMore extends Gtk.Revealer {
+export class Paginator extends Gtk.Revealer {
   static {
     GObject.registerClass({
-      GTypeName: "LoadMore",
+      GTypeName: "Paginator",
       Template:
-        "resource:///org/example/TypescriptTemplate/components/load-more.ui",
+        "resource:///org/example/TypescriptTemplate/components/paginator.ui",
       InternalChildren: [
         "stack",
         "button",
@@ -53,6 +53,7 @@ export class LoadMore extends Gtk.Revealer {
     super();
 
     this._button.connect("clicked", () => {
+      this.loading = true;
       this.emit("activate");
     });
   }

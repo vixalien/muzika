@@ -8,9 +8,9 @@
     <file preprocess="xml-stripblanks">components/carousel.ui</file>
     <file preprocess="xml-stripblanks">components/flatsong.ui</file>
     <file preprocess="xml-stripblanks">components/largeplaylistheader.ui</file>
-    <file preprocess="xml-stripblanks">components/load-more.ui</file>
     <file preprocess="xml-stripblanks">components/loading.ui</file>
     <file preprocess="xml-stripblanks">components/miniplaylistheader.ui</file>
+    <file preprocess="xml-stripblanks">components/paginator.ui</file>
     <file preprocess="xml-stripblanks">components/playlist.ui</file>
     <file preprocess="xml-stripblanks">components/playlistcard.ui</file>
     <file preprocess="xml-stripblanks">components/playlistitem.ui</file>
@@ -18,6 +18,7 @@
     <file preprocess="xml-stripblanks">components/videocard.ui</file>
     <file preprocess="xml-stripblanks">window.ui</file>
     <file preprocess="xml-stripblanks">components/search/section.ui</file>
+    <file preprocess="xml-stripblanks">components/search/page.ui</file>
     <file preprocess="xml-stripblanks">components/search/songcard.ui</file>
     <file preprocess="xml-stripblanks">components/search/inlinecard.ui</file>
     <file preprocess="xml-stripblanks">gtk/help-overlay.ui</file>

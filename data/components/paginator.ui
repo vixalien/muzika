@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <interface>
   <requires lib="gtk" version="4.0"/>
-  <template class="LoadMore" parent="GtkRevealer">
+  <template class="Paginator" parent="GtkRevealer">
     <child>
       <object class="GtkBox">
         <property name="valign">1</property>
@@ -13,7 +13,7 @@
         <property name="margin-end">12</property>
         <child>
           <object class="GtkStack" id="stack">
-            <property name="visible-child">spinner</property>
+            <property name="visible-child">button</property>
             <child>
               <object class="GtkButton" id="button">
                 <style>
