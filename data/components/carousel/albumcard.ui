@@ -72,6 +72,9 @@
             <child>
               <object class="GtkBox" id="second-line">
                 <property name="spacing">6</property>
+                <style>
+                  <class name="dim-label" />
+                </style>
                 <child>
                   <object class="GtkImage" id="explicit">
                     <property name="visible">false</property>
@@ -85,16 +88,12 @@
                     <child>
                       <object class="GtkLabel" id="album_type">
                         <property name="label">Album</property>
-                        <style>
-                          <class name="dim-label" />
-                        </style>
                       </object>
                     </child>
                     <child>
                       <object class="GtkLabel" id="separator">
                         <property name="label">·</property>
                         <style>
-                          <class name="dim-label" />
                           <class name="heading" />
                         </style>
                       </object>
@@ -106,9 +105,6 @@
                         <property name="max-width-chars">1</property>
                         <property name="ellipsize">end</property>
                         <property name="xalign">0</property>
-                        <style>
-                          <class name="dim-label" />
-                        </style>
                       </object>
                     </child>
                   </object>

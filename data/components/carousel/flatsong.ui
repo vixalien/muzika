@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <interface>
-  <requires lib="gtk" version="4.0"/>
+  <requires lib="gtk" version="4.0" />
   <template class="FlatSongCard" parent="GtkBox">
     <property name="valign">center</property>
     <child>
@@ -10,13 +10,13 @@
         <property name="hexpand">false</property>
         <property name="valign">center</property>
         <style>
-          <class name="hover-parent"/>
-          <class name="padding-3"/>
+          <class name="hover-parent" />
+          <class name="padding-3" />
         </style>
         <child>
           <object class="GtkOverlay">
             <style>
-              <class name="br-6"/>
+              <class name="br-6" />
             </style>
             <property name="overflow">hidden</property>
             <child type="overlay">
@@ -27,16 +27,16 @@
                 <property name="vexpand">true</property>
                 <property name="icon-name">media-playback-start-symbolic</property>
                 <style>
-                  <class name="osd"/>
-                  <class name="hover-child"/>
-                  <class name="no-br"/>
+                  <class name="osd" />
+                  <class name="hover-child" />
+                  <class name="no-br" />
                 </style>
               </object>
             </child>
             <child>
               <object class="GtkBox" id="image_box">
                 <style>
-                  <class name="thumbnail"/>
+                  <class name="thumbnail" />
                 </style>
                 <child>
                   <object class="GtkImage" id="image">
@@ -64,13 +64,16 @@
                 <property name="wrap">true</property>
                 <property name="wrap-mode">char</property>
                 <style>
-                  <class name="heading"/>
+                  <class name="heading" />
                 </style>
               </object>
             </child>
             <child>
               <object class="GtkBox" id="second-line">
-                <property name="spacing">3</property>
+                <property name="spacing">6</property>
+                <style>
+                  <class name="dim-label" />
+                </style>
                 <child>
                   <object class="GtkImage" id="explicit">
                     <property name="valign">start</property>
@@ -85,8 +88,7 @@
                     <property name="ellipsize">end</property>
                     <property name="xalign">0</property>
                     <style>
-                      <class name="dim-label"/>
-                      <class name="link"/>
+                      <class name="link" />
                     </style>
                   </object>
                 </child>

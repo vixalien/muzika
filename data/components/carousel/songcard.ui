@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <interface>
-  <requires lib="gtk" version="4.0"/>
+  <requires lib="gtk" version="4.0" />
   <template class="SongCard" parent="GtkBox">
     <property name="valign">start</property>
     <child>
@@ -15,9 +15,9 @@
                 <property name="halign">center</property>
                 <property name="valign">center</property>
                 <style>
-                  <class name="circular"/>
-                  <class name="osd"/>
-                  <class name="song-play-button"/>
+                  <class name="circular" />
+                  <class name="osd" />
+                  <class name="song-play-button" />
                 </style>
                 <child>
                   <object class="GtkImage">
@@ -30,7 +30,7 @@
             <child>
               <object class="GtkBox" id="image_box">
                 <style>
-                  <class name="thumbnail"/>
+                  <class name="thumbnail" />
                 </style>
                 <child>
                   <object class="GtkImage" id="image">
@@ -57,13 +57,16 @@
                 <property name="wrap">true</property>
                 <property name="wrap-mode">char</property>
                 <style>
-                  <class name="heading"/>
+                  <class name="heading" />
                 </style>
               </object>
             </child>
             <child>
               <object class="GtkBox" id="second-line">
                 <property name="spacing">6</property>
+                <style>
+                  <class name="dim-label" />
+                </style>
                 <child>
                   <object class="GtkImage" id="explicit">
                     <property name="visible">false</property>
@@ -81,9 +84,6 @@
                         <property name="max-width-chars">1</property>
                         <property name="ellipsize">end</property>
                         <property name="xalign">0</property>
-                        <style>
-                          <class name="dim-label"/>
-                        </style>
                       </object>
                     </child>
                   </object>
