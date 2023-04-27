@@ -10,6 +10,7 @@ import { endpoints } from "./endpoints.js";
 export type EndpointCtx = {
   match: MatchResult<Record<string, string>>;
   url: URL;
+  signal: AbortSignal;
 };
 
 export type EndpointResponse = {
@@ -79,6 +80,8 @@ export class Navigator extends GObject.Object {
     this._header.set_title_widget(Gtk.Label.new(title));
   }
 
+  last_controller: AbortController | null = null;
+
   private endpoint(
     uri: string,
     match: MatchResult,
@@ -92,17 +95,32 @@ export class Navigator extends GObject.Object {
 
     const component = endpoint.component();
 
+    if (this.last_controller) {
+      console.log("has a last controller");
+      this.last_controller.abort();
+    }
+
+    this.last_controller = new AbortController();
+
     const response = endpoint.load(component, {
       match: match as MatchResult<Record<string, string>>,
       url: new URL("muzika:" + uri),
+      signal: this.last_controller.signal,
     });
 
     if (!response) return;
+
+    // temporarily show an old page if it's available
+    if (this._stack.get_child_by_name(endpoint.uri)) {
+      this._stack.set_visible_child_name(endpoint.uri);
+    }
 
     this.loading = true;
 
     response.then((meta = {}) => {
       this.loading = false;
+      this.last_controller = null;
+
       this._header.set_title_widget(
         Gtk.Label.new(meta?.title ?? endpoint.title),
       );
@@ -114,7 +132,10 @@ export class Navigator extends GObject.Object {
 
       this._stack.add_named(component, endpoint.uri);
       this._stack.set_visible_child_name(endpoint.uri);
-    });
+    })
+      .catch((e) => {
+        console.log("got an error", e);
+      });
 
     return null;
   }

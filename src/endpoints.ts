@@ -12,8 +12,8 @@ export const endpoints: Endpoint<Gtk.Widget>[] = [
     uri: "home",
     title: "Home",
     component: () => new HomePage(),
-    load(component: HomePage) {
-      return component.load_home();
+    load(component: HomePage, ctx) {
+      return component.load_home(ctx.signal);
     },
   } as Endpoint<HomePage>,
   {
@@ -21,7 +21,7 @@ export const endpoints: Endpoint<Gtk.Widget>[] = [
     title: "Playlist",
     component: () => new PlaylistPage(),
     async load(component: PlaylistPage, ctx) {
-      await component.load_playlist(ctx.match.params.playlistId);
+      await component.load_playlist(ctx.match.params.playlistId, ctx.signal);
 
       return {
         title: component.playlist?.title,
@@ -33,7 +33,7 @@ export const endpoints: Endpoint<Gtk.Widget>[] = [
     title: "Playlist",
     component: () => new ArtistPage(),
     async load(component: ArtistPage, ctx) {
-      await component.load_artist(ctx.match.params.channelId);
+      await component.load_artist(ctx.match.params.channelId, ctx.signal);
 
       return {
         title: component.artist?.name,
@@ -47,7 +47,10 @@ export const endpoints: Endpoint<Gtk.Widget>[] = [
     async load(component: SearchPage, ctx) {
       await component.search(
         ctx.match.params.query,
-        Object.fromEntries(ctx.url.searchParams as any),
+        {
+          signal: ctx.signal,
+          ...Object.fromEntries(ctx.url.searchParams as any),
+        },
       );
     },
   } as Endpoint<SearchPage>,

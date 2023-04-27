@@ -1,11 +1,6 @@
 import Gio from "gi://Gio";
 import GLib from "gi://GLib";
 
-//////////// polyfills
-
-// EventTarget
-import "event-target-polyfill";
-
 // URL, URLSearchParams
 import "core-js/features/url";
 
@@ -19,6 +14,9 @@ import "./polyfills/fetch.js";
 
 // base64
 import "./polyfills/base64.js";
+
+// abortcontroller
+import "./polyfills/abortcontroller.js";
 
 //////////// libmuse
 

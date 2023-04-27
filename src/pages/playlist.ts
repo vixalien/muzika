@@ -18,8 +18,7 @@ export class PlaylistPage extends Gtk.Box {
   static {
     GObject.registerClass({
       GTypeName: "PlaylistPage",
-      Template:
-        "resource:///org/example/TypescriptTemplate/pages/playlist.ui",
+      Template: "resource:///org/example/TypescriptTemplate/pages/playlist.ui",
       InternalChildren: [
         "inner_box",
         "trackCount",
@@ -148,12 +147,13 @@ export class PlaylistPage extends Gtk.Box {
     this.append_tracks(playlist.tracks);
   }
 
-  async load_playlist(channelId: string) {
+  async load_playlist(channelId: string, signal?: AbortSignal) {
     this._loading.loading = true;
 
     try {
       this.playlist = await get_playlist(channelId, {
         related: true,
+        signal,
       });
       this.show_playlist(this.playlist);
     } catch (e) {

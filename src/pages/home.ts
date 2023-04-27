@@ -101,11 +101,11 @@ export class HomePage extends Gtk.Box {
     }
   }
 
-  load_home() {
+  load_home(signal?: AbortSignal) {
     if (!this.home) {
       this._loading.loading = true;
 
-      return get_home({ limit: 3 })
+      return get_home({ limit: 3, signal })
         .then((home) => {
           this._loading.loading = false;
 
@@ -119,7 +119,7 @@ export class HomePage extends Gtk.Box {
     } else if (this.home.continuation) {
       this._loading.loading = true;
 
-      return get_home({ continuation: this.home.continuation })
+      return get_home({ continuation: this.home.continuation, signal })
         .then((new_home) => {
           this._loading.loading = false;
 

@@ -5,6 +5,10 @@ import Gio from "gi://Gio";
 // streams polyfill
 import "web-streams-polyfill";
 
+import "./abortcontroller.js";
+import "./customevent.js";
+import "./domexception.js";
+
 Gio._promisify(
   Soup.Session.prototype,
   "send_async",
@@ -39,6 +43,7 @@ export interface FetchOptions {
   url?: string;
   headers?: Record<string, string>;
   method?: string;
+  signal?: AbortSignal | null;
 }
 
 const encoder = new TextEncoder();
@@ -232,13 +237,35 @@ export async function fetch(url: string | URL, options: FetchOptions = {}) {
     );
   }
 
-  const inputStream = await SESSION.send_async(
-    message,
-    GLib.PRIORITY_DEFAULT,
-    null,
-  );
+  const cancellable = Gio.Cancellable.new();
 
-  return new Promise<GResponse>((resolve, reject) => {
+  if (options.signal) {
+    options.signal.addEventListener("abort", () => {
+      cancellable.cancel();
+    });
+  }
+
+  return new Promise<GResponse>(async (resolve, reject) => {
+    let inputStream: Gio.InputStream;
+    try {
+      inputStream = await SESSION.send_async(
+        message,
+        GLib.PRIORITY_DEFAULT,
+        cancellable,
+      );
+    } catch (e) {
+      if (
+        (e instanceof Gio.IOErrorEnum) &&
+        (e.code === Gio.IOErrorEnum.CANCELLED)
+      ) {
+        if (options.signal && options.signal.reason instanceof DOMException) {
+          reject(options.signal.reason);
+        } else {
+          reject(new DOMException("The request was aborted", "AbortError"));
+        }
+      }
+    }
+
     const response_headers = message.get_response_headers();
     const headers = new Headers();
 

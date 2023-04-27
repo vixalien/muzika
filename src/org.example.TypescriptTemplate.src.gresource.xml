@@ -11,7 +11,10 @@
     <file>pages/home.js</file>
     <file>pages/playlist.js</file>
     <file>pages/search.js</file>
+    <file>polyfills/abortcontroller.js</file>
     <file>polyfills/base64.js</file>
+    <file>polyfills/customevent.js</file>
+    <file>polyfills/domexception.js</file>
     <file>polyfills/fetch.js</file>
     <file>util/hash.js</file>
     <file>endpoints.js</file>

@@ -16,8 +16,7 @@ export class ArtistPage extends Gtk.Box {
   static {
     GObject.registerClass({
       GTypeName: "ArtistPage",
-      Template:
-        "resource:///org/example/TypescriptTemplate/pages/artist.ui",
+      Template: "resource:///org/example/TypescriptTemplate/pages/artist.ui",
       InternalChildren: [
         "inner_box",
         "content",
@@ -109,7 +108,7 @@ export class ArtistPage extends Gtk.Box {
     this._inner_box.append(carousel);
   }
 
-  load_artist(id: string) {
+  load_artist(id: string, signal?: AbortSignal) {
     return get_artist(id)
       .then((artist) => {
         this.artist = artist;
