@@ -6,6 +6,7 @@ import { match, MatchFunction, MatchResult } from "path-to-regexp";
 import { Loading } from "./components/loading.js";
 
 import { endpoints } from "./endpoints.js";
+import { ErrorPage } from "./pages/error.js";
 
 export type EndpointCtx = {
   match: MatchResult<Record<string, string>>;
@@ -27,9 +28,16 @@ export type Endpoint<C extends Gtk.Widget> = {
   ) => void | Promise<void | EndpointResponse>;
 };
 
+export interface ShowPageOptions {
+  title: string;
+  page: Gtk.Widget;
+  endpoint: Endpoint<Gtk.Widget>;
+}
+
 export class Navigator extends GObject.Object {
   private _stack: Gtk.Stack;
   private _header: Gtk.HeaderBar;
+  private _error_page: ErrorPage;
 
   private match_map: Map<MatchFunction, Endpoint<Gtk.Widget>> = new Map();
 
@@ -60,14 +68,21 @@ export class Navigator extends GObject.Object {
     this._stack = stack;
     this._header = header;
 
-    this.add_loading_page();
-
     this.match_map = new Map();
 
     for (const endpoint of endpoints) {
       const fn = match(endpoint.uri, {});
       this.match_map.set(fn, endpoint);
     }
+
+    this._error_page = new ErrorPage();
+
+    this.add_loading_page();
+    this.add_error_page();
+  }
+
+  private add_error_page() {
+    this._stack.add_named(this._error_page, "error");
   }
 
   private add_loading_page() {
@@ -78,6 +93,33 @@ export class Navigator extends GObject.Object {
 
   set_title(title: string) {
     this._header.set_title_widget(Gtk.Label.new(title));
+  }
+
+  private show_error(error: any) {
+    if (error instanceof DOMException && error.code == DOMException.ABORT_ERR) {
+      return;
+    }
+
+    this.loading = false;
+    this.last_controller = null;
+
+    this._header.set_title_widget(Gtk.Label.new("Error"));
+    this._error_page.set_error(error);
+    this._stack.set_visible_child_name("error");
+  }
+
+  private show_page(meta: ShowPageOptions) {
+    this._header.set_title_widget(
+      Gtk.Label.new(meta.title),
+    );
+
+    const got_component = this._stack.get_child_by_name(meta.endpoint.uri);
+    if (got_component) {
+      this._stack.remove(got_component);
+    }
+
+    this._stack.add_named(meta.page, meta.endpoint.uri);
+    this._stack.set_visible_child_name(meta.endpoint.uri);
   }
 
   last_controller: AbortController | null = null;
@@ -102,40 +144,37 @@ export class Navigator extends GObject.Object {
 
     this.last_controller = new AbortController();
 
-    const response = endpoint.load(component, {
-      match: match as MatchResult<Record<string, string>>,
-      url: new URL("muzika:" + uri),
-      signal: this.last_controller.signal,
-    });
+    let response: ReturnType<Endpoint<Gtk.Widget>["load"]>;
 
-    if (!response) return;
+    try {
+      response = endpoint.load(component, {
+        match: match as MatchResult<Record<string, string>>,
+        url: new URL("muzika:" + uri),
+        signal: this.last_controller.signal,
+      });
 
-    // temporarily show an old page if it's available
-    if (this._stack.get_child_by_name(endpoint.uri)) {
-      this._stack.set_visible_child_name(endpoint.uri);
-    }
+      if (!response) return;
 
-    this.loading = true;
-
-    response.then((meta = {}) => {
-      this.loading = false;
-      this.last_controller = null;
-
-      this._header.set_title_widget(
-        Gtk.Label.new(meta?.title ?? endpoint.title),
-      );
-
-      const got_component = this._stack.get_child_by_name(endpoint.uri);
-      if (got_component) {
-        this._stack.remove(got_component);
+      // temporarily show an old page if it's available
+      if (this._stack.get_child_by_name(endpoint.uri)) {
+        this._stack.set_visible_child_name(endpoint.uri);
       }
 
-      this._stack.add_named(component, endpoint.uri);
-      this._stack.set_visible_child_name(endpoint.uri);
-    })
-      .catch((e) => {
-        console.log("got an error", e);
-      });
+      this.loading = true;
+
+      response.then((meta = {}) => {
+        this.loading = false;
+        this.last_controller = null;
+
+        this.show_page({
+          title: meta?.title ?? endpoint.title,
+          page: component,
+          endpoint,
+        });
+      }).catch(this.show_error.bind(this));
+    } catch (e) {
+      this.show_error(e);
+    }
 
     return null;
   }

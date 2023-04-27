@@ -8,6 +8,7 @@ sources = [
   'components/playlistheader.ts',
   'components/webimage.ts',
   'pages/artist.ts',
+  'pages/error.ts',
   'pages/home.ts',
   'pages/playlist.ts',
   'pages/search.ts',
