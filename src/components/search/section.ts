@@ -3,6 +3,7 @@ import GObject from "gi://GObject";
 import GLib from "gi://GLib";
 
 import {
+  filters,
   search,
   SearchContent,
   SearchOptions,
@@ -25,8 +26,7 @@ export class SearchSection extends Gtk.Box {
   static {
     GObject.registerClass({
       GTypeName: "SearchSection",
-      Template:
-        "resource:///com/vixalien/muzika/components/search/section.ui",
+      Template: "resource:///com/vixalien/muzika/components/search/section.ui",
       InternalChildren: ["title", "more", "content"],
     }, this);
   }
@@ -85,7 +85,10 @@ export class SearchSection extends Gtk.Box {
   set_category(category: SearchResults["categories"][0]) {
     this._title.label = category.title;
 
-    if (category.results.length >= 0) {
+    if (
+      category.results.length >= 0 && this.show_more && category.filter &&
+      filters.includes(category.filter)
+    ) {
       const url = search_args_to_url(
         this.args[0],
         {
@@ -94,14 +97,12 @@ export class SearchSection extends Gtk.Box {
         },
       );
 
-      if (this.show_more) {
-        this._more.visible = true;
-        this._more.action_name = "app.navigate";
-        this._more.action_target = GLib.Variant.new(
-          "s",
-          url,
-        );
-      }
+      this._more.visible = true;
+      this._more.action_name = "app.navigate";
+      this._more.action_target = GLib.Variant.new(
+        "s",
+        url,
+      );
     }
 
     category.results.forEach((result) => {
