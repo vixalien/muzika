@@ -1,7 +1,7 @@
 [Desktop Entry]
 Name=gnome-typescript-template
-Exec=org.example.TypescriptTemplate
-Icon=org.example.TypescriptTemplate
+Exec=com.vixalien.muzika
+Icon=com.vixalien.muzika
 Terminal=false
 Type=Application
 Categories=GTK;

@@ -10,7 +10,7 @@ export class SearchPage extends Gtk.Box {
   static {
     GObject.registerClass({
       GTypeName: "SearchPage",
-      Template: "resource:///org/example/TypescriptTemplate/pages/search.ui",
+      Template: "resource:///com/vixalien/muzika/pages/search.ui",
       InternalChildren: ["scrolled", "content", "sections"],
     }, this);
   }

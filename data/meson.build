@@ -1,6 +1,6 @@
 desktop_file = i18n.merge_file(
-        input: 'org.example.TypescriptTemplate.desktop.in',
-       output: 'org.example.TypescriptTemplate.desktop',
+        input: 'com.vixalien.muzika.desktop.in',
+       output: 'com.vixalien.muzika.desktop',
          type: 'desktop',
        po_dir: '../po',
       install: true,
@@ -13,8 +13,8 @@ if desktop_utils.found()
 endif
 
 appstream_file = i18n.merge_file(
-        input: 'org.example.TypescriptTemplate.appdata.xml.in',
-       output: 'org.example.TypescriptTemplate.appdata.xml',
+        input: 'com.vixalien.muzika.appdata.xml.in',
+       output: 'com.vixalien.muzika.appdata.xml',
        po_dir: '../po',
       install: true,
   install_dir: join_paths(get_option('datadir'), 'appdata')
@@ -25,7 +25,7 @@ if appstream_util.found()
   test('Validate appstream file', appstream_util, args: ['validate', appstream_file])
 endif
 
-gsettings_schema = 'org.example.TypescriptTemplate.gschema.xml'
+gsettings_schema = 'com.vixalien.muzika.gschema.xml'
 
 local_schemas = configure_file(
   copy: true,
@@ -53,8 +53,8 @@ if compile_schemas.found()
 endif
 
 data_res = gnome.compile_resources(
-  'org.example.TypescriptTemplate.data',
-  'org.example.TypescriptTemplate.data.gresource.xml',
+  'com.vixalien.muzika.data',
+  'com.vixalien.muzika.data.gresource.xml',
   gresource_bundle: true,
   install: true,
   install_dir: pkgdatadir,

@@ -10,7 +10,7 @@ export class TopResultSection extends Gtk.Box {
     GObject.registerClass({
       GTypeName: "TopResultSection",
       Template:
-        "resource:///org/example/TypescriptTemplate/components/search/topresultsection.ui",
+        "resource:///com/vixalien/muzika/components/search/topresultsection.ui",
       InternalChildren: ["title", "flowbox", "content"],
     }, this);
   }

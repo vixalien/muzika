@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <schemalist gettext-domain="gnome-typescript-template">
-	<schema id="org.example.TypescriptTemplate" path="/org/example/TypescriptTemplate/">
+	<schema id="com.vixalien.muzika" path="/com/vixalien/muzika/">
 	</schema>
 </schemalist>

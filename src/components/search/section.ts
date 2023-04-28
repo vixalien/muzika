@@ -26,7 +26,7 @@ export class SearchSection extends Gtk.Box {
     GObject.registerClass({
       GTypeName: "SearchSection",
       Template:
-        "resource:///org/example/TypescriptTemplate/components/search/section.ui",
+        "resource:///com/vixalien/muzika/components/search/section.ui",
       InternalChildren: ["title", "more", "content"],
     }, this);
   }

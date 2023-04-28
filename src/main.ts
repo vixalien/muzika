@@ -65,7 +65,7 @@ export class Application extends Adw.Application {
 
   constructor() {
     super({
-      application_id: "org.example.TypescriptTemplate",
+      application_id: "com.vixalien.muzika",
       flags: Gio.ApplicationFlags.DEFAULT_FLAGS,
     });
 
@@ -75,14 +75,15 @@ export class Application extends Adw.Application {
     show_about_action.connect("activate", () => {
       let aboutParams = {
         transient_for: this.active_window,
-        application_name: "gnome-typescript-template",
-        application_icon: "org.example.TypescriptTemplate",
-        developer_name: "Christopher Davis",
+        application_name: "Muzika",
+        application_icon: "com.vixalien.muzika",
+        developer_name: "Angelo Verlain",
         version: "0.1.0",
         developers: [
+          "Angelo Verlain <hey@vixalien.com>",
           "Christopher Davis <christopherdavis@gnome.org>",
         ],
-        copyright: "© 2023 Christopher Davis",
+        copyright: "© 2023 Angelo Verlain",
       };
       const aboutWindow = new Adw.AboutWindow(aboutParams);
       aboutWindow.present();

@@ -29,7 +29,7 @@ export class ErrorPage extends Gtk.Box {
   static {
     GObject.registerClass({
       GTypeName: "ErrorPage",
-      Template: "resource:///org/example/TypescriptTemplate/pages/error.ui",
+      Template: "resource:///com/vixalien/muzika/pages/error.ui",
       InternalChildren: [
         "status",
         "more",

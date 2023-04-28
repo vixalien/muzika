@@ -6,7 +6,7 @@ export class Paginator extends Gtk.Revealer {
     GObject.registerClass({
       GTypeName: "Paginator",
       Template:
-        "resource:///org/example/TypescriptTemplate/components/paginator.ui",
+        "resource:///com/vixalien/muzika/components/paginator.ui",
       InternalChildren: [
         "stack",
         "button",

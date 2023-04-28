@@ -1,4 +1,4 @@
-application_id = 'org.example.TypescriptTemplate'
+application_id = 'com.vixalien.muzika'
 
 scalable_dir = join_paths('hicolor', 'scalable', 'apps')
 install_data(

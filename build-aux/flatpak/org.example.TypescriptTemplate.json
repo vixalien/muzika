@@ -1,5 +1,5 @@
 {
-    "app-id" : "org.example.TypescriptTemplate",
+    "app-id" : "com.vixalien.muzika",
     "runtime" : "org.gnome.Platform",
     "runtime-version" : "master",
     "sdk" : "org.gnome.Sdk",
@@ -12,7 +12,7 @@
     "build-options" : {
         "append-path" : "/usr/lib/sdk/node18/bin"
     },
-    "command" : "org.example.TypescriptTemplate",
+    "command" : "com.vixalien.muzika",
     "finish-args" : [
         "--share=ipc",
         "--device=dri",

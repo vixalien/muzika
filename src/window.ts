@@ -34,7 +34,7 @@ export class Window extends Adw.ApplicationWindow {
   static {
     GObject.registerClass(
       {
-        Template: "resource:///org/example/TypescriptTemplate/window.ui",
+        Template: "resource:///com/vixalien/muzika/window.ui",
         InternalChildren: ["stack", "header_bar", "progress"],
       },
       this,

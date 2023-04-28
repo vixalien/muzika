@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <gresources>
-  <gresource prefix="/org/example/TypescriptTemplate">
+  <gresource prefix="/com/vixalien/muzika">
     <file>style.css</file>
     <!-- components -->
     <file preprocess="xml-stripblanks">components/carousel/albumcard.ui</file>
@@ -27,7 +27,7 @@
     <file preprocess="xml-stripblanks">window.ui</file>
     <file preprocess="xml-stripblanks">gtk/help-overlay.ui</file>
   </gresource>
-  <gresource prefix="/org/example/TypescriptTemplate/icons/scalable/actions/">
+  <gresource prefix="/com/vixalien/muzika/icons/scalable/actions/">
     <file preprocess="xml-stripblanks" alias="music-artist-symbolic.svg">icons/music-artist-symbolic.svg</file>
   </gresource>
 </gresources>

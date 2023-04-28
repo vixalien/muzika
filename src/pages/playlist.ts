@@ -18,7 +18,7 @@ export class PlaylistPage extends Gtk.Box {
   static {
     GObject.registerClass({
       GTypeName: "PlaylistPage",
-      Template: "resource:///org/example/TypescriptTemplate/pages/playlist.ui",
+      Template: "resource:///com/vixalien/muzika/pages/playlist.ui",
       InternalChildren: [
         "inner_box",
         "trackCount",
@@ -204,7 +204,7 @@ export class PlaylistItemCard extends Gtk.ListBoxRow {
     GObject.registerClass({
       GTypeName: "PlaylistItem",
       Template:
-        "resource:///org/example/TypescriptTemplate/components/playlist/playlistitem.ui",
+        "resource:///com/vixalien/muzika/components/playlist/playlistitem.ui",
       InternalChildren: [
         "play_button",
         "image",

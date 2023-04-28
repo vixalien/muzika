@@ -17,7 +17,7 @@ export class InlineCard extends Gtk.ListBoxRow {
     GObject.registerClass({
       GTypeName: "InlineCard",
       Template:
-        "resource:///org/example/TypescriptTemplate/components/search/inlinecard.ui",
+        "resource:///com/vixalien/muzika/components/search/inlinecard.ui",
       InternalChildren: [
         "avatar",
         "image",

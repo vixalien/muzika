@@ -15,7 +15,7 @@ export class TopResultCard extends Gtk.FlowBoxChild {
     GObject.registerClass({
       GTypeName: "TopResult",
       Template:
-        "resource:///org/example/TypescriptTemplate/components/search/topresult.ui",
+        "resource:///com/vixalien/muzika/components/search/topresult.ui",
       InternalChildren: [
         "avatar",
         "image",

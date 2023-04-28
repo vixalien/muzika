@@ -6,7 +6,7 @@ export class Loading extends Gtk.Box {
     GObject.registerClass({
       GTypeName: "Loading",
       Template:
-        "resource:///org/example/TypescriptTemplate/components/loading.ui",
+        "resource:///com/vixalien/muzika/components/loading.ui",
       Properties: {
         loading: GObject.ParamSpec.boolean(
           "loading",
