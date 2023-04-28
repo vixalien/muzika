@@ -70,17 +70,21 @@ export class ArtistPage extends Gtk.Box {
   }
 
   append_top_songs(tracks: PlaylistItem[]) {
-    for (const track of tracks) {
-      const card = new PlaylistItemCard();
+    if (tracks && tracks.length > 0) {
+      for (const track of tracks) {
+        const card = new PlaylistItemCard();
 
-      card.set_item(track);
+        card.set_item(track);
 
-      this.top_songs_box.append(card);
+        this.top_songs_box.append(card);
+      }
+    } else {
+      this.top_songs.visible = false;
     }
   }
 
   set_artist(artist: Artist) {
-    this.header.load_thumbnails(artist.thumbnails);
+    if (artist.thumbnails) this.header.load_thumbnails(artist.thumbnails);
     this.header.set_title(artist.name);
     this.header.set_description(artist.description);
 

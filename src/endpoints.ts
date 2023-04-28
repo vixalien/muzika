@@ -30,7 +30,7 @@ export const endpoints: Endpoint<Gtk.Widget>[] = [
   } as Endpoint<PlaylistPage>,
   {
     uri: "artist/:channelId",
-    title: "Playlist",
+    title: "Artist",
     component: () => new ArtistPage(),
     async load(component: ArtistPage, ctx) {
       await component.load_artist(ctx.match.params.channelId, ctx.signal);
