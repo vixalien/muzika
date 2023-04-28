@@ -46,7 +46,7 @@ export const endpoints: Endpoint<Gtk.Widget>[] = [
     component: () => new SearchPage(),
     async load(component: SearchPage, ctx) {
       await component.search(
-        ctx.match.params.query,
+        decodeURIComponent(ctx.match.params.query),
         {
           signal: ctx.signal,
           ...Object.fromEntries(ctx.url.searchParams as any),
