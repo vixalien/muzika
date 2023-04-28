@@ -68,8 +68,14 @@ export class TopResultSection extends Gtk.Box {
         //   return;
     }
 
-    if (top_result.more) {
+    if (top_result.more && top_result.more.length > 0) {
       top_result.more.forEach(this.add_more_content.bind(this));
+    } else {
+      const second_flowbox = this._flowbox.get_child_at_index(1);
+      if (second_flowbox) {
+        second_flowbox.visible = false;
+      }
+      this._flowbox.max_children_per_line = 1;
     }
 
     this._flowbox.prepend(card);
