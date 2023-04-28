@@ -16,6 +16,8 @@
     <file preprocess="xml-stripblanks">components/search/inlinecard.ui</file>
     <file preprocess="xml-stripblanks">components/search/section.ui</file>
     <file preprocess="xml-stripblanks">components/search/songcard.ui</file>
+    <file preprocess="xml-stripblanks">components/search/topresult.ui</file>
+    <file preprocess="xml-stripblanks">components/search/topresultsection.ui</file>
     <file preprocess="xml-stripblanks">components/loading.ui</file>
     <file preprocess="xml-stripblanks">components/paginator.ui</file>
     <file preprocess="xml-stripblanks">pages/artist.ui</file>

@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+  <requires lib="gtk" version="4.0" />
+  <template class="TopResult" parent="GtkFlowBoxChild">
+    <property name="margin-start">6</property>
+    <property name="margin-end">6</property>
+    <style>
+      <class name="card" />
+      <class name="activatable" />
+    </style>
+    <child>
+      <object class="GtkGrid">
+        <property name="margin-top">12</property>
+        <property name="margin-bottom">12</property>
+        <property name="margin-start">12</property>
+        <property name="margin-end">12</property>
+        <property name="column-spacing">12</property>
+        <property name="row-spacing">12</property>
+        <property name="valign">center</property>
+        <child>
+          <object class="GtkStack">
+            <layout>
+              <property name="row-span">2</property>
+            </layout>
+            <child>
+              <object class="GtkOverlay" id="image_overlay">
+                <style>
+                  <class name="image" />
+                  <class name="br-12" />
+                  <class name="hover-parent" />
+                </style>
+                <property name="overflow">1</property>
+                <child>
+                  <object class="GtkBox">
+                    <child>
+                      <object class="GtkImage" id="image">
+                        <property name="icon-name">image-missing-symbolic</property>
+                        <property name="pixel-size">100</property>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+                <child type="overlay">
+                  <object class="GtkButton">
+                    <style>
+                      <class name="osd" />
+                      <class name="hover-child" />
+                    </style>
+                    <property name="icon-name">media-playback-start-symbolic</property>
+                  </object>
+                </child>
+              </object>
+            </child>
+            <child>
+              <object class="AdwAvatar" id="avatar">
+                <property name="text">After Hours</property>
+                <property name="size">100</property>
+              </object>
+            </child>
+          </object>
+        </child>
+        <child>
+          <object class="GtkBox" id="meta">
+            <property name="orientation">1</property>
+            <property name="spacing">6</property>
+            <property name="valign">3</property>
+            <child>
+              <object class="GtkLabel" id="title">
+                <property name="label">After Hours</property>
+                <property name="hexpand">true</property>
+                <property name="max-width-chars">1</property>
+                <property name="ellipsize">3</property>
+                <property name="lines">2</property>
+                <property name="xalign">0</property>
+                <property name="wrap">true</property>
+                <property name="wrap-mode">1</property>
+                <style>
+                  <class name="title-3" />
+                </style>
+              </object>
+            </child>
+            <child>
+              <object class="GtkBox" id="second-line">
+                <property name="spacing">6</property>
+                <style>
+                  <class name="dim-label" />
+                </style>
+                <child>
+                  <object class="GtkImage" id="explicit">
+                    <property name="valign">1</property>
+                    <property name="icon-name">network-cellular-edge-symbolic</property>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkBox" id="type_box">
+                    <property name="spacing">6</property>
+                    <child>
+                      <object class="GtkLabel" id="type">
+                        <property name="label">Song</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkLabel" id="type_separator">
+                        <property name="label">·</property>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkBox" id="label_box">
+                    <property name="spacing">6</property>
+                  </object>
+                </child>
+              </object>
+            </child>
+          </object>
+        </child>
+        <child>
+          <object class="GtkBox" id="actions">
+            <property name="spacing">12</property>
+            <layout>
+              <property name="row">1</property>
+              <property name="column">1</property>
+            </layout>
+            <child>
+              <object class="GtkButton" id="primary">
+                <style>
+                  <class name="pill" />
+                  <class name="suggested-action" />
+                </style>
+                <child>
+                  <object class="AdwButtonContent">
+                    <property name="icon-name">media-playback-start-symbolic</property>
+                    <property name="label">Play</property>
+                  </object>
+                </child>
+              </object>
+            </child>
+            <child>
+              <object class="GtkButton" id="secondary">
+                <style>
+                  <class name="pill" />
+                </style>
+                <child>
+                  <object class="AdwButtonContent">
+                    <property name="icon-name">media-playlist-shuffle-symbolic</property>
+                    <property name="label">Shuffle</property>
+                  </object>
+                </child>
+              </object>
+            </child>
+          </object>
+        </child>
+      </object>
+    </child>
+  </template>
+</interface>
