@@ -129,6 +129,8 @@ export class TopResultCard extends Gtk.FlowBoxChild {
 
     this._title.label = artist.name;
 
+    this._type.label = "Artist";
+
     if (artist.subscribers) {
       this.insert_only_text(`${artist.subscribers} subscribers`);
     }
