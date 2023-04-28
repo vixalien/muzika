@@ -9,6 +9,7 @@ import {
   TopResultSong,
 } from "../../muse.js";
 import { load_thumbnails } from "../webimage.js";
+import { TopResultVideo } from "libmuse/types/parsers/search.js";
 
 export class TopResultCard extends Gtk.FlowBoxChild {
   static {
@@ -83,7 +84,7 @@ export class TopResultCard extends Gtk.FlowBoxChild {
     this.insert_only_text(text);
   }
 
-  private set_song_or_video(track: TopResultSong) {
+  private set_song_or_video(track: TopResultSong | TopResultVideo) {
     this.result = track;
 
     load_thumbnails(this._image, track.thumbnails, this.image_size);
@@ -96,14 +97,19 @@ export class TopResultCard extends Gtk.FlowBoxChild {
     });
 
     if (track.duration) this.insert_text(track.duration);
+
+    this._secondary_content.label = "Add";
+    this._secondary_content.icon_name = "list-add-symbolic";
   }
 
   set_song(song: TopResultSong) {
     this.set_song_or_video(song);
     this._type.label = "Song";
+  }
 
-    this._secondary_content.label = "Add";
-    this._secondary_content.icon_name = "list-add-symbolic";
+  set_video(video: TopResultVideo) {
+    this.set_song_or_video(video);
+    this._type.label = "Video";
   }
 
   set_album(album: TopResultAlbum) {

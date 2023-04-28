@@ -57,6 +57,9 @@ export class TopResultSection extends Gtk.Box {
       case "song":
         card.set_song(top_result);
         break;
+      case "video":
+        card.set_video(top_result);
+        break;
       case "album":
         card.set_album(top_result);
         break;
