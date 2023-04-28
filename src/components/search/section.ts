@@ -51,6 +51,33 @@ export class SearchSection extends Gtk.Box {
     this.args = options.args;
     this.show_more = options.show_more ?? false;
     this.show_type = options.show_type ?? true;
+
+    this._content.connect("row-activated", this.row_activated.bind(this));
+  }
+
+  row_activated(_: this, row: InlineCard) {
+    if (!row.content) return;
+
+    let uri: string | null = null;
+
+    switch (row.content.type) {
+      case "playlist":
+        uri = `playlist:${row.content.browseId}`;
+        break;
+      case "artist":
+        uri = `artist:${row.content.browseId}`;
+        break;
+    }
+
+    if (uri) {
+      const root = this.get_root() as Gtk.Window;
+
+      if (!root) return;
+
+      const app = root.application;
+
+      app.activate_action("navigate", GLib.Variant.new("s", "muzika:" + uri));
+    }
   }
 
   add_content(content: SearchContent) {
