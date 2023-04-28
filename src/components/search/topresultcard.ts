@@ -25,6 +25,10 @@ export class TopResultCard extends Gtk.FlowBoxChild {
         "label_box",
         "type",
         "type_box",
+        "primary",
+        "primary_content",
+        "secondary",
+        "secondary_content",
         // "second-line",
       ],
     }, this);
@@ -43,6 +47,10 @@ export class TopResultCard extends Gtk.FlowBoxChild {
   _type!: Gtk.Label;
   _type_box!: Gtk.Box;
   _second_line!: Gtk.Box;
+  _primary!: Gtk.Button;
+  _primary_content!: Adw.ButtonContent;
+  _secondary!: Gtk.Button;
+  _secondary_content!: Adw.ButtonContent;
 
   image_size = 100;
   add_subsequent_middots = false;
@@ -93,6 +101,9 @@ export class TopResultCard extends Gtk.FlowBoxChild {
   set_song(song: TopResultSong) {
     this.set_song_or_video(song);
     this._type.label = "Song";
+
+    this._secondary_content.label = "Add";
+    this._secondary_content.icon_name = "list-add-symbolic";
   }
 
   set_album(album: TopResultAlbum) {
@@ -118,10 +129,11 @@ export class TopResultCard extends Gtk.FlowBoxChild {
 
     this._title.label = artist.name;
 
-    this.show_type(false);
-
     if (artist.subscribers) {
       this.insert_only_text(`${artist.subscribers} subscribers`);
     }
+
+    this._secondary_content.label = "Shuffle";
+    this._secondary_content.icon_name = "media-playlist-shuffle-symbolic";
   }
 }

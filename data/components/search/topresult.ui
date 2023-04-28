@@ -129,7 +129,7 @@
                   <class name="suggested-action" />
                 </style>
                 <child>
-                  <object class="AdwButtonContent">
+                  <object class="AdwButtonContent" id="primary_content">
                     <property name="icon-name">media-playback-start-symbolic</property>
                     <property name="label">Play</property>
                   </object>
@@ -142,7 +142,7 @@
                   <class name="pill" />
                 </style>
                 <child>
-                  <object class="AdwButtonContent">
+                  <object class="AdwButtonContent" id="secondary_content">
                     <property name="icon-name">media-playlist-shuffle-symbolic</property>
                     <property name="label">Shuffle</property>
                   </object>
