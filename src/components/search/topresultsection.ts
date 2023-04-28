@@ -1,5 +1,6 @@
 import Gtk from "gi://Gtk?version=4.0";
 import GObject from "gi://GObject";
+import GLib from "gi://GLib";
 
 import { SearchContent, TopResult } from "../../muse.js";
 import { InlineCard } from "./inlinecard.js";
@@ -21,6 +22,33 @@ export class TopResultSection extends Gtk.Box {
 
   constructor() {
     super();
+
+    this._flowbox.connect("child-activated", this.child_activated.bind(this));
+  }
+
+  child_activated(_: this, child: TopResultCard) {
+    if (!(child instanceof TopResultCard) || !(child.result)) return;
+
+    let uri: string | null = null;
+
+    switch (child.result.type) {
+      // case "playlist":
+      //   uri = `playlist:${row.content.browseId}`;
+      //   break;
+      // case "artist":
+      //   uri = `artist:${row.content.browseId}`;
+      //   break;
+    }
+
+    if (uri) {
+      const root = this.get_root() as Gtk.Window;
+
+      if (!root) return;
+
+      const app = root.application;
+
+      app.activate_action("navigate", GLib.Variant.new("s", "muzika:" + uri));
+    }
   }
 
   add_more_content(content: SearchContent) {
