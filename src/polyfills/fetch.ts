@@ -222,8 +222,15 @@ export async function fetch(url: string | URL, options: FetchOptions = {}) {
   const headers = options.headers || {};
 
   const request_headers = message.get_request_headers();
-  for (const header in headers) {
-    request_headers.append(header, headers[header]);
+
+  if (options.headers instanceof Headers) {
+    options.headers.forEach((value, key) => {
+      request_headers.append(key, value);
+    });
+  } else {
+    for (const header in headers) {
+      request_headers.append(header, headers[header]);
+    }
   }
 
   if (typeof options.body === "string") {
