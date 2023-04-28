@@ -1,6 +1,10 @@
 gnome = import('gnome')
 
 sources = [
+  'components/search/inlinecard.ts',
+  'components/search/section.ts',
+  'components/search/topresultcard.ts',
+  'components/search/topresultsection.ts',
   'components/artistheader.ts',
   'components/carousel.ts',
   'components/loading.ts',
