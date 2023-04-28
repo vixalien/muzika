@@ -11,7 +11,9 @@ import {
 import { InlineCard } from "./inlinecard.js";
 
 function search_args_to_url(query: string, options: SearchOptions = {}) {
-  const params = new URLSearchParams(Object.entries(options))
+  const params = new URLSearchParams(
+    Object.entries(options).filter(([k]) => k !== "signal"),
+  )
     .toString();
   let url_string = `muzika:search:${encodeURIComponent(query)}`;
   if (params) url_string += `?${params}`;
