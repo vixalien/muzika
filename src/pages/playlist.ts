@@ -140,7 +140,7 @@ export class PlaylistPage extends Gtk.Box {
     this._trackCount.set_label(playlist.trackCount.toString() + " songs");
     this._duration.set_label(secondsToDuration(playlist.duration_seconds));
 
-    if (playlist.related) {
+    if (playlist.related && playlist.related.length > 0) {
       this.show_related(playlist.related);
     }
 
