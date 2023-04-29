@@ -77,3 +77,7 @@ button.link.inline label {
 button.link.inline.bold {
   font-weight: 700;
 }
+
+button.link.inactive {
+  color: inherit;
+}

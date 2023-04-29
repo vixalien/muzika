@@ -67,6 +67,9 @@ export class SearchSection extends Gtk.Box {
       case "artist":
         uri = `artist:${row.content.browseId}`;
         break;
+      case "album":
+        uri = `album:${row.content.browseId}`;
+        break;
     }
 
     if (uri) {

@@ -453,6 +453,9 @@ export class Carousel<
       case "artist":
         uri = `artist:${item.browseId}`;
         break;
+      case "album":
+        uri = `album:${item.browseId}`;
+        break;
     }
 
     if (uri) {

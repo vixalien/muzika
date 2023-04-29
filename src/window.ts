@@ -55,7 +55,7 @@ export class Window extends Adw.ApplicationWindow {
     this.navigator = new Navigator(this._stack, this._header_bar);
 
     this.navigator.navigate(
-      "search:ultraviolence",
+      "album:MPREb_6cr21cOz65L",
     );
 
     this.navigator.connect("notify::loading", () => {

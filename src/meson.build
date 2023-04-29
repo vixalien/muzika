@@ -1,6 +1,8 @@
 gnome = import('gnome')
 
 sources = [
+  'components/album/header.ts',
+  'components/album/item.ts',
   'components/search/inlinecard.ts',
   'components/search/section.ts',
   'components/search/topresultcard.ts',
@@ -12,6 +14,7 @@ sources = [
   'components/playlist/header.ts',
   'components/playlist/item.ts',
   'components/webimage.ts',
+  'pages/album.ts',
   'pages/artist.ts',
   'pages/error.ts',
   'pages/home.ts',

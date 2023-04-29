@@ -124,19 +124,28 @@ export class PlaylistHeader extends Gtk.Box {
     this._mini._genre.set_label(genre);
   }
 
-  add_author(author: { name: string; id: string }) {
-    const getElements = (large = false) => {
+  add_author(author: { name: string; id: string | null; artist?: boolean }) {
+    const getElements = () => {
+      const link_arr = author.id ? [] : ["inactive"];
+
       return {
         label: new Gtk.Button({
           label: author.name,
-          action_name: "app.navigate",
-          action_target: GLib.Variant.new("s", `muzika:user:${author.id}`),
-          css_classes: ["title-3", "link", "inline"],
+          css_classes: ["title-3", "inline", "bold", "link", ...link_arr],
+          ...(author.id
+            ? {
+              action_name: "app.navigate",
+              action_target: GLib.Variant.new(
+                "s",
+                `muzika:${author.artist ? "artist" : "user"}:${author.id}`,
+              ),
+            }
+            : {}),
         }),
         separator: new Gtk.Label({
-          label: "•",
+          label: "·",
           xalign: 0,
-          css_classes: ["title-3", "link", "accent"],
+          css_classes: ["title-3", "accent"],
         }),
       };
     };

@@ -45,7 +45,7 @@
                 </child>
                 <child>
                   <object class="GtkBox" id="author_box">
-                    <property name="spacing">6</property>
+                    <property name="spacing">3</property>
                   </object>
                 </child>
               </object>
@@ -71,7 +71,7 @@
                 </child>
                 <child>
                   <object class="GtkLabel" id="subtitle_separator">
-                    <property name="label">·</property>
+                    <property name="label">•</property>
                   </object>
                 </child>
                 <child>

@@ -6,6 +6,7 @@ import { HomePage } from "./pages/home.js";
 import { PlaylistPage } from "./pages/playlist.js";
 import { ArtistPage } from "./pages/artist.js";
 import { SearchPage } from "./pages/search.js";
+import { AlbumPage } from "./pages/album.js";
 
 export const endpoints: Endpoint<Gtk.Widget>[] = [
   {
@@ -28,6 +29,18 @@ export const endpoints: Endpoint<Gtk.Widget>[] = [
       };
     },
   } as Endpoint<PlaylistPage>,
+  {
+    uri: "album/:albumId",
+    title: "Album",
+    component: () => new AlbumPage(),
+    async load(component: AlbumPage, ctx) {
+      await component.load_album(ctx.match.params.albumId, ctx.signal);
+
+      return {
+        title: component.album?.title,
+      };
+    },
+  } as Endpoint<AlbumPage>,
   {
     uri: "artist/:channelId",
     title: "Artist",

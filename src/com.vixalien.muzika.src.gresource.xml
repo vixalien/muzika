@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <gresources>
   <gresource prefix="/com/vixalien/muzika/js">
+    <file>components/album/header.js</file>
+    <file>components/album/item.js</file>
     <file>components/search/inlinecard.js</file>
     <file>components/search/section.js</file>
     <file>components/search/topresultcard.js</file>
@@ -12,6 +14,7 @@
     <file>components/playlist/header.js</file>
     <file>components/playlist/item.js</file>
     <file>components/webimage.js</file>
+    <file>pages/album.js</file>
     <file>pages/artist.js</file>
     <file>pages/error.js</file>
     <file>pages/home.js</file>

@@ -3,6 +3,7 @@
   <gresource prefix="/com/vixalien/muzika">
     <file>style.css</file>
     <!-- components -->
+    <file preprocess="xml-stripblanks">components/album/item.ui</file>
     <file preprocess="xml-stripblanks">components/carousel/albumcard.ui</file>
     <file preprocess="xml-stripblanks">components/carousel/artistcard.ui</file>
     <file preprocess="xml-stripblanks">components/carousel/carousel.ui</file>
@@ -20,6 +21,7 @@
     <file preprocess="xml-stripblanks">components/search/topresultsection.ui</file>
     <file preprocess="xml-stripblanks">components/loading.ui</file>
     <file preprocess="xml-stripblanks">components/paginator.ui</file>
+    <file preprocess="xml-stripblanks">pages/album.ui</file>
     <file preprocess="xml-stripblanks">pages/artist.ui</file>
     <file preprocess="xml-stripblanks">pages/error.ui</file>
     <file preprocess="xml-stripblanks">pages/playlist.ui</file>
