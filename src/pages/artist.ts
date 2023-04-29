@@ -119,8 +119,6 @@ export class ArtistPage extends Gtk.Box {
         this.artist = artist;
 
         this.set_artist(this.artist);
-      }).catch((err) => {
-        console.error(err);
       });
   }
 }
