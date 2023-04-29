@@ -70,6 +70,7 @@ export class AlbumCard extends Gtk.Box {
         "explicit",
         "subtitle",
         "album_type",
+        "separator",
         "image",
       ],
     }, this);
@@ -82,6 +83,7 @@ export class AlbumCard extends Gtk.Box {
   _explicit!: Gtk.Image;
   _subtitle!: Gtk.Label;
   _album_type!: Gtk.Label;
+  _separator!: Gtk.Label;
 
   constructor() {
     super({
@@ -93,9 +95,23 @@ export class AlbumCard extends Gtk.Box {
     this.album = album;
 
     this._title.set_label(album.title);
-    if (album.artists[0]) this._subtitle.set_label(album.artists[0].name);
+
+    const subtitle = album.artists[0]?.name ?? album.year;
+
+    if (subtitle) {
+      this._subtitle.set_label(subtitle);
+    } else {
+      this._separator.set_visible(false);
+    }
+
     this._explicit.set_visible(album.isExplicit);
-    this._album_type.set_label(album.album_type);
+
+    if (album.album_type) {
+      this._album_type.set_label(album.album_type);
+    } else {
+      this._album_type.set_visible(false);
+      this._separator.set_visible(false);
+    }
 
     load_thumbnails(this._image, album.thumbnails, 160);
   }
