@@ -156,8 +156,8 @@ export class Navigator extends GObject.Object {
       if (!response) return;
 
       // temporarily show an old page if it's available
-      if (this._stack.get_child_by_name(endpoint.uri)) {
-        this._stack.set_visible_child_name(endpoint.uri);
+      if (this._stack.get_child_by_name(uri)) {
+        this._stack.set_visible_child_name(uri);
       }
 
       this.loading = true;
