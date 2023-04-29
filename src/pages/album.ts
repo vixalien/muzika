@@ -89,7 +89,7 @@ export class AlbumPage extends Gtk.Box {
     this.header.load_thumbnails(album.thumbnails);
     this.header.set_description(album.description);
     this.header.set_title(album.title);
-    this.header.set_explicit(false);
+    this.header.set_explicit(album.isExplicit);
     this.header.set_genre(album.album_type);
     this.header.set_year(album.year ?? "Unknown year");
 
