@@ -3,9 +3,9 @@ import GObject from "gi://GObject";
 import Adw from "gi://Adw";
 import GLib from "gi://GLib";
 
-import { load_thumbnails } from "./webimage.js";
+import { load_thumbnails } from "../webimage.js";
 
-import { Thumbnail } from "../muse.js";
+import { Thumbnail } from "../../muse.js";
 
 export class MiniPlaylistHeader extends Gtk.Box {
   static {

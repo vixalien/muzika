@@ -1,6 +1,6 @@
 import GObject from "gi://GObject";
 
-import { PlaylistHeader } from "./playlistheader.js";
+import { PlaylistHeader } from "./playlist/header.js";
 import { Thumbnail } from "libmuse";
 import { load_thumbnails } from "./webimage.js";
 

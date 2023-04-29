@@ -9,7 +9,8 @@
     <file>components/carousel.js</file>
     <file>components/loading.js</file>
     <file>components/paginator.js</file>
-    <file>components/playlistheader.js</file>
+    <file>components/playlist/header.js</file>
+    <file>components/playlist/item.js</file>
     <file>components/webimage.js</file>
     <file>pages/artist.js</file>
     <file>pages/error.js</file>

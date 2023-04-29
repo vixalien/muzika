@@ -8,9 +8,10 @@ import {
   MixedItem,
   PlaylistItem,
 } from "../muse.js";
+
 import { ArtistHeader } from "../components/artistheader.js";
-import { PlaylistItemCard } from "./playlist.js";
 import { Carousel } from "../components/carousel.js";
+import { PlaylistItemCard } from "../components/playlist/item.js";
 
 export class ArtistPage extends Gtk.Box {
   static {
@@ -113,7 +114,7 @@ export class ArtistPage extends Gtk.Box {
   }
 
   load_artist(id: string, signal?: AbortSignal) {
-    return get_artist(id)
+    return get_artist(id, { signal })
       .then((artist) => {
         this.artist = artist;
 
