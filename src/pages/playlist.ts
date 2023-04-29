@@ -150,15 +150,11 @@ export class PlaylistPage extends Gtk.Box {
   async load_playlist(channelId: string, signal?: AbortSignal) {
     this._loading.loading = true;
 
-    try {
-      this.playlist = await get_playlist(channelId, {
-        related: true,
-        signal,
-      });
-      this.show_playlist(this.playlist);
-    } catch (e) {
-      return console.error((e as any).toString());
-    }
+    this.playlist = await get_playlist(channelId, {
+      related: true,
+      signal,
+    });
+    this.show_playlist(this.playlist);
   }
 
   no_more = false;
