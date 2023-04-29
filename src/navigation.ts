@@ -43,6 +43,22 @@ export class Navigator extends GObject.Object {
 
   loading = false;
 
+  private static can_go_back_spec = GObject.ParamSpec.boolean(
+    "can-go-back",
+    "Can go back",
+    "Whether the navigator can go back",
+    GObject.ParamFlags.READWRITE,
+    false,
+  );
+
+  private static can_go_forward_spec = GObject.ParamSpec.boolean(
+    "can-go-forward",
+    "Can go forward",
+    "Whether the navigator can go forward",
+    GObject.ParamFlags.EXPLICIT_NOTIFY | GObject.ParamFlags.READABLE,
+    false,
+  );
+
   static {
     GObject.registerClass({
       Signals: {
@@ -58,6 +74,8 @@ export class Navigator extends GObject.Object {
           GObject.ParamFlags.READWRITE,
           false,
         ),
+        can_go_back: this.can_go_back_spec,
+        can_go_forward: this.can_go_forward_spec,
       },
     }, this);
   }
@@ -128,17 +146,18 @@ export class Navigator extends GObject.Object {
     uri: string,
     match: MatchResult,
     endpoint: Endpoint<Gtk.Widget>,
+    history: boolean,
   ) {
-    for (const [fn, endpoint] of this.match_map) {
-      if (fn(uri) === match) {
-        return endpoint;
-      }
-    }
+    // for (const [fn, endpoint] of this.match_map) {
+    //   if (fn(uri) === match) {
+    //     return endpoint;
+    //   }
+    // }
 
+    const url = new URL("muzika:" + uri);
     const component = endpoint.component();
 
     if (this.last_controller) {
-      console.log("has a last controller");
       this.last_controller.abort();
     }
 
@@ -149,11 +168,11 @@ export class Navigator extends GObject.Object {
     try {
       response = endpoint.load(component, {
         match: match as MatchResult<Record<string, string>>,
-        url: new URL("muzika:" + uri),
+        url,
         signal: this.last_controller.signal,
       });
 
-      if (!response) return;
+      if (!response) return null;
 
       // temporarily show an old page if it's available
       if (this._stack.get_child_by_name(uri)) {
@@ -171,6 +190,14 @@ export class Navigator extends GObject.Object {
           page: component,
           endpoint,
         });
+
+        if (history) {
+          if (url.searchParams.has("replace")) {
+            this.replaceState({ uri });
+          } else {
+            this.pushState({ uri });
+          }
+        }
       }).catch(this.show_error.bind(this));
     } catch (e) {
       this.show_error(e);
@@ -179,7 +206,80 @@ export class Navigator extends GObject.Object {
     return null;
   }
 
-  navigate(uri: string) {
+  private history: HistoryState[] = [];
+  private future: HistoryState[] = [];
+
+  get can_go_back() {
+    return this.history.length > 1;
+  }
+
+  get can_go_forward() {
+    return this.future.length > 0;
+  }
+
+  notify_back(prev?: boolean) {
+    if (
+      (prev != undefined && prev != this.can_go_back) || (prev == undefined)
+    ) {
+      this.notify("can-go-back");
+    }
+  }
+
+  notify_forward(prev?: boolean) {
+    if (
+      (prev != undefined && prev != this.can_go_forward) || (prev == undefined)
+    ) {
+      this.notify("can-go-forward");
+    }
+  }
+
+  pushState(state: HistoryState) {
+    const prev_can_go_back = this.can_go_back;
+
+    this.history.push(state);
+
+    this.notify_back(prev_can_go_back);
+  }
+
+  replaceState(state: HistoryState) {
+    this.history[this.history.length - 1] = state;
+  }
+
+  go(n: number) {
+    const prev_can_go_back = this.can_go_back;
+    const prev_can_go_forward = this.can_go_forward;
+
+    if (n > 0) {
+      this.history.push(...this.future.splice(-n));
+    } else if (n < 0) {
+      this.future.push(...this.history.splice(n));
+    }
+
+    this.notify_back(prev_can_go_back);
+    this.notify_forward(prev_can_go_forward);
+
+    const state = this.history[this.history.length - 1];
+
+    if (!state) {
+      return;
+    }
+
+    this.navigate(state.uri, false);
+  }
+
+  back() {
+    this.go(-1);
+  }
+
+  forward() {
+    this.go(1);
+  }
+
+  reload() {
+    this.go(0);
+  }
+
+  navigate(uri: string, history = true) {
     // muzika:home to
     // muzika/home
     // only when it's not escaped (i.e not prefixed with \)
@@ -191,8 +291,12 @@ export class Navigator extends GObject.Object {
       const match = fn(path);
 
       if (match) {
-        return this.endpoint(uri, match, endpoint);
+        return this.endpoint(uri, match, endpoint, history);
       }
     }
   }
+}
+
+export interface HistoryState {
+  uri: string;
 }

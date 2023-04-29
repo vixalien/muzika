@@ -45,6 +45,14 @@ export class Application extends Adw.Application {
     });
     this.add_action(quit_action);
     this.set_accels_for_action("app.quit", ["<primary>q"]);
+  }
+
+  init_nav_actions() {
+    const navigator = this.window?.navigator;
+
+    if (!navigator) {
+      return console.error("No navigator, cannot init nav actions");
+    }
 
     const navigate_action = Gio.SimpleAction.new(
       "navigate",
@@ -61,6 +69,17 @@ export class Application extends Adw.Application {
       }
     });
     this.add_action(navigate_action);
+
+    const back_action = new Gio.SimpleAction({ name: "back", enabled: false });
+    back_action.connect("activate", () => {
+      this.window?.navigator.back();
+    });
+    this.add_action(back_action);
+
+    navigator.connect("notify::can-go-back", () => {
+      back_action.enabled = navigator.can_go_back;
+    });
+    // this.set_accels_for_action("app.quit", ["<Alt>q"]);
   }
 
   constructor() {
@@ -111,6 +130,8 @@ export class Application extends Adw.Application {
   public vfunc_activate(): void {
     if (!this.window) {
       this.window = new Window({ application: this });
+
+      this.init_nav_actions();
     }
 
     this.window.present();

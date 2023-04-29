@@ -35,7 +35,16 @@ export class Window extends Adw.ApplicationWindow {
     GObject.registerClass(
       {
         Template: "resource:///com/vixalien/muzika/window.ui",
-        InternalChildren: ["stack", "header_bar", "progress"],
+        InternalChildren: ["stack", "header_bar", "progress", "back_button"],
+        Properties: {
+          navigator: GObject.ParamSpec.object(
+            "navigator",
+            "Navigator",
+            "The navigator",
+            GObject.ParamFlags.READWRITE,
+            Navigator.$gtype,
+          ),
+        },
       },
       this,
     );
@@ -44,6 +53,7 @@ export class Window extends Adw.ApplicationWindow {
   _stack!: Gtk.Stack;
   _header_bar!: Gtk.HeaderBar;
   _progress!: Gtk.ProgressBar;
+  _back_button!: Gtk.Button;
 
   navigator: Navigator;
 

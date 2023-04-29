@@ -31,5 +31,6 @@
   </gresource>
   <gresource prefix="/com/vixalien/muzika/icons/scalable/actions/">
     <file preprocess="xml-stripblanks" alias="music-artist-symbolic.svg">icons/music-artist-symbolic.svg</file>
+    <file preprocess="xml-stripblanks" alias="left-symbolic.svg">icons/left-symbolic.svg</file>
   </gresource>
 </gresources>
