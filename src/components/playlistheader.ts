@@ -1,6 +1,7 @@
 import Gtk from "gi://Gtk?version=4.0";
 import GObject from "gi://GObject";
 import Adw from "gi://Adw";
+import GLib from "gi://GLib";
 
 import { load_thumbnails } from "./webimage.js";
 
@@ -124,28 +125,25 @@ export class PlaylistHeader extends Gtk.Box {
   }
 
   add_author(author: { name: string; id: string }) {
-    const getElements = (props: Partial<Gtk.Label.ConstructorProperties>) => {
+    const getElements = (large = false) => {
       return {
-        label: new Gtk.Label({
+        label: new Gtk.Button({
           label: author.name,
-          css_classes: ["title-3", "link", "accent"],
-          ...props,
+          action_name: "app.navigate",
+          action_target: GLib.Variant.new("s", `muzika:user:${author.id}`),
+          css_classes: ["title-3", "link", "inline"],
         }),
         separator: new Gtk.Label({
           label: "•",
           xalign: 0,
           css_classes: ["title-3", "link", "accent"],
-          ...props,
         }),
       };
     };
 
-    const largeElements = getElements({
-      xalign: 0,
-      justify: Gtk.Justification.LEFT,
-    });
+    const largeElements = getElements();
 
-    const miniElements = getElements({});
+    const miniElements = getElements();
 
     if (this._large._author_box.get_first_child()) {
       this._large._author_box.append(largeElements.separator);
