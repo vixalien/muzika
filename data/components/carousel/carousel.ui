@@ -47,10 +47,10 @@
             <child>
               <object class="GtkListView" id="list_view">
                 <property name="orientation">horizontal</property>
-                <property name="margin-bottom">24</property>
+                <property name="margin-bottom">18</property>
                 <property name="single-click-activate">true</property>
-                <property name="margin-start">12</property>
-                <property name="margin-end">12</property>
+                <property name="margin-start">6</property>
+                <property name="margin-end">6</property>
                 <style>
                   <class name="background" />
                 </style>
