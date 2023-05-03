@@ -15,8 +15,34 @@
             <property name="maximum-size">1000</property>
             <child>
               <object class="GtkBox" id="inner_box">
-                <property name="spacing">24</property>
+                <property name="spacing">18</property>
                 <property name="orientation">vertical</property>
+                <child>
+                  <object class="GtkBox" id="top_songs">
+                    <property name="spacing">12</property>
+                    <property name="orientation">vertical</property>
+                    <property name="margin-top">24</property>
+                    <property name="margin-start">12</property>
+                    <property name="margin-end">12</property>
+                    <child>
+                      <object class="GtkLabel">
+                        <property name="label">Top Songs</property>
+                        <property name="halign">start</property>
+                        <property name="xalign">0</property>
+                        <style>
+                          <class name="title-2" />
+                        </style>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkListBox" id="top_songs_list">
+                        <style>
+                          <class name="background" />
+                        </style>
+                      </object>
+                    </child>
+                  </object>
+                </child>
                 <child>
                   <object class="GtkBox" id="content"></object>
                 </child>

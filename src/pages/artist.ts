@@ -22,6 +22,8 @@ export class ArtistPage extends Gtk.Box {
         "inner_box",
         "content",
         "scrolled",
+        "top_songs_list",
+        "top_songs",
       ],
     }, this);
   }
@@ -31,31 +33,10 @@ export class ArtistPage extends Gtk.Box {
   _inner_box!: Gtk.Box;
   _content!: Gtk.Box;
   _scrolled!: Gtk.ScrolledWindow;
+  _top_songs!: Gtk.Box;
+  _top_songs_list!: Gtk.ListBox;
 
   header: ArtistHeader;
-  top_songs!: Gtk.Box;
-  top_songs_box!: Gtk.ListBox;
-
-  prepare_top_songs() {
-    this.top_songs = new Gtk.Box({
-      orientation: Gtk.Orientation.VERTICAL,
-      spacing: 12,
-    });
-
-    const top_label = new Gtk.Label({
-      label: "Top Songs",
-      halign: Gtk.Align.START,
-      xalign: 0,
-      css_classes: ["title-3"],
-    });
-
-    this.top_songs_box = new Gtk.ListBox({
-      css_classes: ["background"],
-    });
-
-    this.top_songs.append(top_label);
-    this.top_songs.append(this.top_songs_box);
-  }
 
   constructor() {
     super({
@@ -64,10 +45,7 @@ export class ArtistPage extends Gtk.Box {
 
     this.header = new ArtistHeader();
 
-    this.prepare_top_songs();
-
-    this._inner_box.append(this.header);
-    this._inner_box.append(this.top_songs);
+    this._inner_box.prepend(this.header);
   }
 
   append_top_songs(tracks: PlaylistItem[]) {
@@ -77,10 +55,10 @@ export class ArtistPage extends Gtk.Box {
 
         card.set_item(track);
 
-        this.top_songs_box.append(card);
+        this._top_songs_list.append(card);
       }
     } else {
-      this.top_songs.visible = false;
+      this._top_songs.visible = false;
     }
   }
 

@@ -7,6 +7,8 @@
         <property name="spacing">24</property>
         <property name="hexpand">true</property>
         <property name="valign">1</property>
+        <property name="margin-start">12</property>
+        <property name="margin-end">12</property>
         <child>
           <object class="GtkImage" id="image">
             <property name="valign">1</property>

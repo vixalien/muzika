@@ -7,9 +7,10 @@
     <child>
       <object class="GtkBox" id="titles">
         <property name="orientation">vertical</property>
+        <property name="margin-start">12</property>
+        <property name="margin-end">12</property>
         <child>
           <object class="GtkLabel" id="subtitle">
-            <property name="label"></property>
             <property name="halign">start</property>
             <style>
               <class name="dim-label" />
@@ -18,10 +19,7 @@
         </child>
         <child>
           <object class="GtkLabel" id="title">
-            <property name="label"></property>
             <property name="halign">start</property>
-            <property name="margin-start">12</property>
-            <property name="margin-end">12</property>
             <style>
               <class name="title-2" />
             </style>
