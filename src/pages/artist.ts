@@ -10,7 +10,7 @@ import {
 } from "../muse.js";
 
 import { ArtistHeader } from "../components/artistheader.js";
-import { Carousel } from "../components/carousel.js";
+import { Carousel } from "../components/carousel/index.js";
 import { PlaylistItemCard } from "../components/playlist/item.js";
 
 export class ArtistPage extends Gtk.Box {

@@ -9,7 +9,7 @@ import {
   PlaylistItem,
 } from "../muse.js";
 
-import { Carousel } from "../components/carousel.js";
+import { Carousel } from "../components/carousel/index.js";
 import { Loading } from "../components/loading.js";
 import { PlaylistHeader } from "../components/playlist/header.js";
 import { PlaylistItemCard } from "../components/playlist/item.js";

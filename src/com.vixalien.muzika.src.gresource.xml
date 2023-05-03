@@ -8,7 +8,13 @@
     <file>components/search/topresultcard.js</file>
     <file>components/search/topresultsection.js</file>
     <file>components/artistheader.js</file>
-    <file>components/carousel.js</file>
+    <file>components/carousel/albumcard.js</file>
+    <file>components/carousel/artistcard.js</file>
+    <file>components/carousel/flatsongcard.js</file>
+    <file>components/carousel/index.js</file>
+    <file>components/carousel/playlistcard.js</file>
+    <file>components/carousel/songcard.js</file>
+    <file>components/carousel/videocard.js</file>
     <file>components/loading.js</file>
     <file>components/paginator.js</file>
     <file>components/playlist/header.js</file>
@@ -26,6 +32,7 @@
     <file>polyfills/domexception.js</file>
     <file>polyfills/fetch.js</file>
     <file>util/hash.js</file>
+    <file>util/objectcontainer.js</file>
     <file>endpoints.js</file>
     <file>main.js</file>
     <file>muse.js</file>

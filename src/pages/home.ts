@@ -6,7 +6,7 @@ import { Loading } from "../components/loading.js";
 
 import { get_home, Home, MixedContent } from "../muse.js";
 
-import { Carousel } from "../components/carousel.js";
+import { Carousel } from "../components/carousel/index.js";
 
 export class HomePage extends Gtk.Box {
   static {

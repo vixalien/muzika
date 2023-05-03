@@ -8,7 +8,7 @@ import {
   ParsedAlbum,
 } from "../muse.js";
 
-import { Carousel } from "../components/carousel.js";
+import { Carousel } from "../components/carousel/index.js";
 import { Loading } from "../components/loading.js";
 import { AlbumHeader } from "../components/album/header.js";
 import { AlbumItemCard } from "../components/album/item.js";
