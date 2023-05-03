@@ -122,6 +122,7 @@ export class Application extends Adw.Application {
   }
 
   public vfunc_shutdown(): void {
+    cache.flush();
     cache.dump();
 
     super.vfunc_shutdown();
