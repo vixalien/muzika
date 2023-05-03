@@ -1,7 +1,10 @@
+// Animation code borrowed from https://gitlab.gnome.org/GNOME/gnome-weather/-/blob/7769ce6f29a897a61010c4b496b60a5753e7edff/src/app/city.js#L74
+
 import Gtk from "gi://Gtk?version=4.0";
 import GObject from "gi://GObject";
 import Gio from "gi://Gio";
 import GLib from "gi://GLib";
+import Adw from "gi://Adw";
 
 import { MixedContent, MixedItem } from "../../muse.js";
 import { AlbumCard } from "./albumcard.js";
@@ -31,14 +34,16 @@ export class Carousel<
         "grid_view",
         "grid_scrolled",
         "list_scrolled",
-        "scrolled_box",
+        "stack",
+        "left_button",
+        "right_button",
       ],
     }, this);
   }
 
   content?: Content;
 
-  _scrolled_box!: Gtk.Box;
+  _stack!: Gtk.Stack;
   _grid_scrolled!: Gtk.ScrolledWindow;
   _list_scrolled!: Gtk.ScrolledWindow;
   _title!: Gtk.Label;
@@ -47,6 +52,8 @@ export class Carousel<
   _text_label!: Gtk.Label;
   _list_view!: Gtk.ListView;
   _grid_view!: Gtk.GridView;
+  _left_button!: Gtk.Button;
+  _right_button!: Gtk.Button;
 
   grid = false;
 
@@ -57,6 +64,73 @@ export class Carousel<
 
     this._list_view.remove_css_class("view");
     this._grid_view.remove_css_class("view");
+
+    for (const scrolled of [this._grid_scrolled, this._list_scrolled]) {
+      const adjustment = scrolled.get_hadjustment();
+      adjustment.connect("changed", this.sync_scroll_buttons.bind(this));
+      adjustment.connect("value-changed", this.sync_scroll_buttons.bind(this));
+    }
+
+    Gtk.DirectionType.RIGHT;
+
+    this._left_button.connect(
+      "clicked",
+      () => this.begin_scroll_animation(Gtk.DirectionType.LEFT),
+    );
+    this._right_button.connect(
+      "clicked",
+      () => this.begin_scroll_animation(Gtk.DirectionType.RIGHT),
+    );
+  }
+
+  begin_scroll_animation(
+    direction: Gtk.DirectionType.RIGHT | Gtk.DirectionType.LEFT,
+  ) {
+    const visible_child = this._stack
+      .get_visible_child() as Gtk.ScrolledWindow;
+    const hadjustment = visible_child.get_hadjustment();
+
+    const target = Adw.PropertyAnimationTarget.new(hadjustment, "value");
+    const animation = Adw.TimedAnimation.new(
+      visible_child,
+      hadjustment.value,
+      (direction === Gtk.DirectionType.RIGHT)
+        ? (hadjustment.value + hadjustment.page_size)
+        : (hadjustment.value - hadjustment.page_size),
+      400,
+      target,
+    );
+
+    animation.play();
+  }
+
+  sync_scroll_buttons() {
+    const visible_child = this._stack.get_visible_child() as Gtk.ScrolledWindow;
+    const hadjustment = visible_child.get_hadjustment();
+
+    if (
+      (hadjustment.get_upper() - hadjustment.get_lower()) ==
+        hadjustment.page_size
+    ) {
+      this._left_button.hide();
+      this._right_button.hide();
+    } else {
+      this._left_button.show();
+      this._right_button.show();
+
+      if (hadjustment.value == hadjustment.get_lower()) {
+        this._left_button.set_sensitive(false);
+        this._right_button.set_sensitive(true);
+      } else if (
+        hadjustment.value >= (hadjustment.get_upper() - hadjustment.page_size)
+      ) {
+        this._left_button.set_sensitive(true);
+        this._right_button.set_sensitive(false);
+      } else {
+        this._left_button.set_sensitive(true);
+        this._right_button.set_sensitive(true);
+      }
+    }
   }
 
   setup(grid = false) {
@@ -66,8 +140,7 @@ export class Carousel<
     factory.connect("bind", this.bind_cb.bind(this));
 
     if (grid) {
-      this._grid_scrolled.visible = true;
-      this._list_scrolled.visible = false;
+      this._stack.set_visible_child(this._grid_scrolled);
 
       this._grid_view.factory = factory;
       this._grid_view.model = Gtk.NoSelection.new(this.model);
@@ -191,10 +264,10 @@ export class Carousel<
     if (typeof content.contents === "string") {
       this._text.set_label(content.contents);
       this._text.set_visible(true);
-      this._scrolled_box.set_visible(false);
+      this._stack.set_visible(false);
     } else {
       this._text.set_visible(false);
-      this._scrolled_box.set_visible(true);
+      this._stack.set_visible(true);
 
       this.setup(content.display == "list");
 

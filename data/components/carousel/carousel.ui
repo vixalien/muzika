@@ -3,26 +3,62 @@
   <requires lib="gtk" version="4.0" />
   <template class="Carousel" parent="GtkBox">
     <property name="spacing">6</property>
-    <property name="orientation">vertical</property>
+    <property name="orientation">1</property>
     <child>
-      <object class="GtkBox" id="titles">
-        <property name="orientation">vertical</property>
+      <object class="GtkBox" id="titlesandbuttons">
+        <property name="spacing">6</property>
         <property name="margin-start">12</property>
         <property name="margin-end">12</property>
         <child>
-          <object class="GtkLabel" id="subtitle">
-            <property name="halign">start</property>
-            <style>
-              <class name="dim-label" />
-            </style>
+          <object class="GtkBox" id="titles">
+            <property name="valign">center</property>
+            <property name="orientation">1</property>
+            <child>
+              <object class="GtkLabel" id="subtitle">
+                <property name="halign">1</property>
+                <property name="ellipsize">3</property>
+                <style>
+                  <class name="dim-label" />
+                </style>
+              </object>
+            </child>
+            <child>
+              <object class="GtkLabel" id="title">
+                <property name="halign">1</property>
+                <property name="ellipsize">3</property>
+                <style>
+                  <class name="title-2" />
+                </style>
+              </object>
+            </child>
           </object>
         </child>
         <child>
-          <object class="GtkLabel" id="title">
-            <property name="halign">start</property>
-            <style>
-              <class name="title-2" />
-            </style>
+          <object class="GtkBox" id="buttons">
+            <property name="halign">end</property>
+            <property name="hexpand">True</property>
+            <property name="valign">1</property>
+            <property name="spacing">6</property>
+            <child>
+              <object class="GtkButton" id="left_button">
+                <property name="icon-name">go-previous-symbolic</property>
+                <property name="overflow">1</property>
+                <style>
+                  <class name="rounded" />
+                  <class name="flat" />
+                </style>
+              </object>
+            </child>
+            <child>
+              <object class="GtkButton" id="right_button">
+                <property name="icon-name">go-next-symbolic</property>
+                <property name="overflow">1</property>
+                <style>
+                  <class name="rounded" />
+                  <class name="flat" />
+                </style>
+              </object>
+            </child>
           </object>
         </child>
       </object>
@@ -35,16 +71,16 @@
       </object>
     </child>
     <child>
-      <object class="GtkBox" id="scrolled_box">
+      <object class="GtkStack" id="stack">
         <property name="hexpand">true</property>
         <child>
           <object class="GtkScrolledWindow" id="list_scrolled">
             <property name="hexpand">true</property>
             <property name="propagate-natural-height">true</property>
-            <property name="vscrollbar-policy">never</property>
+            <property name="vscrollbar-policy">2</property>
             <child>
               <object class="GtkListView" id="list_view">
-                <property name="orientation">horizontal</property>
+                <property name="orientation">0</property>
                 <property name="margin-bottom">18</property>
                 <property name="single-click-activate">true</property>
                 <style>
@@ -59,7 +95,7 @@
           <object class="GtkScrolledWindow" id="grid_scrolled">
             <property name="hexpand">true</property>
             <property name="propagate-natural-height">true</property>
-            <property name="vscrollbar-policy">never</property>
+            <property name="vscrollbar-policy">2</property>
             <property name="visible">false</property>
             <child>
               <object class="GtkGridView" id="grid_view">
@@ -67,7 +103,7 @@
                 <property name="single-click-activate">true</property>
                 <property name="min-columns">4</property>
                 <property name="max-columns">4</property>
-                <property name="orientation">horizontal</property>
+                <property name="orientation">0</property>
                 <style>
                   <class name="background" />
                   <class name="carousel-padding" />
