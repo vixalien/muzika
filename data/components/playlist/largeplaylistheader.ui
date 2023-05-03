@@ -6,12 +6,12 @@
       <object class="GtkBox" id="header">
         <property name="spacing">24</property>
         <property name="hexpand">true</property>
-        <property name="valign">start</property>
+        <property name="valign">1</property>
         <child>
           <object class="GtkImage" id="image">
-            <property name="valign">start</property>
+            <property name="valign">1</property>
             <property name="pixel-size">240</property>
-            <property name="overflow">hidden</property>
+            <property name="overflow">1</property>
             <property name="icon-name">image-missing-symbolic</property>
             <style>
               <class name="br-6" />
@@ -20,6 +20,7 @@
         </child>
         <child>
           <object class="AdwAvatar" id="avatar">
+            <property name="valign">1</property>
             <property name="size">240</property>
             <property name="text">Avatar</property>
             <property name="visible">false</property>
@@ -27,17 +28,17 @@
         </child>
         <child>
           <object class="GtkBox">
-            <property name="valign">end</property>
-            <property name="orientation">vertical</property>
+            <property name="valign">2</property>
+            <property name="orientation">1</property>
             <property name="hexpand">true</property>
             <child>
               <object class="GtkBox">
-                <property name="orientation">vertical</property>
+                <property name="orientation">1</property>
                 <child>
                   <object class="GtkLabel" id="title">
                     <property name="label">Title</property>
                     <property name="xalign">0</property>
-                    <property name="justify">left</property>
+                    <property name="justify">0</property>
                     <style>
                       <class name="title-1" />
                     </style>
@@ -66,7 +67,7 @@
                   <object class="GtkLabel" id="genre">
                     <property name="label">Single</property>
                     <property name="xalign">0</property>
-                    <property name="justify">left</property>
+                    <property name="justify">0</property>
                   </object>
                 </child>
                 <child>
@@ -78,21 +79,44 @@
                   <object class="GtkLabel" id="year">
                     <property name="label">2022</property>
                     <property name="xalign">0</property>
-                    <property name="justify">left</property>
+                    <property name="justify">0</property>
                   </object>
                 </child>
               </object>
             </child>
             <child>
-              <object class="GtkLabel" id="description">
+              <object class="GtkStack" id="description_stack">
+                <property name="vhomogeneous">false</property>
+                <property name="hhomogeneous">false</property>
                 <property name="margin-top">24</property>
-                <property name="lines">3</property>
-                <property name="wrap">true</property>
-                <property name="ellipsize">end</property>
-                <property name="label">Description</property>
-                <property name="xalign">0</property>
+                <child>
+                  <object class="GtkLabel" id="description">
+                    <property name="hexpand">true</property>
+                    <property name="wrap">true</property>
+                    <property name="lines">3</property>
+                    <property name="ellipsize">3</property>
+                    <property name="single-line-mode">true</property>
+                    <property name="width-chars">10</property>
+                    <property name="max-width-chars">10</property>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkLabel" id="description_long">
+                    <property name="hexpand">true</property>
+                    <property name="vexpand">true</property>
+                    <property name="wrap">true</property>
+                    <property name="width-chars">10</property>
+                    <property name="max-width-chars">10</property>
+                  </object>
+                </child>
+              </object>
+            </child>
+            <child>
+              <object class="GtkExpander" id="more">
+                <property name="label">More</property>
+                <property name="margin-top">10</property>
                 <style>
-                  <class name="dim-label" />
+                  <class name="inverted" />
                 </style>
               </object>
             </child>

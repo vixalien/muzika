@@ -19,7 +19,10 @@ export class MiniPlaylistHeader extends Gtk.Box {
         "explicit",
         "genre",
         "year",
+        "more",
         "description",
+        "description_long",
+        "description_stack",
         "author_box",
         "submeta",
         "avatar",
@@ -33,9 +36,37 @@ export class MiniPlaylistHeader extends Gtk.Box {
   _explicit!: Gtk.Image;
   _year!: Gtk.Label;
   _genre!: Gtk.Label;
+  _more!: Gtk.Expander;
   _description!: Gtk.Label;
+  _description_long!: Gtk.Label;
+  _description_stack!: Gtk.Stack;
   _submeta!: Gtk.Box;
   _avatar!: Adw.Avatar;
+
+  constructor() {
+    super();
+
+    this._more.connect("activate", (expander) => {
+      this._description_stack.set_visible_child(
+        expander.expanded ? this._description : this._description_long,
+      );
+    });
+  }
+
+  set_description(description: string | null) {
+    if (description) {
+      this._description.set_visible(true);
+      this._description.set_label(description);
+
+      this._description_long.set_visible(true);
+      this._description_long.set_label(description);
+
+      this._more.set_visible(this._description.get_layout().is_ellipsized());
+    } else {
+      this._description_stack.set_visible(false);
+      this._more.set_visible(false);
+    }
+  }
 }
 
 export class LargePlaylistHeader extends Gtk.Box {
@@ -50,7 +81,10 @@ export class LargePlaylistHeader extends Gtk.Box {
         "explicit",
         "genre",
         "year",
+        "more",
         "description",
+        "description_long",
+        "description_stack",
         "author_box",
         "submeta",
         "avatar",
@@ -64,9 +98,37 @@ export class LargePlaylistHeader extends Gtk.Box {
   _explicit!: Gtk.Image;
   _year!: Gtk.Label;
   _genre!: Gtk.Label;
+  _more!: Gtk.Expander;
   _description!: Gtk.Label;
+  _description_long!: Gtk.Label;
+  _description_stack!: Gtk.Stack;
   _submeta!: Gtk.Box;
   _avatar!: Adw.Avatar;
+
+  constructor() {
+    super();
+
+    this._more.connect("activate", (expander) => {
+      this._description_stack.set_visible_child(
+        expander.expanded ? this._description : this._description_long,
+      );
+    });
+  }
+
+  set_description(description: string | null) {
+    if (description) {
+      this._description.set_visible(true);
+      this._description.set_label(description);
+
+      this._description_long.set_visible(true);
+      this._description_long.set_label(description);
+
+      this._more.set_visible(this._description.get_layout().is_ellipsized());
+    } else {
+      this._description_stack.set_visible(false);
+      this._more.set_visible(false);
+    }
+  }
 }
 
 export class PlaylistHeader extends Gtk.Box {
@@ -101,17 +163,8 @@ export class PlaylistHeader extends Gtk.Box {
   }
 
   set_description(description: string | null) {
-    if (description) {
-      this._large._description.set_visible(true);
-      this._large._description.set_label(description);
-
-      this._mini._description.set_visible(true);
-      this._mini._description.set_label(description);
-    } else {
-      this._large._description.set_visible(false);
-
-      this._mini._description.set_visible(false);
-    }
+    this._large.set_description(description);
+    this._mini.set_description(description);
   }
 
   set_title(title: string) {
