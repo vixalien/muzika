@@ -100,6 +100,7 @@
                     <property name="single-line-mode">true</property>
                     <property name="width-chars">10</property>
                     <property name="max-width-chars">10</property>
+                    <property name="xalign">0</property>
                   </object>
                 </child>
                 <child>
@@ -109,6 +110,7 @@
                     <property name="wrap">true</property>
                     <property name="width-chars">10</property>
                     <property name="max-width-chars">10</property>
+                    <property name="xalign">0</property>
                   </object>
                 </child>
               </object>
