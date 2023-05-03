@@ -7,8 +7,6 @@
     <child>
       <object class="GtkBox" id="titles">
         <property name="orientation">vertical</property>
-        <property name="margin-start">12</property>
-        <property name="margin-end">12</property>
         <child>
           <object class="GtkLabel" id="subtitle">
             <property name="label"></property>
@@ -22,8 +20,10 @@
           <object class="GtkLabel" id="title">
             <property name="label"></property>
             <property name="halign">start</property>
+            <property name="margin-start">12</property>
+            <property name="margin-end">12</property>
             <style>
-              <class name="title-1" />
+              <class name="title-2" />
             </style>
           </object>
         </child>
@@ -49,10 +49,9 @@
                 <property name="orientation">horizontal</property>
                 <property name="margin-bottom">18</property>
                 <property name="single-click-activate">true</property>
-                <property name="margin-start">6</property>
-                <property name="margin-end">6</property>
                 <style>
                   <class name="background" />
+                  <class name="carousel-padding" />
                 </style>
               </object>
             </child>
@@ -68,13 +67,12 @@
               <object class="GtkGridView" id="grid_view">
                 <property name="margin-bottom">24</property>
                 <property name="single-click-activate">true</property>
-                <property name="margin-start">12</property>
-                <property name="margin-end">12</property>
                 <property name="min-columns">4</property>
                 <property name="max-columns">4</property>
                 <property name="orientation">horizontal</property>
                 <style>
                   <class name="background" />
+                  <class name="carousel-padding" />
                 </style>
               </object>
             </child>

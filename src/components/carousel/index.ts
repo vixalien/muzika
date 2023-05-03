@@ -131,7 +131,7 @@ export class Carousel<
       const parent = card.get_parent();
 
       if (parent) {
-        parent.margin_end = 6;
+        parent.margin_start = 6;
         if (this.grid) {
           parent.margin_bottom = 6;
           parent.add_css_class("br-9");

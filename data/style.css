@@ -81,3 +81,7 @@ button.link.inline.bold {
 button.link.inactive {
   color: inherit;
 }
+
+.carousel-padding {
+  padding-right: 6px;
+}
