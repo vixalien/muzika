@@ -85,3 +85,7 @@ button.link.inactive {
 .carousel-padding {
   padding-right: 6px;
 }
+
+.transparent {
+  background-color: transparent;
+}
