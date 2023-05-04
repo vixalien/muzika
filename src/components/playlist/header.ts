@@ -26,6 +26,7 @@ export class MiniPlaylistHeader extends Gtk.Box {
         "author_box",
         "submeta",
         "avatar",
+        "subtitle_separator",
       ],
     }, this);
   }
@@ -42,6 +43,7 @@ export class MiniPlaylistHeader extends Gtk.Box {
   _description_stack!: Gtk.Stack;
   _submeta!: Gtk.Box;
   _avatar!: Adw.Avatar;
+  _subtitle_separator!: Gtk.Label;
 
   constructor() {
     super();
@@ -67,6 +69,15 @@ export class MiniPlaylistHeader extends Gtk.Box {
       this._more.set_visible(false);
     }
   }
+
+  set_year(year: string | null) {
+    if (year) {
+      this._year.set_label(year);
+    } else {
+      this._year.set_visible(false);
+      this._subtitle_separator.set_visible(false);
+    }
+  }
 }
 
 export class LargePlaylistHeader extends Gtk.Box {
@@ -88,6 +99,7 @@ export class LargePlaylistHeader extends Gtk.Box {
         "author_box",
         "submeta",
         "avatar",
+        "subtitle_separator",
       ],
     }, this);
   }
@@ -104,6 +116,7 @@ export class LargePlaylistHeader extends Gtk.Box {
   _description_stack!: Gtk.Stack;
   _submeta!: Gtk.Box;
   _avatar!: Adw.Avatar;
+  _subtitle_separator!: Gtk.Label;
 
   constructor() {
     super();
@@ -127,6 +140,15 @@ export class LargePlaylistHeader extends Gtk.Box {
     } else {
       this._description_stack.set_visible(false);
       this._more.set_visible(false);
+    }
+  }
+
+  set_year(year: string | null) {
+    if (year) {
+      this._year.set_label(year);
+    } else {
+      this._year.set_visible(false);
+      this._subtitle_separator.set_visible(false);
     }
   }
 }
@@ -222,8 +244,8 @@ export class PlaylistHeader extends Gtk.Box {
     this._mini._explicit.set_visible(explicit);
   }
 
-  set_year(year: string) {
-    this._large._year.set_label(year);
-    this._mini._year.set_label(year);
+  set_year(year: string | null) {
+    this._large.set_year(year);
+    this._mini.set_year(year);
   }
 }

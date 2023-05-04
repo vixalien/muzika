@@ -22,9 +22,11 @@ export class PlaylistPage extends Gtk.Box {
       InternalChildren: [
         "inner_box",
         "trackCount",
+        "separator",
         "duration",
         "content",
         "scrolled",
+        "data",
       ],
     }, this);
   }
@@ -35,7 +37,9 @@ export class PlaylistPage extends Gtk.Box {
   _trackCount!: Gtk.Label;
   _duration!: Gtk.Label;
   _content!: Gtk.Box;
+  _separator!: Gtk.Label;
   _scrolled!: Gtk.ScrolledWindow;
+  _data!: Gtk.Box;
 
   list_box: Gtk.ListBox;
   header: PlaylistHeader;
@@ -51,24 +55,6 @@ export class PlaylistPage extends Gtk.Box {
     });
 
     this.header = new PlaylistHeader();
-
-    // this._box = new Gtk.Box({
-    //   orientation: Gtk.Orientation.VERTICAL,
-    //   spacing: 12,
-    // });
-
-    // this._clamp = new Adw.Clamp({
-    //   margin_top: 12,
-    //   margin_bottom: 12,
-    //   maximum_size: 1000,
-    //   tightening_threshold: 800,
-    // });
-    // this._clamp.set_child(this._box);
-
-    // this._scrolled = new Gtk.ScrolledWindow({ vexpand: true, hexpand: true });
-    // this._scrolled.set_child(this._clamp);
-
-    // this.append(this._scrolled);
 
     this.list_box = Gtk.ListBox.new();
     this.list_box.add_css_class("background");
@@ -87,16 +73,6 @@ export class PlaylistPage extends Gtk.Box {
       }
     });
   }
-
-  // clear_box() {
-  //   let child = this._box.get_first_child();
-
-  //   while (child) {
-  //     this._box.remove(child);
-
-  //     child = this._box.get_first_child();
-  //   }
-  // }
 
   append_tracks(tracks: PlaylistItem[]) {
     for (const track of tracks) {
@@ -130,15 +106,32 @@ export class PlaylistPage extends Gtk.Box {
     this.header.set_description(playlist.description);
     this.header.set_title(playlist.title);
     this.header.set_explicit(false);
-    this.header.set_genre("Playlist");
-    this.header.set_year(playlist.year ?? "Unknown year");
+    this.header.set_genre(playlist.type);
+    this.header.set_year(playlist.year);
 
-    if (playlist.author) {
-      this.header.add_author(playlist.author);
+    if (playlist.authors && playlist.authors.length >= 1) {
+      playlist.authors.forEach((author) => {
+        this.header.add_author(author);
+      });
     }
 
-    this._trackCount.set_label(playlist.trackCount.toString() + " songs");
-    this._duration.set_label(secondsToDuration(playlist.duration_seconds));
+    if (playlist.trackCount) {
+      this._trackCount.set_label(playlist.trackCount.toString() + " songs");
+    } else {
+      this._trackCount.set_visible(false);
+      this._separator.set_visible(false);
+    }
+
+    if (playlist.duration) {
+      this._duration.set_label(playlist.duration);
+    } else {
+      this._duration.set_visible(false);
+      this._separator.set_visible(false);
+    }
+
+    if (!playlist.duration && !playlist.trackCount) {
+      this._data.set_visible(false);
+    }
 
     if (playlist.related && playlist.related.length > 0) {
       this.show_related(playlist.related);

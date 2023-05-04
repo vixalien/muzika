@@ -11,8 +11,6 @@
           <object class="AdwClamp">
             <property name="margin-top">24</property>
             <property name="margin-bottom">24</property>
-            <property name="margin-start">12</property>
-            <property name="margin-end">12</property>
             <property name="tightening-threshold">800</property>
             <property name="maximum-size">1000</property>
             <child>
@@ -20,7 +18,10 @@
                 <property name="spacing">24</property>
                 <property name="orientation">vertical</property>
                 <child>
-                  <object class="GtkBox" id="content"></object>
+                  <object class="GtkBox" id="content">
+                    <property name="margin-start">12</property>
+                    <property name="margin-end">12</property>
+                  </object>
                 </child>
                 <child>
                   <object class="GtkBox" id="more">
@@ -37,7 +38,7 @@
                           </object>
                         </child>
                         <child>
-                          <object class="GtkLabel">
+                          <object class="GtkLabel" id="separator">
                             <property name="label">·</property>
                           </object>
                         </child>
