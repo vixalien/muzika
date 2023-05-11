@@ -102,3 +102,21 @@ button.link.inline.flat:hover {
 .transparent {
   background-color: transparent;
 }
+
+button.chip {
+  padding: 0 12px;
+  border-radius: 9999px;
+  background-color: alpha(@accent_bg_color, 0.3);
+}
+
+button.chip:hover {
+  background-color: alpha(@accent_bg_color, 0.4);
+}
+
+button.chip:active {
+  background-color: alpha(@accent_bg_color, 0.6);
+}
+
+button.chip label {
+  color: mix(@window_fg_color, @accent_bg_color, 0.3);
+}
