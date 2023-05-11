@@ -82,6 +82,19 @@ button.link.inactive {
   color: inherit;
 }
 
+button.link.inline.flat {
+  padding: 0;
+  color: @window_fg_color;
+}
+
+button.link.inline.flat:hover {
+  color: @accent_color;
+}
+
+.no-padding {
+  padding: 0;
+}
+
 .carousel-padding {
   padding-right: 6px;
 }

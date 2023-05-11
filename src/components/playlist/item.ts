@@ -1,5 +1,6 @@
 import Gtk from "gi://Gtk?version=4.0";
 import GObject from "gi://GObject";
+import GLib from "gi://GLib";
 
 import { PlaylistItem } from "../../muse.js";
 import { load_thumbnails } from "../webimage.js";
@@ -53,16 +54,36 @@ export class PlaylistItemCard extends Gtk.ListBoxRow {
   }
 
   add_artist_only(artist: ArtistRun) {
-    const label = new Gtk.Label({ label: artist.name });
+    let child: Gtk.Widget;
+
+    if (artist.id) {
+      const button = new Gtk.Button({ label: artist.name });
+
+      button.add_css_class("inline");
+      button.add_css_class("flat");
+      button.add_css_class("link");
+
+      button.action_name = "app.navigate";
+      button.action_target = GLib.Variant.new("s", `muzika:artist:${artist.id}`);
+
+      child = button;
+    } else {
+      const label = Gtk.Label.new(artist.name);
+
+      child = label;
+    }
+
     const flowchild = new Gtk.FlowBoxChild({
       halign: Gtk.Align.START,
-      child: label,
+      child: child,
     });
+
+    flowchild.add_css_class("no-padding");
 
     this._second_line.append(flowchild);
   }
 
-  add_text(artist: ArtistRun) {
+  add_author(artist: ArtistRun) {
     this.insert_middot();
     this.add_artist_only(artist);
   }
@@ -74,7 +95,7 @@ export class PlaylistItemCard extends Gtk.ListBoxRow {
 
     if (item.artists && item.artists.length > 0) {
       item.artists.map((artist) => {
-        this.add_text(artist);
+        this.add_author(artist);
       });
     }
 
