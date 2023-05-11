@@ -220,7 +220,7 @@ export class PlaylistHeader extends Gtk.Box {
         separator: new Gtk.Label({
           label: "·",
           xalign: 0,
-          css_classes: ["title-3", "accent"],
+          css_classes: ["title-3"],
         }),
       };
     };

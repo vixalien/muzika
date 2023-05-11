@@ -47,7 +47,7 @@
                 </child>
                 <child>
                   <object class="GtkBox" id="author_box">
-                    <property name="spacing">3</property>
+                    <property name="spacing">6</property>
                     <property name="halign">center</property>
                   </object>
                 </child>
@@ -145,7 +145,7 @@
                     <property name="single-line-mode">true</property>
                     <property name="width-chars">10</property>
                     <property name="max-width-chars">10</property>
-                    <property name="xalign">0</property>
+                    <property name="xalign">0.5</property>
                   </object>
                 </child>
                 <child>
@@ -155,7 +155,7 @@
                     <property name="wrap">true</property>
                     <property name="width-chars">10</property>
                     <property name="max-width-chars">10</property>
-                    <property name="xalign">0</property>
+                    <property name="xalign">0.5</property>
                   </object>
                 </child>
               </object>
@@ -164,6 +164,7 @@
               <object class="GtkExpander" id="more">
                 <property name="label">More</property>
                 <property name="margin-top">10</property>
+                <property name="halign">center</property>
                 <style>
                   <class name="inverted" />
                 </style>

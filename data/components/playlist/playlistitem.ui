@@ -20,7 +20,7 @@
           <object class="GtkBox">
             <property name="width-request">320</property>
             <property name="spacing">12</property>
-            <property name="hexpand">false</property>
+            <property name="hexpand">true</property>
             <property name="valign">center</property>
             <property name="cursor">
               <object class="GdkCursor">
@@ -29,6 +29,7 @@
             </property>
             <child>
               <object class="GtkOverlay">
+                <property name="valign">start</property>
                 <style>
                   <class name="image" />
                 </style>
@@ -84,27 +85,27 @@
                   </object>
                 </child>
                 <child>
-                  <object class="GtkBox" id="second-line">
-                    <property name="spacing">6</property>
-                    <style>
-                      <class name="dim-label" />
-                    </style>
+                  <object class="GtkBox" id="second_line_scrolled">
+                    <property name="halign">start</property>
                     <child>
-                      <object class="GtkImage" id="explicit">
-                        <property name="valign">start</property>
-                        <property name="icon-name">network-cellular-edge-symbolic</property>
-                      </object>
-                    </child>
-                    <child>
-                      <object class="GtkLabel" id="subtitle">
-                        <property name="label"></property>
-                        <property name="hexpand">true</property>
-                        <property name="max-width-chars">1</property>
-                        <property name="ellipsize">end</property>
-                        <property name="xalign">0</property>
+                      <object class="GtkFlowBox" id="second_line">
+                        <property name="halign">start</property>
+                        <property name="min-children-per-line">2</property>
+                        <property name="max-children-per-line">999</property>
+                        <property name="selection-mode">none</property>
                         <style>
-                          <class name="link" />
+                          <class name="dim-label" />
                         </style>
+                        <child>
+                          <object class="GtkFlowBoxChild" id="explicit_flowbox">
+                            <child>
+                              <object class="GtkImage" id="explicit">
+                                <property name="valign">start</property>
+                                <property name="icon-name">network-cellular-edge-symbolic</property>
+                              </object>
+                            </child>
+                          </object>
+                        </child>
                       </object>
                     </child>
                   </object>
