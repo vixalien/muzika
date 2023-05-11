@@ -2,9 +2,8 @@ import Gtk from "gi://Gtk?version=4.0";
 import GObject from "gi://GObject";
 import GLib from "gi://GLib";
 
-import { PlaylistItem } from "../../muse.js";
+import { PlaylistItem, ArtistRun } from "../../muse.js";
 import { load_thumbnails } from "../webimage.js";
-import { ArtistRun } from "libmuse/types/parsers/songs.js";
 
 export class PlaylistItemCard extends Gtk.ListBoxRow {
   static {
