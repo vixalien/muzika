@@ -1,12 +1,7 @@
 import Gtk from "gi://Gtk?version=4.0";
 import GObject from "gi://GObject";
 
-import {
-  AlbumResult,
-  AlbumResultTrack,
-  get_album,
-  ParsedAlbum,
-} from "../muse.js";
+import { AlbumResult, get_album, ParsedAlbum, PlaylistItem } from "../muse.js";
 
 import { Carousel } from "../components/carousel/index.js";
 import { Loading } from "../components/loading.js";
@@ -60,7 +55,7 @@ export class AlbumPage extends Gtk.Box {
     this._content.set_orientation(Gtk.Orientation.VERTICAL);
   }
 
-  append_tracks(tracks: AlbumResultTrack[]) {
+  append_tracks(tracks: PlaylistItem[]) {
     tracks.forEach((track, index) => {
       const card = new AlbumItemCard();
 
