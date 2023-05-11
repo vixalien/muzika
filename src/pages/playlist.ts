@@ -27,6 +27,7 @@ export class PlaylistPage extends Gtk.Box {
         "content",
         "scrolled",
         "data",
+        "list_box"
       ],
     }, this);
   }
@@ -40,8 +41,8 @@ export class PlaylistPage extends Gtk.Box {
   _separator!: Gtk.Label;
   _scrolled!: Gtk.ScrolledWindow;
   _data!: Gtk.Box;
+  _list_box!: Gtk.ListBox;
 
-  list_box: Gtk.ListBox;
   header: PlaylistHeader;
 
   _loading: Loading;
@@ -56,13 +57,9 @@ export class PlaylistPage extends Gtk.Box {
 
     this.header = new PlaylistHeader();
 
-    this.list_box = Gtk.ListBox.new();
-    this.list_box.add_css_class("background");
-
     this._loading = new Loading();
 
     this._inner_box.prepend(this.header);
-    this._content.append(this.list_box);
     this._content.append(this._loading);
 
     this._content.set_orientation(Gtk.Orientation.VERTICAL);
@@ -80,7 +77,7 @@ export class PlaylistPage extends Gtk.Box {
 
       card.set_item(track);
 
-      this.list_box.append(card);
+      this._list_box.append(card);
     }
   }
 

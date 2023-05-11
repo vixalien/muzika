@@ -19,8 +19,15 @@
                 <property name="orientation">vertical</property>
                 <child>
                   <object class="GtkBox" id="content">
-                    <property name="margin-start">12</property>
-                    <property name="margin-end">12</property>
+                    <child>
+                      <object class="GtkListBox" id="list_box">
+                        <property name="margin-start">12</property>
+                        <property name="margin-end">12</property>
+                        <style>
+                          <class name="background" />
+                        </style>
+                      </object>
+                    </child>
                   </object>
                 </child>
                 <child>
