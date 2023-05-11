@@ -1,9 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <interface>
-  <requires lib="gtk" version="4.0"/>
+  <requires lib="gtk" version="4.0" />
   <template class="Gjs__Window" parent="AdwApplicationWindow">
     <property name="default-width">1000</property>
     <property name="default-height">800</property>
+    <style>
+      <class name="devel" />
+    </style>
     <child>
       <object class="GtkBox">
         <property name="orientation">1</property>
@@ -26,7 +29,7 @@
         <child>
           <object class="GtkProgressBar" id="progress">
             <style>
-              <class name="osd"/>
+              <class name="osd" />
             </style>
           </object>
         </child>
