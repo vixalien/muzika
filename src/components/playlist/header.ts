@@ -12,7 +12,7 @@ export class MiniPlaylistHeader extends Gtk.Box {
     GObject.registerClass({
       GTypeName: "MiniPlaylistHeader",
       Template:
-        "resource:///com/vixalien/muzika/components/playlist/miniplaylistheader.ui",
+        "resource:///com/vixalien/muzika/components/playlist/miniheader.ui",
       InternalChildren: [
         "image",
         "title",
@@ -85,7 +85,7 @@ export class LargePlaylistHeader extends Gtk.Box {
     GObject.registerClass({
       GTypeName: "LargePlaylistHeader",
       Template:
-        "resource:///com/vixalien/muzika/components/playlist/largeplaylistheader.ui",
+        "resource:///com/vixalien/muzika/components/playlist/largeheader.ui",
       InternalChildren: [
         "image",
         "title",

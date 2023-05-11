@@ -11,7 +11,7 @@ export class PlaylistItemCard extends Gtk.ListBoxRow {
     GObject.registerClass({
       GTypeName: "PlaylistItem",
       Template:
-        "resource:///com/vixalien/muzika/components/playlist/playlistitem.ui",
+        "resource:///com/vixalien/muzika/components/playlist/item.ui",
       InternalChildren: [
         "play_button",
         "image",
