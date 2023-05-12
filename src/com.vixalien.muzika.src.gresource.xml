@@ -8,6 +8,7 @@
     <file>components/search/topresultcard.js</file>
     <file>components/search/topresultsection.js</file>
     <file>components/artistheader.js</file>
+    <file>components/inline-tab-switcher.js</file>
     <file>components/carousel/albumcard.js</file>
     <file>components/carousel/artistcard.js</file>
     <file>components/carousel/flatsongcard.js</file>

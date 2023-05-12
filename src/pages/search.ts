@@ -1,10 +1,16 @@
 import Gtk from "gi://Gtk?version=4.0";
 import GObject from "gi://GObject";
 
-import { get_more_search_results, search, SearchResults } from "../muse.js";
+import {
+  get_more_search_results,
+  get_option,
+  search,
+  SearchResults,
+} from "../muse.js";
 import { SearchSection } from "../components/search/section.js";
 import { TopResultSection } from "../components/search/topresultsection.js";
 import { Paginator } from "../components/paginator.js";
+import { InlineTabSwitcher } from "src/components/inline-tab-switcher.js";
 
 export class SearchPage extends Gtk.Box {
   static {
@@ -36,9 +42,34 @@ export class SearchPage extends Gtk.Box {
     this._content.append(this.paginator);
   }
 
+  add_scope_tabs() {
+    if (!get_option("auth").has_token()) {
+      return;
+    }
+
+    const switcher = new InlineTabSwitcher({
+      halign: Gtk.Align.START,
+      margin_start: 12,
+      margin_end: 12,
+      margin_top: 12,
+    });
+
+    switcher.add_tab("catalog", "Catalog");
+    switcher.add_tab("lirary", "Library");
+    switcher.add_tab("uploads", "Uploads");
+
+    switcher.connect("changed", (_, tab) => {
+      console.log("tab", tab);
+    });
+
+    this._content.prepend(switcher);
+  }
+
   show_results(results: SearchResults, args: Parameters<typeof search>) {
     this.results = results;
     this.args = args;
+
+    this.add_scope_tabs();
 
     this.paginator.set_reveal_child(results.continuation != null);
 

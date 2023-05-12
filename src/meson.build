@@ -8,6 +8,7 @@ sources = [
   'components/search/topresultcard.ts',
   'components/search/topresultsection.ts',
   'components/artistheader.ts',
+  'components/inline-tab-switcher.ts',
   'components/carousel/albumcard.ts',
   'components/carousel/artistcard.ts',
   'components/carousel/flatsongcard.ts',
