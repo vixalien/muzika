@@ -197,6 +197,8 @@ console.log("caching soup requests at", SOUP_CACHE_DIR.get_path());
 
 const SESSION = Soup.Session.new();
 
+SESSION.set_proxy_resolver(null);
+
 export const cache = Soup.Cache.new(
   SOUP_CACHE_DIR.get_path()!,
   Soup.CacheType.SHARED,
