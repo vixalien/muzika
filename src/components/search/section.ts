@@ -10,17 +10,7 @@ import {
   SearchResults,
 } from "../../muse.js";
 import { InlineCard } from "./inlinecard.js";
-
-function search_args_to_url(query: string, options: SearchOptions = {}) {
-  const params = new URLSearchParams(
-    Object.entries(options).filter(([k]) => k !== "signal"),
-  )
-    .toString();
-  let url_string = `muzika:search:${encodeURIComponent(query)}`;
-  if (params) url_string += `?${params}`;
-
-  return url_string;
-}
+import { search_args_to_url } from "../../pages/search.js";
 
 export class SearchSection extends Gtk.Box {
   static {

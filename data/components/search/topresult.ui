@@ -2,8 +2,8 @@
 <interface>
   <requires lib="gtk" version="4.0" />
   <template class="TopResult" parent="GtkFlowBoxChild">
-    <property name="margin-start">6</property>
-    <property name="margin-end">6</property>
+    <property name="margin-start">12</property>
+    <property name="margin-end">12</property>
     <style>
       <class name="card" />
       <class name="activatable" />

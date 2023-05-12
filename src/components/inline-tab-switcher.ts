@@ -30,6 +30,13 @@ export class Tab extends GObject.Object {
             GObject.ParamFlags.READWRITE,
             null as any,
           ),
+          navigate: GObject.ParamSpec.string(
+            "action-target",
+            "Action Target",
+            "The target string of the action to be executed when the tab is activated",
+            GObject.ParamFlags.READWRITE,
+            null as any,
+          ),
         },
       },
       this,
@@ -39,6 +46,8 @@ export class Tab extends GObject.Object {
   id: string;
   title: string | null = null;
   icon: string | null = null;
+
+  navigate: string | null = null;
 
   constructor(id: string, title?: string, icon?: string) {
     super();
@@ -93,27 +102,43 @@ export class InlineTabSwitcher extends Gtk.Widget {
     this.populate_switcher();
   }
 
-  add_tab_full(page: Tab) {
-    this.model.append(page);
+  add_tab_full(tab: Tab) {
+    this.model.append(tab);
   }
 
   add_tab(id: string, title?: string, icon?: string) {
     this.add_tab_full(new Tab(id, title, icon));
   }
 
-  remove_page(id: string) {
-    let current = 0;
+  private find_tab(id: string) {
+    let current: null | number = null;
 
     for (let i = 0; i < this.tabs.get_n_items(); i++) {
-      const page = this.tabs.get_item(i)!;
+      const tab = this.tabs.get_item(i)!;
 
-      if (page.id === id) {
+      if (tab.id === id) {
         current = i;
         break;
       }
     }
 
-    this.model.remove(current);
+    return current;
+  }
+
+  select(id: string) {
+    const current = this.find_tab(id);
+
+    if (current != null) {
+      this.tabs.select_item(current, true);
+    }
+  }
+
+  remove_tab(id: string) {
+    const current = this.find_tab(id);
+
+    if (current != null) {
+      this.model.remove(current);
+    }
   }
 
   private populate_switcher() {
@@ -123,11 +148,11 @@ export class InlineTabSwitcher extends Gtk.Widget {
   }
 
   private clear_switcher() {
-    this.buttons.forEach((button, page) => {
+    this.buttons.forEach((button, tab) => {
       const separator = (button as any).separator as Gtk.Widget;
       button.unparent();
       separator.unparent();
-      page.connect("notify", this.page_updated_cb.bind(this));
+      tab.connect("notify", this.tab_updated_cb.bind(this));
     });
 
     this.buttons.clear();
@@ -140,8 +165,8 @@ export class InlineTabSwitcher extends Gtk.Widget {
 
   private selection_changed_cb(position: number, items: number) {
     for (let i = position; i < position + items; i++) {
-      const page = this.tabs.get_item(i);
-      const button = this.buttons.get(page!);
+      const tab = this.tabs.get_item(i);
+      const button = this.buttons.get(tab!);
 
       if (button != null) {
         const selected = this.tabs.is_selected(i);
@@ -199,8 +224,8 @@ export class InlineTabSwitcher extends Gtk.Widget {
 
     button.add_controller(controller);
 
-    const page = this.tabs.get_item(index)!;
-    this.update_button(page, button);
+    const tab = this.tabs.get_item(index)!;
+    this.update_button(tab, button);
 
     button.set_parent(this);
 
@@ -213,11 +238,11 @@ export class InlineTabSwitcher extends Gtk.Widget {
 
     // TODO: see https://gitlab.gnome.org/GNOME/gjs/-/merge_requests/668
     // // @ts-expect-error doesn't need a copy
-    // const page_value = new GObject.Value();
-    // page_value.init(GObject.TYPE_OBJECT);
-    // page_value.set_object(page);
-    // // page_value.set_pointer()
-    // button.update_relation([Gtk.AccessibleRelation.CONTROLS], [page_value]);
+    // const tab_value = new GObject.Value();
+    // tab_value.init(GObject.TYPE_OBJECT);
+    // tab_value.set_object(page);
+    // // tab_value.set_pointer()
+    // button.update_relation([Gtk.AccessibleRelation.CONTROLS], [tab_value]);
 
     button.active = selected;
     button.update_state([Gtk.AccessibleState.SELECTED], [selected_value]);
@@ -230,9 +255,9 @@ export class InlineTabSwitcher extends Gtk.Widget {
       }
     });
 
-    page.connect("notify", this.page_updated_cb.bind(this));
+    tab.connect("notify", this.tab_updated_cb.bind(this));
 
-    this.buttons.set(page, button);
+    this.buttons.set(tab, button);
 
     const separator = Gtk.Separator.new(Gtk.Orientation.VERTICAL);
     separator.set_parent(this);
@@ -257,29 +282,34 @@ export class InlineTabSwitcher extends Gtk.Widget {
     separator_changed();
   }
 
-  private page_updated_cb(page: Tab, pspec: GObject.ParamSpec) {
-    const button = this.buttons.get(page)!;
+  private tab_updated_cb(tab: Tab, pspec: GObject.ParamSpec) {
+    const button = this.buttons.get(tab)!;
 
-    this.update_button(page, button);
+    this.update_button(tab, button);
   }
 
-  private update_button(page: Tab, button: Gtk.Button) {
-    if (page.icon != null) {
-      button.icon_name = page.icon;
-      button.set_tooltip_text(page.title);
-    } else if (page.title != null) {
-      button.label = page.title;
+  private update_button(tab: Tab, button: Gtk.Button) {
+    if (tab.icon != null) {
+      button.icon_name = tab.icon;
+      button.set_tooltip_text(tab.title);
+    } else if (tab.title != null) {
+      button.label = tab.title;
       button.set_tooltip_text(null);
+    }
+
+    if (tab.navigate != null) {
+      button.action_name = "app.navigate";
+      button.action_target = GLib.Variant.new_string(tab.navigate);
     }
 
     // @ts-expect-error doesn't need a copy
     const title_value = new GObject.Value();
     title_value.init(GObject.TYPE_STRING);
-    title_value.set_string(page.title);
+    title_value.set_string(tab.title);
 
     button.update_property([Gtk.AccessibleProperty.LABEL], [title_value]);
 
-    button.visible = page.title != null || page.icon != null;
+    button.visible = tab.title != null || tab.icon != null;
   }
 
   private should_hide_separators(widget?: Gtk.Widget) {

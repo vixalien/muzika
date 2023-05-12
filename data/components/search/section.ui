@@ -7,14 +7,14 @@
     <child>
       <object class="GtkBox">
         <property name="margin-top">6</property>
-        <property name="margin-start">6</property>
-        <property name="margin-end">6</property>
+        <property name="margin-start">12</property>
+        <property name="margin-end">12</property>
         <property name="margin-bottom">6</property>
         <child>
           <object class="GtkLabel" id="title">
             <property name="label">Songs</property>
             <style>
-              <class name="title-4" />
+              <class name="title-3" />
             </style>
           </object>
         </child>
@@ -30,8 +30,8 @@
     </child>
     <child>
       <object class="GtkListBox" id="content">
-        <property name="margin-start">6</property>
-        <property name="margin-end">6</property>
+        <property name="margin-start">9</property>
+        <property name="margin-end">9</property>
         <property name="margin-bottom">6</property>
         <property name="selection-mode">none</property>
         <style>
