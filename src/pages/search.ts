@@ -119,30 +119,39 @@ export class SearchPage extends Gtk.Box {
       margin_top: 12,
     });
 
-    this.results.filters.forEach((filter) => {
-      const button = Gtk.ToggleButton.new_with_label(filter_to_string(filter));
+    this.results.filters
+      // sort selected first
+      .sort((a, b) => {
+        if (a === this.args[1]?.filter) return -1;
+        if (b === this.args[1]?.filter) return 1;
+        return 0;
+      })
+      .forEach((filter) => {
+        const button = Gtk.ToggleButton.new_with_label(
+          filter_to_string(filter),
+        );
 
-      button.add_css_class("chip");
+        button.add_css_class("chip");
 
-      const selected = this.args[1]?.filter === filter;
+        const selected = this.args[1]?.filter === filter;
 
-      const url = search_args_to_url(
-        this.args[0],
-        {
-          ...this.args[1],
-          filter: selected ? undefined : filter ?? undefined,
-        },
-      );
+        const url = search_args_to_url(
+          this.args[0],
+          {
+            ...this.args[1],
+            filter: selected ? undefined : filter ?? undefined,
+          },
+        );
 
-      button.action_name = "app.navigate";
-      button.action_target = GLib.Variant.new("s", url);
+        button.action_name = "app.navigate";
+        button.action_target = GLib.Variant.new("s", url);
 
-      if (selected) {
-        button.active = true;
-      }
+        if (selected) {
+          button.active = true;
+        }
 
-      box.append(button);
-    });
+        box.append(button);
+      });
 
     const window = new Gtk.ScrolledWindow({
       vscrollbar_policy: Gtk.PolicyType.NEVER,
