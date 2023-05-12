@@ -81,6 +81,7 @@ export class SearchPage extends Gtk.Box {
         {
           ...this.args[1],
           scope: scope ?? undefined,
+          filter: undefined,
         },
       );
 
