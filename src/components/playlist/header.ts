@@ -13,6 +13,11 @@ export class MiniPlaylistHeader extends Gtk.Box {
       GTypeName: "MiniPlaylistHeader",
       Template:
         "resource:///com/vixalien/muzika/components/playlist/miniheader.ui",
+      Signals: {
+        "more-toggled": {
+          param_types: [GObject.TYPE_BOOLEAN],
+        },
+      },
       InternalChildren: [
         "image",
         "title",
@@ -45,14 +50,26 @@ export class MiniPlaylistHeader extends Gtk.Box {
   _avatar!: Adw.Avatar;
   _subtitle_separator!: Gtk.Label;
 
+  toggled = false;
+
   constructor() {
     super();
 
-    this._more.connect("activate", (expander) => {
-      this._description_stack.set_visible_child(
-        expander.expanded ? this._description : this._description_long,
-      );
+    this._more.connect("activate", () => {
+      this.toggled = !this.toggled;
+
+      this.toggle_more(this.toggled);
+
+      this.emit("more-toggled", this.toggled);
     });
+  }
+
+  toggle_more(expanded = true, update_expander = false) {
+    this._description_stack.set_visible_child(
+      expanded ? this._description_long : this._description,
+    );
+
+    if (update_expander) this._more.expanded = expanded;
   }
 
   set_description(description: string | null) {
@@ -90,6 +107,11 @@ export class LargePlaylistHeader extends Gtk.Box {
       GTypeName: "LargePlaylistHeader",
       Template:
         "resource:///com/vixalien/muzika/components/playlist/largeheader.ui",
+      Signals: {
+        "more-toggled": {
+          param_types: [GObject.TYPE_BOOLEAN],
+        },
+      },
       InternalChildren: [
         "image",
         "title",
@@ -122,14 +144,26 @@ export class LargePlaylistHeader extends Gtk.Box {
   _avatar!: Adw.Avatar;
   _subtitle_separator!: Gtk.Label;
 
+  toggled = false;
+
   constructor() {
     super();
 
-    this._more.connect("activate", (expander) => {
-      this._description_stack.set_visible_child(
-        expander.expanded ? this._description : this._description_long,
-      );
+    this._more.connect("activate", () => {
+      this.toggled = !this.toggled;
+
+      this.toggle_more(this.toggled);
+
+      this.emit("more-toggled", this.toggled);
     });
+  }
+
+  toggle_more(expanded = true, update_expander = false) {
+    this._description_stack.set_visible_child(
+      expanded ? this._description_long : this._description,
+    );
+
+    if (update_expander) this._more.expanded = expanded;
   }
 
   set_description(description: string | null) {
@@ -180,6 +214,19 @@ export class PlaylistHeader extends Gtk.Box {
     });
     this._large = new LargePlaylistHeader();
     this._mini = new MiniPlaylistHeader();
+
+    this._large.connect(
+      "more-toggled",
+      (_, value) => {
+        console.log("setting large to", value);
+        this._mini.toggle_more(value, true);
+      },
+    );
+
+    this._mini.connect(
+      "more-toggled",
+      (_, value) => this._large.toggle_more(value, true),
+    );
 
     this._squeezer.add(this._large);
     this._squeezer.add(this._mini);
