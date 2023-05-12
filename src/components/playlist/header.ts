@@ -57,13 +57,17 @@ export class MiniPlaylistHeader extends Gtk.Box {
 
   set_description(description: string | null) {
     if (description) {
+      const split = description.split("\n");
+
       this._description.set_visible(true);
-      this._description.set_label(description);
+      this._description.set_label(split[0]);
 
       this._description_long.set_visible(true);
       this._description_long.set_label(description);
 
-      this._more.set_visible(this._description.get_layout().is_ellipsized());
+      this._more.set_visible(
+        this._description.get_layout().is_ellipsized() || split.length > 1,
+      );
     } else {
       this._description_stack.set_visible(false);
       this._more.set_visible(false);
@@ -130,13 +134,17 @@ export class LargePlaylistHeader extends Gtk.Box {
 
   set_description(description: string | null) {
     if (description) {
+      const split = description.split("\n");
+
       this._description.set_visible(true);
-      this._description.set_label(description);
+      this._description.set_label(split[0]);
 
       this._description_long.set_visible(true);
       this._description_long.set_label(description);
 
-      this._more.set_visible(this._description.get_layout().is_ellipsized());
+      this._more.set_visible(
+        this._description.get_layout().is_ellipsized() || split.length > 1,
+      );
     } else {
       this._description_stack.set_visible(false);
       this._more.set_visible(false);
