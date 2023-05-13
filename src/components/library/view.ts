@@ -3,7 +3,8 @@ import GObject from "gi://GObject";
 
 import { Grid } from "../../components/grid/index.js";
 import { MixedCard } from "./mixedcard.js";
-import { MixedItem } from "libmuse";
+import { MixedItem } from "../../muse.js";
+import { Settings } from "../../main.js";
 
 export interface LibraryViewOptions {
   filters?: string[];
@@ -55,14 +56,24 @@ export class LibraryView extends Gtk.Box {
     this._stack.add_named(this.list, "list");
 
     this._grid_button.connect("toggled", (button) => {
-      if (button.active) this._stack.visible_child_name = "grid";
+      if (button.active) {
+        this._stack.visible_child_name = "grid";
+        Settings.set_boolean("prefer-list", false);
+      }
     });
 
     this._list_button.connect("toggled", (button) => {
-      if (button.active) this._stack.visible_child_name = "list";
+      if (button.active) {
+        this._stack.visible_child_name = "list";
+        Settings.set_boolean("prefer-list", true);
+      }
     });
 
-    this._grid_button.active = true;
+    if (Settings.get_boolean("prefer-list")) {
+      this._list_button.active = true;
+    } else {
+      this._grid_button.active = true;
+    }
 
     if (props.filters && props.filters.length >= 0) {
       const string_list = Gtk.StringList.new(props.filters);

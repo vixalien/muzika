@@ -31,6 +31,8 @@ import GLib from "gi://GLib";
 import { Window } from "./window.js";
 import { cache } from "./polyfills/fetch.js";
 
+export const Settings = new Gio.Settings({ schema: pkg.name });
+
 export class Application extends Adw.Application {
   private window?: Window;
 

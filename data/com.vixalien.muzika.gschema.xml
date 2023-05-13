@@ -1,5 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <schemalist gettext-domain="gnome-typescript-template">
 	<schema id="com.vixalien.muzika" path="/com/vixalien/muzika/">
+		<key name="prefer-list" type="b">
+			<default>false</default>
+			<summary>Whether lists are prefered to grids</summary>
+			<description>If this option is enabled, the library view will show a list instead of the
+				default grid.</description>
+		</key>
 	</schema>
 </schemalist>
