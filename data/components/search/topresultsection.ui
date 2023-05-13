@@ -27,13 +27,18 @@
         <property name="column-spacing">12</property>
         <property name="row-spacing">12</property>
         <child>
-          <object class="GtkListBox" id="content">
-            <property name="margin-start">6</property>
-            <property name="margin-end">6</property>
-            <property name="selection-mode">0</property>
-            <style>
-              <class name="background" />
-            </style>
+          <object class="GtkFlowBoxChild">
+            <property name="focusable">false</property>
+            <child>
+              <object class="GtkListBox" id="content">
+                <property name="margin-start">6</property>
+                <property name="margin-end">6</property>
+                <property name="selection-mode">0</property>
+                <style>
+                  <class name="background" />
+                </style>
+              </object>
+            </child>
           </object>
         </child>
       </object>
