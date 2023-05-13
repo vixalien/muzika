@@ -32,12 +32,12 @@ export class TopResultSection extends Gtk.Box {
     let uri: string | null = null;
 
     switch (child.result.type) {
-      // case "playlist":
-      //   uri = `playlist:${row.content.browseId}`;
-      //   break;
-      // case "artist":
-      //   uri = `artist:${row.content.browseId}`;
-      //   break;
+      case "artist":
+        uri = `artist:${child.result.browseId}`;
+        break;
+      case "album":
+        uri = `album:${child.result.browseId}`;
+        break;
     }
 
     if (uri) {
