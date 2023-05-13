@@ -255,14 +255,11 @@ export async function fetch(url: string | URL, options: FetchOptions = {}) {
   }
 
   return new Promise<GResponse>(async (resolve, reject) => {
-    let inputStream: Gio.InputStream;
-    try {
-      inputStream = await SESSION.send_async(
-        message,
-        GLib.PRIORITY_DEFAULT,
-        cancellable,
-      );
-    } catch (e) {
+    const inputStream = await SESSION.send_async(
+      message,
+      GLib.PRIORITY_DEFAULT,
+      cancellable,
+    ).catch((e) => {
       if (
         (e instanceof Gio.IOErrorEnum) &&
         (e.code === Gio.IOErrorEnum.CANCELLED)
@@ -272,7 +269,14 @@ export async function fetch(url: string | URL, options: FetchOptions = {}) {
         } else {
           reject(new DOMException("The request was aborted", "AbortError"));
         }
+      } else {
+        reject(e)
       }
+    });
+
+    if (!inputStream) {
+      reject(new Error("Couldn't connect to the internet. Are you offline?"));
+      return;
     }
 
     const response_headers = message.get_response_headers();
