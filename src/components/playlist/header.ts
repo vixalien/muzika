@@ -56,15 +56,15 @@ export class MiniPlaylistHeader extends Gtk.Box {
     super();
 
     this._more.connect("activate", () => {
-      this.toggled = !this.toggled;
-
-      this.toggle_more(this.toggled);
+      this.toggle_more(!this.toggled);
 
       this.emit("more-toggled", this.toggled);
     });
   }
 
   toggle_more(expanded = true, update_expander = false) {
+    this.toggled = expanded;
+
     this._description_stack.set_visible_child(
       expanded ? this._description_long : this._description,
     );
@@ -76,12 +76,16 @@ export class MiniPlaylistHeader extends Gtk.Box {
     if (description) {
       const split = description.split("\n");
 
+      this._description.single_line_mode = true;
+      
       this._description.set_visible(true);
-      this._description.set_label(split[0]);
-
+      this._description.set_label(split[0].trim());
+      
       this._description_long.set_visible(true);
       this._description_long.set_label(description);
-
+      
+      // TODO: check if every line is ellispsized
+      // when this is fixed: https://gitlab.gnome.org/GNOME/gjs/-/issues/547
       this._more.set_visible(
         this._description.get_layout().is_ellipsized() || split.length > 1,
       );
@@ -150,15 +154,15 @@ export class LargePlaylistHeader extends Gtk.Box {
     super();
 
     this._more.connect("activate", () => {
-      this.toggled = !this.toggled;
-
-      this.toggle_more(this.toggled);
+      this.toggle_more(!this.toggled);
 
       this.emit("more-toggled", this.toggled);
     });
   }
 
   toggle_more(expanded = true, update_expander = false) {
+    this.toggled = expanded;
+
     this._description_stack.set_visible_child(
       expanded ? this._description_long : this._description,
     );
@@ -170,8 +174,10 @@ export class LargePlaylistHeader extends Gtk.Box {
     if (description) {
       const split = description.split("\n");
 
+      this._description.single_line_mode = true;
+
       this._description.set_visible(true);
-      this._description.set_label(split[0]);
+      this._description.set_label(split[0].trim());
 
       this._description_long.set_visible(true);
       this._description_long.set_label(description);
@@ -217,10 +223,7 @@ export class PlaylistHeader extends Gtk.Box {
 
     this._large.connect(
       "more-toggled",
-      (_, value) => {
-        console.log("setting large to", value);
-        this._mini.toggle_more(value, true);
-      },
+      (_, value) => this._mini.toggle_more(value, true),
     );
 
     this._mini.connect(
