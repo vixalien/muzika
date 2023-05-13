@@ -2,6 +2,7 @@ import Gtk from "gi://Gtk?version=4.0";
 
 import { Endpoint } from "./navigation.js";
 
+import { LibraryPage } from "./pages/library/index.js";
 import { HomePage } from "./pages/home.js";
 import { PlaylistPage } from "./pages/playlist.js";
 import { ArtistPage } from "./pages/artist.js";
@@ -67,4 +68,12 @@ export const endpoints: Endpoint<Gtk.Widget>[] = [
       );
     },
   } as Endpoint<SearchPage>,
+  {
+    uri: "library",
+    title: "Library",
+    component: () => new LibraryPage(),
+    load(component: LibraryPage, ctx) {
+      return component.load_library();
+    },
+  } as Endpoint<LibraryPage>,
 ];

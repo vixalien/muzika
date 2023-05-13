@@ -2,18 +2,20 @@ import GObject from "gi://GObject";
 
 export class ObjectContainer<T extends Object> extends GObject.Object {
   static {
-    GObject.registerClass({
-      GTypeName: "ObjectContainer",
-      Properties: {
-        item: GObject.ParamSpec.object(
-          "item",
-          "item",
-          "item",
-          GObject.ParamFlags.READWRITE,
-          GObject.Object.$gtype,
-        ),
-      },
-    }, this);
+    if (!GObject.type_from_name("ObjectContainer")) {
+      GObject.registerClass({
+        GTypeName: "ObjectContainer",
+        Properties: {
+          item: GObject.ParamSpec.object(
+            "item",
+            "item",
+            "item",
+            GObject.ParamFlags.READWRITE,
+            GObject.Object.$gtype,
+          ),
+        },
+      }, this);
+    }
   }
 
   item?: T;

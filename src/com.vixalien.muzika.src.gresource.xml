@@ -16,11 +16,13 @@
     <file>components/carousel/playlistcard.js</file>
     <file>components/carousel/songcard.js</file>
     <file>components/carousel/videocard.js</file>
+    <file>components/grid/index.js</file>
     <file>components/loading.js</file>
     <file>components/paginator.js</file>
     <file>components/playlist/header.js</file>
     <file>components/playlist/item.js</file>
     <file>components/webimage.js</file>
+    <file>pages/library/index.js</file>
     <file>pages/album.js</file>
     <file>pages/artist.js</file>
     <file>pages/error.js</file>
