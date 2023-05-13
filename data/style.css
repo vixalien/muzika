@@ -139,3 +139,7 @@ inline-tab-switcher separator {
 inline-tab-switcher separator.hidden {
   opacity: 0;
 }
+
+expander-widget.inverted expander:checked {
+  -gtk-icon-source: -gtk-icontheme("pan-up-symbolic");
+}
