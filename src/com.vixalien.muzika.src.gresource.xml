@@ -1,47 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <gresources>
   <gresource prefix="/com/vixalien/muzika/js">
-    <file>components/album/header.js</file>
-    <file>components/album/item.js</file>
-    <file>components/search/inlinecard.js</file>
-    <file>components/search/section.js</file>
-    <file>components/search/topresultcard.js</file>
-    <file>components/search/topresultsection.js</file>
-    <file>components/artistheader.js</file>
-    <file>components/inline-tab-switcher.js</file>
-    <file>components/carousel/albumcard.js</file>
-    <file>components/carousel/artistcard.js</file>
-    <file>components/carousel/flatsongcard.js</file>
-    <file>components/carousel/index.js</file>
-    <file>components/carousel/playlistcard.js</file>
-    <file>components/carousel/songcard.js</file>
-    <file>components/carousel/videocard.js</file>
-    <file>components/grid/index.js</file>
-    <file>components/library/mixedcard.js</file>
-    <file>components/library/view.js</file>
-    <file>components/loading.js</file>
-    <file>components/paginator.js</file>
-    <file>components/playlist/header.js</file>
-    <file>components/playlist/item.js</file>
-    <file>components/webimage.js</file>
-    <file>pages/library/index.js</file>
-    <file>pages/album.js</file>
-    <file>pages/artist.js</file>
-    <file>pages/error.js</file>
-    <file>pages/home.js</file>
-    <file>pages/playlist.js</file>
-    <file>pages/search.js</file>
-    <file>polyfills/abortcontroller.js</file>
-    <file>polyfills/base64.js</file>
-    <file>polyfills/customevent.js</file>
-    <file>polyfills/domexception.js</file>
-    <file>polyfills/fetch.js</file>
-    <file>util/hash.js</file>
-    <file>util/objectcontainer.js</file>
-    <file>endpoints.js</file>
     <file>main.js</file>
-    <file>muse.js</file>
-    <file>navigation.js</file>
-    <file>window.js</file>
   </gresource>
 </gresources>

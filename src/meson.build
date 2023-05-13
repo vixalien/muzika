@@ -1,56 +1,11 @@
 gnome = import('gnome')
 
 sources = [
-  'components/album/header.ts',
-  'components/album/item.ts',
-  'components/search/inlinecard.ts',
-  'components/search/section.ts',
-  'components/search/topresultcard.ts',
-  'components/search/topresultsection.ts',
-  'components/artistheader.ts',
-  'components/inline-tab-switcher.ts',
-  'components/carousel/albumcard.ts',
-  'components/carousel/artistcard.ts',
-  'components/carousel/flatsongcard.ts',
-  'components/carousel/index.ts',
-  'components/carousel/playlistcard.ts',
-  'components/carousel/songcard.ts',
-  'components/carousel/videocard.ts',
-  'components/grid/index.ts',
-  'components/library/mixedcard.ts',
-  'components/library/view.ts',
-  'components/loading.ts',
-  'components/paginator.ts',
-  'components/playlist/header.ts',
-  'components/playlist/item.ts',
-  'components/webimage.ts',
-  'pages/library/index.ts',
-  'pages/album.ts',
-  'pages/artist.ts',
-  'pages/error.ts',
-  'pages/home.ts',
-  'pages/playlist.ts',
-  'pages/search.ts',
-  'polyfills/abortcontroller.ts',
-  'polyfills/base64.ts',
-  'polyfills/customevent.ts',
-  'polyfills/domexception.ts',
-  'polyfills/fetch.ts',
-  'util/hash.ts',
-  'util/objectcontainer.ts',
-  'endpoints.ts',
   'main.ts',
-  'muse.ts',
-  'navigation.ts',
-  'window.ts',
 ]
 
 outputs = []
 foreach source : sources
-  if '/' in source
-    continue
-  endif
-
 	outputs += source.replace('.ts', '.js')
 endforeach
 
@@ -59,7 +14,7 @@ typescript = custom_target(
   input: files(sources),
   build_by_default: true,
   build_always_stale: true,
-  command: [ yarn, yarn_args, 'run', 'build', '--out', meson.project_build_root() / '@OUTDIR@', '--cwd', meson.project_build_root(), '@INPUT@','--src', meson.project_source_root() ],
+  command: [ yarn, yarn_args, 'run', 'build', '--out', meson.project_build_root() / '@OUTDIR@', '--cwd', meson.project_build_root(), '@INPUT@' ],
   depends: yarn_deps,
   output: outputs,
 )
