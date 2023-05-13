@@ -21,6 +21,8 @@ export class Grid extends Gtk.GridView {
     }, this);
   }
 
+  list_model = Gio.ListStore.new(ObjectContainer.$gtype);
+
   constructor() {
     super({
       max_columns: 18,
@@ -29,11 +31,7 @@ export class Grid extends Gtk.GridView {
     });
 
     this.remove_css_class("view");
-  }
 
-  list_model = Gio.ListStore.new(ObjectContainer.$gtype);
-
-  setup() {
     const factory = Gtk.SignalListItemFactory.new();
     factory.connect("bind", this.bind_cb.bind(this));
 
@@ -130,8 +128,6 @@ export class Grid extends Gtk.GridView {
 
   show_items(items: MixedItem[]) {
     this.list_model.remove_all();
-
-    this.setup();
 
     for (const item of items) {
       if (!item) continue;

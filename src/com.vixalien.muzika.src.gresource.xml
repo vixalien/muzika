@@ -17,6 +17,8 @@
     <file>components/carousel/songcard.js</file>
     <file>components/carousel/videocard.js</file>
     <file>components/grid/index.js</file>
+    <file>components/library/mixedcard.js</file>
+    <file>components/library/view.js</file>
     <file>components/loading.js</file>
     <file>components/paginator.js</file>
     <file>components/playlist/header.js</file>

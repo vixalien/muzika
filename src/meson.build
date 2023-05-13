@@ -17,6 +17,8 @@ sources = [
   'components/carousel/songcard.ts',
   'components/carousel/videocard.ts',
   'components/grid/index.ts',
+  'components/library/mixedcard.ts',
+  'components/library/view.ts',
   'components/loading.ts',
   'components/paginator.ts',
   'components/playlist/header.ts',

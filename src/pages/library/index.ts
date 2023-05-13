@@ -2,7 +2,7 @@ import Gtk from "gi://Gtk?version=4.0";
 import GObject from "gi://GObject";
 
 import { get_library, Library } from "../../muse.js";
-import { Grid } from "../../components/grid/index.js";
+import { LibraryView } from "../../components/library/view.js";
 
 export class LibraryPage extends Gtk.Box {
   static {
@@ -11,30 +11,19 @@ export class LibraryPage extends Gtk.Box {
     }, this);
   }
 
+  view: LibraryView;
   library?: Library;
-  grid: Grid;
-  scrolled: Gtk.ScrolledWindow;
 
   constructor() {
     super();
 
-    this.grid = new Grid();
-    this.grid.margin_start = 6;
-    this.grid.margin_end = 12;
-    this.grid.margin_top = 6;
-    this.grid.margin_bottom = 6;
+    this.view = new LibraryView();
 
-    this.scrolled = new Gtk.ScrolledWindow({
-      hexpand: true,
-      hscrollbar_policy: Gtk.PolicyType.NEVER,
-    });
-
-    this.scrolled.set_child(this.grid);
-    this.append(this.scrolled);
+    this.append(this.view);
   }
 
   show_library(library: Library) {
-    this.grid.show_items(library.results);
+    this.view.show_items(library.results);
   }
 
   async load_library() {
