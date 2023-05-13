@@ -79,7 +79,26 @@ export class Application extends Adw.Application {
     navigator.connect("notify::can-go-back", () => {
       back_action.enabled = navigator.can_go_back;
     });
-    // this.set_accels_for_action("app.quit", ["<Alt>q"]);
+
+    const push_state_action = new Gio.SimpleAction({
+      name: "push-state",
+      parameter_type: GLib.VariantType.new("s"),
+    });
+    push_state_action.connect("activate", (_, parameter) => {
+      if (!parameter) return;
+
+      navigator.pushState({ uri: parameter.get_string()[0] });
+    });
+
+    const replace_state_action = new Gio.SimpleAction({
+      name: "replace-state",
+      parameter_type: GLib.VariantType.new("s"),
+    });
+    replace_state_action.connect("activate", (_, parameter) => {
+      if (!parameter) return;
+
+      navigator.replaceState({ uri: parameter.get_string()[0] });
+    });
   }
 
   constructor() {
