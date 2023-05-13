@@ -22,7 +22,11 @@ export class Grid extends Gtk.GridView {
   }
 
   constructor() {
-    super();
+    super({
+      max_columns: 18,
+      min_columns: 2,
+      single_click_activate: true,
+    });
 
     this.remove_css_class("view");
   }
@@ -75,6 +79,7 @@ export class Grid extends Gtk.GridView {
 
     if (card) {
       card.add_css_class("padding-6");
+      card.halign = Gtk.Align.CENTER;
 
       list_item.set_child(card);
 

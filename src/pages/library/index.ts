@@ -20,12 +20,13 @@ export class LibraryPage extends Gtk.Box {
 
     this.grid = new Grid();
     this.grid.margin_start = 6;
-    this.grid.margin_end = 6;
+    this.grid.margin_end = 12;
     this.grid.margin_top = 6;
     this.grid.margin_bottom = 6;
 
     this.scrolled = new Gtk.ScrolledWindow({
       hexpand: true,
+      hscrollbar_policy: Gtk.PolicyType.NEVER,
     });
 
     this.scrolled.set_child(this.grid);
