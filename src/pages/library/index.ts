@@ -36,8 +36,6 @@ export class LibraryPage extends Gtk.Box {
       filters: Array.from(orders.keys()),
     });
 
-    this.view.connect("filter-changed", this.handle_order_changed.bind(this));
-
     this.append(this.view);
   }
 
@@ -63,6 +61,8 @@ export class LibraryPage extends Gtk.Box {
 
       if (order) this.view.set_selected_filter(order);
     }
+
+    this.view.connect("filter-changed", this.handle_order_changed.bind(this));
 
     this.show_library(this.library);
   }
