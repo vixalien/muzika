@@ -5,6 +5,10 @@ import { Grid } from "../../components/grid/index.js";
 import { MixedCard } from "./mixedcard.js";
 import { MixedItem } from "libmuse";
 
+export interface LibraryViewOptions {
+  filters?: string[];
+}
+
 export class LibraryView extends Gtk.Box {
   static {
     GObject.registerClass({
@@ -17,11 +21,16 @@ export class LibraryView extends Gtk.Box {
         "stack",
         "tools",
       ],
+      Signals: {
+        "filter-changed": {
+          param_types: [GObject.TYPE_STRING],
+        },
+      },
     }, this);
   }
 
   _stack!: Gtk.Stack;
-  _drop_down!: Gtk.ToggleButton;
+  _drop_down!: Gtk.DropDown;
   _grid_button!: Gtk.ToggleButton;
   _list_button!: Gtk.ToggleButton;
   _tools!: Gtk.Box;
@@ -29,7 +38,7 @@ export class LibraryView extends Gtk.Box {
   grid: Grid;
   list: Gtk.ListBox;
 
-  constructor() {
+  constructor(props: LibraryViewOptions = {}) {
     super();
 
     this.grid = new Grid();
@@ -54,6 +63,41 @@ export class LibraryView extends Gtk.Box {
     });
 
     this._grid_button.active = true;
+
+    if (props.filters && props.filters.length >= 0) {
+      const string_list = Gtk.StringList.new(props.filters);
+      const selection_model = Gtk.SingleSelection.new(string_list);
+
+      this._drop_down.model = selection_model;
+
+      this._drop_down.connect("notify::selected", () => {
+        const selected = this._drop_down.selected_item as Gtk.StringObject;
+        this.emit("filter-changed", selected.string);
+      });
+    } else {
+      this._drop_down.hide();
+    }
+  }
+
+  set_selected_filter(filter: string) {
+    let current: null | number = null;
+
+    for (let i = 0; i < this._drop_down.model.get_n_items(); i++) {
+      const item = this._drop_down.model.get_item(i) as Gtk.StringObject | null;
+
+      if (!item) continue;
+
+      const string = item.string;
+
+      if (string === filter) {
+        current = i;
+        break;
+      }
+    }
+
+    if (current == null) return;
+
+    this._drop_down.selected = current;
   }
 
   show_items(items: MixedItem[]) {

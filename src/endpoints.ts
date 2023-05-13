@@ -73,7 +73,10 @@ export const endpoints: Endpoint<Gtk.Widget>[] = [
     title: "Library",
     component: () => new LibraryPage(),
     load(component: LibraryPage, ctx) {
-      return component.load_library();
+      return component.load_library({
+        signal: ctx.signal,
+        ...Object.fromEntries(ctx.url.searchParams as any),
+      });
     },
   } as Endpoint<LibraryPage>,
 ];
