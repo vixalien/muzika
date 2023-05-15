@@ -8,7 +8,7 @@
   "author": "Christopher Davis <christopherdavis@gnome.org>",
   "license": "MIT",
   "dependencies": {
-    "libmuse": "../muse/npm/",
+    "libmuse": "../muse/npm",
     "path-to-regexp": "^6.2.1",
     "typescript": "^4.7.4",
     "web-streams-polyfill": "^3.2.1"

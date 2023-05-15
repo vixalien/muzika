@@ -27,7 +27,6 @@ import GObject from "gi://GObject";
 import Gtk from "gi://Gtk?version=4.0";
 import Adw from "gi://Adw";
 
-import { HomePage } from "./pages/home.js";
 import { Navigator } from "./navigation.js";
 
 export class Window extends Adw.ApplicationWindow {

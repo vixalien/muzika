@@ -30,6 +30,7 @@ import GLib from "gi://GLib";
 
 import { Window } from "./window.js";
 import { cache } from "./polyfills/fetch.js";
+import { Player } from "./player/index.js";
 
 export const Settings = new Gio.Settings({ schema: pkg.name });
 
@@ -103,11 +104,20 @@ export class Application extends Adw.Application {
     });
   }
 
-  constructor() {
+  argv: string[] = [];
+  player: Player;
+
+  set_argv(argv: string[]) {
+    this.argv = argv;
+  }
+
+  constructor(argv: string[]) {
     super({
       application_id: "com.vixalien.muzika",
       flags: Gio.ApplicationFlags.DEFAULT_FLAGS,
     });
+
+    this.set_argv(argv);
 
     this.init_actions();
 
@@ -140,6 +150,21 @@ export class Application extends Adw.Application {
         return GLib.SOURCE_REMOVE;
       },
     );
+
+    this.player = new Player();
+
+    this.player.queue.add(["-2yJiningjk", "DPbj1iKH5Yk", "-2yJiningjk"])
+      .then(() => {
+        console.log("added to queue!", this.player.queue.list.n_items);
+
+        this.player.next();
+
+        setTimeout(() => {
+          this.player.next();
+        }, 5000);
+      }).catch((err) => {
+        console.error(err);
+      });
   }
 
   public vfunc_shutdown(): void {
@@ -161,5 +186,7 @@ export class Application extends Adw.Application {
 }
 
 export function main(argv: string[]): number {
-  return new Application().run(argv);
+  const app = new Application(argv);
+
+  return app.run(argv);
 }
