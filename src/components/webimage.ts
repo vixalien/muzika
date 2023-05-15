@@ -41,8 +41,7 @@ export function get_square_thumbnails(thumbnails: Thumbnail[]) {
   return fixed;
 }
 
-export function load_thumbnails(
-  image: Gtk.Image | Gtk.Picture | Adw.Avatar,
+export function get_best_thumbnail(
   thumbnails: Thumbnail[],
   options: number | LoadOptions,
 ) {
@@ -71,6 +70,16 @@ export function load_thumbnails(
   if (!best_thumbnail) {
     best_thumbnail = sorted_thumbnails[sorted_thumbnails.length - 1];
   }
+
+  return best_thumbnail;
+}
+
+export function load_thumbnails(
+  image: Gtk.Image | Gtk.Picture | Adw.Avatar,
+  thumbnails: Thumbnail[],
+  options: number | LoadOptions,
+) {
+  const best_thumbnail = get_best_thumbnail(thumbnails, options);
 
   return load_image(
     image,

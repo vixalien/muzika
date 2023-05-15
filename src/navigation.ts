@@ -112,7 +112,6 @@ export class Navigator extends GObject.Object {
           if (!param) return;
 
           const [url] = param.get_string();
-          console.log("activating visit", url);
 
           if (url) {
             if (url.startsWith("muzika:")) {
