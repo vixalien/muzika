@@ -159,10 +159,6 @@ export class Application extends Adw.Application {
         console.log("added tracks to queue!");
 
         this.player.next();
-
-        setInterval(() => {
-          this.player.next();
-        }, 5000);
       });
 
     // this.player.queue.play_next(["-2yJiningjk", "DPbj1iKH5Yk", "-2yJiningjk"])

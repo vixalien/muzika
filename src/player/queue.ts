@@ -5,6 +5,8 @@ import { get_queue, Queue as MuseQueue } from "../muse.js";
 import { ObjectContainer } from "../util/objectcontainer.js";
 import { QueueTrack } from "libmuse/types/parsers/queue.js";
 
+export type TrackOptions = Omit<MuseQueue, "tracks" | "continuation">;
+
 export class Queue extends GObject.Object {
   static {
     GObject.registerClass({
@@ -60,13 +62,6 @@ export class Queue extends GObject.Object {
 
   private _list: Gio.ListStore<ObjectContainer<QueueTrack>> = new Gio
     .ListStore();
-  private _position = -1;
-
-  private options?: Omit<MuseQueue, "tracks">;
-
-  constructor() {
-    super();
-  }
 
   get list() {
     return this._list;
@@ -75,22 +70,6 @@ export class Queue extends GObject.Object {
   clear() {
     this._list.remove_all();
     this.change_position(-1);
-  }
-
-  private change_position(position: number) {
-    this._position = position;
-    this.notify("position");
-    this.notify("current");
-    this.notify("can-play-next");
-    this.notify("can-play-previous");
-  }
-
-  private increment_position(n: number) {
-    this.change_position(this.position + n);
-  }
-
-  get position() {
-    return this._position;
   }
 
   get current() {
@@ -106,50 +85,51 @@ export class Queue extends GObject.Object {
     return this.position > 0;
   }
 
-  next(): QueueTrack | null {
-    if (this.position >= this.list.n_items) return null;
+  private _position = -1;
 
-    this.increment_position(1);
-    return this.list.get_item(this.position)?.item!;
+  get position() {
+    return this._position;
   }
 
-  previous(): QueueTrack | null {
-    if (this.position <= 0) return null;
-
-    this.increment_position(-1);
-    return this.list.get_item(this.position)?.item!;
+  private change_position(position: number) {
+    this._position = position;
+    this.notify("position");
+    this.notify("current");
+    this.notify("can-play-next");
+    this.notify("can-play-previous");
   }
+
+  private increment_position(n: number) {
+    this.change_position(this.position + n);
+  }
+
+  private options?: TrackOptions;
 
   private set_queue_options(queue: MuseQueue) {
-    this.options = _omit(queue, ["tracks"]);
+    this.options = _omit(queue, ["tracks", "continuation"]);
   }
 
-  private add_queue_tracks(tracks: QueueTrack[]) {
-    tracks.forEach((track) => {
-      this.list.append(ObjectContainer.new(track));
-    });
+  private _track_options_cache = new Map<string, TrackOptions>();
+
+  get track_options_cache() {
+    return this._track_options_cache;
   }
 
-  private add_queue_at_position(
-    queue: MuseQueue,
-    position: number,
-    set_options = false,
-  ) {
-    if (set_options) this.set_queue_options(queue);
-
-    this.list.splice(
-      position,
-      0,
-      queue.tracks.map((song) => ObjectContainer.new(song)),
-    );
+  constructor() {
+    super();
   }
 
-  private play_next(queue: MuseQueue, set_options?: boolean) {
-    this.add_queue_at_position(queue, this.position + 1, set_options);
-  }
+  async get_track_options(video_id: string) {
+    if (!this.track_options_cache.has(video_id)) {
+      const queue = await get_queue(video_id, null);
 
-  private add(queue: MuseQueue, set_options?: boolean) {
-    this.add_queue_at_position(queue, this.list.n_items, set_options);
+      this.track_options_cache.set(
+        video_id,
+        _omit(queue, ["tracks", "continuation"]),
+      );
+    }
+
+    return this.track_options_cache.get(video_id)!;
   }
 
   async add_playlist(
@@ -200,6 +180,42 @@ export class Queue extends GObject.Object {
     this.clear();
 
     this.add(song_queue, true);
+  }
+
+  next(): QueueTrack | null {
+    if (this.position >= this.list.n_items) return null;
+
+    this.increment_position(1);
+    return this.list.get_item(this.position)?.item!;
+  }
+
+  previous(): QueueTrack | null {
+    if (this.position <= 0) return null;
+
+    this.increment_position(-1);
+    return this.list.get_item(this.position)?.item!;
+  }
+
+  private add_queue_at_position(
+    queue: MuseQueue,
+    position: number,
+    set_options = false,
+  ) {
+    if (set_options) this.set_queue_options(queue);
+
+    this.list.splice(
+      position,
+      0,
+      queue.tracks.map((song) => ObjectContainer.new(song)),
+    );
+  }
+
+  private play_next(queue: MuseQueue, set_options?: boolean) {
+    this.add_queue_at_position(queue, this.position + 1, set_options);
+  }
+
+  private add(queue: MuseQueue, set_options?: boolean) {
+    this.add_queue_at_position(queue, this.list.n_items, set_options);
   }
 }
 

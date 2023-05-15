@@ -1,7 +1,7 @@
 import Gst from "gi://Gst";
 import GObject from "gi://GObject";
 
-import { Queue } from "./queue.js";
+import { Queue, TrackOptions } from "./queue.js";
 import { AudioFormat, get_song, Song } from "../muse.js";
 import { QueueTrack } from "libmuse/types/parsers/queue.js";
 import { ObjectContainer } from "src/util/objectcontainer.js";
@@ -16,6 +16,7 @@ type MaybeAdaptiveFormat = AudioFormat & {
 export type TrackMetadata = {
   song: Song;
   track: QueueTrack;
+  options: TrackOptions;
 };
 
 export class Player extends GObject.Object {
@@ -123,7 +124,11 @@ export class Player extends GObject.Object {
     const song = await get_song(track.videoId);
     const format = this.negotiate_best_format(song);
 
-    this._current = ObjectContainer.new({ song, track });
+    this._current = ObjectContainer.new({
+      song,
+      track,
+      options: await this.queue.get_track_options(track.videoId),
+    });
     this.notify("current");
 
     this.stop();
