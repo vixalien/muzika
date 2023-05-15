@@ -1,8 +1,9 @@
 import GObject from "gi://GObject";
 import Gio from "gi://Gio";
 
-import { get_song, Song } from "../muse.js";
+import { get_queue, Queue as MuseQueue } from "../muse.js";
 import { ObjectContainer } from "../util/objectcontainer.js";
+import { QueueTrack } from "libmuse/types/parsers/queue.js";
 
 export class Queue extends GObject.Object {
   static {
@@ -57,11 +58,23 @@ export class Queue extends GObject.Object {
     }, this);
   }
 
-  private _list: Gio.ListStore<ObjectContainer<Song>> = new Gio.ListStore();
-  private _position = -1
+  private _list: Gio.ListStore<ObjectContainer<QueueTrack>> = new Gio
+    .ListStore();
+  private _position = -1;
+
+  private options?: Omit<MuseQueue, "tracks">;
+
+  constructor() {
+    super();
+  }
 
   get list() {
     return this._list;
+  }
+
+  clear() {
+    this._list.remove_all();
+    this.change_position(-1);
   }
 
   private change_position(position: number) {
@@ -93,51 +106,116 @@ export class Queue extends GObject.Object {
     return this.position > 0;
   }
 
-  constructor() {
-    super();
-  }
-
-  next(): Song | null {
+  next(): QueueTrack | null {
     if (this.position >= this.list.n_items) return null;
 
     this.increment_position(1);
     return this.list.get_item(this.position)?.item!;
   }
 
-  previous(): Song | null {
+  previous(): QueueTrack | null {
     if (this.position <= 0) return null;
 
     this.increment_position(-1);
     return this.list.get_item(this.position)?.item!;
   }
 
-  private async add_at_position(
-    song_or_ids: Song[] | string[],
-    position: number,
-  ) {
-    if (!song_or_ids || song_or_ids.length <= 0) return;
+  private set_queue_options(queue: MuseQueue) {
+    this.options = _omit(queue, ["tracks"]);
+  }
 
-    const songs = await Promise.all(
-      song_or_ids
-        .map((song) => {
-          if (typeof song === "string") {
-            return get_song(song);
-          } else {
-            return song;
-          }
-        }),
+  private add_queue_tracks(tracks: QueueTrack[]) {
+    tracks.forEach((track) => {
+      this.list.append(ObjectContainer.new(track));
+    });
+  }
+
+  private add_queue_at_position(
+    queue: MuseQueue,
+    position: number,
+    set_options = false,
+  ) {
+    if (set_options) this.set_queue_options(queue);
+
+    this.list.splice(
+      position,
+      0,
+      queue.tracks.map((song) => ObjectContainer.new(song)),
+    );
+  }
+
+  private play_next(queue: MuseQueue, set_options?: boolean) {
+    this.add_queue_at_position(queue, this.position + 1, set_options);
+  }
+
+  private add(queue: MuseQueue, set_options?: boolean) {
+    this.add_queue_at_position(queue, this.list.n_items, set_options);
+  }
+
+  async add_playlist(
+    playlist_id: string,
+    video_id?: string,
+    options: AddPlaylistOptions = {},
+  ) {
+    const queue = await get_queue(video_id ?? null, playlist_id, {
+      shuffle: options.shuffle ?? false,
+      signal: options.signal,
+    });
+
+    if (options.next) {
+      this.play_next(queue);
+    } else {
+      this.add(queue);
+    }
+  }
+
+  async add_songs(song_ids: string[], options: AddPlaylistOptions = {}) {
+    const song_queues = await Promise.all(
+      song_ids.map((song_id) => get_queue(song_id, null, options)),
     );
 
-    const song_containers = songs.map((song) => ObjectContainer.new(song));
-
-    this.list.splice(position, 0, song_containers);
+    if (options.next) {
+      song_queues.forEach((queue) => this.play_next(queue));
+    } else {
+      song_queues.forEach((queue) => this.add(queue));
+    }
   }
 
-  async add(song_or_ids: Song[] | string[]) {
-    await this.add_at_position(song_or_ids, this.position + 1);
+  async play_playlist(...options: Parameters<Queue["add_playlist"]>) {
+    this.clear();
+    await this.add_playlist(...options);
   }
 
-  async add_last(song_or_ids: Song[] | string[]) {
-    await this.add_at_position(song_or_ids, this.list.n_items);
+  async play_songs(...options: Parameters<Queue["add_songs"]>) {
+    this.clear();
+    await this.add_songs(...options);
   }
+
+  async play_song(song_id: string, signal?: AbortSignal) {
+    const song_queue = await get_queue(song_id, null, {
+      signal,
+      radio: true,
+    });
+
+    this.clear();
+
+    this.add(song_queue, true);
+  }
+}
+
+interface AddPlaylistOptions {
+  shuffle?: boolean;
+  next?: boolean;
+  signal?: AbortSignal;
+}
+
+function _omit<Object extends Record<string, any>, Key extends keyof Object>(
+  object: Object,
+  keys: Key[],
+): Omit<Object, Key> {
+  const new_object = { ...object };
+  for (const key of keys) {
+    delete new_object[key];
+  }
+  return new_object;
 }

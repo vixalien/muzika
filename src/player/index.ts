@@ -2,13 +2,20 @@ import Gst from "gi://Gst";
 import GObject from "gi://GObject";
 
 import { Queue } from "./queue.js";
-import { AudioFormat, Song } from "../muse.js";
+import { AudioFormat, get_song, Song } from "../muse.js";
+import { QueueTrack } from "libmuse/types/parsers/queue.js";
+import { ObjectContainer } from "src/util/objectcontainer.js";
 
 const preferred_quality: AudioFormat["audio_quality"] = "medium";
 const preferred_format: AudioFormat["audio_codec"] = "opus";
 
 type MaybeAdaptiveFormat = AudioFormat & {
   adaptive: boolean;
+};
+
+export type TrackMetadata = {
+  song: Song;
+  track: QueueTrack;
 };
 
 export class Player extends GObject.Object {
@@ -23,14 +30,28 @@ export class Player extends GObject.Object {
           Queue.$gtype,
           GObject.ParamFlags.READABLE,
         ),
+        current: GObject.param_spec_object(
+          "current",
+          "Current",
+          "The current song",
+          ObjectContainer.$gtype,
+          GObject.ParamFlags.READABLE,
+        ),
       },
     }, this);
   }
+
   player: Gst.Element;
   fakesink: Gst.Element;
   // URL: string;
 
   private _queue: Queue = new Queue();
+
+  _current: ObjectContainer<TrackMetadata> | null = null;
+
+  get current() {
+    return this._current;
+  }
 
   get queue(): Queue {
     return this._queue;
@@ -74,7 +95,7 @@ export class Player extends GObject.Object {
     }
   }
 
-  previous() {
+  async previous() {
     const song = this.queue.previous();
 
     if (song) {
@@ -84,7 +105,7 @@ export class Player extends GObject.Object {
     }
   }
 
-  next() {
+  async next() {
     const song = this.queue.next();
 
     if (song) {
@@ -98,8 +119,12 @@ export class Player extends GObject.Object {
     this.player.set_state(Gst.State.NULL);
   }
 
-  play_song(song: Song) {
+  async play_song(track: QueueTrack) {
+    const song = await get_song(track.videoId);
     const format = this.negotiate_best_format(song);
+
+    this._current = ObjectContainer.new({ song, track });
+    this.notify("current");
 
     this.stop();
     this.player.set_property("uri", format.url);

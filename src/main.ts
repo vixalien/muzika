@@ -153,18 +153,30 @@ export class Application extends Adw.Application {
 
     this.player = new Player();
 
-    this.player.queue.add(["-2yJiningjk", "DPbj1iKH5Yk", "-2yJiningjk"])
+    this.player.queue
+      .add_songs(["-2yJiningjk", "DPbj1iKH5Yk", "-2yJiningjk"])
       .then(() => {
-        console.log("added to queue!", this.player.queue.list.n_items);
+        console.log("added tracks to queue!");
 
         this.player.next();
 
-        setTimeout(() => {
+        setInterval(() => {
           this.player.next();
         }, 5000);
-      }).catch((err) => {
-        console.error(err);
       });
+
+    // this.player.queue.play_next(["-2yJiningjk", "DPbj1iKH5Yk", "-2yJiningjk"])
+    //   .then(() => {
+    //     console.log("added to queue!", this.player.queue.list.n_items);
+
+    //     this.player.next();
+
+    //     setTimeout(() => {
+    //       this.player.next();
+    //     }, 5000);
+    //   }).catch((err) => {
+    //     console.error(err);
+    //   });
   }
 
   public vfunc_shutdown(): void {
