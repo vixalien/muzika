@@ -6,6 +6,7 @@ import GLib from "gi://GLib";
 import { Window } from "./window.js";
 import { cache } from "./polyfills/fetch.js";
 import { Player } from "./player/index.js";
+import { AddActionEntries } from "./util/action.js";
 
 export const Settings = new Gio.Settings({ schema: pkg.name });
 
@@ -17,11 +18,15 @@ export class Application extends Adw.Application {
   }
 
   init_actions() {
-    const quit_action = new Gio.SimpleAction({ name: "quit" });
-    quit_action.connect("activate", () => {
-      this.quit();
-    });
-    this.add_action(quit_action);
+    (this.add_action_entries as AddActionEntries)([
+      {
+        name: "quit",
+        activate: () => {
+          this.quit();
+        },
+      },
+    ]);
+
     this.set_accels_for_action("app.quit", ["<primary>q"]);
   }
 
@@ -130,7 +135,14 @@ export class Application extends Adw.Application {
     this.player = new Player();
 
     this.player.queue
-      .add_songs(["GJnWa0QWUpM", "DPbj1iKH5Yk", "-2yJiningjk", "OeY0I9baRvM", "9lvYKJYmHsY", "t4IEaUhIuCs"])
+      .add_songs([
+        "GJnWa0QWUpM",
+        "DPbj1iKH5Yk",
+        "-2yJiningjk",
+        "OeY0I9baRvM",
+        "9lvYKJYmHsY",
+        "t4IEaUhIuCs",
+      ])
       .then(() => {
         console.log("added tracks to queue!");
 
