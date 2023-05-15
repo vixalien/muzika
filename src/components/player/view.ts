@@ -1,5 +1,7 @@
 import Gtk from "gi://Gtk?version=4.0";
 import GObject from "gi://GObject";
+import GLib from "gi://GLib";
+import Gst from "gi://Gst";
 
 import { Song } from "../../muse.js";
 import { Player, TrackMetadata } from "../../player/index.js";
@@ -77,6 +79,15 @@ export class PlayerView extends Gtk.ActionBar {
 
     this.player.connect("notify::playing", () => {
       this.update_play_button();
+      this.update_progress();
+    });
+
+    this.player.connect("notify::seeking-enabled", () => {
+      this.update_seeking();
+    });
+
+    this.player.connect("notify::position", () => {
+      this.update_progress();
     });
 
     // buttons
@@ -92,6 +103,16 @@ export class PlayerView extends Gtk.ActionBar {
     this._next_button.connect("clicked", () => {
       this.player.next();
     });
+
+    this._progress_scale.connect("change-value", () => {
+      if (this.player.seeking_enabled) {
+        this.player.playbin.seek_simple(
+          Gst.Format.TIME,
+          Gst.SeekFlags.FLUSH | Gst.SeekFlags.SKIP,
+          this._progress_adjustment.value,
+        );
+      }
+    });
   }
 
   update_play_button() {
@@ -102,17 +123,97 @@ export class PlayerView extends Gtk.ActionBar {
     }
   }
 
+  update_seeking() {
+    this._progress_scale.set_sensitive(this.player.seeking_enabled);
+
+    if (this.player.seeking_enabled) {
+      this._progress_adjustment.set_lower(this.player.seeking_low);
+      this._progress_adjustment.set_upper(this.player.seeking_high);
+    }
+  }
+
+  update_progress_cb() {
+    const position = this.player.get_position();
+    if (position != null) {
+      this._progress_adjustment.value = position;
+      this._progress_label.label = nano_to_string(position);
+    }
+  }
+
+  update_progress_timeout: number | null = null;
+
+  update_progress() {
+    if (this.player.playing) {
+      if (!this.update_progress_timeout) {
+        this.update_progress_timeout = GLib.timeout_add(
+          GLib.PRIORITY_DEFAULT,
+          100,
+          () => {
+            this.update_progress_cb();
+            return GLib.SOURCE_CONTINUE;
+          },
+        );
+      }
+    } else {
+      if (this.update_progress_timeout != null) {
+        GLib.source_remove(this.update_progress_timeout);
+        this.update_progress_timeout = null;
+      }
+    }
+  }
+
   show_song({ track, options }: TrackMetadata) {
+    // thumbnail
+
+    load_thumbnails(this._image, track.thumbnails, 74);
+
+    // labels
+
     this._title.label = track.title;
     this._subtitle.label = track.artists[0].name;
 
     this._duration_label.label = track.duration?.toString() ?? "";
 
+    // toggle buttons
+
     this._lyrics_button.set_sensitive(options.lyrics != null);
+
+    // buttons
 
     this._prev_button.set_sensitive(this.player.queue.can_play_previous);
     this._next_button.set_sensitive(this.player.queue.can_play_next);
 
-    load_thumbnails(this._image, track.thumbnails, 74);
+    // progress
+
+    this._progress_adjustment.value = 0;
   }
+}
+
+function seconds_to_string(seconds: number) {
+  // show the duration in the format "mm:ss"
+  // show hours if the duration is longer than an hour
+
+  const hours = Math.floor(seconds / 3600);
+  const minutes = Math.floor(seconds / 60) % 60;
+  seconds = Math.floor(seconds % 60);
+
+  let string = "";
+
+  if (hours > 0) {
+    string += hours.toString().padStart(2, "0") + ":";
+  }
+
+  string += minutes.toString().padStart(2, "0") + ":";
+
+  string += seconds.toString().padStart(2, "0");
+
+  return string;
+}
+
+function nano_to_seconds(nano: number) {
+  return nano / Gst.SECOND;
+}
+
+function nano_to_string(nano: number) {
+  return seconds_to_string(nano_to_seconds(nano));
 }

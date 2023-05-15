@@ -154,7 +154,7 @@ export class Application extends Adw.Application {
     this.player = new Player();
 
     this.player.queue
-      .add_songs(["-2yJiningjk", "DPbj1iKH5Yk", "-2yJiningjk"])
+      .add_songs(["GJnWa0QWUpM", "DPbj1iKH5Yk", "-2yJiningjk"])
       .then(() => {
         console.log("added tracks to queue!");
 

@@ -60,6 +60,40 @@ export class Player extends GObject.Object {
           false,
           GObject.ParamFlags.READABLE,
         ),
+        seeking_enabled: GObject.param_spec_boolean(
+          "seeking-enabled",
+          "Seeking enabled",
+          "Whether seeking is enabled",
+          false,
+          GObject.ParamFlags.READABLE,
+        ),
+        seeking_low: GObject.param_spec_uint64(
+          "seeking-low",
+          "Seeking low",
+          "The low bound of the seeking range",
+          0,
+          Number.MAX_SAFE_INTEGER,
+          0,
+          GObject.ParamFlags.READABLE,
+        ),
+        seeking_high: GObject.param_spec_uint64(
+          "seeking-high",
+          "Seeking high",
+          "The high bound of the seeking range",
+          0,
+          Number.MAX_SAFE_INTEGER,
+          0,
+          GObject.ParamFlags.READABLE,
+        ),
+        position: GObject.param_spec_uint64(
+          "position",
+          "Position",
+          "The current position",
+          0,
+          Number.MAX_SAFE_INTEGER,
+          0,
+          GObject.ParamFlags.READABLE,
+        ),
       },
     }, this);
   }
@@ -106,10 +140,64 @@ export class Player extends GObject.Object {
     return this._queue;
   }
 
-  _current: ObjectContainer<TrackMetadata> | null = null;
+  private _current: ObjectContainer<TrackMetadata> | null = null;
 
   get current() {
     return this._current;
+  }
+
+  private _position = 0;
+
+  get position() {
+    return this._position;
+  }
+
+  private set position(value: number) {
+    this._position = value;
+    this.notify("position");
+  }
+
+  get_position() {
+    const [ret, pos] = this.playbin.query_position(Gst.Format.TIME);
+
+    if (ret) {
+      return pos;
+    } else {
+      return null;
+    }
+  }
+
+  private _seeking_enabled = false;
+
+  get seeking_enabled() {
+    return this._seeking_enabled;
+  }
+
+  private set seeking_enabled(value: boolean) {
+    this._seeking_enabled = value;
+    this.notify("seeking-enabled");
+  }
+
+  private _seeking_low = 0;
+
+  get seeking_low() {
+    return this._seeking_low;
+  }
+
+  private set seeking_low(value: number) {
+    this._seeking_low = value;
+    this.notify("seeking-low");
+  }
+
+  private _seeking_high = 0;
+
+  get seeking_high() {
+    return this._seeking_high;
+  }
+
+  private set seeking_high(value: number) {
+    this._seeking_high = value;
+    this.notify("seeking-high");
   }
 
   constructor() {
@@ -200,7 +288,19 @@ export class Player extends GObject.Object {
   private on_message(_bus: Gst.Bus, message: Gst.Message) {
     const type = message.type;
 
+    const [position_available, position] = this.playbin.query_position(
+      Gst.Format.TIME,
+    );
+
+    if (position_available) {
+      this.position = position;
+    }
+
     switch (type) {
+      case Gst.MessageType.RESET_TIME:
+        const time = message.parse_reset_time();
+        if (time) this.playbin.set_property("running-time", time);
+        break;
       case Gst.MessageType.EOS:
         this.next();
         break;
@@ -208,6 +308,10 @@ export class Player extends GObject.Object {
         this.stop();
         const [error, debug] = message.parse_error();
         console.log("Error: ", error, debug);
+      case Gst.MessageType.CLOCK_LOST:
+        this.playbin.set_state(Gst.State.PAUSED);
+        this.playbin.set_state(Gst.State.PLAYING);
+        break;
       case Gst.MessageType.BUFFERING:
         const percent = message.parse_buffering();
 
@@ -225,6 +329,23 @@ export class Player extends GObject.Object {
           this.buffering = true;
         }
         break;
+      case Gst.MessageType.STATE_CHANGED:
+        const [_old_state, new_state, _pending_state] = message
+          .parse_state_changed();
+
+        const playing = new_state === Gst.State.PLAYING;
+
+        if (playing) {
+          const query = Gst.Query.new_seeking(Gst.Format.TIME);
+
+          if (this.playbin.query(query)) {
+            const result = query.parse_seeking();
+
+            this.seeking_enabled = result[1];
+            this.seeking_low = result[2];
+            this.seeking_high = result[3];
+          }
+        }
     }
   }
 
