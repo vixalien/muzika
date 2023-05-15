@@ -4,6 +4,7 @@ import Gio from "gi://Gio";
 import { get_queue, Queue as MuseQueue } from "../muse.js";
 import { ObjectContainer } from "../util/objectcontainer.js";
 import { QueueTrack } from "libmuse/types/parsers/queue.js";
+import { AddActionEntries } from "src/util/action.js";
 
 export type TrackOptions = Omit<MuseQueue, "tracks" | "continuation">;
 
@@ -249,6 +250,9 @@ export class Queue extends GObject.Object {
       this.change_position(queue.current.index);
     } else if (this.position < 0) {
       this.change_position(0);
+    } else {
+      this.notify("can-play-previous");
+      this.notify("can-play-next");
     }
   }
 
