@@ -4,7 +4,7 @@ import GObject from "gi://GObject";
 import { Grid } from "../../components/grid/index.js";
 import { MixedCard } from "./mixedcard.js";
 import { MixedItem } from "../../muse.js";
-import { Settings } from "../../main.js";
+import { Settings } from "../../application.js";
 
 export interface LibraryViewOptions {
   filters?: string[];

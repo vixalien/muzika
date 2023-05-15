@@ -29,7 +29,7 @@ import Adw from "gi://Adw";
 
 import { Navigator } from "./navigation.js";
 import { PlayerView } from "./components/player/view.js";
-import { Application } from "./main.js";
+import { Application } from "./application.js";
 
 export class Window extends Adw.ApplicationWindow {
   static {
