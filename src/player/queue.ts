@@ -209,7 +209,9 @@ export class Queue extends GObject.Object {
       queue.tracks.map((song) => ObjectContainer.new(song)),
     );
 
-    if (this.position < 0) {
+    if (queue.current?.index != null) {
+      this.change_position(queue.current.index);
+    } else if (this.position < 0) {
       this.change_position(0);
     }
   }
