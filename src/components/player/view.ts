@@ -113,19 +113,7 @@ export class PlayerView extends Gtk.ActionBar {
     });
 
     this._repeat_button.connect("clicked", () => {
-      const repeat_mode = this.player.queue.repeat;
-
-      switch (repeat_mode) {
-        case RepeatMode.ALL:
-          this.player.queue.repeat = RepeatMode.ONE;
-          break;
-        case RepeatMode.ONE:
-          this.player.queue.repeat = RepeatMode.NONE;
-          break;
-        case RepeatMode.NONE:
-          this.player.queue.repeat = RepeatMode.ALL;
-          break;
-      }
+      this.player.queue.toggle_repeat();
     });
 
     this._progress_scale.connect("change-value", () => {

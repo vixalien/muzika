@@ -4,14 +4,13 @@ import Gio from "gi://Gio";
 import { get_queue, Queue as MuseQueue } from "../muse.js";
 import { ObjectContainer } from "../util/objectcontainer.js";
 import { QueueTrack } from "libmuse/types/parsers/queue.js";
-import { AddActionEntries } from "src/util/action.js";
 
 export type TrackOptions = Omit<MuseQueue, "tracks" | "continuation">;
 
 export enum RepeatMode {
   NONE = 0,
-  ONE = 1,
-  ALL = 2,
+  ALL = 1,
+  ONE = 2,
 }
 
 export class Queue extends GObject.Object {
@@ -96,10 +95,12 @@ export class Queue extends GObject.Object {
   }
 
   get can_play_next() {
+    if (this.repeat === RepeatMode.ALL) return true;
     return this.position < this.list.n_items - 1;
   }
 
   get can_play_previous() {
+    if (this.repeat === RepeatMode.ALL) return true;
     return this.position > 0;
   }
 
@@ -135,6 +136,13 @@ export class Queue extends GObject.Object {
 
   constructor() {
     super();
+  }
+
+  toggle_repeat() {
+    this.repeat = (this.repeat + 1) % 3;
+
+    this.notify("can-play-next");
+    this.notify("can-play-previous");
   }
 
   async get_track_options(video_id: string) {
@@ -201,16 +209,7 @@ export class Queue extends GObject.Object {
   }
 
   next(): QueueTrack | null {
-    if (this.position >= this.list.n_items - 1) return null;
-
-    this.increment_position(1);
-    return this.list.get_item(this.position)?.item!;
-  }
-
-  repeat_or_next() {
-    if (this.repeat === RepeatMode.NONE) {
-      return this.next();
-    } else if (this.repeat === RepeatMode.ALL) {
+    if (this.repeat === RepeatMode.ALL) {
       if (this.position >= this.list.n_items - 1) {
         this.change_position(0);
       } else {
@@ -218,19 +217,38 @@ export class Queue extends GObject.Object {
       }
 
       return this.list.get_item(this.position)?.item!;
-    } else if (this.repeat === RepeatMode.ONE) {
+    } else {
+      if (this.position >= this.list.n_items - 1) return null;
+
+      this.increment_position(1);
+      return this.list.get_item(this.position)?.item!;
+    }
+  }
+
+  repeat_or_next() {
+    if (this.repeat === RepeatMode.ONE) {
       this.change_position(this.position);
       return this.list.get_item(this.position)?.item!;
     } else {
-      return null;
+      return this.next();
     }
   }
 
   previous(): QueueTrack | null {
-    if (this.position <= 0) return null;
+    if (this.repeat === RepeatMode.ALL) {
+      if (this.position <= 0) {
+        this.change_position(this.list.n_items - 1);
+      } else {
+        this.increment_position(-1);
+      }
 
-    this.increment_position(-1);
-    return this.list.get_item(this.position)?.item!;
+      return this.list.get_item(this.position)?.item!;
+    } else {
+      if (this.position <= 0) return null;
+
+      this.increment_position(-1);
+      return this.list.get_item(this.position)?.item!;
+    }
   }
 
   private add_queue_at_position(
