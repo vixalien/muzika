@@ -30,60 +30,6 @@ export class Application extends Adw.Application {
     this.set_accels_for_action("app.quit", ["<primary>q"]);
   }
 
-  init_nav_actions() {
-    const navigator = this.window?.navigator;
-
-    if (!navigator) {
-      return console.error("No navigator, cannot init nav actions");
-    }
-
-    const navigate_action = Gio.SimpleAction.new(
-      "navigate",
-      GLib.VariantType.new("s"),
-    );
-    navigate_action.connect("activate", (action, param) => {
-      if (!param || !window) return;
-
-      const [url] = param.get_string();
-      if (url) {
-        if (url.startsWith("muzika:")) {
-          this.window?.navigator.navigate(url.slice(7));
-        }
-      }
-    });
-    this.add_action(navigate_action);
-
-    const back_action = new Gio.SimpleAction({ name: "back", enabled: false });
-    back_action.connect("activate", () => {
-      this.window?.navigator.back();
-    });
-    this.add_action(back_action);
-
-    navigator.connect("notify::can-go-back", () => {
-      back_action.enabled = navigator.can_go_back;
-    });
-
-    const push_state_action = new Gio.SimpleAction({
-      name: "push-state",
-      parameter_type: GLib.VariantType.new("s"),
-    });
-    push_state_action.connect("activate", (_, parameter) => {
-      if (!parameter) return;
-
-      navigator.pushState({ uri: parameter.get_string()[0] });
-    });
-
-    const replace_state_action = new Gio.SimpleAction({
-      name: "replace-state",
-      parameter_type: GLib.VariantType.new("s"),
-    });
-    replace_state_action.connect("activate", (_, parameter) => {
-      if (!parameter) return;
-
-      navigator.replaceState({ uri: parameter.get_string()[0] });
-    });
-  }
-
   argv: string[] = [];
   player: Player;
 
@@ -160,8 +106,6 @@ export class Application extends Adw.Application {
   public vfunc_activate(): void {
     if (!this.window) {
       this.window = new Window({ application: this });
-
-      this.init_nav_actions();
     }
 
     this.window.present();

@@ -239,13 +239,10 @@ export class Carousel<
     }
 
     if (uri) {
-      const root = this.get_root() as Gtk.Window;
-
-      if (!root) return;
-
-      const app = root.application;
-
-      app.activate_action("navigate", GLib.Variant.new("s", "muzika:" + uri));
+      this.activate_action(
+        "navigator.visit",
+        GLib.Variant.new_string("muzika:" + uri),
+      );
     }
   }
 

@@ -267,7 +267,7 @@ export class PlaylistHeader extends Gtk.Box {
           css_classes: ["title-3", "inline", "bold", "link", ...link_arr],
           ...(author.id
             ? {
-              action_name: "app.navigate",
+              action_name: "navigator.visit",
               action_target: GLib.Variant.new(
                 "s",
                 `muzika:${author.artist ? "artist" : "user"}:${author.id}`,

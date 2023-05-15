@@ -57,7 +57,7 @@ export class AlbumItemCard extends Gtk.ListBoxRow {
       button.add_css_class("flat");
       button.add_css_class("link");
 
-      button.action_name = "app.navigate";
+      button.action_name = "navigator.visit";
       button.action_target = GLib.Variant.new(
         "s",
         `muzika:artist:${artist.id}`,

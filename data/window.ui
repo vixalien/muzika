@@ -15,7 +15,7 @@
             <child type="start">
               <object class="GtkButton" id="back_button">
                 <property name="icon-name">left-symbolic</property>
-                <property name="action-name">app.back</property>
+                <property name="action-name">navigator.back</property>
               </object>
             </child>
             <child type="end">

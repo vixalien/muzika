@@ -46,7 +46,7 @@ export class LibraryPage extends Gtk.Box {
 
     let url = `muzika:library?replace=true&order=${order}`;
 
-    this.activate_action("app.navigate", GLib.Variant.new_string(url));
+    this.activate_action("navigator.visit", GLib.Variant.new_string(url));
   }
 
   show_library(library: Library) {

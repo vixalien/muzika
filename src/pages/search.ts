@@ -144,7 +144,7 @@ export class SearchPage extends Gtk.Box {
           },
         );
 
-        button.action_name = "app.navigate";
+        button.action_name = "navigator.visit";
         button.action_target = GLib.Variant.new("s", url);
 
         if (selected) {

@@ -1,5 +1,6 @@
 import Gtk from "gi://Gtk?version=4.0";
 import GObject from "gi://GObject";
+import Gio from "gi://Gio";
 
 import { match, MatchFunction, MatchResult } from "path-to-regexp";
 
@@ -7,6 +8,7 @@ import { Loading } from "./components/loading.js";
 
 import { endpoints } from "./endpoints.js";
 import { ErrorPage } from "./pages/error.js";
+import { AddActionEntries } from "./util/action.js";
 
 export type EndpointCtx = {
   match: MatchResult<Record<string, string>>;
@@ -97,6 +99,61 @@ export class Navigator extends GObject.Object {
 
     this.add_loading_page();
     this.add_error_page();
+  }
+
+  get_action_group() {
+    const action_group = new Gio.SimpleActionGroup();
+
+    (action_group.add_action_entries as AddActionEntries)([
+      {
+        name: "visit",
+        parameter_type: "s",
+        activate: (_action, param) => {
+          if (!param) return;
+
+          const [url] = param.get_string();
+          console.log("activating visit", url);
+
+          if (url) {
+            if (url.startsWith("muzika:")) {
+              this.navigate(url.slice(7));
+            }
+          }
+        },
+      },
+      {
+        name: "back",
+        activate: () => {
+          this.back();
+        },
+      },
+      {
+        name: "push-state",
+        parameter_type: "s",
+        activate: (_action, param) => {
+          if (!param) return;
+
+          this.pushState({ uri: param.get_string()[0] });
+        },
+      },
+      {
+        name: "replace-state",
+        parameter_type: "s",
+        activate: (_action, param) => {
+          if (!param) return;
+
+          this.replaceState({ uri: param.get_string()[0] });
+        },
+      },
+    ]);
+
+    action_group.action_enabled_changed("back", this.can_go_back);
+
+    this.connect("notify::can-go-back", () => {
+      action_group.action_enabled_changed("back", this.can_go_back);
+    });
+
+    return action_group;
   }
 
   private add_error_page() {
