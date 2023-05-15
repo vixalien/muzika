@@ -98,24 +98,6 @@ export class PlayerView extends Gtk.ActionBar {
       this.update_progress_cb();
     });
 
-    // buttons
-
-    this._play_button.connect("clicked", () => {
-      this.activate_action("player.play-pause", null);
-    });
-
-    this._prev_button.connect("clicked", () => {
-      this.activate_action("player.previous", null);
-    });
-
-    this._next_button.connect("clicked", () => {
-      this.activate_action("player.next", null);
-    });
-
-    this._repeat_button.connect("clicked", () => {
-      this.player.queue.toggle_repeat();
-    });
-
     this._progress_scale.connect("change-value", () => {
       if (this.player.seeking_enabled) {
         this.activate_action(
@@ -248,11 +230,6 @@ export class PlayerView extends Gtk.ActionBar {
     // toggle buttons
 
     this._lyrics_button.set_sensitive(options.lyrics != null);
-
-    // buttons
-
-    this._prev_button.set_sensitive(this.player.queue.can_play_previous);
-    this._next_button.set_sensitive(this.player.queue.can_play_next);
 
     // progress
 

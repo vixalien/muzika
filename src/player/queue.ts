@@ -4,6 +4,7 @@ import Gio from "gi://Gio";
 import { get_queue, Queue as MuseQueue } from "../muse.js";
 import { ObjectContainer } from "../util/objectcontainer.js";
 import { QueueTrack } from "libmuse/types/parsers/queue.js";
+import { AddActionEntries } from "src/util/action.js";
 
 export type TrackOptions = Omit<MuseQueue, "tracks" | "continuation">;
 
@@ -136,6 +137,21 @@ export class Queue extends GObject.Object {
 
   constructor() {
     super();
+  }
+
+  get_action_group() {
+    const action_group = Gio.SimpleActionGroup.new();
+
+    (action_group.add_action_entries as AddActionEntries)([
+      {
+        name: "toggle-repeat",
+        activate: () => {
+          this.toggle_repeat();
+        },
+      },
+    ]);
+
+    return action_group;
   }
 
   toggle_repeat() {

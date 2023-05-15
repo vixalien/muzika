@@ -276,6 +276,32 @@ export class Player extends GObject.Object {
       },
     ]);
 
+    this.connect("notify::playing", () => {
+      action_group.action_enabled_changed("play", !this.playing);
+      action_group.action_enabled_changed("pause", this.playing);
+    });
+
+    action_group.action_enabled_changed("play", !this.playing);
+    action_group.action_enabled_changed("pause", this.playing);
+
+    this.queue.connect("notify::can-play-previous", () => {
+      action_group.action_enabled_changed(
+        "previous",
+        this.queue.can_play_previous,
+      );
+    });
+
+    action_group.action_enabled_changed(
+      "previous",
+      this.queue.can_play_previous,
+    );
+
+    this.queue.connect("notify::can-play-next", () => {
+      action_group.action_enabled_changed("next", this.queue.can_play_next);
+    });
+
+    action_group.action_enabled_changed("next", this.queue.can_play_next);
+
     return action_group;
   }
 

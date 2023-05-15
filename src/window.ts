@@ -94,15 +94,15 @@ export class Window extends Adw.ApplicationWindow {
     const application = this.application as Application;
 
     this.insert_action_group("player", application.player.get_action_group());
+    this.insert_action_group(
+      "queue",
+      application.player.queue.get_action_group(),
+    );
 
     this.player_view = new PlayerView({
       player: application.player,
     });
 
     this._box.append(this.player_view);
-
-    // const home_page = new HomePage();
-    // home_page.load_home();
-    // this._box.append(home_page);
   }
 }
