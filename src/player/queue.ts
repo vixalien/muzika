@@ -14,6 +14,16 @@ export enum RepeatMode {
   ONE = 2,
 }
 
+// Durstenfeld's modification of Fisher-Yates shuffle
+function durstenfeld_shuffle<T extends any>(array: T[]) {
+  for (let i = array.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]];
+  }
+
+  return array;
+}
+
 export class Queue extends GObject.Object {
   static {
     GObject.registerClass({
@@ -72,6 +82,13 @@ export class Queue extends GObject.Object {
           0,
           GObject.ParamFlags.READWRITE,
         ),
+        shuffle: GObject.param_spec_boolean(
+          "shuffle",
+          "Shuffle",
+          "Whether the queue is shuffled",
+          false,
+          GObject.ParamFlags.READWRITE,
+        ),
       },
     }, this);
   }
@@ -80,12 +97,16 @@ export class Queue extends GObject.Object {
 
   private _list: Gio.ListStore<ObjectContainer<QueueTrack>> = new Gio
     .ListStore();
+  // original is used to store unshuffled list
+  private _original: Gio.ListStore<ObjectContainer<QueueTrack>> = new Gio
+    .ListStore();
 
   get list() {
     return this._list;
   }
 
   clear() {
+    this._original.remove_all();
     this._list.remove_all();
     this.change_position(-1);
   }
@@ -135,6 +156,57 @@ export class Queue extends GObject.Object {
     return this._track_options_cache;
   }
 
+  private _shuffle = false;
+
+  get shuffle() {
+    return this._shuffle;
+  }
+
+  set shuffle(shuffled: boolean) {
+    this._shuffle = shuffled;
+    this.notify("shuffle");
+
+    if (shuffled) {
+      this._original.remove_all();
+
+      const items = this._get_items(this._list);
+
+      // store the items into original
+      for (const item of items) {
+        this._original.append(item);
+      }
+
+      // add the items back to the list
+      this._list.splice(
+        this.position + 1,
+        items.length - this.position - 1,
+        durstenfeld_shuffle(items.slice(this.position + 1)),
+      );
+    } else {
+      const items = this._get_items(this._original);
+
+      this._list.splice(
+        this.position + 1,
+        items.length - this.position - 1,
+        items.slice(this.position + 1),
+      );
+
+      this._original.remove_all();
+    }
+  }
+
+  private _get_items(list: Gio.ListStore<ObjectContainer<QueueTrack>>) {
+    const items: ObjectContainer<QueueTrack>[] = [];
+
+    for (let i = 0; i < list.n_items; i++) {
+      const item = list.get_item(i);
+      if (!item) continue;
+      items.push(item);
+    }
+
+    return items;
+  }
+
   constructor() {
     super();
   }
@@ -147,6 +219,12 @@ export class Queue extends GObject.Object {
         name: "toggle-repeat",
         activate: () => {
           this.toggle_repeat();
+        },
+      },
+      {
+        name: "toggle-shuffle",
+        activate: () => {
+          this.shuffle = !this.shuffle;
         },
       },
     ]);
@@ -279,6 +357,14 @@ export class Queue extends GObject.Object {
       0,
       queue.tracks.map((song) => ObjectContainer.new(song)),
     );
+
+    if (this.shuffle) {
+      this._original.splice(
+        position,
+        0,
+        queue.tracks.map((song) => ObjectContainer.new(song)),
+      );
+    }
 
     if (queue.current?.index != null) {
       this.change_position(queue.current.index);

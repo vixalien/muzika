@@ -76,11 +76,6 @@ export class PlayerView extends Gtk.ActionBar {
     };
 
     cb();
-    this.update_repeat_button();
-
-    this.player.queue.connect("notify::repeat", () => {
-      this.update_repeat_button();
-    });
 
     // update the player when the current song changes
     this.player.connect("notify::current", cb);
@@ -105,6 +100,18 @@ export class PlayerView extends Gtk.ActionBar {
           GLib.Variant.new_double(this._progress_adjustment.value),
         );
       }
+    });
+
+    // buttons
+
+    this.update_repeat_button();
+
+    this.player.queue.connect("notify::repeat", () => {
+      this.update_repeat_button();
+    });
+
+    this.player.queue.connect("notify::shuffle", () => {
+      this._shuffle_button.set_active(this.player.queue.shuffle);
     });
 
     this.setup_volume_button();

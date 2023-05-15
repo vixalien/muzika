@@ -67,7 +67,8 @@
             <child>
               <object class="GtkToggleButton" id="shuffle_button">
                 <property name="icon-name">media-playlist-shuffle-symbolic</property>
-                <property name="tooltip-text">TOggle Shuffle</property>
+                <property name="tooltip-text">Toggle Shuffle</property>
+                <property name="action-name">queue.toggle-shuffle</property>
                 <property name="valign">3</property>
                 <property name="margin-end">12</property>
                 <style>
