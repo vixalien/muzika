@@ -8,7 +8,7 @@
       <class name="devel" />
     </style>
     <child>
-      <object class="GtkBox">
+      <object class="GtkBox" id="box">
         <property name="orientation">1</property>
         <child>
           <object class="GtkHeaderBar" id="header_bar">

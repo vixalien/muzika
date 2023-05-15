@@ -15,6 +15,7 @@ type MaybeAdaptiveFormat = AudioFormat & {
 
 export type TrackMetadata = {
   song: Song;
+  format: MaybeAdaptiveFormat;
   track: QueueTrack;
   options: TrackOptions;
 };
@@ -38,24 +39,77 @@ export class Player extends GObject.Object {
           ObjectContainer.$gtype,
           GObject.ParamFlags.READABLE,
         ),
+        is_live: GObject.param_spec_boolean(
+          "is-live",
+          "Is live",
+          "Whether the current song is live",
+          false,
+          GObject.ParamFlags.READABLE,
+        ),
+        buffering: GObject.param_spec_boolean(
+          "buffering",
+          "Buffering",
+          "Whether the player is buffering",
+          false,
+          GObject.ParamFlags.READABLE,
+        ),
+        playing: GObject.param_spec_boolean(
+          "playing",
+          "Playing",
+          "Whether the player is playing",
+          false,
+          GObject.ParamFlags.READABLE,
+        ),
       },
     }, this);
   }
 
-  player: Gst.Element;
+  playbin: Gst.Element;
   fakesink: Gst.Element;
-  // URL: string;
+
+  private _is_live = false;
+
+  get is_live() {
+    return this._is_live;
+  }
+
+  private set is_live(value: boolean) {
+    this._is_live = value;
+    this.notify("is-live");
+  }
+
+  private _buffering = false;
+
+  get buffering() {
+    return this._buffering;
+  }
+
+  private set buffering(value: boolean) {
+    this._buffering = value;
+    this.notify("buffering");
+  }
+
+  private _playing = false;
+
+  get playing() {
+    return this._playing;
+  }
+
+  private set playing(value: boolean) {
+    this._playing = value;
+    this.notify("playing");
+  }
 
   private _queue: Queue = new Queue();
+
+  get queue(): Queue {
+    return this._queue;
+  }
 
   _current: ObjectContainer<TrackMetadata> | null = null;
 
   get current() {
     return this._current;
-  }
-
-  get queue(): Queue {
-    return this._queue;
   }
 
   constructor() {
@@ -65,29 +119,34 @@ export class Player extends GObject.Object {
       Gst.init(null);
     }
 
-    // this.URL =
-    //   "https://rr2---sn-3ugf-3bae.googlevideo.com/videoplayback?expire=1684116886&ei=NkFhZOXwBOewxN8PgMCq0AE&ip=105.178.113.196&id=o-AJZyWGY07fxtXZAB4z-phw5z8_kCBt2PrwT-HKU-tA6-&itag=249&source=youtube&requiressl=yes&mh=t_&mm=31%2C29&mn=sn-3ugf-3bae%2Csn-hc57en76&ms=au%2Crdu&mv=m&mvi=2&pl=24&ctier=A&pfa=5&gcr=rw&initcwndbps=205000&hightc=yes&vprv=1&svpuc=1&mime=audio%2Fwebm&gir=yes&clen=2557161&dur=395.701&lmt=1676294036192731&mt=1684094944&fvip=3&keepalive=yes&fexp=24007246&c=ANDROID_MUSIC&txp=2318224&sparams=expire%2Cei%2Cip%2Cid%2Citag%2Csource%2Crequiressl%2Cctier%2Cpfa%2Cgcr%2Chightc%2Cvprv%2Csvpuc%2Cmime%2Cgir%2Cclen%2Cdur%2Clmt&sig=AOq0QJ8wRQIhAIxTYO6FeFp0oyvJ-SM6-W6-diCjqnPypdvQaucI3kNYAiAD8dyOPHjyTY7gPTdBjWf5j04IyaijzzUdMFspeQTKOw%3D%3D&lsparams=mh%2Cmm%2Cmn%2Cms%2Cmv%2Cmvi%2Cpl%2Cinitcwndbps&lsig=AG3C_xAwRAIgS80eCrw-zKeUDpEdingiCtoksZfBEgaAJRJV2VogU_ICIBW0oMyoIj5fqwGL_8V_GFjshLxEi4ZqgZaqJM0NsuGT";
-
-    this.player = Gst.ElementFactory.make("playbin", "player")!;
+    this.playbin = Gst.ElementFactory.make("playbin", "player")!;
     this.fakesink = Gst.ElementFactory.make("fakesink", "fakesink")!;
 
-    this.player.set_property("video-sink", this.fakesink);
+    this.playbin.set_property("video-sink", this.fakesink);
 
-    const bus = this.player.get_bus()!;
+    const bus = this.playbin.get_bus()!;
     bus.add_signal_watch();
     bus.connect("message", this.on_message.bind(this));
   }
 
   play() {
-    this.player.set_state(Gst.State.PLAYING);
+    this.playing = true;
+    const ret = this.playbin.set_state(Gst.State.PLAYING);
+
+    if (ret === Gst.StateChangeReturn.FAILURE) {
+      throw new Error("Failed to play");
+    } else if (ret === Gst.StateChangeReturn.NO_PREROLL) {
+      this.is_live = true;
+    }
   }
 
   pause() {
-    this.player.set_state(Gst.State.PAUSED);
+    this.playing = false;
+    this.playbin.set_state(Gst.State.PAUSED);
   }
 
   play_pause() {
-    const state = this.player.get_state(Gst.CLOCK_TIME_NONE)[1];
+    const state = this.playbin.get_state(Number.MAX_SAFE_INTEGER)[1];
 
     if (state === Gst.State.PLAYING) {
       this.pause();
@@ -117,7 +176,8 @@ export class Player extends GObject.Object {
   }
 
   stop() {
-    this.player.set_state(Gst.State.NULL);
+    this.playing = false;
+    this.playbin.set_state(Gst.State.NULL);
   }
 
   async play_song(track: QueueTrack) {
@@ -127,24 +187,44 @@ export class Player extends GObject.Object {
     this._current = ObjectContainer.new({
       song,
       track,
+      format,
       options: await this.queue.get_track_options(track.videoId),
     });
     this.notify("current");
 
     this.stop();
-    this.player.set_property("uri", format.url);
+    this.playbin.set_property("uri", format.url);
     this.play();
   }
 
   private on_message(_bus: Gst.Bus, message: Gst.Message) {
     const type = message.type;
 
-    if (type === Gst.MessageType.EOS) {
-      this.next();
-    } else if (type == Gst.MessageType.ERROR) {
-      this.stop();
-      const [error, debug] = message.parse_error();
-      console.log("Error: ", error, debug);
+    switch (type) {
+      case Gst.MessageType.EOS:
+        this.next();
+        break;
+      case Gst.MessageType.ERROR:
+        this.stop();
+        const [error, debug] = message.parse_error();
+        console.log("Error: ", error, debug);
+      case Gst.MessageType.BUFFERING:
+        const percent = message.parse_buffering();
+
+        if (this._is_live) return;
+
+        if (percent === 100) {
+          this.buffering = false;
+
+          if (this.playing) this.playbin.set_state(Gst.State.PLAYING);
+        } else {
+          if (!this.buffering && this.playing) {
+            this.playbin.set_state(Gst.State.PAUSED);
+          }
+
+          this.buffering = true;
+        }
+        break;
     }
   }
 

@@ -28,13 +28,21 @@ import Gtk from "gi://Gtk?version=4.0";
 import Adw from "gi://Adw";
 
 import { Navigator } from "./navigation.js";
+import { PlayerView } from "./components/player/view.js";
+import { Application } from "./main.js";
 
 export class Window extends Adw.ApplicationWindow {
   static {
     GObject.registerClass(
       {
         Template: "resource:///com/vixalien/muzika/window.ui",
-        InternalChildren: ["stack", "header_bar", "progress", "back_button"],
+        InternalChildren: [
+          "stack",
+          "header_bar",
+          "progress",
+          "back_button",
+          "box",
+        ],
         Properties: {
           navigator: GObject.ParamSpec.object(
             "navigator",
@@ -53,8 +61,10 @@ export class Window extends Adw.ApplicationWindow {
   _header_bar!: Gtk.HeaderBar;
   _progress!: Gtk.ProgressBar;
   _back_button!: Gtk.Button;
+  _box!: Gtk.Box;
 
   navigator: Navigator;
+  player_view: PlayerView;
 
   interval: number | null = null;
 
@@ -80,6 +90,12 @@ export class Window extends Adw.ApplicationWindow {
         this._progress.fraction = 0;
       }
     });
+
+    this.player_view = new PlayerView({
+      player: (this.application as Application).player,
+    });
+
+    this._box.append(this.player_view);
 
     // const home_page = new HomePage();
     // home_page.load_home();
