@@ -120,6 +120,7 @@ export class Application extends Adw.Application {
       // SIGINT
       2,
       () => {
+        this.player.pause();
         this.release();
 
         return GLib.SOURCE_REMOVE;
