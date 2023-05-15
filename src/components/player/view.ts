@@ -6,6 +6,7 @@ import Gst from "gi://Gst";
 import { Player, TrackMetadata } from "../../player/index.js";
 import { RepeatMode } from "../../player/queue.js";
 import { load_thumbnails } from "../webimage.js";
+import { Settings } from "src/application.js";
 
 export interface PlayerViewOptions {
   player: Player;
@@ -50,7 +51,7 @@ export class PlayerView extends Gtk.ActionBar {
   _progress_scale!: Gtk.ScaleButton;
   _progress_adjustment!: Gtk.Adjustment;
   _duration_label!: Gtk.Label;
-  _volume_button!: Gtk.ToggleButton;
+  _volume_button!: Gtk.VolumeButton;
   _queue_button!: Gtk.ToggleButton;
   _lyrics_button!: Gtk.ToggleButton;
 
@@ -136,6 +137,39 @@ export class PlayerView extends Gtk.ActionBar {
         );
       }
     });
+
+    this.setup_volume_button();
+  }
+
+  setup_volume_button() {
+    this._volume_button.adjustment = Gtk.Adjustment.new(
+      Settings.get_double("volume"),
+      0,
+      1,
+      0.01,
+      0.1,
+      0,
+    );
+
+    this._volume_button.connect("value-changed", () => {
+      Settings.set_double("volume", this._volume_button.adjustment.value);
+    });
+
+    this._volume_button.connect(
+      "query-tooltip",
+      (
+        _widget: Gtk.VolumeButton,
+        _x: number,
+        _y: number,
+        _keyboard_mode: boolean,
+        tooltip: Gtk.Tooltip,
+      ) => {
+        tooltip.set_text(
+          `${Math.round(this._volume_button.adjustment.value * 100)}%`,
+        );
+        return true;
+      },
+    );
   }
 
   update_repeat_button() {

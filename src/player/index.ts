@@ -1,10 +1,12 @@
 import Gst from "gi://Gst";
 import GObject from "gi://GObject";
 
+import type { QueueTrack } from "libmuse/types/parsers/queue.js";
+
 import { Queue, TrackOptions } from "./queue.js";
 import { AudioFormat, get_song, Song } from "../muse.js";
-import { QueueTrack } from "libmuse/types/parsers/queue.js";
-import { ObjectContainer } from "src/util/objectcontainer.js";
+import { Settings } from "../application.js";
+import { ObjectContainer } from "../util/objectcontainer.js";
 
 const preferred_quality: AudioFormat["audio_quality"] = "medium";
 const preferred_format: AudioFormat["audio_codec"] = "opus";
@@ -219,6 +221,12 @@ export class Player extends GObject.Object {
     const bus = this.playbin.get_bus()!;
     bus.add_signal_watch();
     bus.connect("message", this.on_message.bind(this));
+
+    Settings.connect("changed::volume", () => {
+      this.playbin.set_property("volume", Settings.get_double("volume"));
+    });
+
+    this.playbin.set_property("volume", Settings.get_double("volume"));
   }
 
   play() {

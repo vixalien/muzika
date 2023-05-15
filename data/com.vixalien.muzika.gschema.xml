@@ -7,5 +7,10 @@
 			<description>If this option is enabled, the library view will show a list instead of the
 				default grid.</description>
 		</key>
+		<key name="volume" type="d">
+			<default>0.5</default>
+			<summary>Volume</summary>
+			<description>The volume of the player</description>
+		</key>
 	</schema>
 </schemalist>
