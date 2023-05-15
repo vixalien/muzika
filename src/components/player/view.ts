@@ -94,7 +94,7 @@ export class PlayerView extends Gtk.ActionBar {
     });
 
     this.player.connect("notify::position", () => {
-      this.update_progress();
+      this.update_progress_cb();
     });
 
     // buttons
@@ -131,7 +131,7 @@ export class PlayerView extends Gtk.ActionBar {
       if (this.player.seeking_enabled) {
         this.player.playbin.seek_simple(
           Gst.Format.TIME,
-          Gst.SeekFlags.FLUSH | Gst.SeekFlags.SKIP,
+          Gst.SeekFlags.FLUSH,
           this._progress_adjustment.value,
         );
       }
@@ -189,16 +189,18 @@ export class PlayerView extends Gtk.ActionBar {
   update_progress_timeout: number | null = null;
 
   update_progress() {
-    if (this.player.playing) {
+    if (this.player.playing && !this.player.buffering) {
       if (!this.update_progress_timeout) {
-        this.update_progress_timeout = GLib.timeout_add(
-          GLib.PRIORITY_DEFAULT,
-          100,
-          () => {
-            this.update_progress_cb();
-            return GLib.SOURCE_CONTINUE;
-          },
-        );
+        setTimeout(() => {
+          this.update_progress_timeout = GLib.timeout_add(
+            GLib.PRIORITY_DEFAULT,
+            100,
+            () => {
+              this.update_progress_cb();
+              return GLib.SOURCE_CONTINUE;
+            },
+          );
+        }, 1000);
       }
     } else {
       if (this.update_progress_timeout != null) {
@@ -209,6 +211,8 @@ export class PlayerView extends Gtk.ActionBar {
   }
 
   show_song({ track, options }: TrackMetadata) {
+    this.update_progress_cb();
+
     // thumbnail
 
     load_thumbnails(this._image, track.thumbnails, 74);

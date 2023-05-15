@@ -131,7 +131,7 @@
               <object class="GtkBox" id="scale_and_timer">
                 <child>
                   <object class="GtkLabel" id="progress_label">
-                    <property name="label">0:00</property>
+                    <property name="label">00:00</property>
                     <property name="halign">1</property>
                     <property name="valign">3</property>
                   </object>
