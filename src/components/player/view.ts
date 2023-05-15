@@ -69,6 +69,8 @@ export class PlayerView extends Gtk.ActionBar {
       this.revealed = this.player.queue.list.n_items > 0;
     });
 
+    this.revealed = this.player.queue.list.n_items > 0;
+
     // update the player when the current song changes
     this.player.connect("notify::current", () => {
       const song = this.player.current?.item;
