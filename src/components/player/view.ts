@@ -101,15 +101,15 @@ export class PlayerView extends Gtk.ActionBar {
     // buttons
 
     this._play_button.connect("clicked", () => {
-      this.player.play_pause();
+      this.activate_action("player.play-pause", null);
     });
 
     this._prev_button.connect("clicked", () => {
-      this.player.previous();
+      this.activate_action("player.previous", null);
     });
 
     this._next_button.connect("clicked", () => {
-      this.player.next();
+      this.activate_action("player.next", null);
     });
 
     this._repeat_button.connect("clicked", () => {
@@ -130,10 +130,9 @@ export class PlayerView extends Gtk.ActionBar {
 
     this._progress_scale.connect("change-value", () => {
       if (this.player.seeking_enabled) {
-        this.player.playbin.seek_simple(
-          Gst.Format.TIME,
-          Gst.SeekFlags.FLUSH,
-          this._progress_adjustment.value,
+        this.activate_action(
+          "player.seek",
+          GLib.Variant.new_double(this._progress_adjustment.value),
         );
       }
     });

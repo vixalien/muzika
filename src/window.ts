@@ -91,8 +91,12 @@ export class Window extends Adw.ApplicationWindow {
       }
     });
 
+    const application = this.application as Application;
+
+    this.insert_action_group("player", application.player.get_action_group());
+
     this.player_view = new PlayerView({
-      player: (this.application as Application).player,
+      player: application.player,
     });
 
     this._box.append(this.player_view);

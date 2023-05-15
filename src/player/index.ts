@@ -1,5 +1,7 @@
 import Gst from "gi://Gst";
 import GObject from "gi://GObject";
+import Gio from "gi://Gio";
+import GLib from "gi://GLib";
 
 import type { QueueTrack } from "libmuse/types/parsers/queue.js";
 
@@ -7,6 +9,7 @@ import { Queue, TrackOptions } from "./queue.js";
 import { AudioFormat, get_song, Song } from "../muse.js";
 import { Settings } from "../application.js";
 import { ObjectContainer } from "../util/objectcontainer.js";
+import { AddActionEntries } from "src/util/action.js";
 
 const preferred_quality: AudioFormat["audio_quality"] = "medium";
 const preferred_format: AudioFormat["audio_codec"] = "opus";
@@ -229,6 +232,53 @@ export class Player extends GObject.Object {
     this.playbin.set_property("volume", Settings.get_double("volume"));
   }
 
+  get_action_group() {
+    const action_group = Gio.SimpleActionGroup.new();
+
+    (action_group.add_action_entries as AddActionEntries)([
+      {
+        name: "play",
+        activate: () => {
+          this.play();
+        },
+      },
+      {
+        name: "pause",
+        activate: () => {
+          this.pause();
+        },
+      },
+      {
+        name: "play-pause",
+        activate: () => {
+          this.play_pause();
+        },
+      },
+      {
+        name: "previous",
+        activate: () => {
+          this.previous();
+        },
+      },
+      {
+        name: "next",
+        activate: () => {
+          this.next();
+        },
+      },
+      {
+        name: "seek",
+        parameter_type: "d",
+        activate: (_action, param: GLib.Variant<"d"> | null) => {
+          if (!param) return;
+          this.seek(param.get_double());
+        },
+      },
+    ]);
+
+    return action_group;
+  }
+
   play() {
     this.playing = true;
     const ret = this.playbin.set_state(Gst.State.PLAYING);
@@ -253,6 +303,10 @@ export class Player extends GObject.Object {
     } else {
       this.play();
     }
+  }
+
+  seek(position: number) {
+    this.playbin.seek_simple(Gst.Format.TIME, Gst.SeekFlags.FLUSH, position);
   }
 
   async previous() {
