@@ -93,9 +93,12 @@ export class AlbumItemCard extends Gtk.ListBoxRow {
     this._title.set_label(item.title);
 
     if (item.artists && item.artists.length > 0) {
+      this._second_line.show();
       item.artists.map((artist) => {
         this.add_author(artist);
       });
+    } else {
+      this._second_line.hide();
     }
 
     this._explicit.set_visible(item.isExplicit);

@@ -19,7 +19,7 @@
         <child>
           <object class="GtkBox">
             <property name="width-request">320</property>
-            <property name="hexpand">false</property>
+            <property name="hexpand">true</property>
             <property name="valign">3</property>
             <property name="spacing">6</property>
             <property name="cursor">
