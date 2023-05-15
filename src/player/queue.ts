@@ -208,6 +208,10 @@ export class Queue extends GObject.Object {
       0,
       queue.tracks.map((song) => ObjectContainer.new(song)),
     );
+
+    if (this.position < 0) {
+      this.change_position(0);
+    }
   }
 
   private play_next(queue: MuseQueue, set_options?: boolean) {

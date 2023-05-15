@@ -64,20 +64,20 @@ export class PlayerView extends Gtk.ActionBar {
   }
 
   setup_player() {
-    // hide the player if the queue is empty
-    this.player.queue.list.connect("notify::n-items", () => {
-      this.revealed = this.player.queue.list.n_items > 0;
-    });
-
-    this.revealed = this.player.queue.list.n_items > 0;
+    const cb = () => {
+      const song = this.player.current?.item;
+      if (song == null) {
+        this.revealed = false;
+      } else {
+        this.revealed = true;
+        this.show_song(song!);
+      }
+    };
 
     // update the player when the current song changes
-    this.player.connect("notify::current", () => {
-      const song = this.player.current?.item;
-      if (song == null) return;
+    this.player.connect("notify::current", cb);
 
-      this.show_song(song!);
-    });
+    cb();
 
     this.player.connect("notify::playing", () => {
       this.update_play_button();

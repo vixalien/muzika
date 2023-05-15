@@ -134,7 +134,7 @@ export class Application extends Adw.Application {
       .then(() => {
         console.log("added tracks to queue!");
 
-        this.player.next();
+        // this.player.next();
       });
   }
 

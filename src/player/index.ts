@@ -207,6 +207,10 @@ export class Player extends GObject.Object {
       Gst.init(null);
     }
 
+    this.queue.connect("notify::current", () => {
+      this.change_current_track(this.queue.current?.item ?? null);
+    });
+
     this.playbin = Gst.ElementFactory.make("playbin", "player")!;
     this.fakesink = Gst.ElementFactory.make("fakesink", "fakesink")!;
 
@@ -244,23 +248,13 @@ export class Player extends GObject.Object {
   }
 
   async previous() {
-    const song = this.queue.previous();
-
-    if (song) {
-      this.play_song(song);
-    } else {
-      this.stop();
-    }
+    this.playing = true;
+    this.queue.previous();
   }
 
   async next() {
-    const song = this.queue.next();
-
-    if (song) {
-      this.play_song(song);
-    } else {
-      this.stop();
-    }
+    this.playing = true;
+    this.queue.next();
   }
 
   stop() {
@@ -268,8 +262,24 @@ export class Player extends GObject.Object {
     this.playbin.set_state(Gst.State.NULL);
   }
 
-  async play_song(track: QueueTrack) {
-    const song = await get_song(track.videoId);
+  song_cache = new Map<string, Song>();
+
+  async get_song(videoId: string) {
+    if (!this.song_cache.has(videoId)) {
+      this.song_cache.set(videoId, await get_song(videoId));
+    }
+
+    return this.song_cache.get(videoId)!;
+  }
+
+  async change_current_track(track: QueueTrack | null) {
+    if (!track) {
+      return this.stop();
+    }
+
+    const playing = this.playing;
+
+    const song = await this.get_song(track.videoId);
     const format = this.negotiate_best_format(song);
 
     this._current = ObjectContainer.new({
@@ -280,9 +290,10 @@ export class Player extends GObject.Object {
     });
     this.notify("current");
 
-    this.stop();
+    this.playbin.set_state(Gst.State.NULL);
     this.playbin.set_property("uri", format.url);
-    this.play();
+
+    if (playing) this.play();
   }
 
   private on_message(_bus: Gst.Bus, message: Gst.Message) {
