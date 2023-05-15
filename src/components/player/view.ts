@@ -3,8 +3,8 @@ import GObject from "gi://GObject";
 import GLib from "gi://GLib";
 import Gst from "gi://Gst";
 
-import { Song } from "../../muse.js";
 import { Player, TrackMetadata } from "../../player/index.js";
+import { RepeatMode } from "../../player/queue.js";
 import { load_thumbnails } from "../webimage.js";
 
 export interface PlayerViewOptions {
@@ -74,10 +74,15 @@ export class PlayerView extends Gtk.ActionBar {
       }
     };
 
+    cb();
+    this.update_repeat_button();
+
+    this.player.queue.connect("notify::repeat", () => {
+      this.update_repeat_button();
+    });
+
     // update the player when the current song changes
     this.player.connect("notify::current", cb);
-
-    cb();
 
     this.player.connect("notify::playing", () => {
       this.update_play_button();
@@ -106,6 +111,22 @@ export class PlayerView extends Gtk.ActionBar {
       this.player.next();
     });
 
+    this._repeat_button.connect("clicked", () => {
+      const repeat_mode = this.player.queue.repeat;
+
+      switch (repeat_mode) {
+        case RepeatMode.ALL:
+          this.player.queue.repeat = RepeatMode.ONE;
+          break;
+        case RepeatMode.ONE:
+          this.player.queue.repeat = RepeatMode.NONE;
+          break;
+        case RepeatMode.NONE:
+          this.player.queue.repeat = RepeatMode.ALL;
+          break;
+      }
+    });
+
     this._progress_scale.connect("change-value", () => {
       if (this.player.seeking_enabled) {
         this.player.playbin.seek_simple(
@@ -115,6 +136,29 @@ export class PlayerView extends Gtk.ActionBar {
         );
       }
     });
+  }
+
+  update_repeat_button() {
+    const repeat_mode = this.player.queue.repeat;
+
+    this._repeat_button.set_active(
+      repeat_mode === RepeatMode.ALL || repeat_mode === RepeatMode.ONE,
+    );
+
+    switch (repeat_mode) {
+      case RepeatMode.ALL:
+        this._repeat_button.icon_name = "media-playlist-repeat-symbolic";
+        this._repeat_button.tooltip_text = "Repeat All Songs";
+        break;
+      case RepeatMode.ONE:
+        this._repeat_button.icon_name = "media-playlist-repeat-song-symbolic";
+        this._repeat_button.tooltip_text = "Repeat the Current Song";
+        break;
+      case RepeatMode.NONE:
+        this._repeat_button.icon_name = "media-playlist-consecutive-symbolic";
+        this._repeat_button.tooltip_text = "Enable Repeat";
+        break;
+    }
   }
 
   update_play_button() {

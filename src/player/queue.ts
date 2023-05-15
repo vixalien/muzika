@@ -7,6 +7,12 @@ import { QueueTrack } from "libmuse/types/parsers/queue.js";
 
 export type TrackOptions = Omit<MuseQueue, "tracks" | "continuation">;
 
+export enum RepeatMode {
+  NONE = 0,
+  ONE = 1,
+  ALL = 2,
+}
+
 export class Queue extends GObject.Object {
   static {
     GObject.registerClass({
@@ -56,9 +62,20 @@ export class Queue extends GObject.Object {
           false,
           GObject.ParamFlags.READABLE,
         ),
+        repeat: GObject.param_spec_uint(
+          "repeat",
+          "Repeat",
+          "The repeat mode",
+          0,
+          2,
+          0,
+          GObject.ParamFlags.READWRITE,
+        ),
       },
     }, this);
   }
+
+  repeat = RepeatMode.NONE;
 
   private _list: Gio.ListStore<ObjectContainer<QueueTrack>> = new Gio
     .ListStore();
@@ -183,10 +200,29 @@ export class Queue extends GObject.Object {
   }
 
   next(): QueueTrack | null {
-    if (this.position >= this.list.n_items) return null;
+    if (this.position >= this.list.n_items - 1) return null;
 
     this.increment_position(1);
     return this.list.get_item(this.position)?.item!;
+  }
+
+  repeat_or_next() {
+    if (this.repeat === RepeatMode.NONE) {
+      return this.next();
+    } else if (this.repeat === RepeatMode.ALL) {
+      if (this.position >= this.list.n_items - 1) {
+        this.change_position(0);
+      } else {
+        this.increment_position(1);
+      }
+
+      return this.list.get_item(this.position)?.item!;
+    } else if (this.repeat === RepeatMode.ONE) {
+      this.change_position(this.position);
+      return this.list.get_item(this.position)?.item!;
+    } else {
+      return null;
+    }
   }
 
   previous(): QueueTrack | null {

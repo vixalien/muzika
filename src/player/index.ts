@@ -257,6 +257,10 @@ export class Player extends GObject.Object {
     this.queue.next();
   }
 
+  async repeat_or_next() {
+    this.queue.repeat_or_next();
+  }
+
   stop() {
     this.playing = false;
     this.playbin.set_state(Gst.State.NULL);
@@ -313,7 +317,7 @@ export class Player extends GObject.Object {
         if (time) this.playbin.set_property("running-time", time);
         break;
       case Gst.MessageType.EOS:
-        this.next();
+        this.repeat_or_next();
         break;
       case Gst.MessageType.ERROR:
         this.stop();

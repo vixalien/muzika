@@ -112,7 +112,7 @@
             </child>
             <child>
               <object class="GtkToggleButton" id="repeat_button">
-                <property name="icon-name">media-playlist-repeat-symbolic</property>
+                <property name="icon-name">media-playlist-consecutive-symbolic</property>
                 <property name="tooltip-text">Toggle Repeat State</property>
                 <property name="valign">3</property>
                 <property name="margin-start">12</property>
