@@ -371,14 +371,18 @@ export class Player extends GObject.Object {
 
     const playing = this.playing;
 
-    const song = await this.get_song(track.videoId);
+    const [song, track_options] = await Promise.all([
+      this.get_song(track.videoId),
+      this.queue.get_track_options(track.videoId),
+    ]);
+
     const format = this.negotiate_best_format(song);
 
     this._current = ObjectContainer.new({
       song,
       track,
       format,
-      options: await this.queue.get_track_options(track.videoId),
+      options: track_options,
     });
     this.notify("current");
 
