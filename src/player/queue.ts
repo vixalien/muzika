@@ -1,7 +1,7 @@
 import GObject from "gi://GObject";
 import Gio from "gi://Gio";
 
-import { get_queue, Queue as MuseQueue } from "../muse.js";
+import { get_queue, GetPlaylistOptions, Queue as MuseQueue, QueueOptions } from "../muse.js";
 import { ObjectContainer } from "../util/objectcontainer.js";
 import { QueueTrack } from "libmuse/types/parsers/queue.js";
 import { AddActionEntries } from "src/util/action.js";
@@ -239,6 +239,20 @@ export class Queue extends GObject.Object {
     this.notify("can-play-previous");
   }
 
+  async get_track_queue(
+    video_id: string,
+    options: QueueOptions = {},
+  ) {
+    const queue = await get_queue(video_id, null, options);
+
+    this.track_options_cache.set(
+      video_id,
+      _omit(queue, ["tracks", "continuation"]),
+    );
+
+    return queue;
+  }
+
   async get_track_options(video_id: string) {
     if (!this.track_options_cache.has(video_id)) {
       const queue = await get_queue(video_id, null);
@@ -271,7 +285,7 @@ export class Queue extends GObject.Object {
 
   async add_songs(song_ids: string[], options: AddPlaylistOptions = {}) {
     const song_queues = await Promise.all(
-      song_ids.map((song_id) => get_queue(song_id, null, options)),
+      song_ids.map((song_id) => this.get_track_queue(song_id, options)),
     );
 
     if (options.next) {
@@ -292,7 +306,7 @@ export class Queue extends GObject.Object {
   }
 
   async play_song(song_id: string, signal?: AbortSignal) {
-    const song_queue = await get_queue(song_id, null, {
+    const song_queue = await this.get_track_queue(song_id, {
       signal,
       radio: true,
     });
