@@ -349,7 +349,7 @@ export class Queue extends GObject.Object {
 
     if (options.play) {
       this.emit("wants-to-play");
-      this.change_position(0);
+      this.change_position(queue.current?.index ?? 0);
     }
   }
 

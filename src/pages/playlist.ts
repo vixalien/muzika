@@ -1,5 +1,6 @@
 import Gtk from "gi://Gtk?version=4.0";
 import GObject from "gi://GObject";
+import GLib from "gi://GLib";
 
 import {
   get_more_playlist_tracks,
@@ -27,7 +28,7 @@ export class PlaylistPage extends Gtk.Box {
         "content",
         "scrolled",
         "data",
-        "list_box"
+        "list_box",
       ],
     }, this);
   }
@@ -68,6 +69,19 @@ export class PlaylistPage extends Gtk.Box {
       if (pos === Gtk.PositionType.BOTTOM) {
         this.load_more();
       }
+    });
+
+    this._list_box.connect("row-activated", (_, row: PlaylistItemCard) => {
+      if (!(row instanceof PlaylistItemCard) || !this.playlist || !row.item) {
+        return;
+      }
+
+      row.activate_action(
+        "queue.play-playlist",
+        GLib.Variant.new_string(
+          `${this.playlist!.id}?video=${row.item.videoId}`,
+        ),
+      );
     });
   }
 

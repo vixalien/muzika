@@ -79,21 +79,6 @@ export class Application extends Adw.Application {
     );
 
     this.player = new Player();
-
-    this.player.queue
-      .add_songs([
-        "DPbj1iKH5Yk",
-        "GJnWa0QWUpM",
-        "-2yJiningjk",
-        "OeY0I9baRvM",
-        "9lvYKJYmHsY",
-        "t4IEaUhIuCs",
-      ])
-      .then(() => {
-        console.log("added tracks to queue!");
-
-        // this.player.next();
-      });
   }
 
   public vfunc_shutdown(): void {

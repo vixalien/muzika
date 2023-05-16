@@ -23,6 +23,7 @@
                       <object class="GtkListBox" id="list_box">
                         <property name="margin-start">12</property>
                         <property name="margin-end">12</property>
+                        <property name="selection-mode">none</property>
                         <style>
                           <class name="background" />
                         </style>
