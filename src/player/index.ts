@@ -404,10 +404,6 @@ export class Player extends GObject.Object {
     }
 
     switch (type) {
-      case Gst.MessageType.RESET_TIME:
-        const time = message.parse_reset_time();
-        if (time) this.playbin.set_property("running-time", time);
-        break;
       case Gst.MessageType.EOS:
         this.repeat_or_next();
         break;
