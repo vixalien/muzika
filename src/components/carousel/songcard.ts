@@ -1,5 +1,6 @@
 import Gtk from "gi://Gtk?version=4.0";
 import GObject from "gi://GObject";
+import GLib from "gi://GLib";
 
 import { ParsedSong } from "../../muse.js";
 import { load_thumbnails } from "../webimage.js";
@@ -37,6 +38,15 @@ export class SongCard extends Gtk.Box {
 
   set_song(song: ParsedSong) {
     this.song = song;
+
+    if (song.videoId) {
+      this._play_button.action_name = "queue.play-song";
+      this._play_button.action_target = GLib.Variant.new_string(
+        song.videoId,
+      );
+    } else {
+      this._play_button.hide();
+    }
 
     this._title.set_label(song.title);
     this._subtitle.set_label(song.artists[0].name);

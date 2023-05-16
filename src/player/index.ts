@@ -380,11 +380,13 @@ export class Player extends GObject.Object {
   }
 
   async change_current_track(track: QueueTrack | null) {
-    if (!track) {
-      return this.stop();
-    }
-
     const playing = this.playing;
+
+    this.stop();
+
+    if (!track) {
+      return;
+    }
 
     const [song, track_options] = await Promise.all([
       this.get_song(track.videoId),

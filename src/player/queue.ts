@@ -259,6 +259,35 @@ export class Queue extends GObject.Object {
           });
         },
       },
+      {
+        name: "play-song",
+        parameter_type: "s",
+        activate: (_, param) => {
+          if (!param) return;
+
+          const url = new URL(`muzika:${param.get_string()[0]}`);
+          const params = url.searchParams;
+
+          this.play_songs(url.pathname.split(","), {
+            shuffle: params.has("shuffle"),
+          });
+        },
+      },
+      {
+        name: "add-playlist",
+        parameter_type: "s",
+        activate: (_, param) => {
+          if (!param) return;
+
+          const url = new URL(`muzika:${param.get_string()}`);
+          const params = url.searchParams;
+
+          this.add_songs(url.pathname.split(","), {
+            next: params.has("next"),
+            shuffle: params.has("shuffle"),
+          });
+        },
+      },
     ]);
 
     return action_group;
@@ -320,6 +349,7 @@ export class Queue extends GObject.Object {
 
     if (options.play) {
       this.emit("wants-to-play");
+      this.change_position(0);
     }
   }
 
@@ -328,10 +358,19 @@ export class Queue extends GObject.Object {
       song_ids.map((song_id) => this.get_track_queue(song_id, options)),
     );
 
+    if (options.play) {
+      this.clear();
+    }
+
     if (options.next) {
       song_queues.forEach((queue) => this.play_next(queue));
     } else {
       song_queues.forEach((queue) => this.add(queue));
+    }
+
+    if (options.play) {
+      this.emit("wants-to-play");
+      this.change_position(0);
     }
   }
 
@@ -340,12 +379,13 @@ export class Queue extends GObject.Object {
       ...options[2],
       play: true,
     });
-    this.change_position(0);
   }
 
   async play_songs(...options: Parameters<Queue["add_songs"]>) {
-    this.clear();
-    await this.add_songs(...options);
+    await this.add_songs(options[0], {
+      ...options[1],
+      play: true,
+    });
   }
 
   async play_song(song_id: string, signal?: AbortSignal) {

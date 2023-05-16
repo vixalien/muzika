@@ -74,7 +74,7 @@ export class Window extends Adw.ApplicationWindow {
     this.navigator = new Navigator(this._stack, this._header_bar);
 
     this.navigator.navigate(
-      "library",
+      "home",
     );
 
     this.navigator.connect("notify::loading", () => {
