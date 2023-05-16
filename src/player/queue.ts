@@ -268,9 +268,15 @@ export class Queue extends GObject.Object {
           const url = new URL(`muzika:${param.get_string()[0]}`);
           const params = url.searchParams;
 
-          this.play_songs(url.pathname.split(","), {
-            shuffle: params.has("shuffle"),
-          });
+          const ids = url.pathname.split(",");
+
+          if (ids.length == 1) {
+            this.play_song(ids[0]);
+          } else {
+            this.play_songs(url.pathname.split(","), {
+              shuffle: params.has("shuffle"),
+            });
+          }
         },
       },
       {
@@ -397,6 +403,9 @@ export class Queue extends GObject.Object {
     this.clear();
 
     this.add(song_queue, true);
+
+    this.emit("wants-to-play");
+    this.change_position(0);
   }
 
   next(): QueueTrack | null {
