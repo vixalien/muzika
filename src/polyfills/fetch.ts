@@ -195,9 +195,12 @@ if (!SOUP_CACHE_DIR.query_exists(null)) {
 
 console.log("caching soup requests at", SOUP_CACHE_DIR.get_path());
 
-const SESSION = Soup.Session.new();
-
-SESSION.set_proxy_resolver(null);
+const SESSION = new Soup.Session({
+  // change from the default of 10 and 2 respectively
+  // because most of the connections go to the same host
+  max_conns: 32,
+  max_conns_per_host: 8,
+});
 
 export const cache = Soup.Cache.new(
   SOUP_CACHE_DIR.get_path()!,
@@ -270,7 +273,7 @@ export async function fetch(url: string | URL, options: FetchOptions = {}) {
           reject(new DOMException("The request was aborted", "AbortError"));
         }
       } else {
-        reject(e)
+        reject(e);
       }
     });
 
