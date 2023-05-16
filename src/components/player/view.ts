@@ -2,11 +2,13 @@ import Gtk from "gi://Gtk?version=4.0";
 import GObject from "gi://GObject";
 import GLib from "gi://GLib";
 import Gst from "gi://Gst";
+import Adw from "gi://Adw";
 
 import { Player, TrackMetadata } from "../../player/index.js";
 import { RepeatMode } from "../../player/queue.js";
 import { load_thumbnails } from "../webimage.js";
 import { Settings } from "src/application.js";
+import { PlayerScale } from "./scale.js";
 
 export interface PlayerViewOptions {
   player: Player;
@@ -28,12 +30,11 @@ export class PlayerView extends Gtk.ActionBar {
         "next_button",
         "repeat_button",
         "progress_label",
-        "progress_scale",
-        "progress_adjustment",
         "duration_label",
         "volume_button",
         "queue_button",
         "lyrics_button",
+        "scale_and_timer",
       ],
     }, this);
   }
@@ -48,68 +49,67 @@ export class PlayerView extends Gtk.ActionBar {
   _next_button!: Gtk.Button;
   _repeat_button!: Gtk.ToggleButton;
   _progress_label!: Gtk.Label;
-  _progress_scale!: Gtk.ScaleButton;
-  _progress_adjustment!: Gtk.Adjustment;
   _duration_label!: Gtk.Label;
   _volume_button!: Gtk.VolumeButton;
   _queue_button!: Gtk.ToggleButton;
   _lyrics_button!: Gtk.ToggleButton;
+  _scale_and_timer!: Gtk.Box;
 
   player: Player;
+
+  scale: PlayerScale;
 
   constructor(options: PlayerViewOptions) {
     super();
 
     this.player = options.player;
+
+    this.scale = new PlayerScale();
+    this.scale.insert_after(this._scale_and_timer, this._progress_label);
+    this.scale.connect("notify::value", () => {
+      this._progress_label.label = nano_to_string(this.scale.value);
+    });
+
     this.setup_player();
   }
 
-  setup_player() {
-    const cb = () => {
-      const song = this.player.current?.item;
-      if (song == null) {
-        this.revealed = false;
-      } else {
-        this.revealed = true;
-        this.show_song(song!);
-      }
-    };
+  song_changed() {
+    this.scale.reset();
+    this.scale.value = 0;
 
-    cb();
+    const song = this.player.current?.item;
+    if (song == null) {
+      this.revealed = false;
+    } else {
+      this.revealed = true;
+      this.show_song(song!);
+    }
+  }
+
+  setup_player() {
+    this.song_changed();
 
     // update the player when the current song changes
-    this.player.connect("notify::current", cb);
+    this.player.connect("notify::current", this.song_changed.bind(this));
 
     this.player.connect("notify::buffering", () => {
-      if (this.player.buffering) {
-        this._progress_scale.add_css_class("buffering");
-      } else {
-        this._progress_scale.remove_css_class("buffering");
-      }
-
-      this.update_progress();
+      this.update_play_button();
     });
 
     this.player.connect("notify::playing", () => {
       this.update_play_button();
-      this.update_progress();
     });
 
-    this.player.connect("notify::seeking-enabled", () => {
-      this.update_seeking();
+    this.player.connect("notify::duration", () => {
+      this.scale.set_duration(this.player.duration);
+      this._duration_label.label = nano_to_string(this.player.duration);
     });
 
-    this.player.connect("notify::position", () => {
-      this.update_progress_cb();
-    });
-
-    this._progress_scale.connect("change-value", () => {
-      if (this.player.seeking_enabled) {
-        this.activate_action(
-          "player.seek",
-          GLib.Variant.new_double(this._progress_adjustment.value),
-        );
-      }
+    this.scale.connect("user-changed-value", (_, value) => {
+      this.activate_action(
+        "player.seek",
+        GLib.Variant.new_double(this.scale.value),
+      );
     });
 
     // buttons
@@ -182,6 +182,14 @@ export class PlayerView extends Gtk.ActionBar {
   }
 
   update_play_button() {
+    this.scale.buffering = this.player.buffering && this.player.playing;
+
+    if (this.player.playing && !this.player.buffering) {
+      this.scale.play(this.player.get_position() ?? 0);
+    } else {
+      this.scale.pause();
+    }
+
     if (this.player.playing) {
       this._play_image.icon_name = "media-playback-pause-symbolic";
     } else {
@@ -189,51 +197,7 @@ export class PlayerView extends Gtk.ActionBar {
     }
   }
 
-  update_seeking() {
-    this._progress_scale.set_sensitive(this.player.seeking_enabled);
-
-    if (this.player.seeking_enabled) {
-      this._progress_adjustment.set_lower(this.player.seeking_low);
-      this._progress_adjustment.set_upper(this.player.seeking_high);
-    }
-  }
-
-  update_progress_cb() {
-    const position = this.player.get_position();
-
-    if (position != null) {
-      this._progress_adjustment.value = position;
-      this._progress_label.label = nano_to_string(position);
-    }
-  }
-
-  update_progress_timeout: number | null = null;
-
-  update_progress() {
-    if (this.player.playing && !this.player.buffering) {
-      if (!this.update_progress_timeout) {
-        setTimeout(() => {
-          this.update_progress_timeout = GLib.timeout_add(
-            GLib.PRIORITY_DEFAULT,
-            100,
-            () => {
-              this.update_progress_cb();
-              return GLib.SOURCE_CONTINUE;
-            },
-          );
-        }, 1000);
-      }
-    } else {
-      if (this.update_progress_timeout != null) {
-        GLib.source_remove(this.update_progress_timeout);
-        this.update_progress_timeout = null;
-      }
-    }
-  }
-
   show_song({ track, options }: TrackMetadata) {
-    this.update_progress_cb();
-
     // thumbnail
 
     load_thumbnails(this._image, track.thumbnails, 74);
@@ -243,15 +207,13 @@ export class PlayerView extends Gtk.ActionBar {
     this._title.label = track.title;
     this._subtitle.label = track.artists[0].name;
 
-    this._duration_label.label = track.duration?.toString() ?? "";
+    this._duration_label.label = track.duration_seconds
+      ? seconds_to_string(track.duration_seconds)
+      : track.duration ?? "00:00";
 
     // toggle buttons
 
     this._lyrics_button.set_sensitive(options.lyrics != null);
-
-    // progress
-
-    this._progress_adjustment.value = 0;
   }
 }
 

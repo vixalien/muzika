@@ -65,35 +65,19 @@ export class Player extends GObject.Object {
           false,
           GObject.ParamFlags.READABLE,
         ),
-        seeking_enabled: GObject.param_spec_boolean(
-          "seeking-enabled",
-          "Seeking enabled",
-          "Whether seeking is enabled",
-          false,
-          GObject.ParamFlags.READABLE,
-        ),
-        seeking_low: GObject.param_spec_uint64(
-          "seeking-low",
-          "Seeking low",
-          "The low bound of the seeking range",
-          0,
-          Number.MAX_SAFE_INTEGER,
-          0,
-          GObject.ParamFlags.READABLE,
-        ),
-        seeking_high: GObject.param_spec_uint64(
-          "seeking-high",
-          "Seeking high",
-          "The high bound of the seeking range",
-          0,
-          Number.MAX_SAFE_INTEGER,
-          0,
-          GObject.ParamFlags.READABLE,
-        ),
         position: GObject.param_spec_uint64(
           "position",
           "Position",
           "The current position",
+          0,
+          Number.MAX_SAFE_INTEGER,
+          0,
+          GObject.ParamFlags.READABLE,
+        ),
+        duration: GObject.param_spec_uint64(
+          "duration",
+          "Duration",
+          "The duration of the current song",
           0,
           Number.MAX_SAFE_INTEGER,
           0,
@@ -117,7 +101,7 @@ export class Player extends GObject.Object {
     this.notify("is-live");
   }
 
-  private _buffering = false;
+  private _buffering = true;
 
   get buffering() {
     return this._buffering;
@@ -172,38 +156,28 @@ export class Player extends GObject.Object {
     }
   }
 
-  private _seeking_enabled = false;
+  private _duration = 0;
 
-  get seeking_enabled() {
-    return this._seeking_enabled;
+  get duration() {
+    return this._duration;
   }
 
-  private set seeking_enabled(value: boolean) {
-    this._seeking_enabled = value;
-    this.notify("seeking-enabled");
+  private set duration(value: number) {
+    this._duration = value;
+    this.notify("duration");
   }
 
-  private _seeking_low = 0;
+  get_duration() {
+    const [ret, dur] = this.playbin.query_duration(Gst.Format.TIME);
 
-  get seeking_low() {
-    return this._seeking_low;
+    if (ret) {
+      return dur;
+    } else {
+      return null;
+    }
   }
 
-  private set seeking_low(value: number) {
-    this._seeking_low = value;
-    this.notify("seeking-low");
-  }
-
-  private _seeking_high = 0;
-
-  get seeking_high() {
-    return this._seeking_high;
-  }
-
-  private set seeking_high(value: number) {
-    this._seeking_high = value;
-    this.notify("seeking-high");
-  }
+  async = false;
 
   constructor() {
     super();
@@ -318,7 +292,11 @@ export class Player extends GObject.Object {
 
   pause() {
     this.playing = false;
-    this.playbin.set_state(Gst.State.PAUSED);
+    if (
+      this.playbin.get_state(Number.MAX_SAFE_INTEGER)[1] === Gst.State.PLAYING
+    ) {
+      this.playbin.set_state(Gst.State.PAUSED);
+    }
   }
 
   play_pause() {
@@ -331,8 +309,37 @@ export class Player extends GObject.Object {
     }
   }
 
+  private seek_id: number | null = null;
+
+  private do_seek(position: number) {
+    this.playbin.seek_simple(
+      Gst.Format.TIME,
+      Gst.SeekFlags.FLUSH,
+      position,
+    );
+  }
+
+  private remove_seek_cb() {
+    if (!this.seek_id) return;
+    this.disconnect(this.seek_id);
+    this.seek_id = null;
+  }
+
   seek(position: number) {
-    this.playbin.seek_simple(Gst.Format.TIME, Gst.SeekFlags.FLUSH, position);
+    // seek after buffering is complete
+    if (this.buffering) {
+      this.remove_seek_cb();
+
+      this.seek_id = this.connect("notify::buffering", () => {
+        if (this.buffering) return;
+        this.do_seek(position);
+
+        this.remove_seek_cb();
+      });
+    } else {
+      // seek immediately
+      this.do_seek(position);
+    }
   }
 
   async previous() {
@@ -420,35 +427,21 @@ export class Player extends GObject.Object {
 
         if (this._is_live) return;
 
-        if (percent === 100) {
-          this.buffering = false;
-
-          if (this.playing) this.playbin.set_state(Gst.State.PLAYING);
-        } else {
+        if (percent < 100) {
           if (!this.buffering && this.playing) {
             this.playbin.set_state(Gst.State.PAUSED);
           }
 
           this.buffering = true;
+        } else {
+          this.buffering = false;
+
+          if (this.playing) this.playbin.set_state(Gst.State.PLAYING);
         }
         break;
-      case Gst.MessageType.STATE_CHANGED:
-        const [_old_state, new_state, _pending_state] = message
-          .parse_state_changed();
-
-        const playing = new_state === Gst.State.PLAYING;
-
-        if (playing) {
-          const query = Gst.Query.new_seeking(Gst.Format.TIME);
-
-          if (this.playbin.query(query)) {
-            const result = query.parse_seeking();
-
-            this.seeking_enabled = result[1];
-            this.seeking_low = result[2];
-            this.seeking_high = result[3];
-          }
-        }
+      case Gst.MessageType.ASYNC_DONE:
+        this.duration = this.get_duration() ?? 0;
+        break;
     }
   }
 
@@ -460,11 +453,11 @@ export class Player extends GObject.Object {
     }
 
     if (format.audio_codec === preferred_format) {
-      points += 5;
+      points += 1;
     }
 
     if (format.adaptive) {
-      points += 5;
+      points += 1;
     }
 
     switch (format.audio_quality) {
