@@ -190,6 +190,10 @@ export class Player extends GObject.Object {
       this.change_current_track(this.queue.current?.item ?? null);
     });
 
+    this.queue.connect("wants-to-play", () => {
+      this.play();
+    });
+
     this.playbin = Gst.ElementFactory.make("playbin", "player")!;
     this.fakesink = Gst.ElementFactory.make("fakesink", "fakesink")!;
 
@@ -280,6 +284,10 @@ export class Player extends GObject.Object {
   }
 
   play() {
+    if (
+      this.playbin.get_state(Number.MAX_SAFE_INTEGER)[1] === Gst.State.PLAYING
+    ) return;
+
     this.playing = true;
     const ret = this.playbin.set_state(Gst.State.PLAYING);
 

@@ -1,7 +1,7 @@
 import GObject from "gi://GObject";
 import Gio from "gi://Gio";
 
-import { get_queue, GetPlaylistOptions, Queue as MuseQueue, QueueOptions } from "../muse.js";
+import { get_queue, Queue as MuseQueue, QueueOptions } from "../muse.js";
 import { ObjectContainer } from "../util/objectcontainer.js";
 import { QueueTrack } from "libmuse/types/parsers/queue.js";
 import { AddActionEntries } from "src/util/action.js";
@@ -89,6 +89,9 @@ export class Queue extends GObject.Object {
           false,
           GObject.ParamFlags.READWRITE,
         ),
+      },
+      Signals: {
+        "wants-to-play": {},
       },
     }, this);
   }
@@ -227,6 +230,35 @@ export class Queue extends GObject.Object {
           this.shuffle = !this.shuffle;
         },
       },
+      {
+        name: "play-playlist",
+        parameter_type: "s",
+        activate: (_, param) => {
+          if (!param) return;
+
+          const url = new URL(`muzika:${param.get_string()[0]}`);
+          const params = url.searchParams;
+
+          this.play_playlist(url.pathname, params.get("video") ?? undefined, {
+            shuffle: params.has("shuffle"),
+          });
+        },
+      },
+      {
+        name: "add-playlist",
+        parameter_type: "s",
+        activate: (_, param) => {
+          if (!param) return;
+
+          const url = new URL(`muzika:${param.get_string()}`);
+          const params = url.searchParams;
+
+          this.add_playlist(url.pathname, params.get("video") ?? undefined, {
+            next: params.has("next"),
+            shuffle: params.has("shuffle"),
+          });
+        },
+      },
     ]);
 
     return action_group;
@@ -276,10 +308,18 @@ export class Queue extends GObject.Object {
       signal: options.signal,
     });
 
+    if (options.play) {
+      this.clear();
+    }
+
     if (options.next) {
       this.play_next(queue);
     } else {
       this.add(queue);
+    }
+
+    if (options.play) {
+      this.emit("wants-to-play");
     }
   }
 
@@ -296,8 +336,11 @@ export class Queue extends GObject.Object {
   }
 
   async play_playlist(...options: Parameters<Queue["add_playlist"]>) {
-    this.clear();
-    await this.add_playlist(...options);
+    await this.add_playlist(options[0], options[1], {
+      ...options[2],
+      play: true,
+    });
+    this.change_position(0);
   }
 
   async play_songs(...options: Parameters<Queue["add_songs"]>) {
@@ -403,6 +446,7 @@ interface AddPlaylistOptions {
   shuffle?: boolean;
   next?: boolean;
   signal?: AbortSignal;
+  play?: boolean;
 }
 
 function _omit<Object extends Record<string, any>, Key extends keyof Object>(

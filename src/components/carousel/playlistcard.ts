@@ -1,5 +1,6 @@
 import Gtk from "gi://Gtk?version=4.0";
 import GObject from "gi://GObject";
+import GLib from "gi://GLib";
 
 import { ParsedPlaylist } from "../../muse.js";
 import { load_thumbnails } from "../webimage.js";
@@ -36,6 +37,11 @@ export class PlaylistCard extends Gtk.Box {
 
   set_playlist(playlist: ParsedPlaylist) {
     this.playlist = playlist;
+
+    this._play_button.action_name = "queue.play-playlist";
+    this._play_button.action_target = GLib.Variant.new_string(
+      playlist.playlistId,
+    );
 
     this._title.set_label(playlist.title);
     this._description_label.set_label(playlist.description ?? "");
