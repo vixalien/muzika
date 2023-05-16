@@ -80,6 +80,16 @@ export class PlayerView extends Gtk.ActionBar {
     // update the player when the current song changes
     this.player.connect("notify::current", cb);
 
+    this.player.connect("notify::buffering", () => {
+      if (this.player.buffering) {
+        this._progress_scale.add_css_class("buffering");
+      } else {
+        this._progress_scale.remove_css_class("buffering");
+      }
+
+      this.update_progress();
+    });
+
     this.player.connect("notify::playing", () => {
       this.update_play_button();
       this.update_progress();
@@ -190,6 +200,7 @@ export class PlayerView extends Gtk.ActionBar {
 
   update_progress_cb() {
     const position = this.player.get_position();
+
     if (position != null) {
       this._progress_adjustment.value = position;
       this._progress_label.label = nano_to_string(position);

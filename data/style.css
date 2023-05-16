@@ -143,3 +143,18 @@ inline-tab-switcher separator.hidden {
 expander-widget.inverted expander:checked {
   -gtk-icon-source: -gtk-icontheme("pan-up-symbolic");
 }
+
+scale.buffering trough {
+  background-image: cross-fade(40% -gtk-recolor(url("resource:///com/vixalien/muzika/icons/scalable/actions/progress-symbolic.svg")), transparent);
+  animation: moving linear 6s infinite both;
+}
+
+@keyframes moving {
+  from {
+    background-position: 0;
+  }
+
+  to {
+    background-position: 60px;
+  }
+}

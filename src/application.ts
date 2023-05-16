@@ -82,8 +82,8 @@ export class Application extends Adw.Application {
 
     this.player.queue
       .add_songs([
-        "GJnWa0QWUpM",
         "DPbj1iKH5Yk",
+        "GJnWa0QWUpM",
         "-2yJiningjk",
         "OeY0I9baRvM",
         "9lvYKJYmHsY",
