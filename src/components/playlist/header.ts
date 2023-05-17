@@ -77,13 +77,13 @@ export class MiniPlaylistHeader extends Gtk.Box {
       const split = description.split("\n");
 
       this._description.single_line_mode = true;
-      
+
       this._description.set_visible(true);
       this._description.set_label(split[0].trim());
-      
+
       this._description_long.set_visible(true);
       this._description_long.set_label(description);
-      
+
       // TODO: check if every line is ellispsized
       // when this is fixed: https://gitlab.gnome.org/GNOME/gjs/-/issues/547
       this._more.set_visible(
@@ -216,8 +216,8 @@ export class PlaylistHeader extends Gtk.Box {
     super();
     this._squeezer = new Adw.Squeezer({
       homogeneous: false,
-      transition_type: Adw.SqueezerTransitionType.CROSSFADE,
     });
+
     this._large = new LargePlaylistHeader();
     this._mini = new MiniPlaylistHeader();
 
