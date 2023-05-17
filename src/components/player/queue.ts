@@ -6,6 +6,7 @@ import { Queue } from "src/player/queue.js";
 import { ObjectContainer } from "src/util/objectcontainer";
 import type { QueueTrack } from "libmuse/types/parsers/queue";
 import { QueueItem } from "./queueitem";
+import { Player } from "src/player";
 
 export class QueueView extends Gtk.Stack {
   static {
@@ -31,15 +32,17 @@ export class QueueView extends Gtk.Stack {
   _params_box!: Gtk.Box;
 
   queue: Queue;
+  player: Player;
 
   params_map = new Map<string, Gtk.Widget>();
 
-  constructor({ queue }: QueueViewOptions) {
+  constructor({ queue, player }: QueueViewOptions) {
     super();
 
     // set up the queue
 
     this.queue = queue;
+    this.player = player;
 
     this.queue.connect("notify::settings", () => {
       this.update_settings();
@@ -49,7 +52,7 @@ export class QueueView extends Gtk.Stack {
       this.update_visible_child();
     });
 
-    this.queue.connect("notify::position", () => {
+    this.player.connect("notify::current", () => {
       if (this.queue.position < 0) {
         this._list_view.model.unselect_all();
       } else {
@@ -145,4 +148,5 @@ export class QueueView extends Gtk.Stack {
 
 export interface QueueViewOptions {
   queue: Queue;
+  player: Player;
 }

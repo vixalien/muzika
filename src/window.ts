@@ -31,6 +31,10 @@ import { Navigator } from "./navigation.js";
 import { PlayerView } from "./components/player/view.js";
 import { Application } from "./application.js";
 import { QueueView } from "./components/player/queue.js";
+import {
+  PlayerSidebar,
+  PlayerSidebarView,
+} from "./components/player/sidebar.js";
 
 export class Window extends Adw.ApplicationWindow {
   static {
@@ -44,6 +48,7 @@ export class Window extends Adw.ApplicationWindow {
           "back_button",
           "box",
           "sidebar",
+          "flap",
         ],
         Properties: {
           navigator: GObject.ParamSpec.object(
@@ -65,10 +70,11 @@ export class Window extends Adw.ApplicationWindow {
   _back_button!: Gtk.Button;
   _box!: Gtk.Box;
   _sidebar!: Gtk.ScrolledWindow;
+  _flap!: Adw.Flap;
 
   navigator: Navigator;
   player_view: PlayerView;
-  queue_view: QueueView;
+  sidebar: PlayerSidebar;
 
   interval: number | null = null;
 
@@ -110,9 +116,18 @@ export class Window extends Adw.ApplicationWindow {
 
     this._box.append(this.player_view);
 
-    this.queue_view = new QueueView({
+    this.sidebar = new PlayerSidebar({
+      player: application.player,
       queue: application.player.queue,
     });
-    this._sidebar.set_child(this.queue_view);
+
+    this.player_view.connect("sidebar-button-clicked", (_, view) => {
+      this._flap.reveal_flap = view !== PlayerSidebarView.NONE;
+      if (view !== PlayerSidebarView.NONE) {
+        this.sidebar.show_view(view);
+      }
+    });
+
+    this._sidebar.set_child(this.sidebar);
   }
 }

@@ -13,6 +13,7 @@
     <file preprocess="xml-stripblanks">components/carousel/videocard.ui</file>
     <file preprocess="xml-stripblanks">components/library/mixedcard.ui</file>
     <file preprocess="xml-stripblanks">components/library/view.ui</file>
+    <file preprocess="xml-stripblanks">components/player/lyrics.ui</file>
     <file preprocess="xml-stripblanks">components/player/queue.ui</file>
     <file preprocess="xml-stripblanks">components/player/queueitem.ui</file>
     <file preprocess="xml-stripblanks">components/player/view.ui</file>
@@ -35,8 +36,9 @@
     <file preprocess="xml-stripblanks">gtk/help-overlay.ui</file>
   </gresource>
   <gresource prefix="/com/vixalien/muzika/icons/scalable/actions/">
-    <file preprocess="xml-stripblanks" alias="music-artist-symbolic.svg">icons/music-artist-symbolic.svg</file>
+    <file preprocess="xml-stripblanks" alias="heart-broken-symbolic.svg">icons/heart-broken-symbolic.svg</file>
     <file preprocess="xml-stripblanks" alias="left-symbolic.svg">icons/left-symbolic.svg</file>
+    <file preprocess="xml-stripblanks" alias="music-artist-symbolic.svg">icons/music-artist-symbolic.svg</file>
     <file preprocess="xml-stripblanks" alias="playlist2-symbolic.svg">icons/playlist2-symbolic.svg</file>
     <file preprocess="xml-stripblanks" alias="progress-symbolic.svg">icons/progress-symbolic.svg</file>
     <file preprocess="xml-stripblanks" alias="subtitles-symbolic.svg">icons/subtitles-symbolic.svg</file>

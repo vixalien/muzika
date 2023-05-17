@@ -9,6 +9,7 @@ import { RepeatMode } from "../../player/queue.js";
 import { load_thumbnails } from "../webimage.js";
 import { Settings } from "src/application.js";
 import { PlayerScale } from "./scale.js";
+import { PlayerSidebarView } from "./sidebar.js";
 
 export interface PlayerViewOptions {
   player: Player;
@@ -36,6 +37,11 @@ export class PlayerView extends Gtk.ActionBar {
         "lyrics_button",
         "scale_and_timer",
       ],
+      Signals: {
+        "sidebar-button-clicked": {
+          param_types: [GObject.TYPE_UINT],
+        },
+      },
     }, this);
   }
 
@@ -71,6 +77,42 @@ export class PlayerView extends Gtk.ActionBar {
     });
 
     this.setup_player();
+
+    this._lyrics_button.connect(
+      "clicked",
+      this.handle_sidebar_button.bind(this),
+    );
+    this._queue_button.connect(
+      "clicked",
+      this.handle_sidebar_button.bind(this),
+    );
+  }
+
+  private buttons_map = new Map<Gtk.ToggleButton, PlayerSidebarView>([
+    [this._lyrics_button, PlayerSidebarView.LYRICS],
+    [this._queue_button, PlayerSidebarView.QUEUE],
+  ]);
+
+  private last_button: Gtk.ToggleButton | null = null;
+
+  private handle_sidebar_button(toggled_button: Gtk.ToggleButton) {
+    if (toggled_button === this.last_button) {
+      toggled_button.set_active(false);
+      this.last_button = null;
+      this.emit("sidebar-button-clicked", PlayerSidebarView.NONE);
+      return;
+    } else {
+      this.last_button = toggled_button;
+
+      if (toggled_button.active) {
+        this.emit(
+          "sidebar-button-clicked",
+          this.buttons_map.get(toggled_button)!,
+        );
+      } else {
+        this.emit("sidebar-button-clicked", PlayerSidebarView.NONE);
+      }
+    }
   }
 
   song_changed() {
