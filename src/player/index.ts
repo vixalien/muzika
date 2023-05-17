@@ -191,7 +191,7 @@ export class Player extends GObject.Object {
     });
 
     this.queue.connect("wants-to-play", () => {
-      this.play();
+      this.playing = true;
     });
 
     this.playbin = Gst.ElementFactory.make("playbin", "player")!;
@@ -292,6 +292,7 @@ export class Player extends GObject.Object {
     const ret = this.playbin.set_state(Gst.State.PLAYING);
 
     if (ret === Gst.StateChangeReturn.FAILURE) {
+      this.pause();
       throw new Error("Failed to play");
     } else if (ret === Gst.StateChangeReturn.NO_PREROLL) {
       this.is_live = true;
