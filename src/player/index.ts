@@ -5,7 +5,7 @@ import GLib from "gi://GLib";
 
 import type { QueueTrack } from "libmuse/types/parsers/queue.js";
 
-import { Queue, TrackOptions } from "./queue.js";
+import { Queue, QueueSettings } from "./queue.js";
 import { AudioFormat, get_song, Song } from "../muse.js";
 import { Settings } from "../application.js";
 import { ObjectContainer } from "../util/objectcontainer.js";
@@ -22,7 +22,7 @@ export type TrackMetadata = {
   song: Song;
   format: MaybeAdaptiveFormat;
   track: QueueTrack;
-  options: TrackOptions;
+  options: QueueSettings;
 };
 
 export class Player extends GObject.Object {
@@ -390,7 +390,7 @@ export class Player extends GObject.Object {
 
     const [song, track_options] = await Promise.all([
       this.get_song(track.videoId),
-      this.queue.get_track_options(track.videoId),
+      this.queue.get_track_settings(track.videoId),
     ]);
 
     const format = this.negotiate_best_format(song);

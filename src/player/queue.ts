@@ -1,12 +1,17 @@
 import GObject from "gi://GObject";
 import Gio from "gi://Gio";
 
-import { get_queue, Queue as MuseQueue, QueueOptions } from "../muse.js";
+import {
+  get_queue,
+  get_queue_ids,
+  Queue as MuseQueue,
+  QueueOptions,
+} from "../muse.js";
 import { ObjectContainer } from "../util/objectcontainer.js";
 import { QueueTrack } from "libmuse/types/parsers/queue.js";
 import { AddActionEntries } from "src/util/action.js";
 
-export type TrackOptions = Omit<MuseQueue, "tracks" | "continuation">;
+export type QueueSettings = Omit<MuseQueue, "tracks">;
 
 export enum RepeatMode {
   NONE = 0,
@@ -89,14 +94,19 @@ export class Queue extends GObject.Object {
           false,
           GObject.ParamFlags.READWRITE,
         ),
+        settings: GObject.param_spec_object(
+          "settings",
+          "Settings",
+          "The current queue settings",
+          GObject.TYPE_OBJECT,
+          GObject.ParamFlags.READWRITE,
+        ),
       },
       Signals: {
         "wants-to-play": {},
       },
     }, this);
   }
-
-  repeat = RepeatMode.NONE;
 
   private _list: Gio.ListStore<ObjectContainer<QueueTrack>> = new Gio
     .ListStore();
@@ -147,16 +157,15 @@ export class Queue extends GObject.Object {
     this.change_position(this.position + n);
   }
 
-  private options?: TrackOptions;
+  private _settings?: QueueSettings;
 
-  private set_queue_options(queue: MuseQueue) {
-    this.options = _omit(queue, ["tracks", "continuation"]);
+  get settings() {
+    return this._settings;
   }
 
-  private _track_options_cache = new Map<string, TrackOptions>();
-
-  get track_options_cache() {
-    return this._track_options_cache;
+  private set_settings(settings: QueueSettings) {
+    this.notify("settings");
+    this._settings = settings;
   }
 
   private _shuffle = false;
@@ -198,6 +207,9 @@ export class Queue extends GObject.Object {
     }
   }
 
+  /**
+   * A helper to turn a `Gio.ListStore` into an array
+   */
   private _get_items(list: Gio.ListStore<ObjectContainer<QueueTrack>>) {
     const items: ObjectContainer<QueueTrack>[] = [];
 
@@ -299,6 +311,10 @@ export class Queue extends GObject.Object {
     return action_group;
   }
 
+  // property: repeat
+
+  repeat = RepeatMode.NONE;
+
   toggle_repeat() {
     this.repeat = (this.repeat + 1) % 3;
 
@@ -306,31 +322,68 @@ export class Queue extends GObject.Object {
     this.notify("can-play-previous");
   }
 
-  async get_track_queue(
+  /**
+   * This functions gets and caches the track
+   */
+  private async get_track_queue(
     video_id: string,
     options: QueueOptions = {},
   ) {
     const queue = await get_queue(video_id, null, options);
 
-    this.track_options_cache.set(
-      video_id,
-      _omit(queue, ["tracks", "continuation"]),
-    );
+    this.track_options_settings.set(video_id, _omit(queue, ["tracks"]));
+
+    for (const track of queue.tracks) {
+      this.tracklist_map.set(
+        track.videoId,
+        track,
+      );
+    }
 
     return queue;
   }
 
-  async get_track_options(video_id: string) {
-    if (!this.track_options_cache.has(video_id)) {
-      const queue = await get_queue(video_id, null);
+  // queue track is a distinct track in the queue
 
-      this.track_options_cache.set(
-        video_id,
-        _omit(queue, ["tracks", "continuation"]),
+  private tracklist_map = new Map<string, QueueTrack>();
+
+  private async get_tracklist(video_ids: string[]) {
+    if (video_ids.every((id) => this.tracklist_map.has(id))) {
+      return video_ids.map((id) => this.tracklist_map.get(id)!);
+    }
+
+    const tracks = await get_queue_ids(video_ids);
+
+    for (const track of tracks) {
+      this.tracklist_map.set(
+        track.videoId,
+        track,
       );
     }
 
-    return this.track_options_cache.get(video_id)!;
+    return tracks;
+  }
+
+  // track options is the specific option for a queue track
+  // it includes stuff like the lyrics, related info etc
+
+  private track_options_settings = new Map<string, QueueSettings>();
+
+  async get_track_settings(video_id: string) {
+    if (!this.track_options_settings.has(video_id)) {
+      const queue = await get_queue(video_id, null);
+
+      this.track_options_settings.set(video_id, _omit(queue, ["tracks"]));
+
+      for (const track of queue.tracks) {
+        this.tracklist_map.set(
+          track.videoId,
+          track,
+        );
+      }
+    }
+
+    return this.track_options_settings.get(video_id)!;
   }
 
   async add_playlist(
@@ -348,30 +401,46 @@ export class Queue extends GObject.Object {
     }
 
     if (options.next) {
-      this.play_next(queue);
+      this.play_next(queue.tracks, queue.current?.index);
     } else {
-      this.add(queue);
+      this.add(queue.tracks, queue.current?.index);
     }
 
     if (options.play) {
+      this.set_settings(_omit(queue, ["tracks"]));
       this.emit("wants-to-play");
       this.change_position(queue.current?.index ?? 0);
     }
   }
 
   async add_songs(song_ids: string[], options: AddPlaylistOptions = {}) {
-    const song_queues = await Promise.all(
-      song_ids.map((song_id) => this.get_track_queue(song_id, options)),
-    );
+    let tracks: QueueTrack[], first_track_options: QueueSettings | undefined;
+
+    if (song_ids.length === 1) {
+      // fast path to get the track options and tracklist at the same time
+      const queue = await this.get_track_queue(song_ids[0]);
+
+      tracks = queue.tracks;
+      first_track_options = _omit(queue, ["tracks"]);
+    } else {
+      [tracks, first_track_options] = await Promise.all([
+        this.get_tracklist(song_ids).then((tracks) => tracks ?? []),
+        options.play ? this.get_track_settings(song_ids[0]) : undefined,
+      ]);
+    }
 
     if (options.play) {
       this.clear();
     }
 
     if (options.next) {
-      song_queues.forEach((queue) => this.play_next(queue));
+      this.play_next(tracks);
     } else {
-      song_queues.forEach((queue) => this.add(queue));
+      this.add(tracks);
+    }
+
+    if (first_track_options) {
+      this.set_settings(first_track_options);
     }
 
     if (options.play) {
@@ -395,17 +464,7 @@ export class Queue extends GObject.Object {
   }
 
   async play_song(song_id: string, signal?: AbortSignal) {
-    const song_queue = await this.get_track_queue(song_id, {
-      signal,
-      radio: true,
-    });
-
-    this.clear();
-
-    this.add(song_queue, true);
-
-    this.emit("wants-to-play");
-    this.change_position(0);
+    await this.play_songs([song_id], { signal });
   }
 
   next(): QueueTrack | null {
@@ -452,28 +511,26 @@ export class Queue extends GObject.Object {
   }
 
   private add_queue_at_position(
-    queue: MuseQueue,
+    tracks: QueueTrack[],
     position: number,
-    set_options = false,
+    new_position?: number,
   ) {
-    if (set_options) this.set_queue_options(queue);
-
     this.list.splice(
       position,
       0,
-      queue.tracks.map((song) => ObjectContainer.new(song)),
+      tracks.map((song) => ObjectContainer.new(song)),
     );
 
     if (this.shuffle) {
       this._original.splice(
         position,
         0,
-        queue.tracks.map((song) => ObjectContainer.new(song)),
+        tracks.map((song) => ObjectContainer.new(song)),
       );
     }
 
-    if (queue.current?.index != null) {
-      this.change_position(queue.current.index);
+    if (new_position != null) {
+      this.change_position(new_position);
     } else if (this.position < 0) {
       this.change_position(0);
     } else {
@@ -482,12 +539,12 @@ export class Queue extends GObject.Object {
     }
   }
 
-  private play_next(queue: MuseQueue, set_options?: boolean) {
-    this.add_queue_at_position(queue, this.position + 1, set_options);
+  private play_next(tracks: QueueTrack[], new_position?: number) {
+    this.add_queue_at_position(tracks, this.position + 1, new_position);
   }
 
-  private add(queue: MuseQueue, set_options?: boolean) {
-    this.add_queue_at_position(queue, this.list.n_items, set_options);
+  private add(tracks: QueueTrack[], new_position?: number) {
+    this.add_queue_at_position(tracks, this.list.n_items, new_position);
   }
 }
 
