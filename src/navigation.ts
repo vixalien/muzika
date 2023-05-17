@@ -286,8 +286,10 @@ export class Navigator extends GObject.Object {
   go(n: number) {
     if (n > 0) {
       this.history.push(...this.future.splice(-n));
+      this._stack.transition_type = Gtk.StackTransitionType.SLIDE_LEFT;
     } else if (n < 0) {
       this.future.push(...this.history.splice(n));
+      this._stack.transition_type = Gtk.StackTransitionType.SLIDE_RIGHT;
     }
 
     this.notify("can-go-back");
@@ -315,6 +317,10 @@ export class Navigator extends GObject.Object {
   }
 
   navigate(uri: string, history = true) {
+    if (history) {
+      this._stack.transition_type = Gtk.StackTransitionType.SLIDE_LEFT;
+    }
+
     // muzika:home to
     // muzika/home
     // only when it's not escaped (i.e not prefixed with \)
