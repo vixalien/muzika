@@ -381,9 +381,7 @@ export class Player extends GObject.Object {
   }
 
   async change_current_track(track: QueueTrack | null) {
-    const playing = this.playing;
-
-    this.stop();
+    this.playbin.set_state(Gst.State.NULL);
 
     if (!track) {
       return;
@@ -407,7 +405,7 @@ export class Player extends GObject.Object {
     this.playbin.set_state(Gst.State.NULL);
     this.playbin.set_property("uri", format.url);
 
-    if (playing) this.play();
+    if (this.playing) this.play();
   }
 
   private on_message(_bus: Gst.Bus, message: Gst.Message) {
