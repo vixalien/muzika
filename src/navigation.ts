@@ -273,28 +273,10 @@ export class Navigator extends GObject.Object {
     return this.future.length > 0;
   }
 
-  notify_back(prev?: boolean) {
-    if (
-      (prev != undefined && prev != this.can_go_back) || (prev == undefined)
-    ) {
-      this.notify("can-go-back");
-    }
-  }
-
-  notify_forward(prev?: boolean) {
-    if (
-      (prev != undefined && prev != this.can_go_forward) || (prev == undefined)
-    ) {
-      this.notify("can-go-forward");
-    }
-  }
-
   pushState(state: HistoryState) {
-    const prev_can_go_back = this.can_go_back;
-
     this.history.push(state);
 
-    this.notify_back(prev_can_go_back);
+    this.notify("can-go-back");
   }
 
   replaceState(state: HistoryState) {
@@ -302,17 +284,14 @@ export class Navigator extends GObject.Object {
   }
 
   go(n: number) {
-    const prev_can_go_back = this.can_go_back;
-    const prev_can_go_forward = this.can_go_forward;
-
     if (n > 0) {
       this.history.push(...this.future.splice(-n));
     } else if (n < 0) {
       this.future.push(...this.history.splice(n));
     }
 
-    this.notify_back(prev_can_go_back);
-    this.notify_forward(prev_can_go_forward);
+    this.notify("can-go-back");
+    this.notify("can-go-forward");
 
     const state = this.history[this.history.length - 1];
 
