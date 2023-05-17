@@ -2,7 +2,6 @@
 <interface>
   <requires lib="gtk" version="4.0" />
   <template class="QueueView" parent="GtkStack">
-    <property name="visible-child">queue_box</property>
     <child>
       <object class="AdwStatusPage" id="no_queue">
         <property name="icon-name">playlist2-symbolic</property>
