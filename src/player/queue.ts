@@ -413,12 +413,12 @@ export class Queue extends GObject.Object {
     }
   }
 
-  async add_songs(song_ids: string[], options: AddPlaylistOptions = {}) {
+  async add_songs(song_ids: string[], options: AddSongOptions = {}) {
     let tracks: QueueTrack[], first_track_options: QueueSettings | undefined;
 
     if (song_ids.length === 1) {
       // fast path to get the track options and tracklist at the same time
-      const queue = await this.get_track_queue(song_ids[0]);
+      const queue = await this.get_track_queue(song_ids[0], { radio: true });
 
       tracks = queue.tracks;
       first_track_options = _omit(queue, ["tracks"]);
@@ -546,6 +546,13 @@ export class Queue extends GObject.Object {
   private add(tracks: QueueTrack[], new_position?: number) {
     this.add_queue_at_position(tracks, this.list.n_items, new_position);
   }
+}
+
+interface AddSongOptions {
+  shuffle?: boolean;
+  next?: boolean;
+  signal?: AbortSignal;
+  play?: boolean;
 }
 
 interface AddPlaylistOptions {
