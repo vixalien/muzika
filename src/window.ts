@@ -30,6 +30,7 @@ import Adw from "gi://Adw";
 import { Navigator } from "./navigation.js";
 import { PlayerView } from "./components/player/view.js";
 import { Application } from "./application.js";
+import { QueueView } from "./components/player/queue.js";
 
 export class Window extends Adw.ApplicationWindow {
   static {
@@ -42,6 +43,7 @@ export class Window extends Adw.ApplicationWindow {
           "progress",
           "back_button",
           "box",
+          "sidebar",
         ],
         Properties: {
           navigator: GObject.ParamSpec.object(
@@ -62,9 +64,11 @@ export class Window extends Adw.ApplicationWindow {
   _progress!: Gtk.ProgressBar;
   _back_button!: Gtk.Button;
   _box!: Gtk.Box;
+  _sidebar!: Gtk.ScrolledWindow;
 
   navigator: Navigator;
   player_view: PlayerView;
+  queue_view: QueueView;
 
   interval: number | null = null;
 
@@ -105,5 +109,10 @@ export class Window extends Adw.ApplicationWindow {
     });
 
     this._box.append(this.player_view);
+
+    this.queue_view = new QueueView({
+      queue: application.player.queue,
+    });
+    this._sidebar.set_child(this.queue_view);
   }
 }

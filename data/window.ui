@@ -27,15 +27,40 @@
           </object>
         </child>
         <child>
-          <object class="GtkProgressBar" id="progress">
-            <style>
-              <class name="osd" />
-            </style>
-          </object>
-        </child>
-        <child>
-          <object class="GtkStack" id="stack">
-            <property name="vexpand">true</property>
+          <object class="GtkOverlay" id="progress_overlay">
+            <child type="overlay">
+              <object class="GtkProgressBar" id="progress">
+                <property name="valign">start</property>
+                <style>
+                  <class name="osd" />
+                </style>
+              </object>
+            </child>
+            <child>
+              <object class="AdwFlap" id="flap">
+                <property name="flap-position">1</property>
+                <child>
+                  <object class="GtkStack" id="stack">
+                    <property name="vexpand">true</property>
+                    <property name="width-request">300</property>
+                  </object>
+                </child>
+                <child type="separator">
+                  <object class="GtkSeparator"></object>
+                </child>
+                <child type="flap">
+                  <object class="GtkScrolledWindow" id="sidebar">
+                    <property name="width-request">400</property>
+                    <property name="hscrollbar-policy">never</property>
+                    <child>
+                      <object class="GtkLabel" id="label">
+                        <property name="label">Hello World</property>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+              </object>
+            </child>
           </object>
         </child>
       </object>

@@ -101,6 +101,13 @@ export class Queue extends GObject.Object {
           GObject.TYPE_OBJECT,
           GObject.ParamFlags.READWRITE,
         ),
+        "active-chip": GObject.param_spec_string(
+          "active-chip",
+          "Active chip",
+          "The active chip",
+          null as any,
+          GObject.ParamFlags.READWRITE,
+        ),
       },
       Signals: {
         "wants-to-play": {},
@@ -164,8 +171,8 @@ export class Queue extends GObject.Object {
   }
 
   private set_settings(settings: QueueSettings) {
-    this.notify("settings");
     this._settings = settings;
+    this.notify("settings");
   }
 
   private _shuffle = false;
@@ -205,6 +212,17 @@ export class Queue extends GObject.Object {
 
       this._original.remove_all();
     }
+  }
+
+  private _active_chip: string | null = null;
+
+  get active_chip() {
+    return this._active_chip;
+  }
+
+  set active_chip(chip: string | null) {
+    this._active_chip = chip;
+    this.notify("active-chip");
   }
 
   /**
@@ -384,6 +402,36 @@ export class Queue extends GObject.Object {
     }
 
     return this.track_options_settings.get(video_id)!;
+  }
+
+  async change_active_chip(chip: string | null) {
+    const found_chip = this.settings?.chips.find((c) => c.playlistId == chip);
+
+    if (chip && found_chip) {
+      const local_settings = this.settings;
+
+      await get_queue(null, found_chip.playlistId, {
+        params: found_chip.params,
+      }).then((queue) => {
+        // don't do anything if the queue has changed
+        if (local_settings != this.settings) {
+          this.active_chip = null;
+        }
+
+        this.list.splice(
+          this.position + 1,
+          this.list.n_items - this.position - 1,
+          queue.tracks.map((track) => ObjectContainer.new(track)),
+        );
+
+        this.active_chip = chip;
+
+        this.notify("can-play-previous");
+        this.notify("can-play-next");
+      });
+    }
+
+    this.active_chip = chip;
   }
 
   async add_playlist(

@@ -61,6 +61,7 @@
                 <property name="max-width-chars">1</property>
                 <property name="ellipsize">end</property>
                 <property name="lines">2</property>
+                <property name="wrap">true</property>
                 <property name="xalign">0</property>
                 <style>
                   <class name="heading" />
@@ -87,6 +88,8 @@
                         <property name="max-width-chars">1</property>
                         <property name="ellipsize">end</property>
                         <property name="xalign">0</property>
+                        <property name="lines">2</property>
+                        <property name="wrap">true</property>
                         <style>
                           <class name="dim-label" />
                         </style>

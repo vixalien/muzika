@@ -13,6 +13,8 @@
     <file preprocess="xml-stripblanks">components/carousel/videocard.ui</file>
     <file preprocess="xml-stripblanks">components/library/mixedcard.ui</file>
     <file preprocess="xml-stripblanks">components/library/view.ui</file>
+    <file preprocess="xml-stripblanks">components/player/queue.ui</file>
+    <file preprocess="xml-stripblanks">components/player/queueitem.ui</file>
     <file preprocess="xml-stripblanks">components/player/view.ui</file>
     <file preprocess="xml-stripblanks">components/playlist/largeheader.ui</file>
     <file preprocess="xml-stripblanks">components/playlist/miniheader.ui</file>
