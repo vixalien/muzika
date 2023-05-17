@@ -15,6 +15,7 @@
         </style>
         <child>
           <object class="GtkOverlay">
+            <property name="valign">start</property>
             <style>
               <class name="br-6" />
             </style>
