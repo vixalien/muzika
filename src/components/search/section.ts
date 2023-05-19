@@ -108,9 +108,12 @@ export class SearchSection extends Gtk.Box {
       case "playlist":
         card.set_playlist(content);
         break;
-      default:
-        console.error("Unknown search content type", content.type);
-        return;
+      case "radio":
+        card.set_radio(content);
+        break;
+        // default:
+        //   console.error("Unknown search content type", content.type);
+        //   return;
     }
 
     this._content.append(card);

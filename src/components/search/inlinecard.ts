@@ -7,6 +7,7 @@ import {
   SearchArtist,
   SearchContent,
   SearchPlaylist,
+  SearchRadio,
   SearchSong,
   SearchVideo,
 } from "../../muse.js";
@@ -27,6 +28,7 @@ export class InlineCard extends Gtk.ListBoxRow {
         "label_box",
         "type",
         "type_box",
+        "type_separator",
         // "second-line",
       ],
     }, this);
@@ -44,7 +46,7 @@ export class InlineCard extends Gtk.ListBoxRow {
   _label_box!: Gtk.Box;
   _type!: Gtk.Label;
   _type_box!: Gtk.Box;
-  _second_line!: Gtk.Box;
+  _type_separator!: Gtk.Label;
 
   image_size = 48;
   add_subsequent_middots = false;
@@ -69,6 +71,7 @@ export class InlineCard extends Gtk.ListBoxRow {
   }
 
   insert_only_text(text: string) {
+    this._type_separator.visible = true;
     this._label_box.append(Gtk.Label.new(text));
   }
 
@@ -113,6 +116,8 @@ export class InlineCard extends Gtk.ListBoxRow {
 
     this._type.label = album.album_type;
 
+    this.show_type(true);
+
     album.artists.forEach((artist) => {
       this.insert_text(artist.name);
     });
@@ -145,5 +150,17 @@ export class InlineCard extends Gtk.ListBoxRow {
     if (artist.subscribers) {
       this.insert_only_text(`${artist.subscribers} subscribers`);
     }
+  }
+
+  set_radio(radio: SearchRadio) {
+    this.content = radio;
+
+    load_thumbnails(this._image, radio.thumbnails, this.image_size);
+
+    this._title.label = radio.title;
+
+    this._type.label = "Radio";
+
+    this.show_type(true);
   }
 }

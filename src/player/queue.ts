@@ -480,8 +480,12 @@ export class Queue extends GObject.Object {
     if (options.play) {
       this.set_settings(_omit(queue, ["tracks"]));
 
+      const position = queue.current?.index
+        ? queue.current?.index % queue.tracks.length
+        : 0;
+
       this.emit("wants-to-play");
-      this.change_position(queue.current?.index ?? 0);
+      this.change_position(position);
     }
   }
 
