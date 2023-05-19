@@ -95,10 +95,26 @@ export class PlayerView extends Gtk.ActionBar {
 
   private last_button: Gtk.ToggleButton | null = null;
 
+  deselect_buttons() {
+    if (this.last_button) {
+      this.last_button.set_active(false);
+      this.last_button = null;
+    }
+  }
+
+  select_button(view: PlayerSidebarView) {
+    for (const [button, view_] of this.buttons_map) {
+      if (view_ === view) {
+        button.set_active(true);
+        this.last_button = button;
+        break;
+      }
+    }
+  }
+
   private handle_sidebar_button(toggled_button: Gtk.ToggleButton) {
     if (toggled_button === this.last_button) {
-      toggled_button.set_active(false);
-      this.last_button = null;
+      this.deselect_buttons();
       this.emit("sidebar-button-clicked", PlayerSidebarView.NONE);
       return;
     } else {

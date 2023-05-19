@@ -29,7 +29,7 @@ export class PlayerSidebar extends Gtk.Stack {
     }, this);
   }
 
-  views: Gtk.Widget[] = [];
+  views: Map<PlayerSidebarView, Gtk.Widget> = new Map();
 
   constructor(options: PlayerSidebarOptions) {
     super({
@@ -43,12 +43,24 @@ export class PlayerSidebar extends Gtk.Stack {
     this.add_child(queue_view);
     this.add_child(lyrics_view);
 
-    this.views[PlayerSidebarView.QUEUE] = queue_view;
-    this.views[PlayerSidebarView.LYRICS] = lyrics_view;
+    this.views.set(PlayerSidebarView.QUEUE, queue_view);
+    this.views.set(PlayerSidebarView.LYRICS, lyrics_view);
   }
 
   show_view(view: PlayerSidebarView) {
-    this.set_visible_child(this.views[view]);
+    this.set_visible_child(this.views.get(view)!);
+  }
+
+  get_selected_view(): PlayerSidebarView {
+    const child = this.get_visible_child();
+
+    for (const [view, widget] of this.views) {
+      if (widget === child) {
+        return view;
+      }
+    }
+
+    return PlayerSidebarView.NONE;
   }
 }
 
