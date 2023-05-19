@@ -63,7 +63,7 @@ label.link:hover {
 }
 
 .playlist-item:not(:focus):not(:focus-visible):not(:hover):nth-child(2n+1) {
-  background-color: alpha(@card_bg_color, .3);
+  background-color: shade(@card_bg_color, .93);
 }
 
 button.link.inline {
