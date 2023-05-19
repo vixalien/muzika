@@ -39,7 +39,10 @@ export class LyricsView extends Gtk.Stack {
 
     this._view.remove_css_class("view");
 
-    this.player.connect("notify::current", this.update_lyrics.bind(this));
+    this.player.queue.connect(
+      "notify::settings",
+      this.update_lyrics.bind(this),
+    );
   }
 
   controller: AbortController | null = null;
@@ -51,13 +54,13 @@ export class LyricsView extends Gtk.Stack {
 
     this.controller = new AbortController();
 
-    const track_options = this.player.current?.item?.options;
+    const track_settings = this.player.queue.settings;
 
-    if (track_options?.lyrics) {
+    if (track_settings?.lyrics) {
       this.set_visible_child(this._loading);
       this._loading.start();
 
-      await get_lyrics(track_options.lyrics, {
+      await get_lyrics(track_settings.lyrics, {
         signal: this.controller.signal,
       }).then((lyrics) => {
         this._source.label = lyrics.source;

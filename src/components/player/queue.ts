@@ -52,7 +52,7 @@ export class QueueView extends Gtk.Stack {
       this.update_visible_child();
     });
 
-    this.player.connect("notify::current", () => {
+    this.queue.connect("notify::position", () => {
       if (this.queue.position < 0) {
         this._list_view.model.unselect_all();
       } else {

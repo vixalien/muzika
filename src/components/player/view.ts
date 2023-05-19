@@ -10,6 +10,7 @@ import { load_thumbnails } from "../webimage.js";
 import { Settings } from "src/application.js";
 import { PlayerScale } from "./scale.js";
 import { PlayerSidebarView } from "./sidebar.js";
+import { QueueTrack } from "libmuse/types/parsers/queue.js";
 
 export interface PlayerViewOptions {
   player: Player;
@@ -135,7 +136,7 @@ export class PlayerView extends Gtk.ActionBar {
     this.scale.reset();
     this.scale.value = 0;
 
-    const song = this.player.current?.item;
+    const song = this.player.queue.current?.item;
     if (song == null) {
       this.revealed = false;
     } else {
@@ -144,11 +145,27 @@ export class PlayerView extends Gtk.ActionBar {
     }
   }
 
+  song_meta_changed() {
+    // toggle buttons
+
+    this._lyrics_button.set_sensitive(
+      this.player.queue.settings?.lyrics != null,
+    );
+  }
+
   setup_player() {
     this.song_changed();
 
     // update the player when the current song changes
-    this.player.connect("notify::current", this.song_changed.bind(this));
+    this.player.queue.connect(
+      "notify::current",
+      this.song_changed.bind(this),
+    );
+
+    this.player.connect(
+      "notify::current-meta",
+      this.song_meta_changed.bind(this),
+    );
 
     this.player.connect("notify::buffering", () => {
       this.update_play_button();
@@ -255,8 +272,10 @@ export class PlayerView extends Gtk.ActionBar {
     }
   }
 
-  show_song({ track, options }: TrackMetadata) {
+  show_song(track: QueueTrack) {
     // thumbnail
+
+    this._image.icon_name = "image-missing-symbolic";
 
     load_thumbnails(this._image, track.thumbnails, 74);
 
@@ -268,10 +287,6 @@ export class PlayerView extends Gtk.ActionBar {
     this._duration_label.label = track.duration_seconds
       ? seconds_to_string(track.duration_seconds)
       : track.duration ?? "00:00";
-
-    // toggle buttons
-
-    this._lyrics_button.set_sensitive(options.lyrics != null);
   }
 }
 

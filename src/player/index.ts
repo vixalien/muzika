@@ -22,7 +22,7 @@ export type TrackMetadata = {
   song: Song;
   format: MaybeAdaptiveFormat;
   track: QueueTrack;
-  options: QueueSettings;
+  settings: QueueSettings;
 };
 
 export class Player extends GObject.Object {
@@ -38,9 +38,9 @@ export class Player extends GObject.Object {
           GObject.ParamFlags.READABLE,
         ),
         current: GObject.param_spec_object(
-          "current",
-          "Current",
-          "The current song",
+          "current-meta",
+          "Current Metadata",
+          "The metadata of the currently playing song",
           ObjectContainer.$gtype,
           GObject.ParamFlags.READABLE,
         ),
@@ -129,10 +129,10 @@ export class Player extends GObject.Object {
     return this._queue;
   }
 
-  private _current: ObjectContainer<TrackMetadata> | null = null;
+  private _current_meta: ObjectContainer<TrackMetadata> | null = null;
 
-  get current() {
-    return this._current;
+  get current_meta() {
+    return this._current_meta;
   }
 
   private _position = 0;
@@ -387,20 +387,22 @@ export class Player extends GObject.Object {
       return;
     }
 
-    const [song, track_options] = await Promise.all([
+    this.buffering = true;
+
+    const [song, settings] = await Promise.all([
       this.get_song(track.videoId),
       this.queue.get_track_settings(track.videoId),
     ]);
 
     const format = this.negotiate_best_format(song);
 
-    this._current = ObjectContainer.new({
+    this._current_meta = ObjectContainer.new({
       song,
       track,
       format,
-      options: track_options,
+      settings: settings,
     });
-    this.notify("current");
+    this.notify("current-meta");
 
     this.playbin.set_state(Gst.State.NULL);
     this.playbin.set_property("uri", format.url);
