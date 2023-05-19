@@ -60,6 +60,23 @@ export class SearchSection extends Gtk.Box {
       case "album":
         uri = `album:${row.content.browseId}`;
         break;
+      case "radio":
+        this.activate_action(
+          "queue.play-playlist",
+          GLib.Variant.new_string(
+            `${row.content.playlistId}?video=${row.content.videoId}`,
+          ),
+        );
+        break;
+      case "song":
+      case "video":
+        this.activate_action(
+          "queue.play-song",
+          GLib.Variant.new_string(
+            row.content.videoId,
+          ),
+        );
+        break;
     }
 
     if (uri) {

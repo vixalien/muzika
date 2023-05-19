@@ -38,6 +38,15 @@ export class TopResultSection extends Gtk.Box {
       case "album":
         uri = `album:${child.result.browseId}`;
         break;
+      case "song":
+      case "video":
+        this.activate_action(
+          "queue.play-song",
+          GLib.Variant.new_string(
+            child.result.videoId,
+          ),
+        );
+        break;
     }
 
     if (uri) {

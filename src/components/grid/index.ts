@@ -105,6 +105,7 @@ export class Grid extends Gtk.GridView {
 
     switch (item.type) {
       case "playlist":
+      case "watch-playlist":
         uri = `playlist:${item.playlistId}`;
         break;
       case "artist":
@@ -112,6 +113,19 @@ export class Grid extends Gtk.GridView {
         break;
       case "album":
         uri = `album:${item.browseId}`;
+        break;
+      case "inline-video":
+      case "song":
+      case "video":
+      case "flat-song":
+        if (item.videoId) {
+          this.activate_action(
+            "queue.play-song",
+            GLib.Variant.new_string(
+              item.videoId,
+            ),
+          );
+        }
         break;
     }
 
