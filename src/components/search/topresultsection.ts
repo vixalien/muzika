@@ -107,6 +107,8 @@ export class TopResultSection extends Gtk.Box {
 
     if (top_result.more && top_result.more.length > 0) {
       top_result.more.forEach(this.add_more_content.bind(this));
+
+      this._content.connect("row-activated", this.row_activated.bind(this));
     } else {
       const second_flowbox = this._flowbox.get_child_at_index(1);
       if (second_flowbox) {
@@ -116,5 +118,47 @@ export class TopResultSection extends Gtk.Box {
     }
 
     this._flowbox.prepend(card);
+  }
+
+  row_activated(_: this, row: InlineCard) {
+    if (!row.content) return;
+
+    let uri: string | null = null;
+
+    switch (row.content.type) {
+      case "playlist":
+        uri = `playlist:${row.content.browseId}`;
+        break;
+      case "artist":
+        uri = `artist:${row.content.browseId}`;
+        break;
+      case "album":
+        uri = `album:${row.content.browseId}`;
+        break;
+      case "radio":
+        this.activate_action(
+          "queue.play-playlist",
+          GLib.Variant.new_string(
+            `${row.content.playlistId}?video=${row.content.videoId}`,
+          ),
+        );
+        break;
+      case "song":
+      case "video":
+        this.activate_action(
+          "queue.play-song",
+          GLib.Variant.new_string(
+            row.content.videoId,
+          ),
+        );
+        break;
+    }
+
+    if (uri) {
+      this.activate_action(
+        "navigator.visit",
+        GLib.Variant.new_string("muzika:" + uri),
+      );
+    }
   }
 }

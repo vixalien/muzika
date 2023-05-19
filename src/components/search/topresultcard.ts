@@ -1,6 +1,7 @@
 import Gtk from "gi://Gtk?version=4.0";
 import GObject from "gi://GObject";
 import Adw from "gi://Adw";
+import GLib from "gi://GLib";
 
 import {
   TopResult,
@@ -98,6 +99,10 @@ export class TopResultCard extends Gtk.FlowBoxChild {
 
     if (track.duration) this.insert_text(track.duration);
 
+    this._primary.action_name = "queue.play-song";
+    this._primary.action_target = GLib.Variant.new_string(track.videoId);
+
+    this._secondary.sensitive = false;
     this._secondary_content.label = "Add";
     this._secondary_content.icon_name = "list-add-symbolic";
   }
@@ -125,6 +130,9 @@ export class TopResultCard extends Gtk.FlowBoxChild {
     album.artists.forEach((artist) => {
       this.insert_text(artist.name);
     });
+
+    this._primary.sensitive = false;
+    this._secondary.sensitive = false;
   }
 
   set_artist(artist: TopResultArtist) {
@@ -141,7 +149,26 @@ export class TopResultCard extends Gtk.FlowBoxChild {
       this.insert_only_text(`${artist.subscribers} subscribers`);
     }
 
-    this._secondary_content.label = "Shuffle";
-    this._secondary_content.icon_name = "media-playlist-shuffle-symbolic";
+    this._primary_content.label = "Shuffle";
+    this._primary_content.icon_name = "media-playlist-shuffle-symbolic";
+
+    if (artist.shuffleId) {
+      this._primary.sensitive = true;
+      this._primary.action_name = "queue.play-playlist";
+      this._primary.action_target = GLib.Variant.new_string(artist.shuffleId);
+    } else {
+      this._primary.sensitive = false;
+    }
+
+    this._secondary_content.label = "Radio";
+    this._secondary_content.icon_name = "sonar-symbolic";
+
+    if (artist.radioId) {
+      this._secondary.sensitive = true;
+      this._secondary.action_name = "queue.play-playlist";
+      this._secondary.action_target = GLib.Variant.new_string(artist.radioId);
+    } else {
+      this._secondary.sensitive = false;
+    }
   }
 }
