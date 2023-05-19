@@ -118,7 +118,6 @@ export class Window extends Adw.ApplicationWindow {
 
     this.sidebar = new PlayerSidebar({
       player: application.player,
-      queue: application.player.queue,
     });
 
     this.player_view.connect("sidebar-button-clicked", (_, view) => {

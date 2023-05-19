@@ -175,6 +175,29 @@ export class Queue extends GObject.Object {
     this.notify("settings");
   }
 
+  private settings_abort_controller?: AbortController;
+
+  private update_settings() {
+    if (this.settings_abort_controller) {
+      this.settings_abort_controller.abort();
+      this.settings_abort_controller = undefined;
+    }
+
+    if (this.current?.item?.videoId) {
+      this.settings_abort_controller = new AbortController();
+
+      this.get_track_settings(
+        this.current?.item?.videoId,
+        this.settings_abort_controller.signal,
+      )
+        .then((settings) => this.set_settings(settings))
+        .catch(() => {})
+        .finally(() => {
+          this.settings_abort_controller = undefined;
+        });
+    }
+  }
+
   private _shuffle = false;
 
   get shuffle() {
@@ -387,9 +410,9 @@ export class Queue extends GObject.Object {
 
   private track_options_settings = new Map<string, QueueSettings>();
 
-  async get_track_settings(video_id: string) {
+  async get_track_settings(video_id: string, signal?: AbortSignal) {
     if (!this.track_options_settings.has(video_id)) {
-      const queue = await get_queue(video_id, null);
+      const queue = await get_queue(video_id, null, { signal });
 
       this.track_options_settings.set(video_id, _omit(queue, ["tracks"]));
 
@@ -456,6 +479,7 @@ export class Queue extends GObject.Object {
 
     if (options.play) {
       this.set_settings(_omit(queue, ["tracks"]));
+
       this.emit("wants-to-play");
       this.change_position(queue.current?.index ?? 0);
     }
@@ -523,11 +547,16 @@ export class Queue extends GObject.Object {
         this.increment_position(1);
       }
 
+      this.update_settings();
+
       return this.list.get_item(this.position)?.item!;
     } else {
       if (this.position >= this.list.n_items - 1) return null;
 
       this.increment_position(1);
+
+      this.update_settings();
+
       return this.list.get_item(this.position)?.item!;
     }
   }
@@ -535,6 +564,9 @@ export class Queue extends GObject.Object {
   repeat_or_next() {
     if (this.repeat === RepeatMode.ONE) {
       this.change_position(this.position);
+
+      this.update_settings();
+
       return this.list.get_item(this.position)?.item!;
     } else {
       return this.next();
@@ -549,11 +581,16 @@ export class Queue extends GObject.Object {
         this.increment_position(-1);
       }
 
+      this.update_settings();
+
       return this.list.get_item(this.position)?.item!;
     } else {
       if (this.position <= 0) return null;
 
       this.increment_position(-1);
+
+      this.update_settings();
+
       return this.list.get_item(this.position)?.item!;
     }
   }
@@ -579,8 +616,10 @@ export class Queue extends GObject.Object {
 
     if (new_position != null) {
       this.change_position(new_position);
+      this.update_settings();
     } else if (this.position < 0) {
       this.change_position(0);
+      this.update_settings();
     } else {
       this.notify("can-play-previous");
       this.notify("can-play-next");

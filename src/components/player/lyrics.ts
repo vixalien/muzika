@@ -38,33 +38,40 @@ export class LyricsView extends Gtk.Stack {
     this.player = player;
 
     this._view.remove_css_class("view");
-
-    this.player.queue.connect(
-      "notify::settings",
-      this.update_lyrics.bind(this),
-    );
   }
 
+  lyrics: string | null = null;
+  loaded = false;
   controller: AbortController | null = null;
 
-  async update_lyrics() {
+  async load_lyrics() {
+    const new_lyrics = this.player.queue.settings?.lyrics ?? null;
+
+    if (new_lyrics !== this.lyrics) {
+      this.lyrics = new_lyrics;
+      this.loaded = false;
+    }
+
     if (this.controller) {
       this.controller.abort();
     }
 
+    if (this.loaded) {
+      return;
+    }
+
     this.controller = new AbortController();
 
-    const track_settings = this.player.queue.settings;
-
-    if (track_settings?.lyrics) {
+    if (this.lyrics) {
       this.set_visible_child(this._loading);
       this._loading.start();
 
-      await get_lyrics(track_settings.lyrics, {
+      await get_lyrics(this.lyrics, {
         signal: this.controller.signal,
       }).then((lyrics) => {
         this._source.label = lyrics.source;
         this._buffer.text = lyrics.lyrics;
+        this.loaded = true;
 
         this.set_visible_child(this._lyrics_box);
       }).catch((err) => {
@@ -77,6 +84,7 @@ export class LyricsView extends Gtk.Stack {
         this._loading.stop();
       });
     } else {
+      this.loaded = true;
       this.set_visible_child(this._no_lyrics);
     }
   }

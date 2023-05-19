@@ -40,6 +40,12 @@ export class PlayerSidebar extends Gtk.Stack {
     const queue_view = new QueueView(options);
     const lyrics_view = new LyricsView(options);
 
+    options.player.queue.connect("notify::settings", () => {
+      if (this.visible_child === lyrics_view) {
+        lyrics_view.load_lyrics();
+      }
+    });
+
     this.add_child(queue_view);
     this.add_child(lyrics_view);
 
@@ -49,6 +55,11 @@ export class PlayerSidebar extends Gtk.Stack {
 
   show_view(view: PlayerSidebarView) {
     this.set_visible_child(this.views.get(view)!);
+
+    if (view === PlayerSidebarView.LYRICS) {
+      const lyrics_view = this.views.get(view)! as LyricsView;
+      lyrics_view.load_lyrics();
+    }
   }
 
   get_selected_view(): PlayerSidebarView {
@@ -72,5 +83,4 @@ export enum PlayerSidebarView {
 
 export interface PlayerSidebarOptions {
   player: Player;
-  queue: Queue;
 }

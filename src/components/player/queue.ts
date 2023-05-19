@@ -31,32 +31,30 @@ export class QueueView extends Gtk.Stack {
   _params!: Gtk.Box;
   _params_box!: Gtk.Box;
 
-  queue: Queue;
   player: Player;
 
   params_map = new Map<string, Gtk.Widget>();
 
-  constructor({ queue, player }: QueueViewOptions) {
+  constructor({ player }: QueueViewOptions) {
     super();
 
     // set up the queue
 
-    this.queue = queue;
     this.player = player;
 
-    this.queue.connect("notify::settings", () => {
+    this.player.queue.connect("notify::settings", () => {
       this.update_settings();
     });
 
-    this.queue.list.connect("notify::n-items", () => {
+    this.player.queue.list.connect("notify::n-items", () => {
       this.update_visible_child();
     });
 
-    this.queue.connect("notify::position", () => {
-      if (this.queue.position < 0) {
+    this.player.queue.connect("notify::position", () => {
+      if (this.player.queue.position < 0) {
         this._list_view.model.unselect_all();
       } else {
-        this._list_view.model.select_item(this.queue.position, true);
+        this._list_view.model.select_item(this.player.queue.position, true);
       }
     });
 
@@ -66,7 +64,7 @@ export class QueueView extends Gtk.Stack {
     factory.connect("bind", this.bind_cb.bind(this));
     this._list_view.connect("activate", this.activate_cb.bind(this));
 
-    this._list_view.model = Gtk.SingleSelection.new(queue.list);
+    this._list_view.model = Gtk.SingleSelection.new(player.queue.list);
     this._list_view.factory = factory;
 
     this._list_view.remove_css_class("view");
@@ -76,13 +74,13 @@ export class QueueView extends Gtk.Stack {
   }
 
   update_visible_child() {
-    this.visible_child = this.queue.list.n_items > 0
+    this.visible_child = this.player.queue.list.n_items > 0
       ? this._queue_box
       : this._no_queue;
   }
 
   update_settings() {
-    const settings = this.queue.settings;
+    const settings = this.player.queue.settings;
 
     this._playlist_name.label = settings?.playlist ?? "Queue";
 
@@ -105,7 +103,7 @@ export class QueueView extends Gtk.Stack {
         if (!first_button) {
           first_button = button;
 
-          if (!this.queue.active_chip) {
+          if (!this.player.queue.active_chip) {
             button.set_active(true);
           }
         } else {
@@ -114,7 +112,7 @@ export class QueueView extends Gtk.Stack {
 
         button.connect("toggled", (button) => {
           if (button.active) {
-            this.queue.change_active_chip(chip.playlistId);
+            this.player.queue.change_active_chip(chip.playlistId);
           }
         });
 
@@ -147,6 +145,5 @@ export class QueueView extends Gtk.Stack {
 }
 
 export interface QueueViewOptions {
-  queue: Queue;
   player: Player;
 }
