@@ -1,5 +1,6 @@
 import Gtk from "gi://Gtk?version=4.0";
 import GObject from "gi://GObject";
+import GLib from "gi://GLib";
 
 import { AlbumResult, get_album, ParsedAlbum, PlaylistItem } from "../muse.js";
 
@@ -53,6 +54,23 @@ export class AlbumPage extends Gtk.Box {
     this._content.append(this._loading);
 
     this._content.set_orientation(Gtk.Orientation.VERTICAL);
+
+    this.list_box.connect("row-activated", (_, row: AlbumItemCard) => {
+      console.log("row activated");
+      if (
+        !(row instanceof AlbumItemCard) || !this.album?.audioPlaylistId ||
+        !row.item
+      ) {
+        return;
+      }
+
+      row.activate_action(
+        "queue.play-playlist",
+        GLib.Variant.new_string(
+          `${this.album.audioPlaylistId}?video=${row.item.videoId}`,
+        ),
+      );
+    });
   }
 
   append_tracks(tracks: PlaylistItem[]) {
