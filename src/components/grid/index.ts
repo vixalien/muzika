@@ -67,6 +67,7 @@ export class Grid extends Gtk.GridView {
         card = new PlaylistCard();
         card.set_playlist(item);
         break;
+      case "channel":
       case "artist":
         card = new ArtistCard();
         card.set_artist(item);
@@ -109,6 +110,7 @@ export class Grid extends Gtk.GridView {
         uri = `playlist:${item.playlistId}`;
         break;
       case "artist":
+      case "channel":
         uri = `artist:${item.browseId}`;
         break;
       case "album":
