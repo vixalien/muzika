@@ -138,8 +138,6 @@ export class Grid extends Gtk.GridView {
   }
 
   show_items(items: MixedItem[]) {
-    this.list_model.remove_all();
-
     for (const item of items) {
       if (!item) continue;
 

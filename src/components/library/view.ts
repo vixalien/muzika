@@ -5,6 +5,7 @@ import { Grid } from "../../components/grid/index.js";
 import { MixedCard } from "./mixedcard.js";
 import { MixedItem } from "../../muse.js";
 import { Settings } from "../../application.js";
+import { Paginator } from "../paginator.js";
 
 export interface LibraryViewOptions {
   filters?: string[];
@@ -21,11 +22,29 @@ export class LibraryView extends Gtk.Box {
         "list_button",
         "stack",
         "tools",
+        "box",
       ],
       Signals: {
         "filter-changed": {
           param_types: [GObject.TYPE_STRING],
         },
+        "paginate": {},
+      },
+      Properties: {
+        "reveal-paginator": GObject.param_spec_boolean(
+          "reveal-paginator",
+          "Reveal Paginator",
+          "Whether to show the paginator component",
+          false,
+          GObject.ParamFlags.READWRITE,
+        ),
+        "paginator-loading": GObject.param_spec_boolean(
+          "paginator-loading",
+          "Paginator Loading",
+          "Whether the paginator is currently loading",
+          false,
+          GObject.ParamFlags.READWRITE,
+        ),
       },
     }, this);
   }
@@ -35,12 +54,32 @@ export class LibraryView extends Gtk.Box {
   _grid_button!: Gtk.ToggleButton;
   _list_button!: Gtk.ToggleButton;
   _tools!: Gtk.Box;
+  _box!: Gtk.Box;
 
   grid: Grid;
   list: Gtk.ListBox;
+  paginator: Paginator;
+
+  get reveal_paginator() {
+    return this.paginator.child_revealed;
+  }
+
+  set reveal_paginator(value: boolean) {
+    this.paginator.reveal_child = value;
+  }
+
+  get paginator_loading() {
+    return this.paginator.loading;
+  }
+
+  set paginator_loading(value: boolean) {
+    this.paginator.loading = value;
+  }
 
   constructor(props: LibraryViewOptions = {}) {
-    super();
+    super({
+      vexpand: true,
+    });
 
     this.grid = new Grid();
     this.grid.margin_start = 6;
@@ -54,6 +93,14 @@ export class LibraryView extends Gtk.Box {
 
     this._stack.add_named(this.grid, "grid");
     this._stack.add_named(this.list, "list");
+
+    this.paginator = new Paginator();
+
+    this.paginator.connect("activate", () => {
+      this.emit("paginate");
+    });
+
+    this._box.append(this.paginator);
 
     this._grid_button.connect("toggled", (button) => {
       if (button.active) {

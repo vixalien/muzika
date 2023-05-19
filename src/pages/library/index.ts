@@ -30,10 +30,16 @@ export class LibraryPage extends Gtk.Box {
   library?: Library;
 
   constructor() {
-    super();
+    super({
+      orientation: Gtk.Orientation.VERTICAL,
+    });
 
     this.view = new LibraryView({
       filters: Array.from(orders.keys()),
+    });
+
+    this.view.connect("paginate", () => {
+      this.load_more();
     });
 
     this.append(this.view);
@@ -51,6 +57,8 @@ export class LibraryPage extends Gtk.Box {
 
   show_library(library: Library) {
     this.view.show_items(library.results);
+
+    this.view.reveal_paginator = library.continuation != null;
   }
 
   async load_library(options: GetLibraryOptions) {
@@ -65,5 +73,20 @@ export class LibraryPage extends Gtk.Box {
     this.view.connect("filter-changed", this.handle_order_changed.bind(this));
 
     this.show_library(this.library);
+  }
+
+  loading = false;
+
+  load_more() {
+    if (this.loading || !this.library?.continuation) return;
+
+    get_library({ continuation: this.library.continuation })
+      .then((library) => {
+        this.library!.continuation = library.continuation;
+
+        this.show_library(library);
+
+        this.view.paginator_loading = this.loading = false;
+      });
   }
 }
