@@ -5,11 +5,12 @@ import GLib from "gi://GLib";
 
 import type { QueueTrack } from "libmuse/types/parsers/queue.js";
 
-import { Queue, QueueSettings } from "./queue.js";
+import { Queue, QueueSettings, RepeatMode } from "./queue.js";
 import { AudioFormat, get_song, Song } from "../muse.js";
 import { Settings } from "../application.js";
 import { ObjectContainer } from "../util/objectcontainer.js";
 import { AddActionEntries } from "src/util/action.js";
+import { store } from "src/util/giofilestore.js";
 
 const preferred_quality: AudioFormat["audio_quality"] = "medium";
 const preferred_format: AudioFormat["audio_codec"] = "opus";
@@ -208,6 +209,8 @@ export class Player extends GObject.Object {
     });
 
     this.playbin.set_property("volume", Settings.get_double("volume"));
+
+    this.load_state();
   }
 
   get_action_group() {
@@ -380,6 +383,8 @@ export class Player extends GObject.Object {
     return this.song_cache.get(videoId)!;
   }
 
+  private seek_to: number | null = null;
+
   async change_current_track(track: QueueTrack | null) {
     this.playbin.set_state(Gst.State.NULL);
 
@@ -406,6 +411,11 @@ export class Player extends GObject.Object {
 
     this.playbin.set_state(Gst.State.NULL);
     this.playbin.set_property("uri", format.url);
+
+    if (this.seek_to) {
+      this.seek(this.seek_to);
+      this.seek_to = null;
+    }
 
     if (this.playing) this.play();
   }
@@ -518,4 +528,70 @@ export class Player extends GObject.Object {
         return format.has_audio;
       }) as MaybeAdaptiveFormat[];
   }
+
+  private get_state(): PlayerState {
+    const get_tracks = (list: Gio.ListStore) => {
+      return this.queue._get_items(list).map((item) => item.item)
+        .filter(Boolean).map((track) => track?.videoId) as string[];
+    };
+
+    return {
+      shuffle: this.queue.shuffle,
+      repeat: this.queue.repeat,
+      position: this.queue.position,
+      tracks: get_tracks(this.queue.list),
+      original: get_tracks(this.queue._original),
+      seek: this.get_position() ?? 0,
+      settings: this.queue.settings,
+    };
+  }
+
+  save_state() {
+    const state = this.get_state();
+
+    store.set("player-state", state);
+  }
+
+  private async set_state(state?: PlayerState) {
+    if (!state) return;
+
+    if (state.tracks.length === 0) return;
+
+    if (state.settings) {
+      this.queue.set_settings(state.settings);
+    }
+
+    this.seek_to = state.seek;
+
+    await Promise.all([
+      this.queue.add_songs(state.tracks),
+      this.queue.get_tracklist(state.original)
+        .then((tracks) =>
+          tracks.forEach((track) =>
+            this.queue._original.append(ObjectContainer.new(track))
+          )
+        ),
+    ]);
+
+    this.queue._shuffle = state.shuffle;
+    this.queue.repeat = state.repeat;
+    this.queue.change_position(state.position);
+  }
+
+  private async load_state() {
+    const state = store.get("player-state") as PlayerState | undefined;
+
+    await this.set_state(state)
+      .catch((err) => console.error(err));
+  }
+}
+
+export interface PlayerState {
+  shuffle: boolean;
+  repeat: RepeatMode;
+  position: number;
+  tracks: string[];
+  original: string[];
+  seek: number;
+  settings?: QueueSettings;
 }

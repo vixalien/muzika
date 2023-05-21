@@ -118,7 +118,7 @@ export class Queue extends GObject.Object {
   private _list: Gio.ListStore<ObjectContainer<QueueTrack>> = new Gio
     .ListStore();
   // original is used to store unshuffled list
-  private _original: Gio.ListStore<ObjectContainer<QueueTrack>> = new Gio
+  _original: Gio.ListStore<ObjectContainer<QueueTrack>> = new Gio
     .ListStore();
 
   get list() {
@@ -152,7 +152,7 @@ export class Queue extends GObject.Object {
     return this._position;
   }
 
-  private change_position(position: number) {
+  change_position(position: number) {
     this._position = position;
     this.notify("position");
     this.notify("current");
@@ -170,7 +170,7 @@ export class Queue extends GObject.Object {
     return this._settings;
   }
 
-  private set_settings(settings: QueueSettings) {
+  set_settings(settings: QueueSettings) {
     this._settings = settings;
     this.notify("settings");
   }
@@ -209,7 +209,7 @@ export class Queue extends GObject.Object {
     }
   }
 
-  private _shuffle = false;
+  _shuffle = false;
 
   get shuffle() {
     return this._shuffle;
@@ -262,7 +262,7 @@ export class Queue extends GObject.Object {
   /**
    * A helper to turn a `Gio.ListStore` into an array
    */
-  private _get_items(list: Gio.ListStore<ObjectContainer<QueueTrack>>) {
+  _get_items(list: Gio.ListStore<ObjectContainer<QueueTrack>>) {
     const items: ObjectContainer<QueueTrack>[] = [];
 
     for (let i = 0; i < list.n_items; i++) {
@@ -399,7 +399,7 @@ export class Queue extends GObject.Object {
 
   private tracklist_map = new Map<string, QueueTrack>();
 
-  private async get_tracklist(video_ids: string[]) {
+  async get_tracklist(video_ids: string[]) {
     if (video_ids.every((id) => this.tracklist_map.has(id))) {
       return video_ids.map((id) => this.tracklist_map.get(id)!);
     }
