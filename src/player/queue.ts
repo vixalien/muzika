@@ -177,7 +177,7 @@ export class Queue extends GObject.Object {
 
   private settings_abort_controller?: AbortController;
 
-  private update_settings() {
+  private update_track_settings() {
     if (this.settings_abort_controller) {
       this.settings_abort_controller.abort();
       this.settings_abort_controller = undefined;
@@ -190,7 +190,18 @@ export class Queue extends GObject.Object {
         this.current?.item?.videoId,
         this.settings_abort_controller.signal,
       )
-        .then((settings) => this.set_settings(settings))
+        .then((settings) => {
+          if (this.settings) {
+            this.set_settings({
+              ...this.settings,
+              current: settings.current,
+              lyrics: settings.lyrics,
+              related: settings.related,
+            });
+          } else {
+            this.set_settings(settings);
+          }
+        })
         .catch(() => {})
         .finally(() => {
           this.settings_abort_controller = undefined;
@@ -551,7 +562,7 @@ export class Queue extends GObject.Object {
         this.increment_position(1);
       }
 
-      this.update_settings();
+      this.update_track_settings();
 
       return this.list.get_item(this.position)?.item!;
     } else {
@@ -559,7 +570,7 @@ export class Queue extends GObject.Object {
 
       this.increment_position(1);
 
-      this.update_settings();
+      this.update_track_settings();
 
       return this.list.get_item(this.position)?.item!;
     }
@@ -569,7 +580,7 @@ export class Queue extends GObject.Object {
     if (this.repeat === RepeatMode.ONE) {
       this.change_position(this.position);
 
-      this.update_settings();
+      this.update_track_settings();
 
       return this.list.get_item(this.position)?.item!;
     } else {
@@ -585,7 +596,7 @@ export class Queue extends GObject.Object {
         this.increment_position(-1);
       }
 
-      this.update_settings();
+      this.update_track_settings();
 
       return this.list.get_item(this.position)?.item!;
     } else {
@@ -593,7 +604,7 @@ export class Queue extends GObject.Object {
 
       this.increment_position(-1);
 
-      this.update_settings();
+      this.update_track_settings();
 
       return this.list.get_item(this.position)?.item!;
     }
@@ -620,10 +631,10 @@ export class Queue extends GObject.Object {
 
     if (new_position != null) {
       this.change_position(new_position);
-      this.update_settings();
+      this.update_track_settings();
     } else if (this.position < 0) {
       this.change_position(0);
-      this.update_settings();
+      this.update_track_settings();
     } else {
       this.notify("can-play-previous");
       this.notify("can-play-next");

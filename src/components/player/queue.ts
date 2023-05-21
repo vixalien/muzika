@@ -1,8 +1,8 @@
 import Gtk from "gi://Gtk?version=4.0";
 import GObject from "gi://GObject";
 import Adw from "gi://Adw";
+import GLib from "gi://GLib";
 
-import { Queue } from "src/player/queue.js";
 import { ObjectContainer } from "src/util/objectcontainer";
 import type { QueueTrack } from "libmuse/types/parsers/queue";
 import { QueueItem } from "./queueitem";
@@ -17,7 +17,10 @@ export class QueueView extends Gtk.Stack {
         "no_queue",
         "list_view",
         "queue_box",
+        "playlist_stack",
         "playlist_name",
+        "playlist_button",
+        "playlist_button_name",
         "params",
         "params_box",
       ],
@@ -27,7 +30,10 @@ export class QueueView extends Gtk.Stack {
   _list_view!: Gtk.ListView;
   _queue_box!: Gtk.Box;
   _no_queue!: Adw.StatusPage;
+  _playlist_stack!: Gtk.Stack;
   _playlist_name!: Gtk.Label;
+  _playlist_button!: Gtk.Button;
+  _playlist_button_name!: Gtk.Label;
   _params!: Gtk.Box;
   _params_box!: Gtk.Box;
 
@@ -82,7 +88,20 @@ export class QueueView extends Gtk.Stack {
   update_settings() {
     const settings = this.player.queue.settings;
 
-    this._playlist_name.label = settings?.playlist ?? "Queue";
+    if (settings?.playlistId) {
+      this._playlist_stack.set_visible_child(this._playlist_button);
+
+      this._playlist_button.action_name = "navigator.visit";
+      this._playlist_button.action_target = GLib.Variant.new_string(
+        `muzika:playlist:${settings.playlistId}`,
+      );
+
+      this._playlist_button_name.label = settings?.playlist ?? "Queue";
+    } else {
+      this._playlist_stack.set_visible_child(this._playlist_name);
+
+      this._playlist_name.label = settings?.playlist ?? "Queue";
+    }
 
     this.params_map.clear();
 
