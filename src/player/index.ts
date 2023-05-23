@@ -85,6 +85,11 @@ export class Player extends GObject.Object {
           GObject.ParamFlags.READABLE,
         ),
       },
+      Signals: {
+        seeked: {
+          param_types: [GObject.TYPE_INT64],
+        },
+      },
     }, this);
   }
 
@@ -329,6 +334,8 @@ export class Player extends GObject.Object {
       Gst.SeekFlags.FLUSH,
       position,
     );
+
+    this.emit("seeked", position);
   }
 
   private remove_seek_cb() {

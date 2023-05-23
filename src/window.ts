@@ -30,11 +30,11 @@ import Adw from "gi://Adw";
 import { Navigator } from "./navigation.js";
 import { PlayerView } from "./components/player/view.js";
 import { Application } from "./application.js";
-import { QueueView } from "./components/player/queue.js";
 import {
   PlayerSidebar,
   PlayerSidebarView,
 } from "./components/player/sidebar.js";
+import { MPRIS } from "./mpris.js";
 
 export class Window extends Adw.ApplicationWindow {
   static {
@@ -102,6 +102,8 @@ export class Window extends Adw.ApplicationWindow {
     });
 
     const application = this.application as Application;
+
+    const mpris = new MPRIS(application);
 
     this.insert_action_group("navigator", this.navigator.get_action_group());
     this.insert_action_group("player", application.player.get_action_group());
