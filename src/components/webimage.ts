@@ -92,6 +92,7 @@ export interface LoadOptions {
   width: number;
   height?: number;
   square?: boolean;
+  signal?: AbortSignal;
 }
 
 export function load_image(
@@ -101,8 +102,9 @@ export function load_image(
 ) {
   const url = new URL(href);
 
-  fetch(url, {
+  return fetch(url, {
     method: "GET",
+    signal: options.signal,
   }).then(async (response) => {
     const buffer = await response.arrayBuffer();
 
@@ -129,5 +131,9 @@ export function load_image(
       const texture = Gdk.Texture.new_for_pixbuf(pixbuf);
       image.set_custom_image(texture);
     }
-  }).catch((e) => console.error(e.name, e.message));
+  }).catch((e) => {
+    if (e.name !== "AbortError") {
+      console.error("Couldn't load thumbnail:", e);
+    }
+  });
 }

@@ -272,13 +272,28 @@ export class PlayerView extends Gtk.ActionBar {
     }
   }
 
+  /**
+   * loading multiple thumbnails can result in the previous one loading
+   * after the current one, so we need to abort the previous one
+   */
+  abort_thumbnail: AbortController | null = null;
+
   show_song(track: QueueTrack) {
+    if (this.abort_thumbnail != null) {
+      this.abort_thumbnail.abort();
+      this.abort_thumbnail = null;
+    }
+
     // thumbnail
 
     this._image.icon_name = "image-missing-symbolic";
 
-    load_thumbnails(this._image, track.thumbnails, 74);
+    this.abort_thumbnail = new AbortController();
 
+    load_thumbnails(this._image, track.thumbnails, {
+      width: 74,
+      signal: this.abort_thumbnail.signal,
+    });
     // labels
 
     this._title.label = track.title;
