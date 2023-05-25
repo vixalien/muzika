@@ -376,8 +376,14 @@ export class MPRIS extends DBusInterface {
       "xesam:userRating": GLib.Variant.new_double(user_rating),
       "xesam:title": GLib.Variant.new_string(track.title),
       "xesam:album": GLib.Variant.new_string(track.album?.name ?? ""),
-      "xesam:artist": GLib.Variant.new_tuple(artists as any),
-      "xesam:albumArtist": GLib.Variant.new_tuple(artists as any),
+      "xesam:artist": GLib.Variant.new_array(
+        GLib.VariantType.new("s"),
+        artists as any,
+      ),
+      "xesam:albumArtist": GLib.Variant.new_array(
+        GLib.VariantType.new("s"),
+        artists as any,
+      ),
       "mpris:artUrl": GLib.Variant.new_string(largest_thumbnail.url),
     };
 
