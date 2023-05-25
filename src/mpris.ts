@@ -558,7 +558,7 @@ export class MPRIS extends DBusInterface {
     const duration_second = (this.player.get_duration() ?? 0) / Gst.SECOND;
 
     if (new_position_second <= duration_second) {
-      this.player.seek(new_position_second * Gst.SECOND);
+      this.player.raw_seek(new_position_second * Gst.SECOND);
     } else {
       this.player.next();
     }

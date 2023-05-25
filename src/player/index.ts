@@ -3,6 +3,8 @@ import GObject from "gi://GObject";
 import Gio from "gi://Gio";
 import GLib from "gi://GLib";
 
+import { throttle } from "lodash-es";
+
 import type { QueueTrack } from "libmuse/types/parsers/queue.js";
 
 import { Queue, QueueSettings, RepeatMode } from "./queue.js";
@@ -209,6 +211,7 @@ export class Player extends GObject.Object {
     }
 
     this.queue.connect("notify::current", () => {
+      this._last_position = 0;
       this.change_current_track(this.queue.current?.item ?? null);
     });
 
@@ -345,7 +348,7 @@ export class Player extends GObject.Object {
     }
   }
 
-  seek(position: number) {
+  raw_seek(position: number) {
     const cb = () => {
       this.playbin.seek_simple(
         Gst.Format.TIME,
@@ -371,6 +374,11 @@ export class Player extends GObject.Object {
 
     return state_change;
   }
+
+  seek = throttle(this.raw_seek.bind(this), 300, {
+    trailing: true,
+    leading: false,
+  });
 
   async previous() {
     this.playing = true;
@@ -440,9 +448,11 @@ export class Player extends GObject.Object {
           const ret = this.seek(this.seek_to);
           this.seek_to = null;
 
-          this.exec_after(ret, () => {
-            if (this.playing) this.play;
-          });
+          if (ret) {
+            this.exec_after(ret, () => {
+              if (this.playing) this.play;
+            });
+          }
         } else {
           if (this.playing) this.play();
         }
