@@ -162,6 +162,22 @@ export class Player extends GObject.Object {
     }
   }
 
+  private _last_position = 0;
+
+  /**
+   * Gets the current position of the player, or the last position seeked to
+   */
+  get_normalised_position() {
+    const position = this.get_position();
+
+    if (position) {
+      this._last_position = position;
+      return position;
+    } else {
+      return this._last_position;
+    }
+  }
+
   private _duration = 0;
 
   get duration() {
@@ -293,10 +309,9 @@ export class Player extends GObject.Object {
 
   play() {
     if (
-      this.playbin.get_state(Number.MAX_SAFE_INTEGER)[1] === Gst.State.PLAYING
+      this.playbin.get_state(0)[1] === Gst.State.PLAYING
     ) return;
 
-    this.playing = true;
     const ret = this.playbin.set_state(Gst.State.PLAYING);
 
     if (ret === Gst.StateChangeReturn.FAILURE) {
@@ -305,6 +320,10 @@ export class Player extends GObject.Object {
     } else if (ret === Gst.StateChangeReturn.NO_PREROLL) {
       this.is_live = true;
     }
+
+    this.exec_after(ret, () => {
+      this.playing = true;
+    });
   }
 
   pause() {
@@ -326,39 +345,31 @@ export class Player extends GObject.Object {
     }
   }
 
-  private seek_id: number | null = null;
-
-  private do_seek(position: number) {
-    this.playbin.seek_simple(
-      Gst.Format.TIME,
-      Gst.SeekFlags.FLUSH,
-      position,
-    );
-
-    this.emit("seeked", position);
-  }
-
-  private remove_seek_cb() {
-    if (!this.seek_id) return;
-    this.disconnect(this.seek_id);
-    this.seek_id = null;
-  }
-
   seek(position: number) {
-    // seek after buffering is complete
-    if (this.buffering) {
-      this.remove_seek_cb();
+    const cb = () => {
+      this.playbin.seek_simple(
+        Gst.Format.TIME,
+        Gst.SeekFlags.FLUSH,
+        position,
+      );
 
-      this.seek_id = this.connect("notify::buffering", () => {
-        if (this.buffering) return;
-        this.do_seek(position);
-
-        this.remove_seek_cb();
+      this.add_async_done_cb(() => {
+        this._last_position = position;
+        this.emit("seeked", position);
       });
-    } else {
-      // seek immediately
-      this.do_seek(position);
+    };
+
+    const state_change = this.playbin.get_state(0)[0];
+
+    if (state_change === Gst.StateChangeReturn.ASYNC) {
+      if (!this.async_done_cbs.includes(cb)) {
+        this.add_async_done_cb(cb);
+      }
+    } else if (state_change === Gst.StateChangeReturn.SUCCESS) {
+      cb();
     }
+
+    return state_change;
   }
 
   async previous() {
@@ -418,13 +429,51 @@ export class Player extends GObject.Object {
 
     this.playbin.set_state(Gst.State.NULL);
     this.playbin.set_property("uri", format.url);
+    const paused_ret = this.playbin.set_state(Gst.State.PAUSED);
 
-    if (this.seek_to) {
-      this.seek(this.seek_to);
-      this.seek_to = null;
+    this.exec_after(
+      paused_ret,
+      () => {
+        this.duration = this.get_duration() ?? 0;
+
+        if (this.seek_to) {
+          const ret = this.seek(this.seek_to);
+          this.seek_to = null;
+
+          this.exec_after(ret, () => {
+            if (this.playing) this.play;
+          });
+        } else {
+          if (this.playing) this.play();
+        }
+      },
+    );
+  }
+
+  private exec_after(
+    statechange: Gst.StateChangeReturn,
+    cb: () => void,
+  ) {
+    if (statechange === Gst.StateChangeReturn.ASYNC) {
+      this.add_async_done_cb(cb);
+    } else if (statechange === Gst.StateChangeReturn.SUCCESS) {
+      cb();
     }
+  }
 
-    if (this.playing) this.play();
+  private async_done_cbs: (() => void)[] = [];
+
+  private add_async_done_cb(cb: () => void) {
+    this.async_done_cbs.push(cb);
+  }
+
+  private fire_async_done_cbs() {
+    const cbs = this.async_done_cbs;
+    this.async_done_cbs = [];
+
+    for (const cb of cbs) {
+      cb();
+    }
   }
 
   private on_message(_bus: Gst.Bus, message: Gst.Message) {
@@ -468,7 +517,7 @@ export class Player extends GObject.Object {
         }
         break;
       case Gst.MessageType.ASYNC_DONE:
-        this.duration = this.get_duration() ?? 0;
+        this.fire_async_done_cbs();
         break;
     }
   }

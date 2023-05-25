@@ -68,17 +68,10 @@ export class PlayerScale extends Gtk.Scale {
 
     this.connect("change-value", (_, _scroll, value: number) => {
       if (this.animation) {
-        // first end the animation to reduce jiggling of duration label
-        this.animation.connect("done", () => {
-          // reset the value to what it was before the animation ended
-          this.adjustment.value = value;
-          this.user_changed_value();
-        });
-
-        this.animation.skip();
-      } else {
-        this.user_changed_value();
+        this.animation.pause();
       }
+
+      this.user_changed_value();
     });
   }
 
@@ -168,5 +161,18 @@ export class PlayerScale extends Gtk.Scale {
     }
 
     this.animation.pause();
+  }
+
+  update_position(position: number) {
+    const playing = this.animation?.state === Adw.AnimationState.PLAYING;
+
+    this.setup_animation(this.duration, position);
+
+    if (playing) {
+      this.animation?.play();
+    } else {
+      this.value = position;
+      this.notify("value");
+    }
   }
 }

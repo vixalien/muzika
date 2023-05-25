@@ -167,6 +167,10 @@ export class PlayerView extends Gtk.ActionBar {
       this.song_meta_changed.bind(this),
     );
 
+    this.player.connect("seeked", (_, position) => {
+      this.scale.update_position(position);
+    });
+
     this.player.connect("notify::buffering", () => {
       this.update_play_button();
     });

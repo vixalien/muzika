@@ -673,7 +673,7 @@ export class MPRIS extends DBusInterface {
         };
       case this.MEDIA_PLAYER2_PLAYER_IFACE:
         const position_msecond = Math.trunc(
-          (this.player.get_position() ?? 0) / 1e3,
+          (this.player.get_normalised_position()) / 1e3,
         );
         const playback_status = this._get_playback_status();
         const is_shuffle = this.player.queue.shuffle;
