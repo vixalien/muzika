@@ -122,7 +122,12 @@ export class PlaylistPage extends Gtk.Box {
 
     if (playlist.authors && playlist.authors.length >= 1) {
       playlist.authors.forEach((author) => {
-        this.header.add_author(author);
+        this.header.add_author({
+          ...author,
+          // can only be an artist when we are viewing the playlist of 
+          // all songs by an artist
+          artist: playlist.id.startsWith("OLAK5uy_")
+        });
       });
     }
 

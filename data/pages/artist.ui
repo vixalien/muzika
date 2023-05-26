@@ -25,13 +25,28 @@
                     <property name="margin-start">12</property>
                     <property name="margin-end">12</property>
                     <child>
-                      <object class="GtkLabel">
-                        <property name="label">Top Songs</property>
-                        <property name="halign">start</property>
-                        <property name="xalign">0</property>
-                        <style>
-                          <class name="title-2" />
-                        </style>
+                      <object class="GtkBox">
+                        <child>
+                          <object class="GtkLabel">
+                            <property name="label">Top Songs</property>
+                            <property name="halign">start</property>
+                            <property name="xalign">0</property>
+                            <style>
+                              <class name="title-2" />
+                            </style>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkButton" id="more_top_songs">
+                            <property name="visible">false</property>
+                            <property name="halign">2</property>
+                            <property name="hexpand">true</property>
+                            <property name="label">More</property>
+                            <style>
+                              <class name="flat" />
+                            </style>
+                          </object>
+                        </child>
                       </object>
                     </child>
                     <child>

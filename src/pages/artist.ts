@@ -1,13 +1,8 @@
 import Gtk from "gi://Gtk?version=4.0";
 import GObject from "gi://GObject";
+import GLib from "gi://GLib";
 
-import {
-  Artist,
-  Category,
-  get_artist,
-  MixedItem,
-  PlaylistItem,
-} from "../muse.js";
+import { Artist, Category, get_artist, MixedItem } from "../muse.js";
 
 import { ArtistHeader } from "../components/artistheader.js";
 import { Carousel } from "../components/carousel/index.js";
@@ -24,6 +19,7 @@ export class ArtistPage extends Gtk.Box {
         "scrolled",
         "top_songs_list",
         "top_songs",
+        "more_top_songs",
       ],
     }, this);
   }
@@ -35,6 +31,7 @@ export class ArtistPage extends Gtk.Box {
   _scrolled!: Gtk.ScrolledWindow;
   _top_songs!: Gtk.Box;
   _top_songs_list!: Gtk.ListBox;
+  _more_top_songs!: Gtk.Button;
 
   header: ArtistHeader;
 
@@ -48,9 +45,9 @@ export class ArtistPage extends Gtk.Box {
     this._inner_box.prepend(this.header);
   }
 
-  append_top_songs(tracks: PlaylistItem[]) {
-    if (tracks && tracks.length > 0) {
-      for (const track of tracks) {
+  show_top_songs(songs: Artist["songs"]) {
+    if (songs.results && songs.results.length > 0) {
+      for (const track of songs.results) {
         const card = new PlaylistItemCard();
 
         card.set_item(track);
@@ -60,6 +57,15 @@ export class ArtistPage extends Gtk.Box {
     } else {
       this._top_songs.visible = false;
     }
+
+    if (songs.browseId) {
+      this._more_top_songs.visible = true;
+      this._more_top_songs.action_name = "navigator.visit";
+      this._more_top_songs.action_target = GLib.Variant.new(
+        "s",
+        `muzika:playlist:${songs.browseId}`,
+      );
+    }
   }
 
   set_artist(artist: Artist) {
@@ -67,7 +73,7 @@ export class ArtistPage extends Gtk.Box {
     this.header.set_title(artist.name);
     this.header.set_description(artist.description);
 
-    this.append_top_songs(artist.songs.results);
+    this.show_top_songs(artist.songs);
 
     this.add_carousel("Albums", artist.albums);
     this.add_carousel("Singles", artist.singles);
