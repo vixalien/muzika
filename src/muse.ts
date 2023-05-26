@@ -40,6 +40,8 @@ class CustomFetch extends FetchClient {
     GLib.build_filenamev([GLib.get_user_cache_dir(), pkg.name, "cache"]),
   );
 
+  CACHE = false;
+
   constructor() {
     super();
 
@@ -62,7 +64,7 @@ class CustomFetch extends FetchClient {
       )
     }.json`;
 
-    const cache = !path.startsWith("like/");
+    const cache = this.CACHE && !path.startsWith("like/");
 
     const cached_file = Gio.file_new_for_path(GLib.build_filenamev([
       this.cache_dir.get_path()!,
@@ -88,7 +90,7 @@ class CustomFetch extends FetchClient {
     const response = await super.request(path, options) as GResponse;
 
     // store into cache
-    if (cache) {
+    if (cache && response.ok) {
       try {
         // await Deno.mkdir("store/cache", { recursive: true });
         // await Deno.writeTextFile(

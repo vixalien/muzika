@@ -8,6 +8,7 @@
   "author": "Christopher Davis <christopherdavis@gnome.org>",
   "license": "MIT",
   "dependencies": {
+    "@lemaik/qrcode-svg": "^1.2.0",
     "libmuse": "../muse/npm/",
     "lodash-es": "^4.17.21",
     "path-to-regexp": "^6.2.1",

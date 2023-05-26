@@ -8,59 +8,63 @@
       <class name="devel" />
     </style>
     <child>
-      <object class="GtkBox" id="box">
-        <property name="orientation">1</property>
+      <object class="AdwToastOverlay" id="toast_overlay">
         <child>
-          <object class="GtkHeaderBar" id="header_bar">
-            <child type="start">
-              <object class="GtkButton" id="back_button">
-                <property name="icon-name">left-symbolic</property>
-                <property name="action-name">navigator.back</property>
-              </object>
-            </child>
-            <child type="end">
-              <object class="GtkMenuButton">
-                <property name="icon-name">open-menu-symbolic</property>
-                <property name="menu-model">primary_menu</property>
-              </object>
-            </child>
-          </object>
-        </child>
-        <child>
-          <object class="GtkOverlay" id="progress_overlay">
-            <child type="overlay">
-              <object class="GtkProgressBar" id="progress">
-                <property name="valign">start</property>
-                <style>
-                  <class name="osd" />
-                </style>
+          <object class="GtkBox" id="box">
+            <property name="orientation">1</property>
+            <child>
+              <object class="GtkHeaderBar" id="header_bar">
+                <child type="start">
+                  <object class="GtkButton" id="back_button">
+                    <property name="icon-name">left-symbolic</property>
+                    <property name="action-name">navigator.back</property>
+                  </object>
+                </child>
+                <child type="end">
+                  <object class="GtkMenuButton">
+                    <property name="icon-name">open-menu-symbolic</property>
+                    <property name="menu-model">primary_menu</property>
+                  </object>
+                </child>
               </object>
             </child>
             <child>
-              <object class="AdwFlap" id="flap">
-                <property name="flap-position">1</property>
-                <property name="reveal-flap">false</property>
-                <property name="locked">true</property>
-                <child>
-                  <object class="GtkStack" id="stack">
-                    <property name="vexpand">true</property>
-                    <property name="width-request">300</property>
+              <object class="GtkOverlay" id="progress_overlay">
+                <child type="overlay">
+                  <object class="GtkProgressBar" id="progress">
+                    <property name="valign">1</property>
+                    <style>
+                      <class name="osd" />
+                    </style>
                   </object>
                 </child>
-                <child type="separator">
-                  <object class="GtkSeparator"></object>
-                </child>
-                <child type="flap">
-                  <object class="GtkScrolledWindow" id="sidebar">
-                    <property name="width-request">300</property>
-                    <property name="hscrollbar-policy">never</property>
-                    <property name="hexpand">false</property>
-                    <style>
-                      <class name="background" />
-                    </style>
+                <child>
+                  <object class="AdwFlap" id="flap">
+                    <property name="flap-position">1</property>
+                    <property name="reveal-flap">false</property>
+                    <property name="locked">true</property>
                     <child>
-                      <object class="GtkLabel" id="label">
-                        <property name="label">Hello World</property>
+                      <object class="GtkStack" id="stack">
+                        <property name="vexpand">true</property>
+                        <property name="width-request">300</property>
+                      </object>
+                    </child>
+                    <child type="separator">
+                      <object class="GtkSeparator"></object>
+                    </child>
+                    <child type="flap">
+                      <object class="GtkScrolledWindow" id="sidebar">
+                        <property name="width-request">300</property>
+                        <property name="hscrollbar-policy">2</property>
+                        <property name="hexpand">false</property>
+                        <style>
+                          <class name="background" />
+                        </style>
+                        <child>
+                          <object class="GtkLabel" id="label">
+                            <property name="label">Hello World</property>
+                          </object>
+                        </child>
                       </object>
                     </child>
                   </object>

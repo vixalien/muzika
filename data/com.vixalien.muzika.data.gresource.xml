@@ -29,7 +29,9 @@
     <file preprocess="xml-stripblanks">components/paginator.ui</file>
     <file preprocess="xml-stripblanks">pages/album.ui</file>
     <file preprocess="xml-stripblanks">pages/artist.ui</file>
+    <file preprocess="xml-stripblanks">pages/authentication-error.ui</file>
     <file preprocess="xml-stripblanks">pages/error.ui</file>
+    <file preprocess="xml-stripblanks">pages/login.ui</file>
     <file preprocess="xml-stripblanks">pages/playlist.ui</file>
     <file preprocess="xml-stripblanks">pages/search.ui</file>
     <file preprocess="xml-stripblanks">window.ui</file>

@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+  <requires lib="gtk" version="4.0" />
+  <template class="LoginPage" parent="AdwWindow">
+    <property name="default-width">400</property>
+    <property name="default-height">680</property>
+    <child>
+      <object class="AdwToastOverlay" id="toast_overlay">
+        <child>
+          <object class="GtkBox">
+            <property name="orientation">1</property>
+            <child>
+              <object class="GtkHeaderBar">
+                <property name="title-widget">
+                  <object class="GtkLabel">
+                    <property name="label">Login</property>
+                    <style>
+                      <class name="heading" />
+                    </style>
+                  </object>
+                </property>
+                <style>
+                  <class name="flat" />
+                </style>
+              </object>
+            </child>
+            <child>
+              <object class="GtkStack" id="stack">
+                <property name="vexpand">true</property>
+                <child>
+                  <object class="GtkSpinner" id="spinner">
+                    <property name="spinning">true</property>
+                    <property name="halign">3</property>
+                    <property name="width-request">48</property>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkBox" id="flow">
+                    <property name="margin-top">24</property>
+                    <property name="margin-bottom">24</property>
+                    <property name="margin-start">24</property>
+                    <property name="margin-end">24</property>
+                    <property name="spacing">24</property>
+                    <property name="orientation">1</property>
+                    <child>
+                      <object class="GtkPicture" id="qr">
+                        <property name="halign">center</property>
+                        <style>
+                          <class name="br-9" />
+                        </style>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkBox" id="title-1">
+                        <property name="halign">3</property>
+                        <property name="orientation">1</property>
+                        <property name="margin-start">12</property>
+                        <child>
+                          <object class="GtkLabel">
+                            <property name="label">Scan with phone or go to</property>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkLinkButton" id="link">
+                            <style>
+                              <class name="title-3" />
+                            </style>
+                          </object>
+                        </child>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkBox" id="title-2">
+                        <property name="halign">3</property>
+                        <property name="orientation">1</property>
+                        <child>
+                          <object class="GtkLabel">
+                            <property name="label">Enter the code</property>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkBox">
+                            <property name="spacing">6</property>
+                            <property name="halign">3</property>
+                            <child>
+                              <object class="GtkLabel" id="code">
+                                <property name="selectable">true</property>
+                                <style>
+                                  <class name="title-3" />
+                                </style>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkButton" id="button">
+                                <property name="halign">3</property>
+                                <property name="icon-name">edit-copy-symbolic</property>
+                                <property name="tooltip-text">Copy authentication code</property>
+                                <style>
+                                  <class name="flat" />
+                                </style>
+                              </object>
+                            </child>
+                          </object>
+                        </child>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+              </object>
+            </child>
+          </object>
+        </child>
+      </object>
+    </child>
+  </template>
+</interface>

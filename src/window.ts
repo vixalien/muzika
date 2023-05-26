@@ -35,6 +35,8 @@ import {
   PlayerSidebarView,
 } from "./components/player/sidebar.js";
 import { MPRIS } from "./mpris.js";
+import { LoginPage } from "./pages/login.js";
+import { AddActionEntries } from "./util/action.js";
 
 export class Window extends Adw.ApplicationWindow {
   static {
@@ -49,6 +51,7 @@ export class Window extends Adw.ApplicationWindow {
           "box",
           "sidebar",
           "flap",
+          "toast_overlay",
         ],
         Properties: {
           navigator: GObject.ParamSpec.object(
@@ -71,12 +74,15 @@ export class Window extends Adw.ApplicationWindow {
   _box!: Gtk.Box;
   _sidebar!: Gtk.ScrolledWindow;
   _flap!: Adw.Flap;
+  _toast_overlay!: Adw.ToastOverlay;
 
   navigator: Navigator;
   player_view: PlayerView;
   sidebar: PlayerSidebar;
 
   interval: number | null = null;
+
+  mpris: MPRIS;
 
   constructor(params?: Partial<Adw.ApplicationWindow.ConstructorProperties>) {
     super(params);
@@ -103,7 +109,7 @@ export class Window extends Adw.ApplicationWindow {
 
     const application = this.application as Application;
 
-    const mpris = new MPRIS(application);
+    this.mpris = new MPRIS(application);
 
     this.insert_action_group("navigator", this.navigator.get_action_group());
     this.insert_action_group("player", application.player.get_action_group());
@@ -130,5 +136,63 @@ export class Window extends Adw.ApplicationWindow {
     });
 
     this._sidebar.set_child(this.sidebar);
+
+    this.add_actions();
+  }
+
+  add_actions() {
+    (this.add_action_entries as AddActionEntries)([
+      {
+        name: "login",
+        activate: () => {
+          this.auth_flow();
+        },
+      },
+      {
+        name: "add-toast",
+        parameter_type: "s",
+        activate: (_, parameter) => {
+          if (!parameter) return;
+
+          this.add_toast(parameter.get_string()[0]);
+        },
+      },
+    ]);
+  }
+
+  add_toast(text: string) {
+    this._toast_overlay.add_toast(Adw.Toast.new(text));
+  }
+
+  auth_flow() {
+    const page = new LoginPage();
+
+    page.set_modal(true);
+    page.set_transient_for(this);
+    page.present();
+
+    const controller = new AbortController();
+
+    page.connect("close-request", () => {
+      controller.abort();
+    });
+
+    page.auth_flow(controller.signal)
+      .then(() => {
+        this.add_toast("Successfully logged in!");
+        this.navigator.reload();
+      })
+      .catch((error) => {
+        if (error instanceof DOMException && error.name === "AbortError") {
+          return;
+        }
+
+        this.add_toast("An error happened while logging in!");
+
+        console.log("an error happened while auth", error);
+      })
+      .finally(() => {
+        page.destroy();
+      });
   }
 }

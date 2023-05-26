@@ -1,39 +1,21 @@
 import Gtk from "gi://Gtk?version=4.0";
 import GObject from "gi://GObject";
+import GLib from "gi://GLib";
 import Adw from "gi://Adw";
 
-export function escape_label(label: string) {
-  return label
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;");
-}
+import { get_option } from "../muse.js";
+import { error_to_string } from "./error.js";
 
-export function indent_stack(stack: string) {
-  return escape_label(
-    stack
-      .split("\n")
-      .map((line) => `    ${escape_label(line)}`)
-      .join("\n"),
-  );
-}
-
-export function error_to_string(error: Error) {
-  // must show error name, message, and stack
-  return `<b>${escape_label(error.name)}: </b>${escape_label(error.message)}\n${
-    indent_stack(error.stack ?? "")
-  }`;
-}
-
-export class ErrorPage extends Gtk.Box {
+export class AuthenticationErrorPage extends Gtk.Box {
   static {
     GObject.registerClass({
-      GTypeName: "ErrorPage",
-      Template: "resource:///com/vixalien/muzika/pages/error.ui",
+      GTypeName: "AuthenticationErrorPage",
+      Template: "resource:///com/vixalien/muzika/pages/authentication-error.ui",
       InternalChildren: [
         "status",
         "more",
         "text_view",
+        "home_button",
       ],
     }, this);
   }
@@ -41,6 +23,7 @@ export class ErrorPage extends Gtk.Box {
   _status!: Adw.StatusPage;
   _more!: Gtk.Box;
   _text_view!: Gtk.TextView;
+  _home_button!: Gtk.Button;
 
   buffer: Gtk.TextBuffer;
 
@@ -48,10 +31,15 @@ export class ErrorPage extends Gtk.Box {
     super();
 
     this._text_view.buffer = this.buffer = new Gtk.TextBuffer();
-  }
 
-  set_message(message: string) {
-    this._status.set_description(message);
+    this._home_button.connect("clicked", () => {
+      get_option("auth").token = null;
+
+      this.activate_action(
+        "navigator.visit",
+        GLib.Variant.new_string("muzika:home"),
+      );
+    });
   }
 
   set_more(show: boolean, label?: string) {
@@ -68,11 +56,19 @@ export class ErrorPage extends Gtk.Box {
 
   set_error(error: any) {
     if (error instanceof Error) {
-      this.set_message(error.message);
       this.set_more(true, error_to_string(error));
     } else {
-      this.set_message(error ? "Error: " + error : "Unknown error");
       this.set_more(false);
+    }
+
+    if (get_option("auth").has_token()) {
+      this._status.set_description(
+        `Your authentication details have expired. Please log in again or go to home.`,
+      );
+    } else {
+      this._status.set_description(
+        `The page you were trying to access requires you to log in.`,
+      );
     }
   }
 }

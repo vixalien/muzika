@@ -4,11 +4,13 @@ import Gio from "gi://Gio";
 
 import { match, MatchFunction, MatchResult } from "path-to-regexp";
 
-import { Loading } from "./components/loading.js";
+import { ERROR_CODE, MuseError } from "./muse.js";
 
+import { Loading } from "./components/loading.js";
 import { endpoints } from "./endpoints.js";
 import { ErrorPage } from "./pages/error.js";
 import { AddActionEntries } from "./util/action.js";
+import { AuthenticationErrorPage } from "./pages/authentication-error.js";
 
 export type EndpointCtx = {
   match: MatchResult<Record<string, string>>;
@@ -40,6 +42,7 @@ export class Navigator extends GObject.Object {
   private _stack: Gtk.Stack;
   private _header: Gtk.HeaderBar;
   private _error_page: ErrorPage;
+  private _auth_page: AuthenticationErrorPage;
 
   private match_map: Map<MatchFunction, Endpoint<Gtk.Widget>> = new Map();
 
@@ -96,9 +99,10 @@ export class Navigator extends GObject.Object {
     }
 
     this._error_page = new ErrorPage();
+    this._auth_page = new AuthenticationErrorPage();
 
     this.add_loading_page();
-    this.add_error_page();
+    this.add_error_pages();
   }
 
   get_action_group() {
@@ -155,8 +159,9 @@ export class Navigator extends GObject.Object {
     return action_group;
   }
 
-  private add_error_page() {
+  private add_error_pages() {
     this._stack.add_named(this._error_page, "error");
+    this._stack.add_named(this._auth_page, "auth-error");
   }
 
   private add_loading_page() {
@@ -177,9 +182,16 @@ export class Navigator extends GObject.Object {
     this.loading = false;
     this.last_controller = null;
 
-    this._header.set_title_widget(Gtk.Label.new("Error"));
-    this._error_page.set_error(error);
-    this._stack.set_visible_child_name("error");
+    if (error instanceof MuseError && error.code === ERROR_CODE.AUTH_REQUIRED) {
+      this._header.set_title_widget(Gtk.Label.new("Authentication Required"));
+      this._auth_page.set_error(error);
+      this._stack.set_visible_child_name("auth-error");
+      return;
+    } else {
+      this._header.set_title_widget(Gtk.Label.new("Error"));
+      this._error_page.set_error(error);
+      this._stack.set_visible_child_name("error");
+    }
   }
 
   private show_page(meta: ShowPageOptions) {
@@ -254,8 +266,12 @@ export class Navigator extends GObject.Object {
             this.pushState({ uri });
           }
         }
-      }).catch(this.show_error.bind(this));
+      }).catch((e) => {
+        this.pushState({ uri });
+        this.show_error(e);
+      });
     } catch (e) {
+      this.pushState({ uri });
       this.show_error(e);
     }
 
