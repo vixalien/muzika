@@ -72,24 +72,12 @@
             <child>
               <object class="GtkBox" id="second-line">
                 <property name="spacing">6</property>
-                <style>
-                  <class name="dim-label" />
-                </style>
                 <child>
                   <object class="GtkImage" id="explicit">
-                    <property name="valign">start</property>
+                    <property name="valign">center</property>
                     <property name="icon-name">network-cellular-edge-symbolic</property>
-                  </object>
-                </child>
-                <child>
-                  <object class="GtkLabel" id="subtitle">
-                    <property name="label"></property>
-                    <property name="hexpand">true</property>
-                    <property name="max-width-chars">1</property>
-                    <property name="ellipsize">end</property>
-                    <property name="xalign">0</property>
                     <style>
-                      <class name="link" />
+                      <class name="dim-label" />
                     </style>
                   </object>
                 </child>

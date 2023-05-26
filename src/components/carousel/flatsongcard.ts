@@ -1,7 +1,9 @@
 import Gtk from "gi://Gtk?version=4.0";
+import Gdk from "gi://Gdk?version=4.0";
 import GObject from "gi://GObject";
+import GLib from "gi://GLib";
 
-import { FlatSong } from "../../muse.js";
+import { ArtistRun, FlatSong } from "../../muse.js";
 import { load_thumbnails } from "../webimage.js";
 
 export class FlatSongCard extends Gtk.Box {
@@ -15,7 +17,7 @@ export class FlatSongCard extends Gtk.Box {
         "image",
         "title",
         "explicit",
-        "subtitle",
+        "second-line",
         "image",
       ],
     }, this);
@@ -27,12 +29,75 @@ export class FlatSongCard extends Gtk.Box {
   _image!: Gtk.Image;
   _title!: Gtk.Label;
   _explicit!: Gtk.Image;
-  _subtitle!: Gtk.Label;
+  _second_line!: Gtk.Box;
 
   constructor() {
     super({
       orientation: Gtk.Orientation.VERTICAL,
     });
+  }
+
+  add_subsequent_middots = false;
+
+  insert_middot(force = false) {
+    const label = Gtk.Label.new("·");
+
+    label.add_css_class("dim-label");
+
+    const flowchild = new Gtk.FlowBoxChild({
+      halign: Gtk.Align.START,
+      child: label,
+    });
+
+    if (this.add_subsequent_middots || force) {
+      this._second_line.append(flowchild);
+    } else {
+      this.add_subsequent_middots = true;
+    }
+  }
+
+  add_artist_only(artist: ArtistRun) {
+    let child: Gtk.Widget;
+
+    if (artist.id) {
+      const button = new Gtk.Button({
+        label: artist.name,
+        cursor: Gdk.Cursor.new_from_name("pointer", null),
+      });
+
+      button.add_css_class("inline");
+      button.add_css_class("flat");
+      button.add_css_class("link");
+      button.add_css_class("dim-label");
+
+      button.action_name = "navigator.visit";
+      button.action_target = GLib.Variant.new(
+        "s",
+        `muzika:artist:${artist.id}`,
+      );
+
+      child = button;
+    } else {
+      const label = Gtk.Label.new(artist.name);
+
+      label.add_css_class("dim-label");
+
+      child = label;
+    }
+
+    const flowchild = new Gtk.FlowBoxChild({
+      halign: Gtk.Align.START,
+      child: child,
+    });
+
+    flowchild.add_css_class("no-padding");
+
+    this._second_line.append(flowchild);
+  }
+
+  add_artist(artist: ArtistRun) {
+    this.insert_middot();
+    this.add_artist_only(artist);
   }
 
   set_song(song: FlatSong) {
@@ -41,9 +106,9 @@ export class FlatSongCard extends Gtk.Box {
     this._title.set_label(song.title);
 
     if (song.artists && song.artists.length > 0) {
-      this._subtitle.set_label(song.artists[0].name);
-    } else {
-      this._subtitle.set_label("");
+      song.artists.map((artist) => {
+        this.add_artist(artist);
+      });
     }
 
     this._explicit.set_visible(song.isExplicit);
