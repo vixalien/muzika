@@ -77,7 +77,11 @@ export class TopResultCard extends Gtk.FlowBoxChild {
   }
 
   insert_only_text(text: string) {
-    this._label_box.append(Gtk.Label.new(text));
+    const label = Gtk.Label.new(text);
+
+    label.add_css_class("dim-label");
+
+    this._label_box.append(label);
   }
 
   insert_text(text: string) {

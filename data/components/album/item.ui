@@ -22,11 +22,6 @@
             <property name="hexpand">true</property>
             <property name="valign">3</property>
             <property name="spacing">6</property>
-            <property name="cursor">
-              <object class="GdkCursor">
-                <property name="name">pointer</property>
-              </object>
-            </property>
             <child>
               <object class="GtkBox" id="label_box">
                 <property name="width-request">42</property>
@@ -79,15 +74,15 @@
                         <property name="selection-mode">none</property>
                         <property name="column-spacing">3</property>
                         <property name="row-spacing">3</property>
-                        <style>
-                          <class name="dim-label" />
-                        </style>
                         <child>
                           <object class="GtkFlowBoxChild" id="explicit_flowbox">
                             <child>
                               <object class="GtkImage" id="explicit">
                                 <property name="valign">center</property>
                                 <property name="icon-name">network-cellular-edge-symbolic</property>
+                                <style>
+                                  <class name="dim-label" />
+                                </style>
                               </object>
                             </child>
                           </object>

@@ -89,6 +89,7 @@ button.link.inline.flat {
 
 button.link.inline.flat:hover {
   color: @accent_color;
+  opacity: 1;
 }
 
 .no-padding {

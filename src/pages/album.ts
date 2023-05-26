@@ -56,7 +56,6 @@ export class AlbumPage extends Gtk.Box {
     this._content.set_orientation(Gtk.Orientation.VERTICAL);
 
     this.list_box.connect("row-activated", (_, row: AlbumItemCard) => {
-      console.log("row activated");
       if (
         !(row instanceof AlbumItemCard) || !this.album?.audioPlaylistId ||
         !row.item

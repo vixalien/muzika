@@ -1,4 +1,5 @@
 import Gtk from "gi://Gtk?version=4.0";
+import Gdk from "gi://Gdk?version=4.0";
 import GObject from "gi://GObject";
 import Adw from "gi://Adw";
 import GLib from "gi://GLib";
@@ -66,7 +67,11 @@ export class InlineCard extends Gtk.ListBoxRow {
 
   insert_middot(force = false) {
     if (this.add_subsequent_middots || force) {
-      this._label_box.append(Gtk.Label.new("·"));
+      const label = Gtk.Label.new("·");
+
+      label.add_css_class("dim-label");
+
+      this._label_box.append(label);
     } else {
       this.add_subsequent_middots = true;
     }
@@ -74,7 +79,12 @@ export class InlineCard extends Gtk.ListBoxRow {
 
   insert_only_text(text: string) {
     this._type_separator.visible = true;
-    this._label_box.append(Gtk.Label.new(text));
+
+    const label = Gtk.Label.new(text);
+
+    label.add_css_class("dim-label");
+
+    this._label_box.append(label);
   }
 
   insert_text(text: string) {
@@ -87,11 +97,15 @@ export class InlineCard extends Gtk.ListBoxRow {
     let child: Gtk.Widget;
 
     if (artist.id) {
-      const button = new Gtk.Button({ label: artist.name });
+      const button = new Gtk.Button({
+        label: artist.name,
+        cursor: Gdk.Cursor.new_from_name("pointer", null),
+      });
 
       button.add_css_class("inline");
       button.add_css_class("flat");
       button.add_css_class("link");
+      button.add_css_class("dim-label");
 
       button.action_name = "navigator.visit";
       button.action_target = GLib.Variant.new(
@@ -102,6 +116,8 @@ export class InlineCard extends Gtk.ListBoxRow {
       child = button;
     } else {
       const label = Gtk.Label.new(artist.name);
+
+      label.add_css_class("dim-label");
 
       child = label;
     }

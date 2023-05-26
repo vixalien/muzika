@@ -102,10 +102,6 @@ export class SearchPage extends Gtk.Box {
       }
     }
 
-    switcher.connect("changed", (_, tab) => {
-      console.log("tab", tab);
-    });
-
     this._content.prepend(switcher);
   }
 

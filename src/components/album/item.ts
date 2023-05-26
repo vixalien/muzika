@@ -1,4 +1,5 @@
 import Gtk from "gi://Gtk?version=4.0";
+import Gdk from "gi://Gdk?version=4.0";
 import GObject from "gi://GObject";
 import GLib from "gi://GLib";
 
@@ -35,6 +36,9 @@ export class AlbumItemCard extends Gtk.ListBoxRow {
 
   insert_middot(force = false) {
     const label = Gtk.Label.new("·");
+
+    label.add_css_class("dim-label");
+
     const flowchild = new Gtk.FlowBoxChild({
       halign: Gtk.Align.START,
       child: label,
@@ -51,11 +55,15 @@ export class AlbumItemCard extends Gtk.ListBoxRow {
     let child: Gtk.Widget;
 
     if (artist.id) {
-      const button = new Gtk.Button({ label: artist.name });
+      const button = new Gtk.Button({
+        label: artist.name,
+        cursor: Gdk.Cursor.new_from_name("pointer", null),
+      });
 
       button.add_css_class("inline");
       button.add_css_class("flat");
       button.add_css_class("link");
+      button.add_css_class("dim-label");
 
       button.action_name = "navigator.visit";
       button.action_target = GLib.Variant.new(
@@ -66,6 +74,8 @@ export class AlbumItemCard extends Gtk.ListBoxRow {
       child = button;
     } else {
       const label = Gtk.Label.new(artist.name);
+
+      label.add_css_class("dim-label");
 
       child = label;
     }

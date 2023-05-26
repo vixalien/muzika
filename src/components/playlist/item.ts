@@ -1,16 +1,16 @@
 import Gtk from "gi://Gtk?version=4.0";
+import Gdk from "gi://Gdk?version=4.0";
 import GObject from "gi://GObject";
 import GLib from "gi://GLib";
 
-import { PlaylistItem, ArtistRun } from "../../muse.js";
+import { ArtistRun, PlaylistItem } from "../../muse.js";
 import { load_thumbnails } from "../webimage.js";
 
 export class PlaylistItemCard extends Gtk.ListBoxRow {
   static {
     GObject.registerClass({
       GTypeName: "PlaylistItem",
-      Template:
-        "resource:///com/vixalien/muzika/components/playlist/item.ui",
+      Template: "resource:///com/vixalien/muzika/components/playlist/item.ui",
       InternalChildren: [
         "play_button",
         "image",
@@ -40,6 +40,9 @@ export class PlaylistItemCard extends Gtk.ListBoxRow {
 
   insert_middot(force = false) {
     const label = Gtk.Label.new("·");
+
+    label.add_css_class("dim-label");
+
     const flowchild = new Gtk.FlowBoxChild({
       halign: Gtk.Align.START,
       child: label,
@@ -56,18 +59,27 @@ export class PlaylistItemCard extends Gtk.ListBoxRow {
     let child: Gtk.Widget;
 
     if (artist.id) {
-      const button = new Gtk.Button({ label: artist.name });
+      const button = new Gtk.Button({
+        label: artist.name,
+        cursor: Gdk.Cursor.new_from_name("pointer", null),
+      });
 
       button.add_css_class("inline");
       button.add_css_class("flat");
       button.add_css_class("link");
+      button.add_css_class("dim-label");
 
       button.action_name = "navigator.visit";
-      button.action_target = GLib.Variant.new("s", `muzika:artist:${artist.id}`);
+      button.action_target = GLib.Variant.new(
+        "s",
+        `muzika:artist:${artist.id}`,
+      );
 
       child = button;
     } else {
       const label = Gtk.Label.new(artist.name);
+
+      label.add_css_class("dim-label");
 
       child = label;
     }
