@@ -8,7 +8,13 @@ import { throttle } from "lodash-es";
 import type { QueueTrack } from "libmuse/types/parsers/queue.js";
 
 import { Queue, QueueSettings, RepeatMode } from "./queue.js";
-import { AudioFormat, get_song, Song } from "../muse.js";
+import {
+  add_history_item,
+  AudioFormat,
+  get_option,
+  get_song,
+  Song,
+} from "../muse.js";
 import { Settings } from "../application.js";
 import { ObjectContainer } from "../util/objectcontainer.js";
 import { AddActionEntries } from "src/util/action.js";
@@ -424,6 +430,11 @@ export class Player extends GObject.Object {
       this.get_song(track.videoId),
       this.queue.get_track_settings(track.videoId),
     ]);
+
+    // add history entry, but don't wait for it
+    if (get_option("auth").has_token()) {
+      add_history_item(song);
+    }
 
     const format = this.negotiate_best_format(song);
 
