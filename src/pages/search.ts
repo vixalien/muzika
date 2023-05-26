@@ -152,6 +152,8 @@ export class SearchPage extends Gtk.Box {
 
     const window = new Gtk.ScrolledWindow({
       vscrollbar_policy: Gtk.PolicyType.NEVER,
+      // don't show the scrollbar, but allow scrolling
+      hscrollbar_policy: Gtk.PolicyType.EXTERNAL,
     });
     window.set_child(box);
 
