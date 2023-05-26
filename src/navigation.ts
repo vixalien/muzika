@@ -171,7 +171,11 @@ export class Navigator extends GObject.Object {
   }
 
   set_title(title: string) {
-    this._header.set_title_widget(Gtk.Label.new(title));
+    const label = Gtk.Label.new(title);
+
+    label.add_css_class("heading");
+
+    this._header.set_title_widget(label);
   }
 
   private show_error(error: any) {
@@ -195,9 +199,7 @@ export class Navigator extends GObject.Object {
   }
 
   private show_page(meta: ShowPageOptions) {
-    this._header.set_title_widget(
-      Gtk.Label.new(meta.title),
-    );
+    this.set_title(meta.title);
 
     const got_component = this._stack.get_child_by_name(meta.endpoint.uri);
     if (got_component) {
