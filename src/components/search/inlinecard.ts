@@ -1,8 +1,10 @@
 import Gtk from "gi://Gtk?version=4.0";
 import GObject from "gi://GObject";
 import Adw from "gi://Adw";
+import GLib from "gi://GLib";
 
 import {
+  ArtistRun,
   SearchAlbum,
   SearchArtist,
   SearchContent,
@@ -80,6 +82,45 @@ export class InlineCard extends Gtk.ListBoxRow {
     this.insert_only_text(text);
   }
 
+  add_artist_only(artist: ArtistRun) {
+    this._type_separator.visible = true;
+    let child: Gtk.Widget;
+
+    if (artist.id) {
+      const button = new Gtk.Button({ label: artist.name });
+
+      button.add_css_class("inline");
+      button.add_css_class("flat");
+      button.add_css_class("link");
+
+      button.action_name = "navigator.visit";
+      button.action_target = GLib.Variant.new(
+        "s",
+        `muzika:artist:${artist.id}`,
+      );
+
+      child = button;
+    } else {
+      const label = Gtk.Label.new(artist.name);
+
+      child = label;
+    }
+
+    const flowchild = new Gtk.FlowBoxChild({
+      halign: Gtk.Align.START,
+      child: child,
+    });
+
+    flowchild.add_css_class("no-padding");
+
+    this._label_box.append(flowchild);
+  }
+
+  add_artist(artist: ArtistRun) {
+    this.insert_middot();
+    this.add_artist_only(artist);
+  }
+
   private set_song_or_video(track: SearchSong | SearchVideo) {
     this.content = track;
 
@@ -89,7 +130,7 @@ export class InlineCard extends Gtk.ListBoxRow {
     this._explicit.set_visible(track.isExplicit);
 
     track.artists.forEach((artist) => {
-      this.insert_text(artist.name);
+      this.add_artist(artist);
     });
 
     if (track.duration) this.insert_text(track.duration);
@@ -119,7 +160,7 @@ export class InlineCard extends Gtk.ListBoxRow {
     this.show_type(true);
 
     album.artists.forEach((artist) => {
-      this.insert_text(artist.name);
+      this.add_artist(artist);
     });
   }
 
@@ -133,7 +174,7 @@ export class InlineCard extends Gtk.ListBoxRow {
     this._type.label = "Playlist";
 
     playlist.authors.forEach((artist) => {
-      this.insert_text(artist.name);
+      this.add_artist(artist);
     });
   }
 
