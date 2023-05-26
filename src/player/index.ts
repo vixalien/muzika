@@ -595,7 +595,11 @@ export class Player extends GObject.Object {
       }) as MaybeAdaptiveFormat[];
   }
 
-  private get_state(): PlayerState {
+  private get_state(): PlayerState | null {
+    if (!this.queue.current?.item) {
+      return null;
+    }
+
     const get_tracks = (list: Gio.ListStore) => {
       return this.queue._get_items(list).map((item) => item.item)
         .filter(Boolean).map((track) => track?.videoId) as string[];
