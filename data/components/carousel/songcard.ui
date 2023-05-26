@@ -10,6 +10,10 @@
         <property name="spacing">6</property>
         <child>
           <object class="GtkOverlay">
+            <property name="overflow">1</property>
+            <style>
+              <class name="br-6" />
+            </style>
             <child type="overlay">
               <object class="GtkButton" id="play_button">
                 <property name="halign">center</property>
