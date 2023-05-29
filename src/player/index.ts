@@ -316,6 +316,9 @@ export class Player extends GObject.Object {
     return action_group;
   }
 
+  // whether the next play action should add to the history
+  add_history = false;
+
   play() {
     if (
       this.playbin.get_state(0)[1] === Gst.State.PLAYING
@@ -332,6 +335,15 @@ export class Player extends GObject.Object {
 
     this.exec_after(ret, () => {
       this.playing = true;
+
+      if (this.add_history) {
+        // add history entry, but don't wait for the promise to resolve
+        if (this.current_meta?.item?.song && get_option("auth").has_token()) {
+          add_history_item(this.current_meta?.item?.song);
+        }
+
+        this.add_history = false;
+      }
     });
   }
 
@@ -431,11 +443,6 @@ export class Player extends GObject.Object {
       this.queue.get_track_settings(track.videoId),
     ]);
 
-    // add history entry, but don't wait for it
-    if (get_option("auth").has_token()) {
-      add_history_item(song);
-    }
-
     const format = this.negotiate_best_format(song);
 
     this._current_meta = ObjectContainer.new({
@@ -454,6 +461,8 @@ export class Player extends GObject.Object {
       paused_ret,
       () => {
         this.duration = this.get_duration() ?? 0;
+
+        this.add_history = true;
 
         if (this.seek_to) {
           const ret = this.seek(this.seek_to);
