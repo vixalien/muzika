@@ -2,7 +2,7 @@ import Gtk from "gi://Gtk?version=4.0";
 import GObject from "gi://GObject";
 import Adw from "gi://Adw";
 
-import { Loading } from "../components/loading.js";
+import { Paginator } from "../components/paginator.js";
 
 import { get_home, Home, MixedContent } from "../muse.js";
 
@@ -17,7 +17,7 @@ export class HomePage extends Gtk.Box {
   _scrolled: Gtk.ScrolledWindow;
   _clamp: Adw.Clamp;
   _box: Gtk.Box;
-  _loading: Loading;
+  _paginator: Paginator;
 
   home?: Home;
 
@@ -26,14 +26,14 @@ export class HomePage extends Gtk.Box {
       orientation: Gtk.Orientation.VERTICAL,
     });
 
-    this._loading = new Loading();
+    this._paginator = new Paginator();
 
     this._box = new Gtk.Box({
       orientation: Gtk.Orientation.VERTICAL,
       spacing: 12,
     });
 
-    this._box.append(this._loading);
+    this._box.append(this._paginator);
 
     this._clamp = new Adw.Clamp({
       margin_top: 12,
@@ -45,10 +45,16 @@ export class HomePage extends Gtk.Box {
 
     this._scrolled = new Gtk.ScrolledWindow({ vexpand: true, hexpand: true });
     this._scrolled.set_child(this._clamp);
-    this._scrolled.connect("edge-reached", (_, pos) => {
-      if (pos === Gtk.PositionType.BOTTOM) {
+
+    this._scrolled.vadjustment.connect("value-changed", () => {
+      if (this.check_if_almost_scrolled()) {
+        this._paginator.loading = true;
         this.load_home();
       }
+    });
+
+    this._paginator.connect("activate", () => {
+      this.load_home();
     });
 
     this.append(this._scrolled);
@@ -58,79 +64,85 @@ export class HomePage extends Gtk.Box {
     for (const content of result) {
       const carousel = new Carousel();
       carousel.show_content(content);
-      carousel.insert_before(this._box, this._loading);
+      carousel.insert_before(this._box, this._paginator);
 
       const spacer = new Gtk.Separator();
       spacer.add_css_class("spacer");
-      spacer.insert_before(this._box, this._loading);
+      spacer.insert_before(this._box, this._paginator);
     }
   }
 
-  loading = false;
-  no_more = false;
+  check_if_almost_scrolled() {
+    const vadjustment = this._scrolled.get_vadjustment();
 
-  load_more() {
-    if (this.loading || this.no_more) return;
-
-    this.loading = true;
-
-    const result = this.load_home();
-
-    if (result) {
-      result.then(() => {
-        this.loading = false;
-      });
-    } else {
-      this.loading = false;
-      this.no_more = true;
+    if (
+      vadjustment.get_upper() -
+          (vadjustment.get_value() + vadjustment.get_page_size()) < 300
+    ) {
+      return true;
     }
+
+    return false;
   }
 
   check_height_and_load() {
-    // check if there's empty space
-    // if so, load more
-    let height = 0, child = this._box.get_first_child();
+    if (this._paginator.loading) return;
 
-    while (child) {
-      height += child!.get_allocated_height();
-      child = child!.get_next_sibling();
+    // scroll if the scrolled window is not full
+    if (
+      this._scrolled.get_vadjustment().get_upper() -
+          this._scrolled.get_vadjustment().get_page_size() < 0
+    ) {
+      this.load_home();
     }
 
-    if (height < this._box.get_allocated_height()) {
-      this.load_more();
-    }
+    // scroll if the scrolled window is almost full
+  }
+
+  _loading = false;
+
+  get loading() {
+    return this._loading;
+  }
+
+  set loading(value: boolean) {
+    this._paginator.loading = value;
+    this._loading = value;
   }
 
   load_home(signal?: AbortSignal) {
-    if (!this.home) {
-      this._loading.loading = true;
+    if (this.loading) return;
 
+    this.loading = true;
+
+    if (!this.home) {
       return get_home({ limit: 3, signal })
         .then((home) => {
-          this._loading.loading = false;
-
           this.home = home;
+
+          this.loading = false;
+          this._paginator.reveal_child = home.continuation != null;
 
           this.append_contents(home.results);
 
           this.check_height_and_load();
         });
     } else if (this.home.continuation) {
-      this._loading.loading = true;
-
       return get_home({ continuation: this.home.continuation, signal })
         .then((new_home) => {
-          this._loading.loading = false;
-
           this.home!.continuation = new_home.continuation;
           this.home!.results.push(...new_home.results);
+
+          this.loading = false;
+          this._paginator.reveal_child = new_home.continuation != null;
 
           this.append_contents(new_home.results);
 
           this.check_height_and_load();
         });
     } else {
-      return null;
+      this.loading = false;
+      this._paginator.reveal_child = false;
     }
   }
 }
