@@ -25,6 +25,7 @@
     <file preprocess="xml-stripblanks">components/search/songcard.ui</file>
     <file preprocess="xml-stripblanks">components/search/topresult.ui</file>
     <file preprocess="xml-stripblanks">components/search/topresultsection.ui</file>
+    <file preprocess="xml-stripblanks">components/dynamic-image.ui</file>
     <file preprocess="xml-stripblanks">components/loading.ui</file>
     <file preprocess="xml-stripblanks">components/paginator.ui</file>
     <file preprocess="xml-stripblanks">pages/album.ui</file>
@@ -44,6 +45,7 @@
     <file preprocess="xml-stripblanks" alias="playlist2-symbolic.svg">icons/playlist2-symbolic.svg</file>
     <file preprocess="xml-stripblanks" alias="progress-symbolic.svg">icons/progress-symbolic.svg</file>
     <file preprocess="xml-stripblanks" alias="sonar-symbolic.svg">icons/sonar-symbolic.svg</file>
+    <file preprocess="xml-stripblanks" alias="sound-wave-symbolic.svg">icons/sound-wave-symbolic.svg</file>
     <file preprocess="xml-stripblanks" alias="subtitles-symbolic.svg">icons/subtitles-symbolic.svg</file>
   </gresource>
 </gresources>

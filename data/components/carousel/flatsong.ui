@@ -14,39 +14,10 @@
           <class name="padding-3" />
         </style>
         <child>
-          <object class="GtkOverlay">
-            <property name="valign">start</property>
-            <style>
-              <class name="br-6" />
-            </style>
-            <property name="overflow">hidden</property>
-            <child type="overlay">
-              <object class="GtkButton" id="play_button">
-                <property name="halign">fill</property>
-                <property name="valign">fill</property>
-                <property name="hexpand">true</property>
-                <property name="vexpand">true</property>
-                <property name="icon-name">media-playback-start-symbolic</property>
-                <style>
-                  <class name="osd" />
-                  <class name="hover-child" />
-                  <class name="no-br" />
-                </style>
-              </object>
-            </child>
-            <child>
-              <object class="GtkBox" id="image_box">
-                <style>
-                  <class name="thumbnail" />
-                </style>
-                <child>
-                  <object class="GtkImage" id="image">
-                    <property name="icon-name">image-missing-symbolic</property>
-                    <property name="pixel-size">48</property>
-                  </object>
-                </child>
-              </object>
-            </child>
+          <object class="DynamicImage" id="dynamic_image">
+            <property name="image-size">48</property>
+            <property name="icon-size">16</property>
+            <property name="persistent-play-button">false</property>
           </object>
         </child>
         <child>

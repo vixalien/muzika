@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+  <requires lib="gtk" version="4.0"/>
+  <template class="DynamicImage" parent="GtkOverlay">
+    <property name="overflow">1</property>
+    <property name="valign">1</property>
+    <style>
+      <class name="br-9"/>
+    </style>
+    <child type="overlay">
+      <object class="GtkStack" id="stack">
+        <property name="transition-type">1</property>
+        <style>
+          <class name="background-transition"/>
+        </style>
+        <property name="visible-child">play</property>
+        <child>
+          <object class="GtkBox" id="blank"></object>
+        </child>
+        <child>
+          <object class="GtkButton" id="play">
+            <property name="cursor">
+              <object class="GdkCursor">
+                <property name="name">pointer</property>
+              </object>
+            </property>
+            <style>
+              <class name="flat"/>
+              <class name="no-br"/>
+            </style>
+            <child>
+              <object class="GtkImage" id="play_image">
+                <property name="icon-name">media-playback-start-symbolic</property>
+                <property name="pixel-size">48</property>
+              </object>
+            </child>
+          </object>
+        </child>
+        <child>
+          <object class="GtkImage" id="wave">
+            <property name="icon-name">sound-wave-symbolic</property>
+            <property name="pixel-size">48</property>
+          </object>
+        </child>
+        <child>
+          <object class="GtkSpinner" id="loading">
+            <property name="halign">3</property>
+            <property name="width-request">48</property>
+          </object>
+        </child>
+        <child>
+          <object class="GtkButton" id="pause">
+            <property name="cursor">
+              <object class="GdkCursor">
+                <property name="name">pointer</property>
+              </object>
+            </property>
+            <style>
+              <class name="flat"/>
+              <class name="no-br"/>
+            </style>
+            <child>
+              <object class="GtkImage" id="pause_image">
+                <property name="icon-name">media-playback-pause-symbolic</property>
+                <property name="pixel-size">48</property>
+              </object>
+            </child>
+          </object>
+        </child>
+      </object>
+    </child>
+    <child>
+      <object class="GtkImage" id="image">
+        <property name="pixel-size">160</property>
+        <property name="icon-name">image-missing-symbolic</property>
+      </object>
+    </child>
+  </template>
+</interface>

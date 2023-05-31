@@ -97,6 +97,21 @@ export class Player extends GObject.Object {
         seeked: {
           param_types: [GObject.TYPE_INT64],
         },
+        start_loading: {
+          flags: GObject.SignalFlags.DETAILED,
+        },
+        stop_loading: {
+          flags: GObject.SignalFlags.DETAILED,
+        },
+        start_playback: {
+          flags: GObject.SignalFlags.DETAILED,
+        },
+        pause_playback: {
+          flags: GObject.SignalFlags.DETAILED,
+        },
+        stop_playback: {
+          flags: GObject.SignalFlags.DETAILED,
+        },
       },
     }, this);
   }
@@ -135,6 +150,15 @@ export class Player extends GObject.Object {
   private set playing(value: boolean) {
     this._playing = value;
     this.notify("playing");
+
+    const id = this.current_meta?.item?.track.videoId;
+    if (id) {
+      if (this.playing) {
+        this.emit(`start-playback::${id}`);
+      } else {
+        this.emit(`pause-playback::${id}`);
+      }
+    }
   }
 
   private _queue: Queue;
@@ -223,7 +247,10 @@ export class Player extends GObject.Object {
 
     this.queue.connect("notify::current", () => {
       this._last_position = 0;
-      this.change_current_track(this.queue.current?.item ?? null);
+      this.change_current_track(this.queue.current?.item ?? null)
+        .catch((e) => {
+          console.log("caught error", e);
+        });
     });
 
     this.queue.connect("wants-to-play", () => {
@@ -437,11 +464,19 @@ export class Player extends GObject.Object {
   async change_current_track(track: QueueTrack | null) {
     this.playbin.set_state(Gst.State.NULL);
 
+    const current = this.current_meta?.item?.track.videoId;
+
+    if (current) {
+      this.emit(`stop-playback::${current}`);
+    }
+
     if (!track) {
       return;
     }
 
     this.buffering = true;
+
+    this.emit(`start-loading::${track.videoId}`);
 
     const [song, settings] = await Promise.all([
       this.get_song(track.videoId),
@@ -457,6 +492,8 @@ export class Player extends GObject.Object {
       settings: settings,
     });
     this.notify("current-meta");
+
+    this.emit(`stop-loading::${track.videoId}`);
 
     this.playbin.set_state(Gst.State.NULL);
     this.playbin.set_property("uri", format.url);

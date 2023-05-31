@@ -1,11 +1,14 @@
 import Gtk from "gi://Gtk?version=4.0";
 import Gdk from "gi://Gdk?version=4.0";
 import GObject from "gi://GObject";
-import GLib from "gi://GLib";
 import Gio from "gi://Gio";
 
 import { ParsedSong } from "../../muse.js";
 import { load_thumbnails } from "../webimage.js";
+import { DynamicImage } from "../dynamic-image.js";
+
+// first register the DynamicImage class
+import "../dynamic-image.js";
 
 export class SongCard extends Gtk.Box {
   static {
@@ -14,31 +17,29 @@ export class SongCard extends Gtk.Box {
       Template:
         "resource:///com/vixalien/muzika/components/carousel/songcard.ui",
       InternalChildren: [
-        "play_button",
-        "image",
         "title",
         "explicit",
         "subtitle",
-        "image",
         "popover",
+        "dynamic_image",
       ],
     }, this);
   }
 
   song?: ParsedSong;
 
-  _play_button!: Gtk.Button;
-  _image!: Gtk.Image;
   _title!: Gtk.Label;
   _explicit!: Gtk.Image;
   _subtitle!: Gtk.Label;
   _popover!: Gtk.PopoverMenu;
+  _dynamic_image!: DynamicImage;
 
   constructor() {
     super({
       orientation: Gtk.Orientation.VERTICAL,
     });
 
+    // gestures
     const click = new Gtk.GestureClick({
       button: 3,
     });
@@ -84,22 +85,19 @@ export class SongCard extends Gtk.Box {
   set_song(song: ParsedSong) {
     this.song = song;
 
-    if (song.videoId) {
-      this._play_button.action_name = "queue.play-song";
-      this._play_button.action_target = GLib.Variant.new_string(
-        song.videoId,
-      );
-    } else {
-      this._play_button.hide();
-    }
-
     this._title.set_label(song.title);
     this._subtitle.set_label(song.artists[0].name);
     this._explicit.set_visible(song.isExplicit);
 
-    load_thumbnails(this._image, song.thumbnails, 160);
+    load_thumbnails(this._dynamic_image.image, song.thumbnails, 160);
 
     this._popover.position = Gtk.PositionType.RIGHT;
     this._popover.set_menu_model(this.build_menu());
+
+    if (song.videoId) {
+      this._dynamic_image.setup_listeners(song.videoId);
+    } else {
+      this._dynamic_image.reset_listeners();
+    }
   }
 }

@@ -9,41 +9,7 @@
         <property name="hexpand">false</property>
         <property name="spacing">6</property>
         <child>
-          <object class="GtkOverlay">
-            <property name="overflow">1</property>
-            <style>
-              <class name="br-6" />
-            </style>
-            <child type="overlay">
-              <object class="GtkButton" id="play_button">
-                <property name="halign">center</property>
-                <property name="valign">center</property>
-                <style>
-                  <class name="circular" />
-                  <class name="osd" />
-                  <class name="song-play-button" />
-                </style>
-                <child>
-                  <object class="GtkImage">
-                    <property name="icon-name">media-playback-start-symbolic</property>
-                    <property name="icon-size">large</property>
-                  </object>
-                </child>
-              </object>
-            </child>
-            <child>
-              <object class="GtkBox" id="image_box">
-                <style>
-                  <class name="thumbnail" />
-                </style>
-                <child>
-                  <object class="GtkImage" id="image">
-                    <property name="icon-name">image-missing-symbolic</property>
-                    <property name="pixel-size">160</property>
-                  </object>
-                </child>
-              </object>
-            </child>
+          <object class="DynamicImage" id="dynamic_image">
           </object>
         </child>
         <child>

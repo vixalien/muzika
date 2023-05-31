@@ -5,6 +5,10 @@ import GLib from "gi://GLib";
 
 import { ArtistRun, FlatSong } from "../../muse.js";
 import { load_thumbnails } from "../webimage.js";
+import { DynamicImage } from "../dynamic-image.js";
+
+// first register the DynamicImage class
+import "../dynamic-image.js";
 
 export class FlatSongCard extends Gtk.Box {
   static {
@@ -13,23 +17,20 @@ export class FlatSongCard extends Gtk.Box {
       Template:
         "resource:///com/vixalien/muzika/components/carousel/flatsong.ui",
       InternalChildren: [
-        "play_button",
-        "image",
         "title",
         "explicit",
         "second-line",
-        "image",
+        "dynamic_image",
       ],
     }, this);
   }
 
   song?: FlatSong;
 
-  _play_button!: Gtk.Button;
-  _image!: Gtk.Image;
   _title!: Gtk.Label;
   _explicit!: Gtk.Image;
   _second_line!: Gtk.Box;
+  _dynamic_image!: DynamicImage;
 
   constructor() {
     super({
@@ -113,6 +114,12 @@ export class FlatSongCard extends Gtk.Box {
 
     this._explicit.set_visible(song.isExplicit);
 
-    load_thumbnails(this._image, song.thumbnails, 48);
+    load_thumbnails(this._dynamic_image.image, song.thumbnails, 160);
+
+    if (song.videoId) {
+      this._dynamic_image.setup_listeners(song.videoId);
+    } else {
+      this._dynamic_image.reset_listeners();
+    }
   }
 }
