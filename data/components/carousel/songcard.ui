@@ -96,6 +96,11 @@
             </child>
           </object>
         </child>
+        <child>
+          <object class="GtkPopoverMenu" id="popover">
+            <property name="has-arrow">false</property>
+          </object>
+        </child>
       </object>
     </child>
   </template>

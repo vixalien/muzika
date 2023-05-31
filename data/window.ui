@@ -8,44 +8,44 @@
       <class name="devel" />
     </style>
     <child>
-      <object class="AdwToastOverlay" id="toast_overlay">
+      <object class="GtkBox" id="box">
+        <property name="orientation">1</property>
         <child>
-          <object class="GtkBox" id="box">
-            <property name="orientation">1</property>
-            <child>
-              <object class="GtkHeaderBar" id="header_bar">
-                <child type="start">
-                  <object class="GtkButton" id="back_button">
-                    <property name="icon-name">left-symbolic</property>
-                    <property name="action-name">navigator.back</property>
-                  </object>
-                </child>
-                <child type="end">
-                  <object class="GtkMenuButton">
-                    <property name="icon-name">open-menu-symbolic</property>
-                    <property name="menu-model">primary_menu</property>
-                  </object>
-                </child>
-                <property name="title-widget">
-                  <object class="GtkLabel">
-                    <property name="label">Muzika</property>
-                    <style>
-                      <class name="heading" />
-                    </style>
-                  </object>
-                </property>
+          <object class="GtkHeaderBar" id="header_bar">
+            <child type="start">
+              <object class="GtkButton" id="back_button">
+                <property name="icon-name">left-symbolic</property>
+                <property name="action-name">navigator.back</property>
+              </object>
+            </child>
+            <child type="end">
+              <object class="GtkMenuButton">
+                <property name="icon-name">open-menu-symbolic</property>
+                <property name="menu-model">primary_menu</property>
+              </object>
+            </child>
+            <property name="title-widget">
+              <object class="GtkLabel">
+                <property name="label">Muzika</property>
+                <style>
+                  <class name="heading" />
+                </style>
+              </object>
+            </property>
+          </object>
+        </child>
+        <child>
+          <object class="GtkOverlay" id="progress_overlay">
+            <child type="overlay">
+              <object class="GtkProgressBar" id="progress">
+                <property name="valign">1</property>
+                <style>
+                  <class name="osd" />
+                </style>
               </object>
             </child>
             <child>
-              <object class="GtkOverlay" id="progress_overlay">
-                <child type="overlay">
-                  <object class="GtkProgressBar" id="progress">
-                    <property name="valign">1</property>
-                    <style>
-                      <class name="osd" />
-                    </style>
-                  </object>
-                </child>
+              <object class="AdwToastOverlay" id="toast_overlay">
                 <child>
                   <object class="AdwFlap" id="flap">
                     <property name="flap-position">1</property>

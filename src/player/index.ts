@@ -15,7 +15,7 @@ import {
   get_song,
   Song,
 } from "../muse.js";
-import { Settings } from "../application.js";
+import { Application, Settings } from "../application.js";
 import { ObjectContainer } from "../util/objectcontainer.js";
 import { AddActionEntries } from "src/util/action.js";
 import { store } from "src/util/giofilestore.js";
@@ -137,7 +137,7 @@ export class Player extends GObject.Object {
     this.notify("playing");
   }
 
-  private _queue: Queue = new Queue();
+  private _queue: Queue;
 
   get queue(): Queue {
     return this._queue;
@@ -209,8 +209,13 @@ export class Player extends GObject.Object {
 
   async = false;
 
-  constructor() {
+  app: Application;
+
+  constructor(options: { app: Application }) {
     super();
+
+    this.app = options.app;
+    this._queue = new Queue({ app: options.app });
 
     if (!Gst.is_initialized()) {
       Gst.init(null);

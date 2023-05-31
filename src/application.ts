@@ -78,7 +78,7 @@ export class Application extends Adw.Application {
       },
     );
 
-    this.player = new Player();
+    this.player = new Player({ app: this });
   }
 
   public vfunc_shutdown(): void {

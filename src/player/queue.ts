@@ -1,5 +1,6 @@
 import GObject from "gi://GObject";
 import Gio from "gi://Gio";
+import GLib from "gi://GLib";
 
 import {
   get_queue,
@@ -10,6 +11,8 @@ import {
 import { ObjectContainer } from "../util/objectcontainer.js";
 import { QueueTrack } from "libmuse/types/parsers/queue.js";
 import { AddActionEntries } from "src/util/action.js";
+import { Application } from "src/application.js";
+import { Window } from "src/window.js";
 
 export type QueueSettings = Omit<MuseQueue, "tracks">;
 
@@ -274,8 +277,12 @@ export class Queue extends GObject.Object {
     return items;
   }
 
-  constructor() {
+  app: Application;
+
+  constructor(options: { app: Application }) {
     super();
+
+    this.app = options.app;
   }
 
   get_action_group() {
@@ -344,17 +351,36 @@ export class Queue extends GObject.Object {
         },
       },
       {
-        name: "add-playlist",
+        name: "add-song",
         parameter_type: "s",
         activate: (_, param) => {
           if (!param) return;
 
-          const url = new URL(`muzika:${param.get_string()}`);
+          const url = new URL(`muzika:${param.get_string()[0]}`);
           const params = url.searchParams;
 
           this.add_songs(url.pathname.split(","), {
             next: params.has("next"),
             shuffle: params.has("shuffle"),
+          }).then((tracks) => {
+            const win = this.app.active_window;
+
+            if (win instanceof Window) {
+              const normalized_title = GLib.markup_escape_text(
+                tracks[0].title,
+                -1,
+              );
+
+              win.add_toast(
+                params.has("next")
+                  ? tracks.length == 1
+                    ? `Playing "${normalized_title}" next`
+                    : `Playing ${tracks.length} songs next`
+                  : tracks.length == 1
+                  ? `Added "${normalized_title}" to queue`
+                  : `Added ${tracks.length} songs to queue`,
+              );
+            }
           });
         },
       },
@@ -503,7 +529,7 @@ export class Queue extends GObject.Object {
   async add_songs(song_ids: string[], options: AddSongOptions = {}) {
     let tracks: QueueTrack[], first_track_options: QueueSettings | undefined;
 
-    if (song_ids.length === 1) {
+    if (song_ids.length === 1 && options.radio) {
       // fast path to get the track options and tracklist at the same time
       const queue = await this.get_track_queue(song_ids[0], { radio: true });
 
@@ -534,6 +560,8 @@ export class Queue extends GObject.Object {
       this.emit("wants-to-play");
       this.change_position(0);
     }
+
+    return tracks;
   }
 
   async play_playlist(...options: Parameters<Queue["add_playlist"]>) {
@@ -551,7 +579,7 @@ export class Queue extends GObject.Object {
   }
 
   async play_song(song_id: string, signal?: AbortSignal) {
-    await this.play_songs([song_id], { signal });
+    await this.play_songs([song_id], { signal, radio: true });
   }
 
   next(): QueueTrack | null {
@@ -655,6 +683,7 @@ interface AddSongOptions {
   next?: boolean;
   signal?: AbortSignal;
   play?: boolean;
+  radio?: boolean;
 }
 
 interface AddPlaylistOptions {
