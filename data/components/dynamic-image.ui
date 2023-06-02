@@ -70,9 +70,21 @@
       </object>
     </child>
     <child>
-      <object class="GtkImage" id="image">
-        <property name="pixel-size">160</property>
-        <property name="icon-name">image-missing-symbolic</property>
+      <object class="GtkStack" id="image_stack">
+        <property name="hhomogeneous">false</property>
+        <child>
+          <object class="GtkImage" id="image">
+            <property name="pixel-size">160</property>
+            <property name="icon-name">image-missing-symbolic</property>
+          </object>
+        </child>
+        <child>
+          <object class="GtkPicture" id="picture">
+            <property name="height-request">160</property>
+            <property name="width-request">285</property>
+            <property name="content-fit">2</property>
+          </object>
+        </child>
       </object>
     </child>
   </template>

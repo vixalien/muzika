@@ -25,8 +25,9 @@ export class DynamicImage extends Gtk.Overlay {
         "pause",
         "pause_image",
         "blank",
+        "image_stack",
       ],
-      Children: ["image"],
+      Children: ["image", "picture"],
       Properties: {
         "icon-size": GObject.ParamSpec.int(
           "icon-size",
@@ -62,6 +63,13 @@ export class DynamicImage extends Gtk.Overlay {
           GObject.ParamFlags.READWRITE,
           true,
         ),
+        "show-picture": GObject.ParamSpec.boolean(
+          "show-picture",
+          "Show picture",
+          "Whether the picture should be shown",
+          GObject.ParamFlags.READWRITE,
+          false,
+        ),
       },
       Signals: {
         pause: {},
@@ -77,8 +85,10 @@ export class DynamicImage extends Gtk.Overlay {
   private _pause!: Gtk.Button;
   private _pause_image!: Gtk.Image;
   private _blank!: Gtk.Box;
+  private _image_stack!: Gtk.Stack;
 
   image!: Gtk.Image;
+  picture!: Gtk.Picture;
 
   private _state: DynamicImageState = DynamicImageState.DEFAULT;
 
@@ -117,6 +127,9 @@ export class DynamicImage extends Gtk.Overlay {
   set image_size(size: number) {
     this.image.pixel_size = size;
 
+    this.picture.height_request = size;
+    this.picture.width_request = size * (16 / 9);
+
     ["br-6", "br-9"].map((br_class) => {
       this.remove_css_class(br_class);
     });
@@ -137,6 +150,14 @@ export class DynamicImage extends Gtk.Overlay {
   set persistent_play_button(persistent: boolean) {
     this._persistent_play_button = persistent;
     this.update_stack(this.controller.contains_pointer);
+  }
+
+  get show_picture() {
+    return this._image_stack.visible_child === this.picture;
+  }
+
+  set show_picture(show: boolean) {
+    this._image_stack.visible_child = show ? this.picture : this.image;
   }
 
   private controller: Gtk.EventControllerMotion;

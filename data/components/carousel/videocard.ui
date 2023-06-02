@@ -9,47 +9,8 @@
         <property name="hexpand">false</property>
         <property name="spacing">6</property>
         <child>
-          <object class="GtkOverlay">
-            <style>
-              <class name="br-6" />
-            </style>
-            <property name="overflow">hidden</property>
-            <child type="overlay">
-              <object class="GtkImage" id="play_button">
-                <property name="hexpand">true</property>
-                <property name="icon-name">media-playback-start-symbolic</property>
-                <property name="icon-size">large</property>
-                <style>
-                  <class name="flat" />
-                  <class name="song-play-button" />
-                </style>
-              </object>
-            </child>
-            <child>
-              <object class="GtkBox" id="image_box">
-                <style>
-                  <class name="thumbnail" />
-                </style>
-                <child>
-                  <object class="GtkOverlay">
-                    <child>
-                      <object class="GtkImage" id="fallback">
-                        <property name="icon-name">image-missing-symbolic</property>
-                        <property name="pixel-size">160</property>
-                        <property name="width-request">285</property>
-                      </object>
-                    </child>
-                    <child type="overlay">
-                      <object class="GtkPicture" id="image">
-                        <property name="height-request">160</property>
-                        <property name="width-request">285</property>
-                        <property name="content-fit">cover</property>
-                      </object>
-                    </child>
-                  </object>
-                </child>
-              </object>
-            </child>
+          <object class="DynamicImage" id="dynamic_image">
+            <property name="show-picture">true</property>
           </object>
         </child>
         <child>
