@@ -12,8 +12,6 @@ import type { LikeStatus } from "libmuse/types/parsers/songs";
 // bus_get
 Gio._promisify(Gio, "bus_get", "bus_get_finish");
 
-const bus = Gio.bus_get_sync(Gio.BusType.SESSION, null);
-
 const MPRIS_XML = `
 <!DOCTYPE node
   PUBLIC '-//freedesktop//DTD D-BUS Object Introspection 1.0//EN' 'http://www.freedesktop.org/standards/dbus/1.0/introspect.dtd'>
@@ -145,7 +143,7 @@ export class DBusInterface {
   constructor(
     private name: string,
     private path: string,
-    private application: Gtk.Application,
+    public application: Gtk.Application,
   ) {
     Gio.bus_get(Gio.BusType.SESSION, null)
       .then(this.got_bus.bind(this))
@@ -307,6 +305,37 @@ export class MPRIS extends DBusInterface {
       "notify::shuffle",
       this._on_shuffle_changed.bind(this),
     );
+
+    this.player.queue.connect(
+      "notify::can-play-next",
+      () => {
+        this._properties_changed(
+          this.MEDIA_PLAYER2_PLAYER_IFACE,
+          {
+            CanGoNext: GLib.Variant.new_boolean(
+              this.player.queue.can_play_next,
+            ),
+          },
+          [],
+        );
+      },
+    );
+
+    this.player.queue.connect(
+      "notify::can-play-previous",
+      () => {
+        this._properties_changed(
+          this.MEDIA_PLAYER2_PLAYER_IFACE,
+          {
+            CanGoPrevious: GLib.Variant.new_boolean(
+              this.player.queue.can_play_previous,
+            ),
+          },
+          [],
+        );
+      },
+    );
+
     // this.player.queue.list.connect(
     //   "items-changed",
     //   this._on_player_playlist_changed.bind(this),
