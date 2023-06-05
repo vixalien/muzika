@@ -92,48 +92,6 @@ const MPRIS_XML = `
     <property name='CanSeek' type='b' access='read' />
     <property name='CanControl' type='b' access='read' />
   </interface>
-  <interface name='org.mpris.MediaPlayer2.TrackList'>
-    <method name='GetTracksMetadata'>
-      <arg direction='in' name='TrackIds' type='ao' />
-      <arg direction='out' name='Metadata' type='aa{sv}'>
-      </arg>
-    </method>
-    <method name='AddTrack'>
-      <arg direction='in' name='Uri' type='s' />
-      <arg direction='in' name='AfterTrack' type='o' />
-      <arg direction='in' name='SetAsCurrent' type='b' />
-    </method>
-    <method name='RemoveTrack'>
-      <arg direction='in' name='TrackId' type='o' />
-    </method>
-    <method name='GoTo'>
-      <arg direction='in' name='TrackId' type='o' />
-    </method>
-    <signal name='TrackListReplaced'>
-      <arg name='Tracks' type='ao' />
-      <arg name='CurrentTrack' type='o' />
-    </signal>
-    <property name='Tracks' type='ao' access='read' />
-    <property name='CanEditTracks' type='b' access='read' />
-  </interface>
-  <interface name='org.mpris.MediaPlayer2.Playlists'>
-    <method name='ActivatePlaylist'>
-      <arg direction="in" name="PlaylistId" type="o" />
-    </method>
-    <method name='GetPlaylists'>
-      <arg direction='in' name='Index' type='u' />
-      <arg direction='in' name='MaxCount' type='u' />
-      <arg direction='in' name='Order' type='s' />
-      <arg direction='in' name='ReverseOrder' type='b' />
-      <arg direction='out' name='Playlists' type='a(oss)' />
-    </method>
-    <property name='PlaylistCount' type='u' access='read' />
-    <property name='Orderings' type='as' access='read' />
-    <property name='ActivePlaylist' type='(b(oss))' access='read' />
-    <signal name='PlaylistChanged'>
-      <arg name='Playlist' type='(oss)' />
-    </signal>
-  </interface>
 </node>
 `;
 
@@ -630,42 +588,6 @@ export class MPRIS extends DBusInterface {
         Position: position,
       },
     );
-  }
-
-  /**
-   * Gets all the metadata available for a set of tracks
-   *
-   * Not implemented
-   */
-  _get_tracks_metadata(_track_ids: string[]) {
-    return [];
-  }
-
-  /**
-   * Adds a URI in the TrackList. (MPRIS Method).
-   *
-   * Not implemented
-   */
-  _add_track(uri: string, after_track_id: string, set_as_current: boolean) {
-    return;
-  }
-
-  /**
-   * Removes an item from the TrackList.
-   *
-   * Not implemented
-   */
-  _remove_track(track_id: string) {
-    return;
-  }
-
-  /**
-   * Skip to the specified TrackId
-   *
-   * Not implemented
-   */
-  _go_to(path: string) {
-    return;
   }
 
   _get<Property extends keyof ReturnType<typeof this._get_all>>(
