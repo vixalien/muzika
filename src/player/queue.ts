@@ -582,38 +582,60 @@ export class Queue extends GObject.Object {
     await this.play_songs([song_id], { signal, radio: true });
   }
 
-  next(): QueueTrack | null {
+  peek_next(): [number, QueueTrack | null] {
+    let position: number;
+
     if (this.repeat === RepeatMode.ALL) {
       if (this.position >= this.list.n_items - 1) {
-        this.change_position(0);
+        position = 0;
       } else {
-        this.increment_position(1);
+        position = this.position + 1;
       }
-
-      this.update_track_settings();
-
-      return this.list.get_item(this.position)?.item!;
     } else {
-      if (this.position >= this.list.n_items - 1) return null;
-
-      this.increment_position(1);
-
-      this.update_track_settings();
-
-      return this.list.get_item(this.position)?.item!;
+      if (this.position >= this.list.n_items - 1) {
+        position = -1;
+      } else {
+        position = this.position + 1;
+      }
     }
+
+    return [position, this.list.get_item(position)?.item ?? null];
   }
 
-  repeat_or_next() {
+  next(): QueueTrack | null {
+    const [position, track] = this.peek_next();
+
+    this.update_position(position);
+
+    return track;
+  }
+
+  peek_repeat_or_next(): [number, QueueTrack | null] {
+    let position: number;
+
     if (this.repeat === RepeatMode.ONE) {
-      this.change_position(this.position);
-
-      this.update_track_settings();
-
-      return this.list.get_item(this.position)?.item!;
+      position = this.position;
     } else {
-      return this.next();
+      return this.peek_next();
     }
+
+    return [position, this.list.get_item(position)?.item ?? null];
+  }
+
+  repeat_or_next(): QueueTrack | null {
+    const [position, track] = this.peek_repeat_or_next();
+
+    this.update_position(position);
+
+    return track;
+  }
+
+  private update_position(position: number) {
+    if (position === -1) return null;
+
+    this.change_position(position);
+
+    this.update_track_settings();
   }
 
   previous(): QueueTrack | null {
