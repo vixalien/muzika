@@ -3,7 +3,7 @@ import GObject from "gi://GObject";
 import Gio from "gi://Gio";
 import GLib from "gi://GLib";
 
-import { throttle } from "lodash-es";
+import { debounce } from "lodash-es";
 
 import type { QueueTrack } from "libmuse/types/parsers/queue.js";
 
@@ -425,7 +425,7 @@ export class Player extends GObject.Object {
     return state_change;
   }
 
-  seek = throttle(this.raw_seek.bind(this), 300, {
+  seek = debounce(this.raw_seek.bind(this), 300, {
     trailing: true,
     leading: false,
   });
