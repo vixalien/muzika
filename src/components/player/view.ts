@@ -135,6 +135,7 @@ export class PlayerView extends Gtk.ActionBar {
   song_changed() {
     this.scale.reset();
     this.scale.value = 0;
+    this._progress_label.label = seconds_to_string(0);
 
     const song = this.player.queue.current?.item;
     if (song == null) {
