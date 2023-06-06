@@ -693,10 +693,15 @@ export class Player extends GObject.Object {
       this.queue.set_settings(state.settings);
     }
 
-    this.seek_to = state.seek;
+    if (state.seek) {
+      this.seek_to = state.seek;
+    }
 
     await Promise.all([
-      this.queue.add_songs(state.tracks),
+      this.queue.get_tracklist(state.tracks)
+        .then((tracks) => {
+          this.queue.add(tracks, state.position ?? undefined);
+        }),
       this.queue.get_tracklist(state.original)
         .then((tracks) =>
           tracks.forEach((track) =>
@@ -707,7 +712,6 @@ export class Player extends GObject.Object {
 
     this.queue._shuffle = state.shuffle;
     this.queue.repeat = state.repeat;
-    this.queue.change_position(state.position);
   }
 
   private async load_state() {

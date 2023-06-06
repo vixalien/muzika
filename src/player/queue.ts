@@ -695,7 +695,7 @@ export class Queue extends GObject.Object {
     this.add_queue_at_position(tracks, this.position + 1, new_position);
   }
 
-  private add(tracks: QueueTrack[], new_position?: number) {
+  add(tracks: QueueTrack[], new_position?: number) {
     this.add_queue_at_position(tracks, this.list.n_items, new_position);
   }
 }
