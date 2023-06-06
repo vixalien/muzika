@@ -10,7 +10,7 @@
         <property name="spacing">6</property>
         <child>
           <object class="DynamicImage" id="dynamic_image">
-            <property name="show-picture">true</property>
+            <property name="visible-child">1</property>
           </object>
         </child>
         <child>

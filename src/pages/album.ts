@@ -8,6 +8,7 @@ import { Carousel } from "../components/carousel/index.js";
 import { Loading } from "../components/loading.js";
 import { AlbumHeader } from "../components/album/header.js";
 import { AlbumItemCard } from "../components/album/item.js";
+import { DynamicImageState } from "src/components/dynamic-image.js";
 
 export class AlbumPage extends Gtk.Box {
   static {
@@ -63,6 +64,8 @@ export class AlbumPage extends Gtk.Box {
         return;
       }
 
+      row.dynamic_image.state = DynamicImageState.LOADING;
+
       row.activate_action(
         "queue.play-playlist",
         GLib.Variant.new_string(
@@ -76,7 +79,15 @@ export class AlbumPage extends Gtk.Box {
     tracks.forEach((track, index) => {
       const card = new AlbumItemCard();
 
-      card.set_item(index + 1, track);
+      card.dynamic_image.connect("play", () => {
+        this.list_box.select_row(card);
+      });
+
+      card.dynamic_image.connect("pause", () => {
+        this.list_box.select_row(card);
+      });
+
+      card.set_item(index + 1, track, this.album?.audioPlaylistId ?? undefined);
 
       this.list_box.append(card);
     });

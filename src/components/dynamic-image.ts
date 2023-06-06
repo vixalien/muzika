@@ -11,6 +11,12 @@ export enum DynamicImageState {
   PAUSED,
 }
 
+export enum DynamicImageVisibleChild {
+  IMAGE,
+  PICTURE,
+  NUMBER,
+}
+
 export class DynamicImage extends Gtk.Overlay {
   static {
     GObject.registerClass({
@@ -26,6 +32,7 @@ export class DynamicImage extends Gtk.Overlay {
         "pause_image",
         "blank",
         "image_stack",
+        "number",
       ],
       Children: ["image", "picture"],
       Properties: {
@@ -63,12 +70,21 @@ export class DynamicImage extends Gtk.Overlay {
           GObject.ParamFlags.READWRITE,
           true,
         ),
-        "show-picture": GObject.ParamSpec.boolean(
-          "show-picture",
-          "Show picture",
-          "Whether the picture should be shown",
+        "visible-child": GObject.ParamSpec.uint(
+          "visible-child",
+          "The visible child",
+          "Whether the image, picture or number should be visible",
           GObject.ParamFlags.READWRITE,
-          false,
+          DynamicImageVisibleChild.IMAGE,
+          DynamicImageVisibleChild.NUMBER,
+          DynamicImageVisibleChild.IMAGE,
+        ),
+        "track-number": GObject.ParamSpec.string(
+          "track-number",
+          "Track Number",
+          "The track number of the image",
+          GObject.ParamFlags.READWRITE,
+          "",
         ),
       },
       Signals: {
@@ -87,6 +103,7 @@ export class DynamicImage extends Gtk.Overlay {
   private _pause_image!: Gtk.Image;
   private _blank!: Gtk.Box;
   private _image_stack!: Gtk.Stack;
+  private _number!: Gtk.Label;
 
   image!: Gtk.Image;
   picture!: Gtk.Picture;
@@ -128,6 +145,8 @@ export class DynamicImage extends Gtk.Overlay {
   set image_size(size: number) {
     this.image.pixel_size = size;
 
+    this._number.width_request = this._number.height_request = size;
+
     this.picture.height_request = size;
     this.picture.width_request = size * (16 / 9);
 
@@ -153,12 +172,36 @@ export class DynamicImage extends Gtk.Overlay {
     this.update_stack(this.controller.contains_pointer);
   }
 
-  get show_picture() {
-    return this._image_stack.visible_child === this.picture;
+  get visible_child() {
+    return this._image_stack.visible_child === this.picture
+      ? DynamicImageVisibleChild.PICTURE
+      : this._image_stack.visible_child === this._number
+      ? DynamicImageVisibleChild.NUMBER
+      : DynamicImageVisibleChild.IMAGE;
   }
 
-  set show_picture(show: boolean) {
-    this._image_stack.visible_child = show ? this.picture : this.image;
+  set visible_child(child: DynamicImageVisibleChild) {
+    switch (child) {
+      case DynamicImageVisibleChild.IMAGE:
+        this._image_stack.visible_child = this.image;
+        break;
+      case DynamicImageVisibleChild.PICTURE:
+        this._image_stack.visible_child = this.picture;
+        break;
+      case DynamicImageVisibleChild.NUMBER:
+        this._image_stack.visible_child = this._number;
+        break;
+    }
+  }
+
+  get track_number() {
+    return this._number.label;
+  }
+
+  set track_number(number: string) {
+    this._number.label = number;
+
+    this.visible_child = DynamicImageVisibleChild.NUMBER;
   }
 
   private controller: Gtk.EventControllerMotion;
@@ -191,13 +234,14 @@ export class DynamicImage extends Gtk.Overlay {
   private update_stack(hovering = false) {
     let stop_spinning = true;
 
+    let osd = false;
+
     switch (this.state) {
       case DynamicImageState.DEFAULT:
         if (hovering) {
-          this._stack.add_css_class("osd");
+          osd = true;
           this._stack.visible_child = this._play;
         } else {
-          this._stack.remove_css_class("osd");
           if (this.persistent_play_button) {
             this._stack.visible_child = this._play;
           } else {
@@ -209,24 +253,37 @@ export class DynamicImage extends Gtk.Overlay {
         stop_spinning = false;
         this._stack.visible_child = this._loading;
         this._loading.spinning = true;
-        this._stack.add_css_class("osd");
+        osd = true;
         break;
       case DynamicImageState.PLAYING:
-        this._stack.add_css_class("osd");
         if (hovering) {
           this._stack.visible_child = this._pause;
         } else {
           this._stack.visible_child = this._wave;
         }
+        osd = true;
         break;
       case DynamicImageState.PAUSED:
         this._stack.visible_child = this._play;
-        this._stack.add_css_class("osd");
+        osd = true;
         break;
     }
 
     if (stop_spinning && this._loading.spinning) {
       this._loading.spinning = false;
+    }
+
+    // for number, don't use osd, but instead hide the number label
+    if (this.visible_child === DynamicImageVisibleChild.NUMBER) {
+      this._image_stack.opacity = osd ? 0 : 1;
+      this._stack.remove_css_class("osd");
+    } else {
+      this._image_stack.opacity = 1;
+      if (osd) {
+        this._stack.add_css_class("osd");
+      } else {
+        this._stack.remove_css_class("osd");
+      }
     }
   }
 

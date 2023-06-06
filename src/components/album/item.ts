@@ -4,6 +4,10 @@ import GObject from "gi://GObject";
 import GLib from "gi://GLib";
 
 import { ArtistRun, PlaylistItem } from "../../muse.js";
+import { DynamicImage } from "../dynamic-image.js";
+
+// first register the DynamicImage class
+import "../dynamic-image.js";
 
 export class AlbumItemCard extends Gtk.ListBoxRow {
   static {
@@ -13,20 +17,21 @@ export class AlbumItemCard extends Gtk.ListBoxRow {
       InternalChildren: [
         "title",
         "explicit",
-        "explicit_flowbox",
         "second_line",
-        "number",
       ],
+      Children: [
+        "dynamic_image",
+      ]
     }, this);
   }
 
   item?: PlaylistItem;
 
-  _title!: Gtk.Label;
-  _explicit!: Gtk.Image;
-  _number!: Gtk.Label;
-  _explicit_flowbox!: Gtk.FlowBox;
-  _second_line!: Gtk.Box;
+  dynamic_image!: DynamicImage;
+
+  private _title!: Gtk.Label;
+  private _explicit!: Gtk.Image;
+  private _second_line!: Gtk.Box;
 
   constructor() {
     super({});
@@ -95,10 +100,10 @@ export class AlbumItemCard extends Gtk.ListBoxRow {
     this.add_artist_only(artist);
   }
 
-  set_item(number: number, item: PlaylistItem) {
+  set_item(number: number, item: PlaylistItem, playlistId?: string) {
     this.item = item;
 
-    this._number.label = number.toString();
+    this.dynamic_image.track_number = number.toLocaleString();
 
     this._title.set_label(item.title);
 
@@ -112,5 +117,7 @@ export class AlbumItemCard extends Gtk.ListBoxRow {
     }
 
     this._explicit.set_visible(item.isExplicit);
+
+    this.dynamic_image.setup_listeners(item.videoId, playlistId);
   }
 }

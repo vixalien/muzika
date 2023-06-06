@@ -23,24 +23,11 @@
             <property name="valign">3</property>
             <property name="spacing">6</property>
             <child>
-              <object class="GtkBox" id="label_box">
-                <property name="width-request">42</property>
-                <property name="height-request">48</property>
-                <property name="orientation">1</property>
-                <style>
-                  <class name="thumbnail" />
-                </style>
-                <child>
-                  <object class="GtkLabel" id="number">
-                    <property name="halign">3</property>
-                    <property name="vexpand">true</property>
-                    <property name="label">1</property>
-                    <style>
-                      <class name="heading" />
-                      <class name="dim-label" />
-                    </style>
-                  </object>
-                </child>
+              <object class="DynamicImage" id="dynamic_image">
+                <property name="image-size">48</property>
+                <property name="icon-size">16</property>
+                <property name="persistent-play-button">false</property>
+                <property name="visible-child">2</property>
               </object>
             </child>
             <child>
