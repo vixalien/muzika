@@ -19,6 +19,9 @@ export class PlaylistItemCard extends Gtk.ListBoxRow {
         "title",
         "explicit_flowbox",
         "second_line",
+        "chart_rank",
+        "rank",
+        "change",
       ],
       Children: [
         "dynamic_image",
@@ -33,6 +36,9 @@ export class PlaylistItemCard extends Gtk.ListBoxRow {
   private _title!: Gtk.Label;
   private _explicit_flowbox!: Gtk.FlowBox;
   private _second_line!: Gtk.Box;
+  private _chart_rank!: Gtk.Box;
+  private _rank!: Gtk.Label;
+  private _change!: Gtk.Image;
 
   playlistId?: string;
 
@@ -113,6 +119,24 @@ export class PlaylistItemCard extends Gtk.ListBoxRow {
       item.artists.map((artist) => {
         this.add_author(artist);
       });
+    }
+
+    if (item.rank) {
+      this._chart_rank.visible = true;
+
+      this._rank.label = item.rank;
+
+      switch (item.change) {
+        case "DOWN":
+          this._change.icon_name = "trend-down-symbolic";
+          break;
+        case "UP":
+          this._change.icon_name = "trend-up-symbolic";
+          break;
+        default:
+          this._change.icon_name = "trend-neutral-symbolic";
+          break;
+      }
     }
 
     this._explicit_flowbox.set_visible(item.isExplicit);

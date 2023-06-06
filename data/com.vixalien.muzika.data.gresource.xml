@@ -47,5 +47,8 @@
     <file preprocess="xml-stripblanks" alias="sonar-symbolic.svg">icons/sonar-symbolic.svg</file>
     <file preprocess="xml-stripblanks" alias="sound-wave-symbolic.svg">icons/sound-wave-symbolic.svg</file>
     <file preprocess="xml-stripblanks" alias="subtitles-symbolic.svg">icons/subtitles-symbolic.svg</file>
+    <file preprocess="xml-stripblanks" alias="trend-up-symbolic.svg">icons/trend-up-symbolic.svg</file>
+    <file preprocess="xml-stripblanks" alias="trend-down-symbolic.svg">icons/trend-down-symbolic.svg</file>
+    <file preprocess="xml-stripblanks" alias="trend-neutral-symbolic.svg">icons/trend-neutral-symbolic.svg</file>
   </gresource>
 </gresources>
