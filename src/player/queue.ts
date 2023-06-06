@@ -660,7 +660,7 @@ export class Queue extends GObject.Object {
     }
   }
 
-  private add_queue_at_position(
+  private add_to_queue_at_position(
     tracks: QueueTrack[],
     position: number,
     new_position?: number,
@@ -692,11 +692,11 @@ export class Queue extends GObject.Object {
   }
 
   private play_next(tracks: QueueTrack[], new_position?: number) {
-    this.add_queue_at_position(tracks, this.position + 1, new_position);
+    this.add_to_queue_at_position(tracks, this.position + 1, new_position);
   }
 
   add(tracks: QueueTrack[], new_position?: number) {
-    this.add_queue_at_position(tracks, this.list.n_items, new_position);
+    this.add_to_queue_at_position(tracks, this.list.n_items, new_position);
   }
 }
 

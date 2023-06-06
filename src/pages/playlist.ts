@@ -14,6 +14,7 @@ import { Carousel } from "../components/carousel/index.js";
 import { Loading } from "../components/loading.js";
 import { PlaylistHeader } from "../components/playlist/header.js";
 import { PlaylistItemCard } from "../components/playlist/item.js";
+import { DynamicImageState } from "src/components/dynamic-image.js";
 
 export class PlaylistPage extends Gtk.Box {
   static {
@@ -76,6 +77,8 @@ export class PlaylistPage extends Gtk.Box {
         return;
       }
 
+      row.dynamic_image.state = DynamicImageState.LOADING;
+
       row.activate_action(
         "queue.play-playlist",
         GLib.Variant.new_string(
@@ -89,9 +92,17 @@ export class PlaylistPage extends Gtk.Box {
     for (const track of tracks) {
       const card = new PlaylistItemCard();
 
-      card.set_item(track);
+      card.dynamic_image.connect("play", () => {
+        this._list_box.select_row(card);
+      });
+
+      card.dynamic_image.connect("pause", () => {
+        this._list_box.select_row(card);
+      });
 
       this._list_box.append(card);
+
+      card.set_item(track, this.playlist?.id);
     }
   }
 
@@ -124,9 +135,9 @@ export class PlaylistPage extends Gtk.Box {
       playlist.authors.forEach((author) => {
         this.header.add_author({
           ...author,
-          // can only be an artist when we are viewing the playlist of 
+          // can only be an artist when we are viewing the playlist of
           // all songs by an artist
-          artist: playlist.id.startsWith("OLAK5uy_")
+          artist: playlist.id.startsWith("OLAK5uy_"),
         });
       });
     }

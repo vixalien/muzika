@@ -73,6 +73,7 @@ export class DynamicImage extends Gtk.Overlay {
       },
       Signals: {
         pause: {},
+        play: {},
       },
     }, this);
   }
@@ -253,9 +254,11 @@ export class DynamicImage extends Gtk.Overlay {
   }
 
   videoId: string | null = null;
+  playlistId: string | null = null;
 
-  setup_listeners(videoId: string) {
+  setup_listeners(videoId: string, playlistId: string | null = null) {
     this.videoId = videoId;
+    this.playlistId = playlistId;
 
     if (this.map_listener != null) {
       this.disconnect(this.map_listener);
@@ -267,18 +270,25 @@ export class DynamicImage extends Gtk.Overlay {
 
     if (!player) {
       this.map_listener = this.connect("map", () => {
-        this.setup_listeners(videoId);
+        this.setup_listeners(videoId, playlistId);
       });
       return;
     }
 
     if (!this.setup_button) {
       this._play.connect("clicked", () => {
+        this.emit("play");
+
         if (player.current_meta?.item?.track.videoId === this.videoId) {
           player.play();
         } else if (this.videoId) {
-          this.state = DynamicImageState.LOADING;
-          player.queue.play_song(this.videoId);
+          if (this.playlistId) {
+            this.state = DynamicImageState.LOADING;
+            player.queue.play_playlist(this.playlistId, this.videoId);
+          } else {
+            this.state = DynamicImageState.LOADING;
+            player.queue.play_song(this.videoId);
+          }
         }
       });
 
@@ -291,9 +301,23 @@ export class DynamicImage extends Gtk.Overlay {
       this.setup_button = true;
     }
 
+    // if the video is already playing, we need to update the state
+    if (
+      player.current_meta?.item?.track.videoId === this.videoId
+    ) {
+      if (player.playing) {
+        this.state = DynamicImageState.PLAYING;
+        this.emit("play");
+      } else {
+        this.state = DynamicImageState.PAUSED;
+        this.emit("pause");
+      }
+    }
+
     this.listeners.push(...[
       player.connect(`start-loading::${videoId}`, () => {
         this.state = DynamicImageState.LOADING;
+        this.emit("play");
       }),
       player.connect(`stop-loading::${videoId}`, () => {
         if (

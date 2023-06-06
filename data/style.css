@@ -5,7 +5,7 @@
 .song-play-button {
   color: alpha(white, .9);
   transition: .2s background-color;
-} 
+}
 
 .song-play-button:hover {
   background-color: alpha(black, 0.5);
@@ -68,7 +68,7 @@ label.link:hover {
   border-radius: 3px;
 }
 
-.playlist-item:not(:focus):not(:focus-visible):not(:hover):nth-child(2n+1) {
+.playlist-item:not(:focus):not(:focus-visible):not(:hover):not(:selected):nth-child(2n+1) {
   background-color: shade(@card_bg_color, .93);
 }
 

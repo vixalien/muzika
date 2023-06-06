@@ -5,6 +5,10 @@ import GLib from "gi://GLib";
 
 import { ArtistRun, PlaylistItem } from "../../muse.js";
 import { load_thumbnails } from "../webimage.js";
+import { DynamicImage } from "../dynamic-image.js";
+
+// first register the DynamicImage class
+import "../dynamic-image.js";
 
 export class PlaylistItemCard extends Gtk.ListBoxRow {
   static {
@@ -12,25 +16,25 @@ export class PlaylistItemCard extends Gtk.ListBoxRow {
       GTypeName: "PlaylistItem",
       Template: "resource:///com/vixalien/muzika/components/playlist/item.ui",
       InternalChildren: [
-        "play_button",
-        "image",
         "title",
-        "explicit",
         "explicit_flowbox",
         "second_line",
-        "image",
+      ],
+      Children: [
+        "dynamic_image",
       ],
     }, this);
   }
 
   item?: PlaylistItem;
 
-  _play_button!: Gtk.Button;
-  _image!: Gtk.Image;
-  _title!: Gtk.Label;
-  _explicit!: Gtk.Image;
-  _explicit_flowbox!: Gtk.FlowBox;
-  _second_line!: Gtk.Box;
+  dynamic_image!: DynamicImage;
+
+  private _title!: Gtk.Label;
+  private _explicit_flowbox!: Gtk.FlowBox;
+  private _second_line!: Gtk.Box;
+
+  playlistId?: string;
 
   constructor() {
     super({});
@@ -99,8 +103,9 @@ export class PlaylistItemCard extends Gtk.ListBoxRow {
     this.add_artist_only(artist);
   }
 
-  set_item(item: PlaylistItem) {
+  set_item(item: PlaylistItem, playlistId?: string) {
     this.item = item;
+    this.playlistId = playlistId;
 
     this._title.set_label(item.title);
 
@@ -112,6 +117,8 @@ export class PlaylistItemCard extends Gtk.ListBoxRow {
 
     this._explicit_flowbox.set_visible(item.isExplicit);
 
-    load_thumbnails(this._image, item.thumbnails, 48);
+    load_thumbnails(this.dynamic_image.image, item.thumbnails, 48);
+
+    this.dynamic_image.setup_listeners(item.videoId, playlistId);
   }
 }
