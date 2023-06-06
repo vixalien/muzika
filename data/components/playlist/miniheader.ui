@@ -28,6 +28,7 @@
             <property name="size">240</property>
             <property name="text">Avatar</property>
             <property name="visible">false</property>
+            <property name="halign">center</property>
             <style>
               <class name="br-9" />
               <class name="card" />
