@@ -2,7 +2,7 @@
 
 Muzika is an elegant music streaming app.
 
-![Muzika home page](data/resources/screenshots/muzika.png)
+![Muzika home page](data/resources/screenshots/home.png)
 
 > Note: This is a work in progress. The app is not yet ready for production.
 
