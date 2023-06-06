@@ -1,9 +1,53 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<component type="desktop">
-	<id>com.vixalien.muzika.desktop</id>
+<component type="desktop-application">
+	<id>@app-id@</id>
 	<metadata_license>CC0-1.0</metadata_license>
-	<project_license>MIT</project_license>
+	<project_license>GPL-3.0+</project_license>
+	<name>Muzika</name>
+	<summary>Elegant music streaming application</summary>
 	<description>
-	  <p>No description</p>
+		<p>
+			Play music from millions of songs available on the internet for free.
+			Search for songs, albums, artists, and more. Discover new music from
+			playlists and get a personalized &amp; curated experience. 
+		</p>
+		<p>Current features:</p>
+		<ul>
+			<li>play any music from YouTube Music</li>
+			<li>allows sign in through OAuth with Google to play your playlists and more from your library or uploads</li>
+			<li>search for songs, albums, artists, radios, community &amp; featured playlists and more</li>
+			<li>access personalised music radios &amp; mixes</li>
+		</ul>
 	</description>
+	<screenshots>
+		<screenshot>
+			<image>
+				https://raw.githubusercontent.com/vixalien/muzika/main/data/resources/screenshots/home.png</image>
+		</screenshot>
+	</screenshots>
+	<launchable type="desktop-id">@app-id@.desktop</launchable>
+	<url type="homepage">https://github.com/vixalien/muzika</url>
+	<url type="bugtracker">https://github.com/vixalien/muzika/issues</url>
+	<developer_name>Angelo Verlain</developer_name>
+	<update_contact>hey_at_vixalien.com</update_contact>
+	<translation type="gettext">muzika</translation>
+	<custom>
+		<value key="Purism::form_factor">workstation</value>
+		<value key="Purism::form_factor">mobile</value>
+	</custom>
+	<requires>
+		<display_length compare="ge">360</display_length>
+	</requires>
+	<recommends>
+		<control>pointing</control>
+		<control>keyboard</control>
+		<control>touch</control>
+		<control>tablet</control>
+	</recommends>
+	<kudos>
+		<kudo>ModernToolkit</kudo>
+	</kudos>
+	<content_rating type="oars-1.1" />
+	<provides>@app-id@.desktop</provides>
+	<translation type="gettext">@gettext-package@</translation>
 </component>
