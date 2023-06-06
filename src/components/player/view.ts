@@ -36,6 +36,7 @@ export class PlayerView extends Gtk.ActionBar {
         "volume_button",
         "queue_button",
         "lyrics_button",
+        "related_button",
         "scale_and_timer",
       ],
       Signals: {
@@ -60,6 +61,7 @@ export class PlayerView extends Gtk.ActionBar {
   _volume_button!: Gtk.VolumeButton;
   _queue_button!: Gtk.ToggleButton;
   _lyrics_button!: Gtk.ToggleButton;
+  _related_button!: Gtk.ToggleButton;
   _scale_and_timer!: Gtk.Box;
 
   player: Player;
@@ -87,9 +89,14 @@ export class PlayerView extends Gtk.ActionBar {
       "clicked",
       this.handle_sidebar_button.bind(this),
     );
+    this._related_button.connect(
+      "clicked",
+      this.handle_sidebar_button.bind(this),
+    );
   }
 
   private buttons_map = new Map<Gtk.ToggleButton, PlayerSidebarView>([
+    [this._related_button, PlayerSidebarView.RELATED],
     [this._lyrics_button, PlayerSidebarView.LYRICS],
     [this._queue_button, PlayerSidebarView.QUEUE],
   ]);
@@ -151,6 +158,10 @@ export class PlayerView extends Gtk.ActionBar {
 
     this._lyrics_button.set_sensitive(
       this.player.queue.settings?.lyrics != null,
+    );
+
+    this._related_button.set_sensitive(
+      this.player.queue.settings?.related != null,
     );
   }
 

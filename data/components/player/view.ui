@@ -181,6 +181,13 @@
             <property name="icon-name">subtitles-symbolic</property>
           </object>
         </child>
+        <child>
+          <object class="GtkToggleButton" id="related_button">
+            <property name="group">queue_button</property>
+            <property name="tooltip-text">Show Related songs</property>
+            <property name="icon-name">navigate-symbolic</property>
+          </object>
+        </child>
       </object>
     </child>
   </template>

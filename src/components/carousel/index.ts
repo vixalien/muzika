@@ -29,14 +29,16 @@ export class Carousel<
         "title",
         "subtitle",
         "text",
-        "text_label",
+        "text_view",
         "list_view",
         "grid_view",
         "grid_scrolled",
         "list_scrolled",
         "stack",
+        "buttons",
         "left_button",
         "right_button",
+        "carousel_stack",
       ],
     }, this);
   }
@@ -48,12 +50,14 @@ export class Carousel<
   _list_scrolled!: Gtk.ScrolledWindow;
   _title!: Gtk.Label;
   _subtitle!: Gtk.Label;
-  _text!: Gtk.Label;
-  _text_label!: Gtk.Label;
+  _text!: Gtk.Box;
+  _text_view!: Gtk.TextView;
   _list_view!: Gtk.ListView;
   _grid_view!: Gtk.GridView;
   _left_button!: Gtk.Button;
   _right_button!: Gtk.Button;
+  _carousel_stack!: Gtk.Stack;
+  _buttons!: Gtk.Box;
 
   grid = false;
 
@@ -273,12 +277,14 @@ export class Carousel<
     }
 
     if (typeof content.contents === "string") {
-      this._text.set_label(content.contents);
-      this._text.set_visible(true);
-      this._stack.set_visible(false);
+      this._carousel_stack.visible_child = this._text;
+
+      this._text_view.buffer.text = content.contents;
+      this._text_view.remove_css_class("view");
+
+      this._buttons.visible = false;
     } else {
-      this._text.set_visible(false);
-      this._stack.set_visible(true);
+      this._carousel_stack.visible_child = this._stack;
 
       this.setup(content.display == "list");
 
