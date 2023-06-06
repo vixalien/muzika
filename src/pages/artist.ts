@@ -7,6 +7,7 @@ import { Artist, Category, get_artist, MixedItem } from "../muse.js";
 import { ArtistHeader } from "../components/artistheader.js";
 import { Carousel } from "../components/carousel/index.js";
 import { PlaylistItemCard } from "../components/playlist/item.js";
+import { DynamicImageState } from "src/components/dynamic-image.js";
 
 export class ArtistPage extends Gtk.Box {
   static {
@@ -43,6 +44,26 @@ export class ArtistPage extends Gtk.Box {
     this.header = new ArtistHeader();
 
     this._inner_box.prepend(this.header);
+
+    this._top_songs_list.connect(
+      "row-activated",
+      (_, row: PlaylistItemCard) => {
+        if (
+          !(row instanceof PlaylistItemCard) || !this.artist || !row.item
+        ) {
+          return;
+        }
+
+        row.dynamic_image.state = DynamicImageState.LOADING;
+
+        row.activate_action(
+          "queue.play-playlist",
+          GLib.Variant.new_string(
+            `${this.artist.songs.browseId}?video=${row.item.videoId}`,
+          ),
+        );
+      },
+    );
   }
 
   show_top_songs(songs: Artist["songs"]) {
@@ -50,7 +71,15 @@ export class ArtistPage extends Gtk.Box {
       for (const track of songs.results) {
         const card = new PlaylistItemCard();
 
-        card.set_item(track);
+        card.dynamic_image.connect("play", () => {
+          this._top_songs_list.select_row(card);
+        });
+
+        card.dynamic_image.connect("pause", () => {
+          this._top_songs_list.select_row(card);
+        });
+
+        card.set_item(track, songs.browseId ?? undefined);
 
         this._top_songs_list.append(card);
       }
