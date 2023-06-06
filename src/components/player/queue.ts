@@ -16,7 +16,7 @@ export class QueueView extends Gtk.Stack {
       InternalChildren: [
         "no_queue",
         "list_view",
-        "queue_box",
+        "queue_window",
         "playlist_stack",
         "playlist_name",
         "playlist_button",
@@ -28,7 +28,7 @@ export class QueueView extends Gtk.Stack {
   }
 
   _list_view!: Gtk.ListView;
-  _queue_box!: Gtk.Box;
+  _queue_window!: Gtk.ScrolledWindow;
   _no_queue!: Adw.StatusPage;
   _playlist_stack!: Gtk.Stack;
   _playlist_name!: Gtk.Label;
@@ -81,7 +81,7 @@ export class QueueView extends Gtk.Stack {
 
   update_visible_child() {
     this.visible_child = this.player.queue.list.n_items > 0
-      ? this._queue_box
+      ? this._queue_window
       : this._no_queue;
   }
 

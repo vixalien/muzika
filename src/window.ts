@@ -72,7 +72,7 @@ export class Window extends Adw.ApplicationWindow {
   _progress!: Gtk.ProgressBar;
   _back_button!: Gtk.Button;
   _box!: Gtk.Box;
-  _sidebar!: Gtk.ScrolledWindow;
+  _sidebar!: Gtk.Box;
   _flap!: Adw.Flap;
   _toast_overlay!: Adw.ToastOverlay;
 
@@ -135,7 +135,7 @@ export class Window extends Adw.ApplicationWindow {
       }
     });
 
-    this._sidebar.set_child(this.sidebar);
+    this._sidebar.append(this.sidebar);
 
     this.add_actions();
   }

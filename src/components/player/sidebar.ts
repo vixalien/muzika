@@ -4,7 +4,6 @@ import GObject from "gi://GObject";
 import { LyricsView } from "./lyrics";
 import { QueueView } from "./queue";
 import { Player } from "src/player";
-import { Queue } from "src/player/queue";
 
 export class PlayerSidebar extends Gtk.Stack {
   static {

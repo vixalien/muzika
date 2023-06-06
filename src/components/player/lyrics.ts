@@ -13,7 +13,7 @@ export class LyricsView extends Gtk.Stack {
       InternalChildren: [
         "no_lyrics",
         "loading",
-        "lyrics_box",
+        "lyrics_window",
         "view",
         "source",
         "buffer",
@@ -23,7 +23,7 @@ export class LyricsView extends Gtk.Stack {
 
   _no_lyrics!: Adw.StatusPage;
   _loading!: Gtk.Spinner;
-  _lyrics_box!: Gtk.Box;
+  _lyrics_window!: Gtk.ScrolledWindow;
   _view!: Gtk.TextView;
   _source!: Gtk.Label;
   _buffer!: Gtk.TextBuffer;
@@ -73,7 +73,7 @@ export class LyricsView extends Gtk.Stack {
         this._buffer.text = lyrics.lyrics;
         this.loaded = true;
 
-        this.set_visible_child(this._lyrics_box);
+        this.set_visible_child(this._lyrics_window);
       }).catch((err) => {
         if (err.name === "AbortError") {
           return;
