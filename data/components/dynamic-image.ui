@@ -6,6 +6,7 @@
     <property name="valign">1</property>
     <style>
       <class name="br-9" />
+      <class name="card" />
     </style>
     <child type="overlay">
       <object class="GtkStack" id="stack">
@@ -30,7 +31,7 @@
             </style>
             <child>
               <object class="GtkImage" id="play_image">
-                <property name="icon-name">media-playback-start-symbolic</property>
+                <property name="icon-name">play-white</property>
                 <property name="pixel-size">48</property>
               </object>
             </child>

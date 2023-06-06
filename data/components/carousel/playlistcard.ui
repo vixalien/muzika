@@ -14,7 +14,8 @@
         <child>
           <object class="GtkOverlay">
             <style>
-              <class name="br-6" />
+              <class name="br-9" />
+              <class name="card" />
             </style>
             <property name="overflow">hidden</property>
             <child type="overlay">

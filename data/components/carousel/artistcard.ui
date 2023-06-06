@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <interface>
-  <requires lib="gtk" version="4.0"/>
+  <requires lib="gtk" version="4.0" />
   <template class="ArtistCard" parent="GtkBox">
     <property name="valign">start</property>
     <child>
@@ -13,7 +13,9 @@
             <child>
               <object class="GtkBox" id="image_box">
                 <style>
-                  <class name="thumbnail"/>
+                  <class name="br-9" />
+                  <class name="card" />
+                  <class name="rounded" />
                 </style>
                 <child>
                   <object class="AdwAvatar" id="avatar">
@@ -40,7 +42,7 @@
                 <property name="wrap-mode">word-char</property>
                 <property name="justify">center</property>
                 <style>
-                  <class name="heading"/>
+                  <class name="heading" />
                 </style>
               </object>
             </child>
@@ -58,7 +60,7 @@
                         <property name="ellipsize">end</property>
                         <property name="justify">center</property>
                         <style>
-                          <class name="dim-label"/>
+                          <class name="dim-label" />
                         </style>
                       </object>
                     </child>

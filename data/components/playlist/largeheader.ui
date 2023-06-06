@@ -16,7 +16,8 @@
             <property name="overflow">1</property>
             <property name="icon-name">image-missing-symbolic</property>
             <style>
-              <class name="br-6" />
+              <class name="br-9" />
+              <class name="card" />
             </style>
           </object>
         </child>
@@ -26,6 +27,11 @@
             <property name="size">240</property>
             <property name="text">Avatar</property>
             <property name="visible">false</property>
+            <style>
+              <class name="br-9" />
+              <class name="card" />
+              <class name="rounded" />
+            </style>
           </object>
         </child>
         <child>

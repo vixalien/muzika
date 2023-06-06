@@ -19,6 +19,7 @@
                 <property name="overflow">hidden</property>
                 <style>
                   <class name="br-9" />
+                  <class name="card" />
                 </style>
               </object>
             </child>
