@@ -193,6 +193,12 @@ export class DynamicImage extends Gtk.Overlay {
         this._image_stack.visible_child = this._number;
         break;
     }
+
+    if (child === DynamicImageVisibleChild.NUMBER) {
+      this.remove_css_class("card");
+    } else {
+      this.add_css_class("card");
+    }
   }
 
   get track_number() {
