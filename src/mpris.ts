@@ -531,7 +531,7 @@ export class MPRIS extends DBusInterface {
    * Seek forward in the current track
    *
    * Seek is relative to the current player position
-   * If the value passed in would mean seeking beyong the end of the track,
+   * If the value passed in would mean seeking beyond the end of the track,
    * acts like a call to next
    */
   _seek(offset_variant: GLib.Variant) {
@@ -571,7 +571,7 @@ export class MPRIS extends DBusInterface {
   /**
    * Open the URI given as an argument
    *
-   * Not impremented
+   * Not implemented
    */
   open_uri(_uri: string) {
     return;

@@ -3,7 +3,7 @@
 	<schema id="com.vixalien.muzika" path="/com/vixalien/muzika/">
 		<key name="prefer-list" type="b">
 			<default>false</default>
-			<summary>Whether lists are prefered to grids</summary>
+			<summary>Whether lists are preferred to grids</summary>
 			<description>If this option is enabled, the library view will show a list instead of the
 				default grid.</description>
 		</key>

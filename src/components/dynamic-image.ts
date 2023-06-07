@@ -67,7 +67,7 @@ export class DynamicImage extends Gtk.Overlay {
         "persistent-play-button": GObject.ParamSpec.boolean(
           "persistent-play-button",
           "Persistent play button",
-          "Whether the play button should alwas show persistent",
+          "Whether the play button should always show persistent",
           GObject.ParamFlags.READWRITE,
           true,
         ),
