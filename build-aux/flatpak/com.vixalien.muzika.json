@@ -51,12 +51,15 @@
       "name": "write-yarnrc",
       "buildsystem": "simple",
       "build-commands": [
-        "echo yarn-offline-mirror \"/app/yarn-mirror\" > /app/.yarnrc"
+        "echo $'yarn-offline-mirror \"/app/yarn-mirror\"' > /app/.yarnrc"
       ]
     },
     {
       "name": "muzika",
       "buildsystem": "meson",
+      "config-opts": [
+        "-Dyarnrc=/app/.yarnrc"
+      ],
       "sources": [
         {
           "type": "git",

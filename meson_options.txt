@@ -8,6 +8,6 @@ option(
         value: 'default'
 )
 option(
-        'offline-mirror',
+        'yarnrc',
         type: 'string'
 )

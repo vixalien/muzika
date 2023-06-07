@@ -11,28 +11,28 @@ pkgdatadir = join_paths(get_option('datadir'), meson.project_name())
 
 gjs_dep = dependency('gjs-1.0', version: '>= 1.54.0')
 gjs_console = gjs_dep.get_variable(pkgconfig: 'gjs_console')
+
 yarn = find_program('yarn', required: true)
 
-yarn_args = []
+yarn_args = ['--cwd', meson.project_source_root()]
+yarnrc = get_option('yarnrc')
 
-offline_mirror = get_option('offline-mirror')
-if offline_mirror != ''
-  run_command(
-    'yarn',
-    'config',
-    '--offline',
-    'set',
-    'yarn-offline-mirror',
-    offline_mirror,
-    env: { 'HOME': meson.project_build_root() },
-    check: true,
-  )
-
+if yarnrc != ''
   yarn_args += [
+    # note that this does not affect network requests, as it's getting them from
+    # the offline mirror
     '--offline',
-    '--use-yarnrc', meson.project_build_root() / '.yarnrc'
+    '--use-yarnrc', yarnrc
   ]
 endif
+
+# print yarnrc to console
+run_command(
+  'echo',
+  yarnrc,
+  '\n\n\n\n',
+  check: true,
+)
 
 yarn_deps = custom_target(
   'yarn-deps',
