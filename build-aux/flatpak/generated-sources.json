@@ -2045,6 +2045,13 @@
     },
     {
         "type": "file",
+        "url": "https://registry.yarnpkg.com/libmuse/-/libmuse-0.0.39.tgz#1ec2822bb6ced47250994ed1b9e6f740df895c8c",
+        "sha512": "7e63dd0802e80374d242d8e90c9bc99462753d4123d09a1c011452516ee0d174dd6eacdfb01cebc2ffac6846718e7f31fef55b71d83de2e340ef15e1e4aa578e",
+        "dest-filename": "libmuse-0.0.39.tgz",
+        "dest": "flatpak-node/yarn-mirror"
+    },
+    {
+        "type": "file",
         "url": "https://registry.yarnpkg.com/locate-path/-/locate-path-3.0.0.tgz#dbec3b3ab759758071b58fe59fc41871af21400e",
         "sha512": "ec03bbe3cc169c884da80b9ab72d995879101d148d7cf548b0f21fc043963b6d8099aa15ad66af94e70c4799f34cb358be9dfa5f6db4fe669a46cade7351bae4",
         "dest-filename": "locate-path-3.0.0.tgz",
