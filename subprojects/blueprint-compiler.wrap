@@ -1,0 +1,8 @@
+[wrap-git]
+directory = blueprint-compiler
+url = https://gitlab.gnome.org/jwestman/blueprint-compiler.git
+revision = 0.8.1
+depth = 1
+
+[provide]
+blueprint-compiler = blueprint_compiler
