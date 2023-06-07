@@ -801,8 +801,10 @@ levn@^0.4.1:
     prelude-ls "^1.2.1"
     type-check "~0.4.0"
 
-libmuse@../muse/npm/:
-  version "0.0.38"
+libmuse@^0.0.39:
+  version "0.0.39"
+  resolved "https://registry.yarnpkg.com/libmuse/-/libmuse-0.0.39.tgz#1ec2822bb6ced47250994ed1b9e6f740df895c8c"
+  integrity sha512-fmPdCALoA3TSQtjpDJvJlGJ1PUEj0JocARRSUW7g0XTdbqzfsBzrwv+saEZxjn8x/vVbcdg94uNA7xXh5KpXjg==
   dependencies:
     jsonpath-plus "7.2.0"
 
