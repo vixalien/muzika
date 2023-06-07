@@ -15,8 +15,10 @@
   "command": "com.vixalien.muzika",
   "finish-args": [
     "--share=ipc",
+    "--share=network",
     "--device=dri",
     "--socket=wayland",
+    "--socket=pulseaudio",
     "--socket=fallback-x11",
     "--env=GJS_DISABLE_JIT=1"
   ],
