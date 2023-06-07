@@ -1,11 +1,11 @@
 {
-  "name": "gnome-typescript-template",
+  "name": "muzika",
   "version": "1.0.0",
-  "description": "Template for writing GNOME applications in TypeScript",
+  "description": "An elegant music streaming app",
   "main": "src/main.ts",
   "type": "module",
-  "repository": "https://gitlab.gnome.org/BrainBlasted/gnome-typescript-template",
-  "author": "Christopher Davis <christopherdavis@gnome.org>",
+  "repository": "https://github.com/vixalien/muzika",
+  "author": "Angelo Verlain <hey@vixalien.com>",
   "license": "MIT",
   "dependencies": {
     "@lemaik/qrcode-svg": "^1.2.0",
