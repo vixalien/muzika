@@ -55,9 +55,6 @@
     {
       "name": "muzika",
       "buildsystem": "meson",
-      "config-opts": [
-        "-Dyarnrc=/app/.yarnrc"
-      ],
       "sources": [
         {
           "type": "git",
