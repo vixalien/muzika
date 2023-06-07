@@ -19,6 +19,7 @@
                 </style>
                 <child>
                   <object class="AdwAvatar" id="avatar">
+                    <property name="halign">center</property>
                     <property name="overflow">hidden</property>
                     <property name="size">160</property>
                   </object>
