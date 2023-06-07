@@ -1,1 +1,1 @@
-i18n.gettext('gnome-typescript-template', preset: 'glib')
+i18n.gettext('muzika', preset: 'glib')
