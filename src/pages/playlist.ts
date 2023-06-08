@@ -43,7 +43,7 @@ export class PlaylistPage extends Gtk.Box {
   _separator!: Gtk.Label;
   _scrolled!: Gtk.ScrolledWindow;
   _data!: Gtk.Box;
-  _list_box!: Gtk.ListBox;
+  _list_box!: Gtk.Box;
 
   header: PlaylistHeader;
 

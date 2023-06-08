@@ -31,7 +31,7 @@ export class ArtistPage extends Gtk.Box {
   _content!: Gtk.Box;
   _scrolled!: Gtk.ScrolledWindow;
   _top_songs!: Gtk.Box;
-  _top_songs_list!: Gtk.ListBox;
+  _top_songs_list!: Gtk.Box;
   _more_top_songs!: Gtk.Button;
 
   header: ArtistHeader;

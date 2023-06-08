@@ -13,6 +13,10 @@
     <file preprocess="xml-stripblanks">components/carousel/videocard.ui</file>
     <file preprocess="xml-stripblanks">components/library/mixedcard.ui</file>
     <file preprocess="xml-stripblanks">components/library/view.ui</file>
+    <file preprocess="xml-stripblanks">components/navbar/button.ui</file>
+    <file preprocess="xml-stripblanks">components/navbar/index.ui</file>
+    <file preprocess="xml-stripblanks">components/navbar/section.ui</file>
+    <file preprocess="xml-stripblanks">components/navbar/title.ui</file>
     <file preprocess="xml-stripblanks">components/player/lyrics.ui</file>
     <file preprocess="xml-stripblanks">components/player/queue.ui</file>
     <file preprocess="xml-stripblanks">components/player/queueitem.ui</file>
@@ -40,11 +44,17 @@
     <file preprocess="xml-stripblanks">gtk/help-overlay.ui</file>
   </gresource>
   <gresource prefix="/com/vixalien/muzika/icons/scalable/actions/">
+    <file preprocess="xml-stripblanks" alias="compass2-symbolic.svg">icons/compass2-symbolic.svg</file>
     <file preprocess="xml-stripblanks" alias="heart-broken-symbolic.svg">icons/heart-broken-symbolic.svg</file>
     <file preprocess="xml-stripblanks" alias="left-symbolic.svg">icons/left-symbolic.svg</file>
+    <file preprocess="xml-stripblanks" alias="library-artists-symbolic.svg">icons/library-artists-symbolic.svg</file>
+    <file preprocess="xml-stripblanks" alias="library-music-symbolic.svg">icons/library-music-symbolic.svg</file>
+    <file preprocess="xml-stripblanks" alias="library-symbolic.svg">icons/library-symbolic.svg</file>
     <file preprocess="xml-stripblanks" alias="music-artist-symbolic.svg">icons/music-artist-symbolic.svg</file>
+    <file preprocess="xml-stripblanks" alias="music-note-single-symbolic.svg">icons/music-note-single-symbolic.svg</file>
     <file preprocess="xml-stripblanks" alias="navigate-symbolic.svg">icons/navigate-symbolic.svg</file>
     <file preprocess="xml-stripblanks" alias="play-white.svg">icons/play-white.svg</file>
+    <file preprocess="xml-stripblanks" alias="playlist-symbolic.svg">icons/playlist-symbolic.svg</file>
     <file preprocess="xml-stripblanks" alias="playlist2-symbolic.svg">icons/playlist2-symbolic.svg</file>
     <file preprocess="xml-stripblanks" alias="progress-symbolic.svg">icons/progress-symbolic.svg</file>
     <file preprocess="xml-stripblanks" alias="sonar-symbolic.svg">icons/sonar-symbolic.svg</file>

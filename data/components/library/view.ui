@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <interface>
-  <requires lib="gtk" version="4.0"/>
+  <requires lib="gtk" version="4.0" />
   <template class="LibraryView" parent="GtkBox">
     <child>
       <object class="GtkScrolledWindow">
@@ -20,7 +20,7 @@
                 <child>
                   <object class="GtkBox" id="view_toggle">
                     <style>
-                      <class name="linked"/>
+                      <class name="linked" />
                     </style>
                     <child>
                       <object class="GtkToggleButton" id="grid_button">

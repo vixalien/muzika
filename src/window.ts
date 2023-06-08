@@ -37,6 +37,7 @@ import {
 import { MPRIS } from "./mpris.js";
 import { LoginPage } from "./pages/login.js";
 import { AddActionEntries } from "./util/action.js";
+import { NavbarView } from "./navbar/index.js";
 
 export class Window extends Adw.ApplicationWindow {
   static {
@@ -52,6 +53,7 @@ export class Window extends Adw.ApplicationWindow {
           "sidebar",
           "flap",
           "toast_overlay",
+          "navbar",
         ],
         Properties: {
           navigator: GObject.ParamSpec.object(
@@ -67,14 +69,15 @@ export class Window extends Adw.ApplicationWindow {
     );
   }
 
-  _stack!: Gtk.Stack;
-  _header_bar!: Gtk.HeaderBar;
-  _progress!: Gtk.ProgressBar;
-  _back_button!: Gtk.Button;
-  _box!: Gtk.Box;
-  _sidebar!: Gtk.Box;
-  _flap!: Adw.Flap;
-  _toast_overlay!: Adw.ToastOverlay;
+  private _stack!: Gtk.Stack;
+  private _header_bar!: Gtk.HeaderBar;
+  private _progress!: Gtk.ProgressBar;
+  private _back_button!: Gtk.Button;
+  private _box!: Gtk.Box;
+  private _sidebar!: Gtk.Box;
+  private _flap!: Adw.Flap;
+  private _toast_overlay!: Adw.ToastOverlay;
+  private _navbar!: Gtk.Box;
 
   navigator: Navigator;
   player_view: PlayerView;
@@ -136,6 +139,9 @@ export class Window extends Adw.ApplicationWindow {
     });
 
     this._sidebar.append(this.sidebar);
+
+    const navbar = new NavbarView(this);
+    this._navbar.append(navbar);
 
     this.add_actions();
   }

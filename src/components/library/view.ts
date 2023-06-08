@@ -57,7 +57,7 @@ export class LibraryView extends Gtk.Box {
   _box!: Gtk.Box;
 
   grid: Grid;
-  list: Gtk.ListBox;
+  list: Gtk.Box;
   paginator: Paginator;
 
   get reveal_paginator() {
@@ -85,9 +85,10 @@ export class LibraryView extends Gtk.Box {
     this.grid.margin_start = 6;
     this.grid.margin_end = 12;
 
-    this.list = new Gtk.ListBox({
+    this.list = new Gtk.Box({
       margin_start: 12,
       margin_end: 12,
+      orientation: Gtk.Orientation.VERTICAL,
     });
     this.list.add_css_class("background");
 

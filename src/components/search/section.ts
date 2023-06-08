@@ -23,7 +23,7 @@ export class SearchSection extends Gtk.Box {
 
   _title!: Gtk.Label;
   _more!: Gtk.Button;
-  _content!: Gtk.ListBox;
+  _content!: Gtk.Box;
 
   args: Parameters<typeof search>;
   show_more: boolean;

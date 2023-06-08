@@ -18,7 +18,7 @@ export class TopResultSection extends Gtk.Box {
 
   _title!: Gtk.Label;
   _flowbox!: Gtk.FlowBox;
-  _content!: Gtk.ListBox;
+  _content!: Gtk.Box;
 
   constructor() {
     super();

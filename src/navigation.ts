@@ -81,6 +81,13 @@ export class Navigator extends GObject.Object {
         ),
         can_go_back: this.can_go_back_spec,
         can_go_forward: this.can_go_forward_spec,
+        current_uri: GObject.ParamSpec.string(
+          "current-uri",
+          "Current URI",
+          "The current URI",
+          GObject.ParamFlags.READABLE,
+          "",
+        ),
       },
     }, this);
   }
@@ -280,6 +287,10 @@ export class Navigator extends GObject.Object {
     return null;
   }
 
+  get current_uri(): string | undefined {
+    return this.history[this.history.length - 1]?.uri;
+  }
+
   private history: HistoryState[] = [];
   private future: HistoryState[] = [];
 
@@ -295,10 +306,13 @@ export class Navigator extends GObject.Object {
     this.history.push(state);
 
     this.notify("can-go-back");
+    this.notify("current-uri");
   }
 
   replaceState(state: HistoryState) {
     this.history[this.history.length - 1] = state;
+
+    this.notify("current-uri");
   }
 
   go(n: number) {
@@ -312,6 +326,7 @@ export class Navigator extends GObject.Object {
 
     this.notify("can-go-back");
     this.notify("can-go-forward");
+    this.notify("current-uri");
 
     const state = this.history[this.history.length - 1];
 
