@@ -8,6 +8,12 @@ import { PlaylistPage } from "./pages/playlist.js";
 import { ArtistPage } from "./pages/artist.js";
 import { SearchPage } from "./pages/search.js";
 import { AlbumPage } from "./pages/album.js";
+import { LibraryPlaylistsPage } from "./pages/library/playlists.js";
+import { LibraryAlbumsPage } from "./pages/library/albums.js";
+import { LibraryArtistsPage } from "./pages/library/artists.js";
+import { LibrarySubscriptionsPage } from "./pages/library/subscriptions.js";
+import { LibrarySongsPage } from "./pages/library/songs.js";
+import { HistoryPage } from "./pages/library/history.js";
 
 export const endpoints: Endpoint<Gtk.Widget>[] = [
   {
@@ -79,4 +85,70 @@ export const endpoints: Endpoint<Gtk.Widget>[] = [
       });
     },
   } as Endpoint<LibraryPage>,
+  {
+    uri: "library/playlists",
+    title: "Library Playlists",
+    component: () => new LibraryPlaylistsPage(),
+    load(component: LibraryPlaylistsPage, ctx) {
+      return component.load_library({
+        signal: ctx.signal,
+        ...Object.fromEntries(ctx.url.searchParams as any),
+      });
+    },
+  } as Endpoint<LibraryPlaylistsPage>,
+  {
+    uri: "library/albums",
+    title: "Library Albums",
+    component: () => new LibraryAlbumsPage(),
+    load(component: LibraryAlbumsPage, ctx) {
+      return component.load_library({
+        signal: ctx.signal,
+        ...Object.fromEntries(ctx.url.searchParams as any),
+      });
+    },
+  } as Endpoint<LibraryAlbumsPage>,
+  {
+    uri: "library/artists",
+    title: "Library Artists",
+    component: () => new LibraryArtistsPage(),
+    load(component: LibraryArtistsPage, ctx) {
+      return component.load_library({
+        signal: ctx.signal,
+        ...Object.fromEntries(ctx.url.searchParams as any),
+      });
+    },
+  } as Endpoint<LibraryArtistsPage>,
+  {
+    uri: "library/subscriptions",
+    title: "Library Subscriptions",
+    component: () => new LibrarySubscriptionsPage(),
+    load(component: LibrarySubscriptionsPage, ctx) {
+      return component.load_library({
+        signal: ctx.signal,
+        ...Object.fromEntries(ctx.url.searchParams as any),
+      });
+    },
+  } as Endpoint<LibrarySubscriptionsPage>,
+  {
+    uri: "library/songs",
+    title: "Library Songs",
+    component: () => new LibrarySongsPage(),
+    load(component: LibrarySongsPage, ctx) {
+      return component.load_library({
+        signal: ctx.signal,
+        ...Object.fromEntries(ctx.url.searchParams as any),
+      });
+    },
+  } as Endpoint<LibrarySongsPage>,
+  {
+    uri: "history",
+    title: "History",
+    component: () => new HistoryPage(),
+    load(component: HistoryPage, ctx) {
+      return component.load_library({
+        signal: ctx.signal,
+        ...Object.fromEntries(ctx.url.searchParams as any),
+      });
+    },
+  } as Endpoint<HistoryPage>,
 ];

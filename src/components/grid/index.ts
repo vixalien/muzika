@@ -13,6 +13,7 @@ import { ArtistCard } from "../carousel/artistcard.js";
 import { PlaylistCard } from "../carousel/playlistcard.js";
 import { SongCard } from "../carousel/songcard.js";
 import { VideoCard } from "../carousel/videocard.js";
+import { MixedCardItem } from "../library/mixedcard.js";
 
 export class Grid extends Gtk.GridView {
   static {
@@ -41,7 +42,7 @@ export class Grid extends Gtk.GridView {
   }
 
   bind_cb(_factory: Gtk.ListItemFactory, list_item: Gtk.ListItem) {
-    const object = list_item.get_item() as ObjectContainer<RequiredMixedItem>;
+    const object = list_item.get_item() as ObjectContainer<MixedCardItem>;
     const item = object.item!;
 
     let card;
@@ -72,6 +73,10 @@ export class Grid extends Gtk.GridView {
         card = new ArtistCard();
         card.set_artist(item);
         break;
+      case "library-artist":
+        card = new ArtistCard();
+        card.set_library_artist(item);
+        break;
       default:
         console.warn("Invalid item in carousel", item.type);
     }
@@ -96,7 +101,7 @@ export class Grid extends Gtk.GridView {
 
   activate_cb(_list_view: Gtk.ListView, position: number) {
     const object = this.model.get_item(position) as ObjectContainer<
-      RequiredMixedItem
+      MixedCardItem
     >;
     const item = object.item!;
 
@@ -111,6 +116,7 @@ export class Grid extends Gtk.GridView {
         break;
       case "artist":
       case "channel":
+      case "library-artist":
         uri = `artist:${item.browseId}`;
         break;
       case "album":
@@ -139,7 +145,7 @@ export class Grid extends Gtk.GridView {
     }
   }
 
-  show_items(items: MixedItem[]) {
+  show_items(items: MixedCardItem[]) {
     for (const item of items) {
       if (!item) continue;
 

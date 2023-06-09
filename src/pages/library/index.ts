@@ -1,7 +1,8 @@
 import GObject from "gi://GObject";
 
 import { get_library } from "../../muse.js";
-import { AbstractLibraryPage } from "./base";
+import { AbstractLibraryPage, library_orders } from "./base";
+import { RequiredMixedItem } from "src/components/carousel/index.js";
 
 export class LibraryPage extends AbstractLibraryPage {
   static {
@@ -17,9 +18,10 @@ export class LibraryPage extends AbstractLibraryPage {
           .then((library) => {
             return {
               continuation: library.continuation,
-              items: library.results,
+              items: library.results.filter(Boolean) as RequiredMixedItem[],
             };
           }),
+      orders: library_orders,
       uri: "library",
     });
   }

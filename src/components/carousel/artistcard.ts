@@ -4,6 +4,7 @@ import Adw from "gi://Adw";
 
 import { RelatedArtist } from "../../muse.js";
 import { load_thumbnails } from "../webimage.js";
+import { ParsedLibraryArtist } from "libmuse/types/parsers/library.js";
 
 export class ArtistCard extends Gtk.Box {
   static {
@@ -19,7 +20,7 @@ export class ArtistCard extends Gtk.Box {
     }, this);
   }
 
-  artist?: RelatedArtist;
+  artist?: RelatedArtist | ParsedLibraryArtist;
 
   _avatar!: Adw.Avatar;
   _title!: Gtk.Label;
@@ -38,6 +39,28 @@ export class ArtistCard extends Gtk.Box {
     this._subtitle.set_label(artist.subscribers ?? "");
     this._avatar.set_name(artist.name);
 
-    load_thumbnails(this._avatar, artist.thumbnails, 160);
+    load_thumbnails(this._avatar, artist.thumbnails, {
+      width: 160,
+      upscale: true,
+    });
+  }
+
+  set_library_artist(artist: ParsedLibraryArtist) {
+    this.artist = artist;
+
+    this._title.set_label(artist.name);
+
+    if (artist.subscribers) {
+      this._subtitle.set_label(artist.subscribers);
+    } else if (artist.songs) {
+      this._subtitle.set_label(artist.songs);
+    }
+
+    this._avatar.set_name(artist.name);
+
+    load_thumbnails(this._avatar, artist.thumbnails, {
+      width: 160,
+      upscale: true,
+    });
   }
 }

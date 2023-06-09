@@ -33,7 +33,7 @@ export class AlbumPage extends Gtk.Box {
   _content!: Gtk.Box;
   _scrolled!: Gtk.ScrolledWindow;
 
-  list_box: Gtk.Box;
+  list_box: Gtk.ListBox;
   header: AlbumHeader;
 
   _loading: Loading;
@@ -45,7 +45,7 @@ export class AlbumPage extends Gtk.Box {
 
     this.header = new AlbumHeader();
 
-    this.list_box = Gtk.Box.new();
+    this.list_box = new Gtk.ListBox();
     this.list_box.add_css_class("background");
 
     this._loading = new Loading();

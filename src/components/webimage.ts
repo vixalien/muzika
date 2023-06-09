@@ -6,6 +6,31 @@ import Adw from "gi://Adw";
 import { fetch } from "../polyfills/fetch.js";
 import { Thumbnail } from "libmuse";
 
+export function get_thumbnail_with_size(
+  thumbnail: Thumbnail,
+  required_width: number,
+  required_height: number = required_width,
+) {
+  const regex =
+    /https:\/\/lh3.googleusercontent.com\/\S+=w(\d+)-h(\d+)(-p)?-l90-rj(-(\S+))?/;
+  const match = regex.exec(thumbnail.url);
+
+  if (match) {
+    const new_url = thumbnail.url.replace(
+      /=w\d+-h\d+/,
+      `=w${required_width}-h${required_height}`,
+    );
+
+    return ({
+      url: new_url,
+      width: required_width,
+      height: required_height,
+    });
+  } else {
+    return (thumbnail);
+  }
+}
+
 export function get_square_thumbnails(thumbnails: Thumbnail[]) {
   const fixed: Thumbnail[] = [];
 
@@ -43,18 +68,18 @@ export function get_square_thumbnails(thumbnails: Thumbnail[]) {
 
 export function get_best_thumbnail(
   thumbnails: Thumbnail[],
-  options: number | LoadOptions,
+  _options: number | LoadOptions,
 ) {
-  const required_size = typeof options === "number"
-    ? options
-    : options.width || options.height || 0;
+  const options = typeof _options === "number" ? { width: _options } : _options;
+
+  const required_size = options.width || options.height || 0;
 
   // choose the best thumbnail
   // by choosing the thumbnail with the smallest size that is larger than required_size
 
   let sorted_thumbnails = thumbnails.sort((a, b) => a.width - b.width);
 
-  if (typeof options != "number" && options.square) {
+  if (options.square) {
     sorted_thumbnails = get_square_thumbnails(sorted_thumbnails);
   }
 
@@ -69,6 +94,14 @@ export function get_best_thumbnail(
 
   if (!best_thumbnail) {
     best_thumbnail = sorted_thumbnails[sorted_thumbnails.length - 1];
+  }
+
+  if (options.upscale && required_size > best_thumbnail.width) {
+    best_thumbnail = get_thumbnail_with_size(
+      best_thumbnail,
+      options.width || options.height || 0,
+      options.height || options.width || 0,
+    );
   }
 
   return best_thumbnail;
@@ -93,6 +126,7 @@ export interface LoadOptions {
   height?: number;
   square?: boolean;
   signal?: AbortSignal;
+  upscale?: boolean;
 }
 
 export function load_image(

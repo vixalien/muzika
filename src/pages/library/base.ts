@@ -2,21 +2,29 @@ import Gtk from "gi://Gtk?version=4.0";
 import GObject from "gi://GObject";
 import GLib from "gi://GLib";
 
-import { LibraryItems, MixedItem } from "../../muse.js";
+import { LibraryItems } from "../../muse.js";
 import { LibraryView } from "../../components/library/view.js";
 
 import type {
   LibraryOrder,
+  Order,
   PaginationOptions,
 } from "libmuse/types/mixins/utils.js";
+import { MixedCardItem } from "src/components/library/mixedcard.js";
 
-const orders = new Map([
+export const library_orders = new Map<string, LibraryOrder>([
   ["Recent activity", "recent_activity"],
   ["Recently added", "recently_added"],
   ["Recently played", "recently_played"],
 ]);
 
-function order_id_to_name(string: string) {
+export const alphabetical_orders = new Map<string, Order>([
+  ["Recently added", "recently_added"],
+  ["A to Z", "a_to_z"],
+  ["Z to A", "z_to_a"],
+]);
+
+export function order_id_to_name(string: string, orders: Map<string, string>) {
   for (const [key, value] of orders) {
     if (value === string) return key;
   }
@@ -28,7 +36,7 @@ interface LibraryOptions extends PaginationOptions {
   order?: LibraryOrder;
 }
 
-type LibraryResults = LibraryItems<MixedItem>;
+type LibraryResults = LibraryItems<MixedCardItem>;
 
 type LibraryLoader = (
   options?: { continuation?: string; signal?: AbortSignal },
@@ -52,6 +60,7 @@ export class AbstractLibraryPage extends Gtk.Box {
 
   loader: LibraryLoader;
   uri: string;
+  orders: Map<string, string>;
 
   constructor(options: LibraryPageOptions) {
     super({
@@ -59,10 +68,11 @@ export class AbstractLibraryPage extends Gtk.Box {
     });
 
     this.loader = options.loader;
+    this.orders = options.orders ?? alphabetical_orders;
     this.uri = options.uri;
 
     this.view = new LibraryView({
-      filters: Array.from((options.orders ?? orders).keys()),
+      filters: Array.from((this.orders).keys()),
     });
 
     this.view.connect("paginate", () => {
@@ -73,7 +83,7 @@ export class AbstractLibraryPage extends Gtk.Box {
   }
 
   handle_order_changed(_: Gtk.Widget, order_name: string) {
-    const order = orders.get(order_name);
+    const order = this.orders.get(order_name);
 
     if (!order) return;
 
@@ -92,7 +102,7 @@ export class AbstractLibraryPage extends Gtk.Box {
     this.results = await this.loader(options);
 
     if (options.order) {
-      const order = order_id_to_name(options.order);
+      const order = order_id_to_name(options.order, this.orders);
 
       if (order) this.view.set_selected_filter(order);
     }

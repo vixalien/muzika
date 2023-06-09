@@ -790,7 +790,7 @@ json-stable-stringify-without-jsonify@^1.0.1:
 
 jsonpath-plus@7.2.0:
   version "7.2.0"
-  resolved "https://registry.npmjs.org/jsonpath-plus/-/jsonpath-plus-7.2.0.tgz"
+  resolved "https://registry.yarnpkg.com/jsonpath-plus/-/jsonpath-plus-7.2.0.tgz#7ad94e147b3ed42f7939c315d2b9ce490c5a3899"
   integrity sha512-zBfiUPM5nD0YZSBT/o/fbCUlCcepMIdP0CJZxM1+KgA4f2T206f6VAg9e7mX35+KlMaIc5qXW34f3BnwJ3w+RA==
 
 levn@^0.4.1:
@@ -801,10 +801,10 @@ levn@^0.4.1:
     prelude-ls "^1.2.1"
     type-check "~0.4.0"
 
-libmuse@^0.0.39:
-  version "0.0.39"
-  resolved "https://registry.yarnpkg.com/libmuse/-/libmuse-0.0.39.tgz#1ec2822bb6ced47250994ed1b9e6f740df895c8c"
-  integrity sha512-fmPdCALoA3TSQtjpDJvJlGJ1PUEj0JocARRSUW7g0XTdbqzfsBzrwv+saEZxjn8x/vVbcdg94uNA7xXh5KpXjg==
+libmuse@^0.0.41:
+  version "0.0.41"
+  resolved "https://registry.yarnpkg.com/libmuse/-/libmuse-0.0.41.tgz#82e459f19bda32515d884de9656800f0e0cc1f2c"
+  integrity sha512-StFnJYHq/XhBo37W0qUCIGgzSvhL66f8VSQqTAH/st/mibmfvlWpKCewmu++iV7/2e0P+ts290jb34M3R1BlBw==
   dependencies:
     jsonpath-plus "7.2.0"
 

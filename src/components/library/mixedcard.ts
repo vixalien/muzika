@@ -13,6 +13,9 @@ import {
 } from "../../muse.js";
 import { load_thumbnails } from "../webimage.js";
 import { RequiredMixedItem } from "../carousel/index.js";
+import { ParsedLibraryArtist } from "libmuse/types/parsers/library.js";
+
+export type MixedCardItem = RequiredMixedItem | ParsedLibraryArtist;
 
 export class MixedCard extends Gtk.ListBoxRow {
   static {
@@ -51,7 +54,7 @@ export class MixedCard extends Gtk.ListBoxRow {
   image_size = 48;
   add_subsequent_middots = false;
 
-  content?: MixedItem;
+  content?: MixedCardItem;
 
   show_type(show: boolean) {
     this._type_box.visible = show;
@@ -157,11 +160,28 @@ export class MixedCard extends Gtk.ListBoxRow {
     this.show_type(false);
 
     if (artist.subscribers) {
-      this.insert_only_text(`${artist.subscribers} subscribers`);
+      this.insert_only_text(artist.subscribers);
     }
   }
 
-  set_item(item: RequiredMixedItem) {
+  set_library_artist(artist: ParsedLibraryArtist) {
+    this.content = artist;
+
+    this.show_avatar(true);
+    load_thumbnails(this._avatar, artist.thumbnails, this.image_size);
+
+    this._title.label = artist.name;
+
+    this.show_type(false);
+
+    if (artist.subscribers) {
+      this.insert_only_text(artist.subscribers);
+    } else if (artist.songs) {
+      this.insert_only_text(artist.songs);
+    }
+  }
+
+  set_item(item: MixedCardItem) {
     switch (item.type) {
       case "album":
         this.set_album(item);
@@ -169,6 +189,9 @@ export class MixedCard extends Gtk.ListBoxRow {
       case "artist":
       case "channel":
         this.set_artist(item);
+        break;
+      case "library-artist":
+        this.set_library_artist(item);
         break;
       case "song":
         this.set_song(item);

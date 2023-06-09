@@ -38,7 +38,7 @@ export class NavbarSection extends Gtk.Box {
     );
   }
 
-  items!: Gtk.ListBox;
+  items!: Gtk.Box;
 
   constructor() {
     super();

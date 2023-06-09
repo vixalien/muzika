@@ -2,8 +2,7 @@ import Gtk from "gi://Gtk?version=4.0";
 import GObject from "gi://GObject";
 
 import { Grid } from "../../components/grid/index.js";
-import { MixedCard } from "./mixedcard.js";
-import { MixedItem } from "../../muse.js";
+import { MixedCard, MixedCardItem } from "./mixedcard.js";
 import { Settings } from "../../application.js";
 import { Paginator } from "../paginator.js";
 
@@ -159,7 +158,7 @@ export class LibraryView extends Gtk.Box {
     this._drop_down.selected = current;
   }
 
-  show_items(items: MixedItem[]) {
+  show_items(items: MixedCardItem[]) {
     this.grid.show_items(items);
 
     items.forEach((item) => {

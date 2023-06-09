@@ -51,8 +51,15 @@
         <child>
           <object class="NavbarButton">
             <property name="icon-name">music-note-single-symbolic</property>
-            <property name="label">Tracks</property>
-            <property name="link">library:tracks</property>
+            <property name="label">Songs</property>
+            <property name="link">library:songs</property>
+          </object>
+        </child>
+        <child>
+          <object class="NavbarButton">
+            <property name="icon-name">preferences-system-time-symbolic</property>
+            <property name="label">History</property>
+            <property name="link">history</property>
           </object>
         </child>
         <child>
