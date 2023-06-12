@@ -8,8 +8,7 @@
       <class name="devel" />
     </style>
     <child>
-      <object class="GtkBox" id="box">
-        <property name="orientation">1</property>
+      <object class="AdwToolbarView" id="toolbar_view">
         <child>
           <object class="AdwLeaflet" id="leaflet">
             <property name="visible-child">content</property>
@@ -113,7 +112,7 @@
                                   <object class="GtkSeparator"></object>
                                 </child>
                                 <child type="flap">
-                                  <object class="GtkBox" id="sidebar">
+                                  <object class="GtkBox" id="sidebar_box">
                                     <property name="width-request">400</property>
                                     <property name="hexpand">false</property>
                                     <style>
