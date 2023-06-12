@@ -678,13 +678,6 @@
     },
     {
         "type": "file",
-        "url": "https://registry.npmjs.org/jsonpath-plus/-/jsonpath-plus-7.2.0.tgz",
-        "sha512": "cc17e250f3399c3d18652053fe8fdf6c252509c7a930874fd02259c4cd7e2a00387f64f6d3a7fa54083d7bb997df9f8a94c688739a975b7e1fdc19f0277c3e44",
-        "dest-filename": "jsonpath-plus-7.2.0.tgz",
-        "dest": "flatpak-node/yarn-mirror"
-    },
-    {
-        "type": "file",
         "url": "https://registry.npmjs.org/levn/-/levn-0.4.1.tgz",
         "sha512": "f9b4f6b87e04e4b184ee1fe7ddebdc4bfb109495c2a48a7aca6f0e589e5e57afbaec3b2a97f2da693eea24102ddabcdfa1aff94011818710e2c7574cb7691029",
         "dest-filename": "levn-0.4.1.tgz",
@@ -1196,9 +1189,16 @@
     },
     {
         "type": "file",
-        "url": "https://registry.yarnpkg.com/libmuse/-/libmuse-0.0.39.tgz#1ec2822bb6ced47250994ed1b9e6f740df895c8c",
-        "sha512": "7e63dd0802e80374d242d8e90c9bc99462753d4123d09a1c011452516ee0d174dd6eacdfb01cebc2ffac6846718e7f31fef55b71d83de2e340ef15e1e4aa578e",
-        "dest-filename": "libmuse-0.0.39.tgz",
+        "url": "https://registry.yarnpkg.com/jsonpath-plus/-/jsonpath-plus-7.2.0.tgz#7ad94e147b3ed42f7939c315d2b9ce490c5a3899",
+        "sha512": "cc17e250f3399c3d18652053fe8fdf6c252509c7a930874fd02259c4cd7e2a00387f64f6d3a7fa54083d7bb997df9f8a94c688739a975b7e1fdc19f0277c3e44",
+        "dest-filename": "jsonpath-plus-7.2.0.tgz",
+        "dest": "flatpak-node/yarn-mirror"
+    },
+    {
+        "type": "file",
+        "url": "https://registry.yarnpkg.com/libmuse/-/libmuse-0.0.42.tgz#b199c77153628209670d0985f5eeaf4e2d07b42a",
+        "sha512": "770775ef077133ff900815d8faa763ae5c8ef22ae73de2da68a4e474026724a1fb54a17aaf9be4fef2b6ce97b4aeac8715b64a40825697399422375f6a625ea8",
+        "dest-filename": "libmuse-0.0.42.tgz",
         "dest": "flatpak-node/yarn-mirror"
     },
     {
