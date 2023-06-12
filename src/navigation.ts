@@ -295,7 +295,7 @@ export class Navigator extends GObject.Object {
 
         page.title = meta?.title ?? endpoint.title;
         page.content = component;
-        page.tag = uri;
+        // page.tag = uri;
 
         if (history) {
           if (url.searchParams.has("replace")) {

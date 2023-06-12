@@ -55,6 +55,7 @@ export class Window extends Adw.ApplicationWindow {
           "flap",
           "toast_overlay",
           "navbar",
+          "split_view",
         ],
         Properties: {
           navigator: GObject.ParamSpec.object(
@@ -77,6 +78,7 @@ export class Window extends Adw.ApplicationWindow {
   private _flap!: Adw.Flap;
   private _toast_overlay!: Adw.ToastOverlay;
   private _navbar!: Gtk.Box;
+  private _split_view!: Adw.NavigationSplitView;
 
   navigator: Navigator;
   player_view: PlayerView;
@@ -125,7 +127,7 @@ export class Window extends Adw.ApplicationWindow {
     });
 
     // TODO: fix this
-    this._toolbar_view.add_bottom_bar(this.player_view);
+    // this._toolbar_view.add_bottom_bar(this.player_view);
 
     this.sidebar = new PlayerSidebar({
       player: application.player,
@@ -141,6 +143,9 @@ export class Window extends Adw.ApplicationWindow {
     this._sidebar_box.append(this.sidebar);
 
     const navbar = new NavbarView(this);
+    navbar.connect("activated", () => {
+      this._split_view.show_content = true;
+    });
     this._navbar.append(navbar);
 
     this.add_actions();
