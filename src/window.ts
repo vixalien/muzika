@@ -54,7 +54,7 @@ export class Window extends Adw.ApplicationWindow {
           "sidebar_box",
           "flap",
           "toast_overlay",
-          "navbar",
+          "navbar_window",
           "split_view",
         ],
         Properties: {
@@ -77,7 +77,7 @@ export class Window extends Adw.ApplicationWindow {
   private _sidebar_box!: Gtk.Box;
   private _flap!: Adw.Flap;
   private _toast_overlay!: Adw.ToastOverlay;
-  private _navbar!: Gtk.Box;
+  private _navbar_window!: Gtk.ScrolledWindow;
   private _split_view!: Adw.NavigationSplitView;
 
   navigator: Navigator;
@@ -146,7 +146,7 @@ export class Window extends Adw.ApplicationWindow {
     navbar.connect("activated", () => {
       this._split_view.show_content = true;
     });
-    this._navbar.append(navbar);
+    this._navbar_window.set_child(navbar);
 
     this.add_actions();
   }
