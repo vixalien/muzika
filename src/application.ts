@@ -63,6 +63,7 @@ export class Application extends Adw.Application {
         ],
         copyright: "© 2023 Angelo Verlain",
         license_type: Gtk.License.GPL_3_0,
+        debug_info: this.get_debug_info(),
       });
 
       aboutWindow.present();
@@ -82,6 +83,18 @@ export class Application extends Adw.Application {
     );
 
     this.player = new Player({ app: this });
+  }
+
+  private get_debug_info() {
+    return JSON.stringify(
+      {
+        argv: this.argv,
+        version: pkg.version,
+        uri: this.window?.navigator.current_uri,
+      },
+      null,
+      2,
+    );
   }
 
   public vfunc_shutdown(): void {
