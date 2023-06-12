@@ -49,7 +49,6 @@ export class Window extends Adw.ApplicationWindow {
         Template: "resource:///com/vixalien/muzika/window.ui",
         InternalChildren: [
           "navigation_view",
-          "progress",
           "toolbar_view",
           "sidebar_box",
           "flap",
@@ -72,7 +71,6 @@ export class Window extends Adw.ApplicationWindow {
   }
 
   private _navigation_view!: Adw.NavigationView;
-  private _progress!: Gtk.ProgressBar;
   private _toolbar_view!: Adw.ToolbarView;
   private _sidebar_box!: Gtk.Box;
   private _flap!: Adw.Flap;
@@ -84,8 +82,6 @@ export class Window extends Adw.ApplicationWindow {
   player_view: PlayerView;
   sidebar: PlayerSidebar;
 
-  interval: number | null = null;
-
   mpris: MPRIS;
 
   constructor(params?: Partial<Adw.ApplicationWindow.ConstructorProperties>) {
@@ -96,20 +92,6 @@ export class Window extends Adw.ApplicationWindow {
     this.navigator.navigate(
       "home",
     );
-
-    this.navigator.connect("notify::loading", () => {
-      if (this.interval) clearInterval(this.interval);
-
-      if (this.navigator.loading) {
-        this._progress.pulse();
-
-        this.interval = setInterval(() => {
-          this._progress.pulse();
-        }, 1000);
-      } else {
-        this._progress.fraction = 0;
-      }
-    });
 
     const application = this.application as Application;
 
