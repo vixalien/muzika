@@ -1,6 +1,7 @@
 import Gtk from "gi://Gtk?version=4.0";
 import GObject from "gi://GObject";
 import Gio from "gi://Gio";
+import Adw from "gi://Adw";
 
 import { match, MatchFunction, MatchResult } from "path-to-regexp";
 
@@ -11,6 +12,7 @@ import { endpoints } from "./endpoints.js";
 import { ErrorPage } from "./pages/error.js";
 import { AddActionEntries } from "./util/action.js";
 import { AuthenticationErrorPage } from "./pages/authentication-error.js";
+import { Page } from "./components/nav/page.js";
 
 export type EndpointCtx = {
   match: MatchResult<Record<string, string>>;
@@ -36,13 +38,11 @@ export interface ShowPageOptions {
   title: string;
   page: Gtk.Widget;
   endpoint: Endpoint<Gtk.Widget>;
+  uri: string;
 }
 
 export class Navigator extends GObject.Object {
-  private _stack: Gtk.Stack;
-  private _header: Gtk.HeaderBar;
-  private _error_page: ErrorPage;
-  private _auth_page: AuthenticationErrorPage;
+  private _view: Adw.NavigationView;
 
   private match_map: Map<MatchFunction, Endpoint<Gtk.Widget>> = new Map();
 
@@ -92,11 +92,10 @@ export class Navigator extends GObject.Object {
     }, this);
   }
 
-  constructor(stack: Gtk.Stack, header: Gtk.HeaderBar) {
+  constructor(stack: Adw.NavigationView) {
     super();
 
-    this._stack = stack;
-    this._header = header;
+    this._view = stack;
 
     this.match_map = new Map();
 
@@ -105,11 +104,19 @@ export class Navigator extends GObject.Object {
       this.match_map.set(fn, endpoint);
     }
 
-    this._error_page = new ErrorPage();
-    this._auth_page = new AuthenticationErrorPage();
+    // this._error_page = Adw.NavigationPage.new(new ErrorPage(), "Error");
+    // this._auth_page = Adw.NavigationPage.new(
+    //   new ErrorPage(),
+    //   "Authentication Error",
+    // );
+    // this._loading = Adw.NavigationPage.new(
+    //   new ErrorPage(),
+    //   "Loading...",
+    // );
 
-    this.add_loading_page();
-    this.add_error_pages();
+    // this._view.add(this._error_page);
+    // this._view.add(this._auth_page);
+    // this._view.push(this._loading);
   }
 
   get_action_group() {
@@ -166,26 +173,28 @@ export class Navigator extends GObject.Object {
     return action_group;
   }
 
-  private add_error_pages() {
-    this._stack.add_named(this._error_page, "error");
-    this._stack.add_named(this._auth_page, "auth-error");
-  }
+  // set_title(title: string) {
+  //   const label = Gtk.Label.new(title);
 
-  private add_loading_page() {
-    const loading_page = new Loading();
+  //   label.add_css_class("heading");
 
-    this._stack.add_named(loading_page, "loading");
-  }
+  //   this._header.set_title_widget(label);
+  // }
 
-  set_title(title: string) {
-    const label = Gtk.Label.new(title);
+  // private show_loading_page() {
+  //   this._view.animate_transitions = true;
 
-    label.add_css_class("heading");
+  //   const loading = Adw.NavigationPage.new(
+  //     new Loading(),
+  //     "Loading...",
+  //   );
 
-    this._header.set_title_widget(label);
-  }
+  //   this._view.push(loading);
 
-  private show_error(error: any) {
+  //   this._view.animate_transitions = false;
+  // }
+
+  private prepare_error_page(error: any) {
     if (error instanceof DOMException && error.code == DOMException.ABORT_ERR) {
       return;
     }
@@ -194,28 +203,43 @@ export class Navigator extends GObject.Object {
     this.last_controller = null;
 
     if (error instanceof MuseError && error.code === ERROR_CODE.AUTH_REQUIRED) {
-      this._header.set_title_widget(Gtk.Label.new("Authentication Required"));
-      this._auth_page.set_error(error);
-      this._stack.set_visible_child_name("auth-error");
-      return;
+      const error_page = new AuthenticationErrorPage({ error });
+      return {
+        page: error_page,
+        title: "Authentication Required",
+      };
     } else {
-      this._header.set_title_widget(Gtk.Label.new("Error"));
-      this._error_page.set_error(error);
-      this._stack.set_visible_child_name("error");
+      const error_page = new ErrorPage({ error });
+      return {
+        page: error_page,
+        title: "Error",
+      };
     }
   }
 
-  private show_page(meta: ShowPageOptions) {
-    this.set_title(meta.title);
+  // private show_error(error: any) {
+  //   if (error instanceof DOMException && error.code == DOMException.ABORT_ERR) {
+  //     return;
+  //   }
 
-    const got_component = this._stack.get_child_by_name(meta.endpoint.uri);
-    if (got_component) {
-      this._stack.remove(got_component);
-    }
+  //   this.loading = false;
+  //   this.last_controller = null;
 
-    this._stack.add_named(meta.page, meta.endpoint.uri);
-    this._stack.set_visible_child_name(meta.endpoint.uri);
-  }
+  //   if (error instanceof MuseError && error.code === ERROR_CODE.AUTH_REQUIRED) {
+  //     const error_page = new AuthenticationErrorPage({ error });
+  //     this._view.push(Page.new(
+  //       error_page,
+  //       "Authentication Required",
+  //     ));
+  //     return;
+  //   } else {
+  //     const error_page = new ErrorPage({ error });
+  //     this._view.push(Page.new(
+  //       error_page,
+  //       "Error",
+  //     ));
+  //   }
+  // }
 
   last_controller: AbortController | null = null;
 
@@ -240,33 +264,38 @@ export class Navigator extends GObject.Object {
 
     this.last_controller = new AbortController();
 
-    let response: ReturnType<Endpoint<Gtk.Widget>["load"]>;
+    const response = endpoint.load(component, {
+      match: match as MatchResult<Record<string, string>>,
+      url,
+      signal: this.last_controller.signal,
+    });
+
+    if (!response) return null;
+
+    this.loading = true;
+
+    const page = new Page();
+    page.title = endpoint.title;
+
+    this._view.push(page);
+
+    let handle_error = (error: any) => {
+      const error_page = this.prepare_error_page(error);
+
+      if (error_page) {
+        page.content = error_page.page;
+        page.title = error_page.title;
+      }
+    };
 
     try {
-      response = endpoint.load(component, {
-        match: match as MatchResult<Record<string, string>>,
-        url,
-        signal: this.last_controller.signal,
-      });
-
-      if (!response) return null;
-
-      // temporarily show an old page if it's available
-      if (this._stack.get_child_by_name(uri)) {
-        this._stack.set_visible_child_name(uri);
-      }
-
-      this.loading = true;
-
       response.then((meta = {}) => {
         this.loading = false;
         this.last_controller = null;
 
-        this.show_page({
-          title: meta?.title ?? endpoint.title,
-          page: component,
-          endpoint,
-        });
+        page.title = meta?.title ?? endpoint.title;
+        page.content = component;
+        page.tag = uri;
 
         if (history) {
           if (url.searchParams.has("replace")) {
@@ -277,11 +306,11 @@ export class Navigator extends GObject.Object {
         }
       }).catch((e) => {
         this.pushState({ uri });
-        this.show_error(e);
+        handle_error(e);
       });
     } catch (e) {
       this.pushState({ uri });
-      this.show_error(e);
+      handle_error(e);
     }
 
     return null;
@@ -318,10 +347,8 @@ export class Navigator extends GObject.Object {
   go(n: number) {
     if (n > 0) {
       this.history.push(...this.future.splice(-n));
-      this._stack.transition_type = Gtk.StackTransitionType.SLIDE_LEFT;
     } else if (n < 0) {
       this.future.push(...this.history.splice(n));
-      this._stack.transition_type = Gtk.StackTransitionType.SLIDE_RIGHT;
     }
 
     this.notify("can-go-back");
@@ -350,9 +377,9 @@ export class Navigator extends GObject.Object {
   }
 
   navigate(uri: string, history = true) {
-    if (history) {
-      this._stack.transition_type = Gtk.StackTransitionType.SLIDE_LEFT;
-    }
+    // if (history) {
+    //   this._stack.transition_type = Gtk.StackTransitionType.SLIDE_LEFT;
+    // }
 
     // muzika:home to
     // muzika/home
@@ -365,6 +392,7 @@ export class Navigator extends GObject.Object {
       const match = fn(path);
 
       if (match) {
+        console.log("navigating to", uri);
         return this.endpoint(uri, match, endpoint, history);
       }
     }

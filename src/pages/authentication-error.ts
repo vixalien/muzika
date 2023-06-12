@@ -4,7 +4,7 @@ import GLib from "gi://GLib";
 import Adw from "gi://Adw";
 
 import { get_option } from "../muse.js";
-import { error_to_string } from "./error.js";
+import { error_to_string, ErrorPageOptions } from "./error.js";
 
 export class AuthenticationErrorPage extends Gtk.Box {
   static {
@@ -27,7 +27,7 @@ export class AuthenticationErrorPage extends Gtk.Box {
 
   buffer: Gtk.TextBuffer;
 
-  constructor() {
+  constructor(options: ErrorPageOptions = {}) {
     super();
 
     this._text_view.buffer = this.buffer = new Gtk.TextBuffer();
@@ -39,6 +39,10 @@ export class AuthenticationErrorPage extends Gtk.Box {
         "navigator.visit",
         GLib.Variant.new_string("muzika:home"),
       );
+
+      if (options.error) {
+        this.set_error(options.error);
+      }
     });
   }
 

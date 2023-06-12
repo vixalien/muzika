@@ -62,30 +62,6 @@
                     <property name="orientation">1</property>
                     <property name="hexpand">true</property>
                     <child>
-                      <object class="GtkHeaderBar" id="header_bar">
-                        <child type="start">
-                          <object class="GtkButton" id="back_button">
-                            <property name="icon-name">left-symbolic</property>
-                            <property name="action-name">navigator.back</property>
-                          </object>
-                        </child>
-                        <child type="end">
-                          <object class="GtkMenuButton">
-                            <property name="icon-name">open-menu-symbolic</property>
-                            <property name="menu-model">primary_menu</property>
-                          </object>
-                        </child>
-                        <property name="title-widget">
-                          <object class="GtkLabel">
-                            <property name="label">Muzika</property>
-                            <style>
-                              <class name="heading" />
-                            </style>
-                          </object>
-                        </property>
-                      </object>
-                    </child>
-                    <child>
                       <object class="GtkOverlay" id="progress_overlay">
                         <child type="overlay">
                           <object class="GtkProgressBar" id="progress">
@@ -103,9 +79,27 @@
                                 <property name="reveal-flap">false</property>
                                 <property name="locked">true</property>
                                 <child>
-                                  <object class="GtkStack" id="stack">
+                                  <object class="AdwNavigationView" id="navigation_view">
                                     <property name="vexpand">true</property>
                                     <property name="width-request">300</property>
+                                    <child>
+                                      <object class="AdwHeaderBar" id="header_bar">
+                                        <child type="end">
+                                          <object class="GtkMenuButton">
+                                            <property name="icon-name">open-menu-symbolic</property>
+                                            <property name="menu-model">primary_menu</property>
+                                          </object>
+                                        </child>
+                                        <property name="title-widget">
+                                          <object class="GtkLabel">
+                                            <property name="label">Muzika</property>
+                                            <style>
+                                              <class name="heading" />
+                                            </style>
+                                          </object>
+                                        </property>
+                                      </object>
+                                    </child>
                                   </object>
                                 </child>
                                 <child type="separator">

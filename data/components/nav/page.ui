@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+  <requires lib="gtk" version="4.0" />
+  <template class="Page" parent="AdwNavigationPage">
+    <property name="child">
+      <object class="AdwToolbarView">
+        <child type="top">
+          <object class="AdwHeaderBar" />
+        </child>
+        <property name="content">
+          <object class="GtkStack" id="stack">
+            <child>
+              <object class="Loading" id="loading" />
+            </child>
+            <child>
+              <object class="AdwBin" id="content" />
+            </child>
+          </object>
+        </property>
+      </object>
+    </property>
+  </template>
+</interface>

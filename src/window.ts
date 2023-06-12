@@ -48,10 +48,8 @@ export class Window extends Adw.ApplicationWindow {
       {
         Template: "resource:///com/vixalien/muzika/window.ui",
         InternalChildren: [
-          "stack",
-          "header_bar",
+          "navigation_view",
           "progress",
-          "back_button",
           "toolbar_view",
           "sidebar_box",
           "flap",
@@ -72,10 +70,8 @@ export class Window extends Adw.ApplicationWindow {
     );
   }
 
-  private _stack!: Gtk.Stack;
-  private _header_bar!: Gtk.HeaderBar;
+  private _navigation_view!: Adw.NavigationView;
   private _progress!: Gtk.ProgressBar;
-  private _back_button!: Gtk.Button;
   private _toolbar_view!: Adw.ToolbarView;
   private _sidebar_box!: Gtk.Box;
   private _flap!: Adw.Flap;
@@ -93,7 +89,7 @@ export class Window extends Adw.ApplicationWindow {
   constructor(params?: Partial<Adw.ApplicationWindow.ConstructorProperties>) {
     super(params);
 
-    this.navigator = new Navigator(this._stack, this._header_bar);
+    this.navigator = new Navigator(this._navigation_view);
 
     this.navigator.navigate(
       "home",
@@ -129,7 +125,7 @@ export class Window extends Adw.ApplicationWindow {
     });
 
     // TODO: fix this
-    // this._toolbar_view.add_bottom_bar(this.player_view);
+    this._toolbar_view.add_bottom_bar(this.player_view);
 
     this.sidebar = new PlayerSidebar({
       player: application.player,
