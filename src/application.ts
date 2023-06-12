@@ -59,10 +59,12 @@ export class Application extends Adw.Application {
         developers: [
           "Angelo Verlain <hey@vixalien.com>",
           "Christopher Davis <christopherdavis@gnome.org>",
+          "Kian-Meng Ang <kianmeng@cpan.org>",
         ],
         copyright: "© 2023 Angelo Verlain",
         license_type: Gtk.License.GPL_3_0,
       });
+
       aboutWindow.present();
     });
     this.add_action(show_about_action);
