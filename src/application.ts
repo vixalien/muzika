@@ -64,6 +64,7 @@ export class Application extends Adw.Application {
         copyright: "© 2023 Angelo Verlain",
         license_type: Gtk.License.GPL_3_0,
         debug_info: this.get_debug_info(),
+        website: "https://github.com/vixalien/muzika",
       });
 
       aboutWindow.present();
