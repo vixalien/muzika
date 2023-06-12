@@ -285,7 +285,7 @@ export class Navigator extends GObject.Object {
     this.notify("current-uri");
   }
 
-  go(n: number) {
+  go(n: number, navigate = true) {
     if (n > 0) {
       this.history.push(...this.future.splice(-n));
     } else if (n < 0) {
@@ -302,19 +302,21 @@ export class Navigator extends GObject.Object {
       return;
     }
 
-    this.navigate(state.uri, false);
+    if (navigate) {
+      this.navigate(state.uri, false);
+    }
   }
 
-  back() {
-    this.go(-1);
+  back(navigate?: boolean) {
+    this.go(-1, navigate);
   }
 
-  forward() {
-    this.go(1);
+  forward(navigate?: boolean) {
+    this.go(1, navigate);
   }
 
-  reload() {
-    this.go(0);
+  reload(navigate?: boolean) {
+    this.go(0, navigate);
   }
 
   navigate(uri: string, history = true) {
