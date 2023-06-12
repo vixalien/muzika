@@ -87,6 +87,10 @@ export class Window extends Adw.ApplicationWindow {
 
     this.navigator = new Navigator(this._navigation_view);
 
+    this._navigation_view.connect("popped", () => {
+      this.navigator.back(false);
+    });
+
     this.navigator.navigate(
       "home",
     );
