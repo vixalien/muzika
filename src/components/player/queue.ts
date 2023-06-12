@@ -74,6 +74,7 @@ export class QueueView extends Gtk.Stack {
     this._list_view.factory = factory;
 
     this._list_view.remove_css_class("view");
+    this._list_view.remove_css_class("background");
 
     this.update_visible_child();
     this.update_settings();
@@ -156,7 +157,6 @@ export class QueueView extends Gtk.Stack {
     if (parent) {
       parent.add_css_class("hover-parent");
       parent.add_css_class("focus-parent");
-      parent.add_css_class("background");
     }
   }
 
