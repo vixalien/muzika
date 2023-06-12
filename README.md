@@ -31,18 +31,10 @@ Dependencies:
 git clone https://github.com/vixalien/muzika.git --recurse-submodules
 ```
 
-2. Build the project
+2. Open the project in GNOME Builder and use "Build" to build the project.
 
-```bash
-meson setup build
-ninja -C build
-```
-
-3. Run the app
-
-```bash
-ninja -C build devel
-```
+> Note: Using Meson and Ninja directly is no longer supported because Muzika
+> uses the latest (unreleased) libadwaita components.
 
 ## Navigation
 
