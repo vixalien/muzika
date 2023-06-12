@@ -21,6 +21,7 @@ export class NavbarView extends Gtk.Box {
         Template: "resource:///com/vixalien/muzika/components/navbar/index.ui",
         InternalChildren: [
           "section",
+          "search",
         ],
         Signals: {
           activated: {
@@ -36,6 +37,7 @@ export class NavbarView extends Gtk.Box {
   last_button: NavbarButton;
 
   private _section!: NavbarSection;
+  private _search!: Gtk.SearchEntry;
 
   button_map = new Map<MatchFunction, NavbarButton>();
 
@@ -73,6 +75,23 @@ export class NavbarView extends Gtk.Box {
     });
 
     this.setup_buttons();
+
+    this._search.connect("activate", () => {
+      this.search();
+    });
+
+    this._search.connect("next-match", () => {
+      this.search();
+    });
+  }
+
+  search() {
+    const query = this._search.text;
+
+    this.activate_action(
+      "navigator.visit",
+      GLib.Variant.new_string(`muzika:search:${encodeURIComponent(query)}`),
+    );
   }
 
   setup_buttons() {
