@@ -22,6 +22,11 @@ export class NavbarView extends Gtk.Box {
         InternalChildren: [
           "section",
         ],
+        Signals: {
+          activated: {
+            param_types: [GObject.TYPE_STRING],
+          },
+        },
       },
       this,
     );
@@ -57,6 +62,8 @@ export class NavbarView extends Gtk.Box {
         "navigator.visit",
         GLib.Variant.new_string(`muzika:${child.link}`),
       );
+
+      this.emit("activated", child.link);
     });
 
     this.window.navigator.connect("notify::current-uri", () => {
