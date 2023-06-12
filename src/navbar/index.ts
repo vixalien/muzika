@@ -117,8 +117,6 @@ export class NavbarView extends Gtk.Box {
     this.clear_playlists();
 
     if (get_option("auth").has_token()) {
-      this.clear_playlists();
-    } else {
       get_library_playlists()
         .then((playlists) => {
           this.clear_playlists();
@@ -145,6 +143,8 @@ export class NavbarView extends Gtk.Box {
 
           throw err;
         });
+    } else {
+      this.clear_playlists();
     }
   }
 
