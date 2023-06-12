@@ -16,15 +16,22 @@
       </object>
     </child>
     <child>
+      <object class="AdwBreakpoint">
+        <condition>max-width: 800sp</condition>
+        <setter object="overlay_split_view" property="collapsed">True</setter>
+      </object>
+    </child>
+    <child>
       <object class="AdwToolbarView" id="toolbar_view">
         <property name="content">
           <object class="AdwNavigationSplitView" id="split_view">
+            <property name="min-sidebar-width">250</property>
+            <property name="max-sidebar-width">350</property>
             <property name="show-content">true</property>
             <property name="sidebar">
               <object class="AdwNavigationPage">
                 <child>
                   <object class="AdwToolbarView">
-                    <property name="width-request">300</property>
                     <property name="hexpand">false</property>
                     <child type="top">
                       <object class="AdwHeaderBar" id="nav_header_bar">
@@ -58,17 +65,20 @@
                 <child>
                   <object class="AdwToastOverlay" id="toast_overlay">
                     <child>
-                      <object class="AdwFlap" id="flap">
-                        <property name="flap-position">1</property>
-                        <property name="reveal-flap">false</property>
-                        <property name="locked">true</property>
-                        <child>
+                      <object class="AdwOverlaySplitView" id="overlay_split_view">
+                        <property name="sidebar-position">1</property>
+                        <property name="sidebar-width-fraction">0.4</property>
+                        <property name="min-sidebar-width">300</property>
+                        <property name="max-sidebar-width">400</property>
+                        <property name="show-sidebar">false</property>
+                        <property name="pin-sidebar">true</property>
+                        <property name="content">
                           <object class="AdwNavigationView" id="navigation_view">
                             <property name="vexpand">true</property>
                             <property name="width-request">300</property>
                           </object>
-                        </child>
-                        <child type="flap">
+                        </property>
+                        <!-- <property name="sidebar">
                           <object class="GtkBox" id="sidebar_box">
                             <property name="width-request">300</property>
                             <property name="hexpand">false</property>
@@ -76,7 +86,7 @@
                               <class name="background" />
                             </style>
                           </object>
-                        </child>
+                        </property> -->
                       </object>
                     </child>
                   </object>

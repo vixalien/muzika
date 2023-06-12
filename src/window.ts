@@ -50,8 +50,7 @@ export class Window extends Adw.ApplicationWindow {
         InternalChildren: [
           "navigation_view",
           "toolbar_view",
-          "sidebar_box",
-          "flap",
+          "overlay_split_view",
           "toast_overlay",
           "navbar_window",
           "split_view",
@@ -72,8 +71,7 @@ export class Window extends Adw.ApplicationWindow {
 
   private _navigation_view!: Adw.NavigationView;
   private _toolbar_view!: Adw.ToolbarView;
-  private _sidebar_box!: Gtk.Box;
-  private _flap!: Adw.Flap;
+  private _overlay_split_view!: Adw.OverlaySplitView;
   private _toast_overlay!: Adw.ToastOverlay;
   private _navbar_window!: Gtk.ScrolledWindow;
   private _split_view!: Adw.NavigationSplitView;
@@ -109,20 +107,20 @@ export class Window extends Adw.ApplicationWindow {
     });
 
     // TODO: fix this
-    // this._toolbar_view.add_bottom_bar(this.player_view);
+    this._toolbar_view.add_bottom_bar(this.player_view);
 
     this.sidebar = new PlayerSidebar({
       player: application.player,
     });
 
     this.player_view.connect("sidebar-button-clicked", (_, view) => {
-      this._flap.reveal_flap = view !== PlayerSidebarView.NONE;
+      this._overlay_split_view.show_sidebar = view !== PlayerSidebarView.NONE;
       if (view !== PlayerSidebarView.NONE) {
         this.sidebar.show_view(view);
       }
     });
 
-    this._sidebar_box.append(this.sidebar);
+    this._overlay_split_view.sidebar = this.sidebar;
 
     const navbar = new NavbarView(this);
     navbar.connect("activated", () => {

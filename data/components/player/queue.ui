@@ -85,7 +85,7 @@
             <child>
               <object class="GtkListView" id="list_view">
                 <style>
-                  <class name="background" />
+                  <class name="transparent" />
                 </style>
               </object>
             </child>

@@ -87,7 +87,7 @@
                     <property name="margin-bottom">18</property>
                     <property name="single-click-activate">true</property>
                     <style>
-                      <class name="background" />
+                      <class name="transparent" />
                       <class name="carousel-padding" />
                     </style>
                   </object>
@@ -107,7 +107,7 @@
                     <property name="max-columns">4</property>
                     <property name="orientation">0</property>
                     <style>
-                      <class name="background" />
+                      <class name="transparent" />
                       <class name="carousel-padding" />
                     </style>
                   </object>
