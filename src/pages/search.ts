@@ -83,6 +83,7 @@ export class SearchPage extends Gtk.Box {
           scope: scope ?? undefined,
           filter: undefined,
         },
+        true,
       );
 
       if (!selected) {
@@ -138,6 +139,7 @@ export class SearchPage extends Gtk.Box {
             ...this.args[1],
             filter: selected ? undefined : filter ?? undefined,
           },
+          true,
         );
 
         button.action_name = "navigator.visit";
@@ -229,9 +231,15 @@ export class SearchPage extends Gtk.Box {
   }
 }
 
-export function search_args_to_url(query: string, options: SearchOptions = {}) {
+export function search_args_to_url(
+  query: string,
+  options: SearchOptions = {},
+  replace = false,
+) {
+  const opts = options as Record<string, any>;
+  if (replace) opts.replace = true;
   const params = new URLSearchParams(
-    Object.entries(options)
+    Object.entries(opts)
       .filter(([_, v]) => v != null)
       .filter(([k]) => k !== "signal"),
   )
