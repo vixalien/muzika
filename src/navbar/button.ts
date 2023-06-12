@@ -41,6 +41,13 @@ export class NavbarButton extends Gtk.Box {
             GObject.ParamFlags.READWRITE,
             "",
           ),
+          "requires-login": GObject.ParamSpec.boolean(
+            "requires-login",
+            "Requires login",
+            "Whether this button is only shown when logged in",
+            GObject.ParamFlags.READWRITE,
+            false,
+          ),
         },
       },
       this,
@@ -52,6 +59,11 @@ export class NavbarButton extends Gtk.Box {
 
   link: string | null = null;
   title: string | null = null;
+  requires_login = false;
+
+  constructor() {
+    super();
+  }
 
   get icon_name(): string {
     return this._image.icon_name;
@@ -67,5 +79,8 @@ export class NavbarButton extends Gtk.Box {
 
   set label(label: string) {
     this._label.label = label;
+
+    this.has_tooltip = this._label.get_layout().is_ellipsized();
+    this.tooltip_text = label;
   }
 }

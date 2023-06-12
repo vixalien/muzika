@@ -34,6 +34,7 @@
             <property name="label">Library</property>
             <property name="link">library</property>
             <property name="title">Library</property>
+            <property name="requires-login">true</property>
           </object>
         </child>
         <child>
@@ -41,6 +42,7 @@
             <property name="icon-name">library-artists-symbolic</property>
             <property name="label">Artists</property>
             <property name="link">library:artists</property>
+            <property name="requires-login">true</property>
           </object>
         </child>
         <child>
@@ -48,6 +50,7 @@
             <property name="icon-name">music-artist-symbolic</property>
             <property name="label">Subscriptions</property>
             <property name="link">library:subscriptions</property>
+            <property name="requires-login">true</property>
           </object>
         </child>
         <child>
@@ -55,6 +58,7 @@
             <property name="icon-name">library-music-symbolic</property>
             <property name="label">Albums</property>
             <property name="link">library:albums</property>
+            <property name="requires-login">true</property>
           </object>
         </child>
         <child>
@@ -62,6 +66,7 @@
             <property name="icon-name">music-note-single-symbolic</property>
             <property name="label">Songs</property>
             <property name="link">library:songs</property>
+            <property name="requires-login">true</property>
           </object>
         </child>
         <child>
@@ -69,6 +74,7 @@
             <property name="icon-name">preferences-system-time-symbolic</property>
             <property name="label">History</property>
             <property name="link">history</property>
+            <property name="requires-login">true</property>
           </object>
         </child>
         <child>
@@ -77,6 +83,7 @@
             <property name="icon-name">playlist-symbolic</property>
             <property name="label">All Playlists</property>
             <property name="link">library:playlists</property>
+            <property name="requires-login">true</property>
           </object>
         </child>
       </object>

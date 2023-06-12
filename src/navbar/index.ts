@@ -7,11 +7,9 @@ import { match, MatchFunction } from "path-to-regexp";
 import { Window } from "../window";
 import { NavbarButton } from "./button";
 import { NavbarSection } from "./section";
+import { get_library_playlists, get_option } from "../muse";
 
-// make sure to first register dependencies
-import "./button";
-import "./title";
-import "./section";
+NavbarSection;
 
 export class NavbarView extends Gtk.Box {
   static {
@@ -40,6 +38,7 @@ export class NavbarView extends Gtk.Box {
   private _search!: Gtk.SearchEntry;
 
   button_map = new Map<MatchFunction, NavbarButton>();
+  playlists = new Map<MatchFunction, NavbarButton>();
 
   constructor(window: Window) {
     super();
@@ -83,6 +82,70 @@ export class NavbarView extends Gtk.Box {
     this._search.connect("next-match", () => {
       this.search();
     });
+
+    get_option("auth").addEventListener("token-changed", () => {
+      this.update_buttons();
+    });
+
+    this.update_buttons();
+  }
+
+  update_buttons() {
+    const logged_in = get_option("auth").has_token();
+
+    this.button_map.forEach((button) => {
+      if (button.requires_login) {
+        const parent = button.get_parent();
+        if (parent) {
+          parent.visible = logged_in;
+        }
+      }
+    });
+
+    this.update_playlists();
+  }
+
+  clear_playlists() {
+    this.playlists.forEach((button) => {
+      button.unparent();
+    });
+
+    this.playlists.clear();
+  }
+
+  update_playlists() {
+    this.clear_playlists();
+
+    if (get_option("auth").has_token()) {
+      this.clear_playlists();
+    } else {
+      get_library_playlists()
+        .then((playlists) => {
+          this.clear_playlists();
+
+          playlists.items.forEach((playlist) => {
+            const url = new URL("muzika:playlist:" + playlist.playlistId);
+
+            const path = url.pathname.replace(/(?<!\\):/g, "/");
+
+            const button = new NavbarButton();
+            button.icon_name = "view-grid-symbolic";
+            button.label = playlist.title;
+            button.link = "playlist:" + playlist.playlistId;
+
+            this.playlists.set(
+              match(path),
+              button,
+            );
+
+            this._section.items.append(button);
+          });
+        }).catch((err) => {
+          this.clear_playlists();
+
+          throw err;
+        });
+    }
   }
 
   search() {
@@ -122,7 +185,7 @@ export class NavbarView extends Gtk.Box {
 
     const path = url.pathname.replace(/(?<!\\):/g, "/");
 
-    for (const [fn, button] of this.button_map) {
+    for (const [fn, button] of [...this.button_map, ...this.playlists]) {
       const result = fn(path);
 
       if (result) {
