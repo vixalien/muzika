@@ -7,7 +7,6 @@ import { match, MatchFunction, MatchResult } from "path-to-regexp";
 
 import { ERROR_CODE, MuseError } from "./muse.js";
 
-import { Loading } from "./components/loading.js";
 import { endpoints } from "./endpoints.js";
 import { ErrorPage } from "./pages/error.js";
 import { AddActionEntries } from "./util/action.js";
@@ -103,20 +102,6 @@ export class Navigator extends GObject.Object {
       const fn = match(endpoint.uri, {});
       this.match_map.set(fn, endpoint);
     }
-
-    // this._error_page = Adw.NavigationPage.new(new ErrorPage(), "Error");
-    // this._auth_page = Adw.NavigationPage.new(
-    //   new ErrorPage(),
-    //   "Authentication Error",
-    // );
-    // this._loading = Adw.NavigationPage.new(
-    //   new ErrorPage(),
-    //   "Loading...",
-    // );
-
-    // this._view.add(this._error_page);
-    // this._view.add(this._auth_page);
-    // this._view.push(this._loading);
   }
 
   get_action_group() {
@@ -173,27 +158,6 @@ export class Navigator extends GObject.Object {
     return action_group;
   }
 
-  // set_title(title: string) {
-  //   const label = Gtk.Label.new(title);
-
-  //   label.add_css_class("heading");
-
-  //   this._header.set_title_widget(label);
-  // }
-
-  // private show_loading_page() {
-  //   this._view.animate_transitions = true;
-
-  //   const loading = Adw.NavigationPage.new(
-  //     new Loading(),
-  //     "Loading...",
-  //   );
-
-  //   this._view.push(loading);
-
-  //   this._view.animate_transitions = false;
-  // }
-
   private prepare_error_page(error: any) {
     if (error instanceof DOMException && error.code == DOMException.ABORT_ERR) {
       return;
@@ -217,30 +181,6 @@ export class Navigator extends GObject.Object {
     }
   }
 
-  // private show_error(error: any) {
-  //   if (error instanceof DOMException && error.code == DOMException.ABORT_ERR) {
-  //     return;
-  //   }
-
-  //   this.loading = false;
-  //   this.last_controller = null;
-
-  //   if (error instanceof MuseError && error.code === ERROR_CODE.AUTH_REQUIRED) {
-  //     const error_page = new AuthenticationErrorPage({ error });
-  //     this._view.push(Page.new(
-  //       error_page,
-  //       "Authentication Required",
-  //     ));
-  //     return;
-  //   } else {
-  //     const error_page = new ErrorPage({ error });
-  //     this._view.push(Page.new(
-  //       error_page,
-  //       "Error",
-  //     ));
-  //   }
-  // }
-
   last_controller: AbortController | null = null;
 
   private endpoint(
@@ -249,12 +189,6 @@ export class Navigator extends GObject.Object {
     endpoint: Endpoint<Gtk.Widget>,
     history: boolean,
   ) {
-    // for (const [fn, endpoint] of this.match_map) {
-    //   if (fn(uri) === match) {
-    //     return endpoint;
-    //   }
-    // }
-
     const url = new URL("muzika:" + uri);
     const component = endpoint.component();
 
