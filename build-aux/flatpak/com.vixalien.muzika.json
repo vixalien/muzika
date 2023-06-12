@@ -39,7 +39,6 @@
       "name": "libadwaita",
       "buildsystem": "meson",
       "config-opts": [
-        "-Dintrospection=disabled",
         "-Dvapi=false",
         "-Dtests=false",
         "-Dexamples=false"
@@ -135,7 +134,6 @@
           "name": "gtk",
           "buildsystem": "meson",
           "config-opts": [
-            "-Dintrospection=disabled",
             "-Ddemos=false",
             "-Dbuild-testsuite=false",
             "-Dbuild-examples=false",

@@ -15,6 +15,7 @@
     <file preprocess="xml-stripblanks">components/library/mixedcard.ui</file>
     <file preprocess="xml-stripblanks">components/library/songs.ui</file>
     <file preprocess="xml-stripblanks">components/library/view.ui</file>
+    <file preprocess="xml-stripblanks">components/nav/page.ui</file>
     <file preprocess="xml-stripblanks">components/navbar/button.ui</file>
     <file preprocess="xml-stripblanks">components/navbar/index.ui</file>
     <file preprocess="xml-stripblanks">components/navbar/section.ui</file>

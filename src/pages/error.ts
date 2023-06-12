@@ -25,6 +25,10 @@ export function error_to_string(error: Error) {
   }`;
 }
 
+export interface ErrorPageOptions {
+  error?: any;
+}
+
 export class ErrorPage extends Gtk.Box {
   static {
     GObject.registerClass({
@@ -44,10 +48,14 @@ export class ErrorPage extends Gtk.Box {
 
   buffer: Gtk.TextBuffer;
 
-  constructor() {
+  constructor(options: ErrorPageOptions = {}) {
     super();
 
     this._text_view.buffer = this.buffer = new Gtk.TextBuffer();
+
+    if (options.error) {
+      this.set_error(options.error);
+    }
   }
 
   set_message(message: string) {
