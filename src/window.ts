@@ -39,6 +39,9 @@ import { LoginPage } from "./pages/login.js";
 import { AddActionEntries } from "./util/action.js";
 import { NavbarView } from "./navbar/index.js";
 
+// make sure to first register PlayerSidebar
+PlayerSidebar;
+
 export class Window extends Adw.ApplicationWindow {
   static {
     GObject.registerClass(
@@ -49,8 +52,8 @@ export class Window extends Adw.ApplicationWindow {
           "header_bar",
           "progress",
           "back_button",
-          "box",
-          "sidebar",
+          "toolbar_view",
+          "sidebar_box",
           "flap",
           "toast_overlay",
           "navbar",
@@ -73,8 +76,8 @@ export class Window extends Adw.ApplicationWindow {
   private _header_bar!: Gtk.HeaderBar;
   private _progress!: Gtk.ProgressBar;
   private _back_button!: Gtk.Button;
-  private _box!: Gtk.Box;
-  private _sidebar!: Gtk.Box;
+  private _toolbar_view!: Adw.ToolbarView;
+  private _sidebar_box!: Gtk.Box;
   private _flap!: Adw.Flap;
   private _toast_overlay!: Adw.ToastOverlay;
   private _navbar!: Gtk.Box;
@@ -125,7 +128,8 @@ export class Window extends Adw.ApplicationWindow {
       player: application.player,
     });
 
-    this._box.append(this.player_view);
+    // TODO: fix this
+    // this._toolbar_view.add_bottom_bar(this.player_view);
 
     this.sidebar = new PlayerSidebar({
       player: application.player,
@@ -138,7 +142,7 @@ export class Window extends Adw.ApplicationWindow {
       }
     });
 
-    this._sidebar.append(this.sidebar);
+    this._sidebar_box.append(this.sidebar);
 
     const navbar = new NavbarView(this);
     this._navbar.append(navbar);
