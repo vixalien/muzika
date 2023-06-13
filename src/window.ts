@@ -26,6 +26,8 @@
 import GObject from "gi://GObject";
 import Gtk from "gi://Gtk?version=4.0";
 import Adw from "gi://Adw";
+import GLib from "gi://GLib";
+import Gio from "gi://Gio";
 
 import { Navigator } from "./navigation.js";
 import { PlayerView } from "./components/player/view.js";
@@ -38,6 +40,7 @@ import { MPRIS } from "./mpris.js";
 import { LoginPage } from "./pages/login.js";
 import { AddActionEntries } from "./util/action.js";
 import { NavbarView } from "./navbar/index.js";
+import { get_current_user, get_option } from "libmuse";
 
 // make sure to first register PlayerSidebar
 PlayerSidebar;
@@ -54,6 +57,7 @@ export class Window extends Adw.ApplicationWindow {
           "toast_overlay",
           "navbar_window",
           "split_view",
+          "account",
         ],
         Properties: {
           navigator: GObject.ParamSpec.object(
@@ -75,6 +79,7 @@ export class Window extends Adw.ApplicationWindow {
   private _toast_overlay!: Adw.ToastOverlay;
   private _navbar_window!: Gtk.ScrolledWindow;
   private _split_view!: Adw.NavigationSplitView;
+  private _account!: Gtk.MenuButton;
 
   navigator: Navigator;
   player_view: PlayerView;
@@ -133,16 +138,11 @@ export class Window extends Adw.ApplicationWindow {
     this._navbar_window.set_child(navbar);
 
     this.add_actions();
+    this.token_changed();
   }
 
   add_actions() {
     (this.add_action_entries as AddActionEntries)([
-      {
-        name: "login",
-        activate: () => {
-          this.auth_flow();
-        },
-      },
       {
         name: "add-toast",
         parameter_type: "s",
@@ -153,6 +153,68 @@ export class Window extends Adw.ApplicationWindow {
         },
       },
     ]);
+
+    const login_action = Gio.SimpleAction.new("login", null);
+    login_action.connect("activate", () => {
+      this.auth_flow();
+    });
+    login_action.enabled = !get_option("auth").has_token();
+    this.add_action(login_action);
+
+    const logout_action = Gio.SimpleAction.new("logout", null);
+    logout_action.connect("activate", () => {
+      this.logout();
+    });
+    logout_action.enabled = get_option("auth").has_token();
+    this.add_action(logout_action);
+
+    get_option("auth").addEventListener("token-changed", () => {
+      login_action.enabled = !get_option("auth").has_token();
+      logout_action.enabled = get_option("auth").has_token();
+      this.token_changed();
+    });
+  }
+
+  async token_changed() {
+    if (!get_option("auth").has_token()) {
+      this._account.sensitive = false;
+      return;
+    } else {
+      this._account.sensitive = true;
+    }
+
+    const account = await get_current_user();
+
+    const menu = Gio.Menu.new();
+    const account_item = Gio.MenuItem.new(
+      account.name,
+      `navigator.visit("muzika:user:${account.channel_id}")`,
+    );
+    const logout_item = Gio.MenuItem.new("Logout", "win.logout");
+
+    menu.append_item(account_item);
+    menu.append_item(logout_item);
+
+    this._account.menu_model = menu;
+  }
+
+  logout() {
+    const dialog = Adw.MessageDialog.new(this, "Logout", "Are you sure?");
+    dialog.add_response("cancel", "Cancel");
+    dialog.add_response("logout", "Logout");
+    dialog.default_response = "cancel";
+    dialog.set_response_appearance(
+      "logout",
+      Adw.ResponseAppearance.DESTRUCTIVE,
+    );
+
+    dialog.connect("response", (_, response) => {
+      if (response === "logout") {
+        get_option("auth").token = null;
+      }
+    });
+
+    dialog.present();
   }
 
   add_toast(text: string) {
