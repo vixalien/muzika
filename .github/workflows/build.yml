@@ -26,3 +26,4 @@ jobs:
           manifest-path: com.vixalien.muzika.json
           cache: true
           restore-cache: true
+          branch: main
