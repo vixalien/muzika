@@ -110,8 +110,6 @@ export class LibrarySongsPage extends Gtk.Box {
   }
 
   set_selected_filter(filter: string) {
-    let current: null | number = null;
-
     for (let i = 0; i < this._drop_down.model.get_n_items(); i++) {
       const item = this._drop_down.model.get_item(i) as Gtk.StringObject | null;
 
@@ -120,13 +118,9 @@ export class LibrarySongsPage extends Gtk.Box {
       const string = item.string;
 
       if (string === filter) {
-        current = i;
+        this._drop_down.selected = i;
         break;
       }
     }
-
-    if (current == null) return;
-
-    this._drop_down.selected = current;
   }
 }
