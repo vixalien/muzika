@@ -106,7 +106,7 @@ button.link.inline.flat:hover {
   padding-right: 6px;
 }
 
-.transparent, listview.transparent > row, gridview.transparent > child {
+.transparent {
   background-color: transparent;
 }
 

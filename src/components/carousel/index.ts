@@ -215,7 +215,6 @@ export class Carousel<
         } else {
           parent.add_css_class("br-12");
         }
-        parent.add_css_class("background");
       }
     }
   }
