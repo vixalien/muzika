@@ -50,11 +50,7 @@ export class ArtistCard extends Gtk.Box {
 
     this._title.set_label(artist.name);
 
-    if (artist.subscribers) {
-      this._subtitle.set_label(artist.subscribers);
-    } else if (artist.songs) {
-      this._subtitle.set_label(artist.songs);
-    }
+    this._subtitle.set_label(artist.subscribers ?? artist.songs ?? "");
 
     this._avatar.set_name(artist.name);
 
