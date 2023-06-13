@@ -21,7 +21,7 @@ export class AlbumItemCard extends Gtk.ListBoxRow {
       ],
       Children: [
         "dynamic_image",
-      ]
+      ],
     }, this);
   }
 
