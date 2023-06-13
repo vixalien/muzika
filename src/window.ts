@@ -39,7 +39,7 @@ import {
 import { MPRIS } from "./mpris.js";
 import { LoginPage } from "./pages/login.js";
 import { AddActionEntries } from "./util/action.js";
-import { NavbarView } from "./navbar/index.js";
+import { NavbarView } from "./components/navbar/index.js";
 import { get_current_user, get_option } from "libmuse";
 
 // make sure to first register PlayerSidebar
