@@ -181,6 +181,7 @@
       "sources": [
         {
           "type": "git",
+          "branch": "main",
           "url": "."
         }
       ]
