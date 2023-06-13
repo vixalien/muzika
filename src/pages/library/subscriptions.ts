@@ -1,6 +1,5 @@
 import GObject from "gi://GObject";
 
-
 import { get_library_subscriptions } from "../../muse.js";
 import { AbstractLibraryPage } from "./base";
 
