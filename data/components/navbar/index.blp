@@ -1,0 +1,78 @@
+using Gtk 4.0;
+
+template $NavbarView : Box {
+  orientation: vertical;
+
+  SearchEntry search {
+    placeholder-text: "Search...";
+    margin-start: 12;
+    margin-end: 12;
+    margin-bottom: 6;
+    margin-top: 12;
+  }
+
+  $NavbarSection section {
+    $NavbarButton {
+      icon-name: "go-home-symbolic";
+      label: "Home";
+      link: "home";
+    }
+
+    $NavbarButton {
+      icon-name: "compass2-symbolic";
+      label: "Explore";
+      link: "explore";
+    }
+
+    $NavbarButton {
+      icon-name: "library-symbolic";
+      label: "Library";
+      link: "library";
+      title: "Library";
+      requires-login: "true";
+    }
+
+    $NavbarButton {
+      icon-name: "library-artists-symbolic";
+      label: "Artists";
+      link: "library:artists";
+      requires-login: "true";
+    }
+
+    $NavbarButton {
+      icon-name: "music-artist-symbolic";
+      label: "Subscriptions";
+      link: "library:subscriptions";
+      requires-login: "true";
+    }
+
+    $NavbarButton {
+      icon-name: "library-music-symbolic";
+      label: "Albums";
+      link: "library:albums";
+      requires-login: "true";
+    }
+
+    $NavbarButton {
+      icon-name: "music-note-single-symbolic";
+      label: "Songs";
+      link: "library:songs";
+      requires-login: "true";
+    }
+
+    $NavbarButton {
+      icon-name: "preferences-system-time-symbolic";
+      label: "History";
+      link: "history";
+      requires-login: "true";
+    }
+
+    $NavbarButton all_playlists {
+      title: "Playlists";
+      icon-name: "playlist-symbolic";
+      label: "All Playlists";
+      link: "library:playlists";
+      requires-login: "true";
+    }
+  }
+}

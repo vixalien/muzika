@@ -1,0 +1,55 @@
+using Gtk 4.0;
+using Adw 1;
+
+template $ErrorPage : Box {
+  Adw.StatusPage status {
+    hexpand: true;
+    icon-name: "dialog-question-symbolic";
+    title: "An error occurred";
+    description: "";
+
+    Box more {
+      orientation: vertical;
+      spacing: 6;
+
+      Expander expander {
+        label: "Details";
+        halign: center;
+      }
+
+      Revealer {
+        reveal-child: bind expander.expanded;
+
+        Adw.Clamp {
+          maximum-size: 1000;
+          tightening-threshold: 600;
+
+          Box {
+            margin-top: 6;
+            margin-bottom: 6;
+            margin-end: 6;
+            margin-start: 6;
+
+            styles [
+              "card",
+            ]
+
+            TextView text_view {
+              hexpand: true;
+              top-margin: 12;
+              bottom-margin: 12;
+              left-margin: 12;
+              right-margin: 12;
+              wrap-mode: word_char;
+              editable: false;
+
+              styles [
+                "transparent",
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}

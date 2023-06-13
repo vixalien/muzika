@@ -1,0 +1,177 @@
+using Gtk 4.0;
+using Adw 1;
+
+template $PlayerView : ActionBar {
+  [start]
+  Box {
+    Box song_info_box {
+      spacing: 12;
+      margin-top: 6;
+      margin-bottom: 6;
+      margin-start: 12;
+      margin-end: 6;
+
+      Image image {
+        icon-name: "image-missing-symbolic";
+        pixel-size: 74;
+        valign: center;
+        overflow: hidden;
+
+        styles [
+          "br-9",
+          "card",
+        ]
+      }
+
+      Box now_playing_labels {
+        orientation: vertical;
+        spacing: 3;
+        valign: center;
+        homogeneous: true;
+
+        Label title {
+          label: "Title";
+          halign: start;
+          ellipsize: end;
+
+          styles [
+            "heading",
+          ]
+        }
+
+        Label subtitle {
+          label: "Subtitle";
+          halign: start;
+          ellipsize: end;
+        }
+      }
+    }
+  }
+
+  [center]
+  Box buttons_and_scale {
+    orientation: vertical;
+    margin-top: 6;
+    margin-bottom: 6;
+    margin-start: 6;
+    margin-end: 6;
+    hexpand: true;
+
+    Box buttons {
+      spacing: 3;
+      valign: center;
+      halign: center;
+
+      ToggleButton shuffle_button {
+        icon-name: "media-playlist-shuffle-symbolic";
+        tooltip-text: "Toggle Shuffle";
+        action-name: "queue.toggle-shuffle";
+        valign: center;
+        margin-end: 12;
+
+        styles [
+          "circular",
+          "dim-label",
+        ]
+      }
+
+      Button prev_button {
+        icon-name: "media-skip-backward-symbolic";
+        tooltip-text: "Previous";
+        action-name: "player.previous";
+        valign: center;
+
+        styles [
+          "circular",
+        ]
+      }
+
+      Button play_button {
+        tooltip-text: "Play";
+        action-name: "player.play-pause";
+
+        styles [
+          "pill",
+        ]
+
+        Image play_image {
+          icon-name: "media-playback-start-symbolic";
+          icon-size: large;
+        }
+      }
+
+      Button next_button {
+        icon-name: "media-skip-forward-symbolic";
+        tooltip-text: "Next";
+        action-name: "player.next";
+        valign: center;
+
+        styles [
+          "circular",
+        ]
+      }
+
+      ToggleButton repeat_button {
+        icon-name: "media-playlist-consecutive-symbolic";
+        tooltip-text: "Toggle Repeat State";
+        valign: center;
+        action-name: "queue.toggle-repeat";
+        margin-start: 12;
+
+        styles [
+          "circular",
+          "dim-label",
+        ]
+      }
+    }
+
+    Adw.Clamp {
+      maximum-size: 1000;
+
+      Box scale_and_timer {
+        Label progress_label {
+          label: "00:00";
+          halign: start;
+          valign: center;
+        }
+
+        Label duration_label {
+          label: "0:00";
+          halign: start;
+          valign: center;
+        }
+      }
+    }
+  }
+
+  [end]
+  Box buttons_box {
+    valign: center;
+    spacing: 6;
+    margin-top: 6;
+    margin-bottom: 6;
+    margin-start: 6;
+    margin-end: 12;
+
+    VolumeButton volume_button {
+      tooltip-text: "Adjust Volume";
+    }
+
+    ToggleButton queue_button {
+      tooltip-text: "Show Queue";
+      icon-name: "playlist2-symbolic";
+    }
+
+    ToggleButton lyrics_button {
+      group: queue_button;
+      tooltip-text: "Show Lyrics";
+      icon-name: "subtitles-symbolic";
+    }
+
+    ToggleButton related_button {
+      group: queue_button;
+      tooltip-text: "Show Related songs";
+      icon-name: "navigate-symbolic";
+    }
+  }
+}

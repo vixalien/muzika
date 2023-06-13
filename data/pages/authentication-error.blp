@@ -1,0 +1,78 @@
+using Gtk 4.0;
+using Adw 1;
+
+template $AuthenticationErrorPage : Box {
+  Adw.StatusPage status {
+    hexpand: true;
+    icon-name: "system-lock-screen-symbolic";
+    title: "Authentication is required";
+
+    Box more {
+      orientation: vertical;
+      spacing: 6;
+
+      Box buttons {
+        halign: center;
+        margin-bottom: 12;
+        spacing: 6;
+
+        Button {
+          label: "Log in";
+          action-name: "win.login";
+
+          styles [
+            "pill",
+            "suggested-action",
+          ]
+        }
+
+        Button home_button {
+          label: "Go to Home";
+
+          styles [
+            "pill",
+          ]
+        }
+      }
+
+      Expander expander {
+        label: "Details";
+        halign: center;
+      }
+
+      Revealer {
+        reveal-child: bind expander.expanded;
+
+        Adw.Clamp {
+          maximum-size: 1000;
+          tightening-threshold: 600;
+
+          Box {
+            margin-top: 6;
+            margin-bottom: 6;
+            margin-end: 6;
+            margin-start: 6;
+
+            styles [
+              "card",
+            ]
+
+            TextView text_view {
+              hexpand: true;
+              top-margin: 12;
+              bottom-margin: 12;
+              left-margin: 12;
+              right-margin: 12;
+              wrap-mode: word_char;
+              editable: false;
+
+              styles [
+                "transparent",
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}

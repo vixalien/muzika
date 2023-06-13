@@ -1,0 +1,105 @@
+using Gtk 4.0;
+using Adw 1;
+
+template $Gjs__Window : Adw.ApplicationWindow {
+  default-width: 1000;
+  default-height: 800;
+  width-request: 300;
+  height-request: 200;
+
+  styles [
+    "devel",
+  ]
+
+  Adw.Breakpoint {
+    condition ("max-width: 400sp")
+    setters {
+      split_view.collapsed: true;
+    }
+  }
+
+  Adw.Breakpoint {
+    condition ("max-width: 1000sp")
+    setters {
+      overlay_split_view.collapsed: true;
+    }
+  }
+
+  Adw.ToolbarView toolbar_view {
+    bottom-bar-style: raised;
+    content: Adw.NavigationSplitView split_view {
+      min-sidebar-width: 250;
+      max-sidebar-width: 350;
+      show-content: true;
+      sidebar: Adw.NavigationPage {
+        Adw.ToolbarView {
+          hexpand: false;
+
+          [top]
+          Adw.HeaderBar nav_header_bar {
+            [start]
+            MenuButton account {
+              icon-name: "avatar-default-symbolic";
+            }
+            title-widget: Label {
+              label: "Muzika";
+
+              styles [
+                "heading",
+              ]
+            };
+
+            [end]
+            MenuButton {
+              icon-name: "open-menu-symbolic";
+              menu-model: primary_menu;
+            }
+          }
+          content: ScrolledWindow navbar_window {
+            vexpand: true;
+          };
+        }
+      };
+      content: Adw.NavigationPage {
+        Adw.ToastOverlay toast_overlay {
+          Adw.OverlaySplitView overlay_split_view {
+            sidebar-position: end;
+            sidebar-width-fraction: 0.4;
+            min-sidebar-width: 250;
+            max-sidebar-width: 350;
+            show-sidebar: false;
+            pin-sidebar: true;
+            content: Adw.NavigationView navigation_view {
+              vexpand: true;
+              width-request: 300;
+            };
+          }
+        }
+      };
+    };
+  }
+}
+
+menu primary_menu {
+  section {
+    item {
+      label: _("_Preferences");
+      action: "app.preferences";
+    }
+
+    item {
+      label: _("_Keyboard Shortcuts");
+      action: "win.show-help-overlay";
+    }
+
+    item {
+      label: _("Log In");
+      action: "win.login";
+    }
+
+    item {
+      label: _("_About Muzika");
+      action: "app.about";
+    }
+  }
+}

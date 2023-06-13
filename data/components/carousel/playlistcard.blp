@@ -1,0 +1,98 @@
+using Gtk 4.0;
+
+template $PlaylistCard : Box {
+  valign: start;
+
+  styles [
+    "hover-parent",
+  ]
+
+  Box {
+    orientation: vertical;
+    hexpand: false;
+    spacing: 6;
+
+    Overlay {
+      styles [
+        "br-9",
+        "card",
+      ]
+
+      overflow: hidden;
+
+      [overlay]
+      Button play_button {
+        halign: end;
+        valign: end;
+        margin-bottom: 6;
+        margin-end: 6;
+
+        styles [
+          "circular",
+          "osd",
+          "hover-child",
+        ]
+
+        Image {
+          icon-name: "media-playback-start-symbolic";
+        }
+      }
+
+      Box image_box {
+        styles [
+          "thumbnail",
+        ]
+
+        Image image {
+          icon-name: "image-missing-symbolic";
+          pixel-size: 160;
+        }
+      }
+    }
+
+    Box meta {
+      orientation: vertical;
+      spacing: 3;
+
+      Label title {
+        label: "";
+        hexpand: true;
+        max-width-chars: 1;
+        ellipsize: end;
+        wrap: true;
+        xalign: 0;
+
+        styles [
+          "heading",
+        ]
+      }
+
+      Box second-line {
+        spacing: 6;
+
+        Image explicit {
+          visible: false;
+          valign: start;
+          icon-name: "network-cellular-edge-symbolic";
+        }
+
+        Box description {
+          spacing: 6;
+
+          Label description_label {
+            label: "";
+            hexpand: true;
+            max-width-chars: 1;
+            ellipsize: end;
+            xalign: 0;
+            wrap: true;
+
+            styles [
+              "dim-label",
+            ]
+          }
+        }
+      }
+    }
+  }
+}

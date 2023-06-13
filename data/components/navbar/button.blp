@@ -1,0 +1,20 @@
+using Gtk 4.0;
+
+template $NavbarButton : Box {
+  Box {
+    margin-start: 6;
+    margin-end: 6;
+    margin-bottom: 6;
+    margin-top: 6;
+    spacing: 6;
+
+    Image image {
+      icon-name: "go-home-symbolic";
+    }
+
+    Label label {
+      label: "Home";
+      ellipsize: end;
+    }
+  }
+}

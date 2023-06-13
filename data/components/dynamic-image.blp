@@ -1,0 +1,94 @@
+using Gtk 4.0;
+using Gdk 4.0;
+
+template $DynamicImage : Overlay {
+  overflow: hidden;
+  valign: start;
+
+  styles [
+    "br-9",
+    "card",
+  ]
+
+  [overlay]
+  Stack stack {
+    transition-type: crossfade;
+
+    styles [
+      "background-transition",
+    ]
+
+    visible-child: play;
+
+    Box blank {
+    }
+
+    Button play {
+      cursor: Gdk.Cursor {
+        name: "pointer";
+      };
+
+      styles [
+        "flat",
+        "no-br",
+      ]
+
+      Image play_image {
+        icon-name: "play-white";
+        pixel-size: 48;
+      }
+    }
+
+    Image wave {
+      icon-name: "sound-wave-symbolic";
+      pixel-size: 48;
+    }
+
+    Spinner loading {
+      halign: center;
+      width-request: 48;
+    }
+
+    Button pause {
+      cursor: Gdk.Cursor {
+        name: "pointer";
+      };
+
+      styles [
+        "flat",
+        "no-br",
+      ]
+
+      Image pause_image {
+        icon-name: "media-playback-pause-symbolic";
+        pixel-size: 48;
+      }
+    }
+  }
+
+  Stack image_stack {
+    hhomogeneous: false;
+
+    Image image {
+      pixel-size: 160;
+      icon-name: "image-missing-symbolic";
+    }
+
+    Picture picture {
+      height-request: 160;
+      width-request: 285;
+      content-fit: cover;
+    }
+
+    Label number {
+      halign: center;
+      vexpand: true;
+      label: "1";
+
+      styles [
+        "heading",
+        "dim-label",
+      ]
+    }
+  }
+}

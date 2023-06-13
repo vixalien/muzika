@@ -1,0 +1,147 @@
+using Gtk 4.0;
+using Adw 1;
+
+template $TopResult : FlowBoxChild {
+  margin-start: 12;
+  margin-end: 12;
+
+  styles [
+    "card",
+    "activatable",
+  ]
+
+  Grid {
+    margin-top: 12;
+    margin-bottom: 12;
+    margin-start: 12;
+    margin-end: 12;
+    column-spacing: 12;
+    row-spacing: 12;
+    valign: center;
+
+    Stack {
+      layout {
+        row-span: "2";
+      }
+
+      Overlay image_overlay {
+        styles [
+          "image",
+          "br-12",
+          "hover-parent",
+        ]
+
+        overflow: hidden;
+
+        Box {
+          Image image {
+            icon-name: "image-missing-symbolic";
+            pixel-size: 100;
+          }
+        }
+
+        [overlay]
+        Button {
+          styles [
+            "osd",
+            "hover-child",
+          ]
+
+          icon-name: "media-playback-start-symbolic";
+        }
+      }
+
+      Adw.Avatar avatar {
+        text: "After Hours";
+        size: 100;
+      }
+    }
+
+    Box meta {
+      orientation: vertical;
+      spacing: 6;
+      valign: center;
+
+      Label title {
+        label: "After Hours";
+        hexpand: true;
+        max-width-chars: 1;
+        ellipsize: end;
+        lines: 2;
+        xalign: 0;
+        wrap: true;
+        wrap-mode: char;
+
+        styles [
+          "title-3",
+        ]
+      }
+
+      Box second-line {
+        spacing: 6;
+
+        Image explicit {
+          visible: false;
+          valign: start;
+          icon-name: "network-cellular-edge-symbolic";
+
+          styles [
+            "dim-label",
+          ]
+        }
+
+        Box type_box {
+          spacing: 6;
+
+          styles [
+            "dim-label",
+          ]
+
+          Label type {
+            label: "Song";
+          }
+
+          Label type_separator {
+            label: "·";
+          }
+        }
+
+        Box label_box {
+          spacing: 6;
+        }
+      }
+    }
+
+    Box actions {
+      spacing: 12;
+
+      layout {
+        row: "1";
+        column: "1";
+      }
+
+      Button primary {
+        styles [
+          "pill",
+          "suggested-action",
+        ]
+
+        Adw.ButtonContent primary_content {
+          icon-name: "media-playback-start-symbolic";
+          label: "Play";
+        }
+      }
+
+      Button secondary {
+        styles [
+          "pill",
+        ]
+
+        Adw.ButtonContent secondary_content {
+          icon-name: "media-playlist-shuffle-symbolic";
+          label: "Shuffle";
+        }
+      }
+    }
+  }
+}

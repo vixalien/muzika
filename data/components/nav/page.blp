@@ -1,0 +1,17 @@
+using Gtk 4.0;
+using Adw 1;
+
+template $Page : Adw.NavigationPage {
+  child: Adw.ToolbarView {
+    [top]
+    Adw.HeaderBar {
+    }
+    content: Stack stack {
+      $Loading loading {
+      }
+
+      Adw.Bin content {
+      }
+    };
+  };
+}

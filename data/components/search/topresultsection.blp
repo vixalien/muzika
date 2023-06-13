@@ -1,0 +1,42 @@
+using Gtk 4.0;
+
+template $TopResultSection : Box {
+  valign: start;
+  orientation: vertical;
+
+  Box {
+    margin-top: 12;
+    margin-start: 12;
+    margin-end: 12;
+    margin-bottom: 6;
+
+    Label title {
+      label: _("Top Result");
+
+      styles [
+        "title-2",
+      ]
+    }
+  }
+
+  FlowBox flowbox {
+    selection-mode: none;
+    max-children-per-line: 2;
+    column-spacing: 12;
+    row-spacing: 12;
+
+    FlowBoxChild {
+      focusable: false;
+
+      ListBox content {
+        margin-start: 6;
+        margin-end: 6;
+        selection-mode: none;
+
+        styles [
+          "background",
+        ]
+      }
+    }
+  }
+}

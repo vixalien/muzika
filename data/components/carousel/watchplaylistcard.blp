@@ -1,0 +1,53 @@
+using Gtk 4.0;
+
+template $WatchPlaylistCard : Box {
+  valign: start;
+
+  Box {
+    orientation: vertical;
+    hexpand: false;
+    spacing: 6;
+
+    $DynamicImage dynamic_image {
+    }
+
+    Box meta {
+      orientation: vertical;
+      spacing: 3;
+
+      Label title {
+        label: "";
+        hexpand: true;
+        max-width-chars: 1;
+        ellipsize: end;
+        xalign: 0;
+        wrap: true;
+        wrap-mode: char;
+
+        styles [
+          "heading",
+        ]
+      }
+
+      Box second-line {
+        spacing: 6;
+
+        styles [
+          "dim-label",
+        ]
+
+        Box subtitle_box {
+          spacing: 6;
+
+          Label subtitle {
+            label: "";
+            hexpand: true;
+            max-width-chars: 1;
+            ellipsize: end;
+            xalign: 0;
+          }
+        }
+      }
+    }
+  }
+}

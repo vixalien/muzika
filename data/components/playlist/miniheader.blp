@@ -1,0 +1,165 @@
+using Gtk 4.0;
+using Adw 1;
+
+template $MiniPlaylistHeader : Box {
+  Box header {
+    spacing: 24;
+    margin-start: 12;
+    margin-end: 12;
+    hexpand: true;
+    valign: start;
+    orientation: vertical;
+
+    Image image {
+      pixel-size: 240;
+      overflow: hidden;
+      halign: center;
+      icon-name: "image-missing-symbolic";
+
+      styles [
+        "br-9",
+        "card",
+      ]
+    }
+
+    Adw.Avatar avatar {
+      size: 240;
+      text: "Avatar";
+      visible: false;
+      halign: center;
+
+      styles [
+        "br-9",
+        "card",
+        "rounded",
+      ]
+    }
+
+    Box {
+      valign: end;
+      orientation: vertical;
+      hexpand: true;
+
+      Box {
+        orientation: vertical;
+
+        Label title {
+          label: "Title";
+
+          styles [
+            "title-1",
+          ]
+        }
+
+        Box author_box {
+          spacing: 6;
+          halign: center;
+        }
+      }
+
+      Box submeta {
+        halign: center;
+        margin-top: 3;
+        spacing: 6;
+
+        styles [
+          "dim-label",
+        ]
+
+        Image explicit {
+          icon-name: "network-cellular-edge-symbolic";
+        }
+
+        Label genre {
+          label: "Single";
+          xalign: 0;
+          justify: left;
+        }
+
+        Label subtitle_separator {
+          label: "•";
+        }
+
+        Label year {
+          label: "2022";
+          xalign: 0;
+          justify: left;
+        }
+      }
+
+      Box buttons {
+        margin-top: 12;
+        spacing: 6;
+        halign: center;
+
+        Button shuffle {
+          Adw.ButtonContent {
+            label: "Shuffle";
+            icon-name: "media-playlist-shuffle-symbolic";
+          }
+
+          styles [
+            "pill",
+            "suggested-action",
+          ]
+        }
+
+        ToggleButton add {
+          Adw.ButtonContent {
+            label: "Library";
+            icon-name: "list-add-symbolic";
+          }
+
+          styles [
+            "pill",
+          ]
+        }
+
+        ToggleButton menu {
+          icon-name: "view-more-symbolic";
+
+          styles [
+            "flat",
+            "pill",
+            "small-pill",
+          ]
+        }
+      }
+
+      Stack description_stack {
+        vhomogeneous: false;
+        hhomogeneous: false;
+        margin-top: 24;
+
+        Label description {
+          hexpand: true;
+          wrap: true;
+          lines: 3;
+          ellipsize: end;
+          width-chars: 10;
+          max-width-chars: 10;
+          xalign: 0;
+        }
+
+        Label description_long {
+          hexpand: true;
+          vexpand: true;
+          wrap: true;
+          width-chars: 10;
+          max-width-chars: 10;
+          xalign: 0;
+        }
+      }
+
+      Expander more {
+        label: "More";
+        margin-top: 10;
+        halign: center;
+
+        styles [
+          "inverted",
+        ]
+      }
+    }
+  }
+}

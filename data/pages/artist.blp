@@ -1,0 +1,62 @@
+using Gtk 4.0;
+using Adw 1;
+
+template $ArtistPage : Box {
+  ScrolledWindow scrolled {
+    vexpand: true;
+    hexpand: true;
+    hscrollbar-policy: never;
+
+    Adw.Clamp {
+      margin-top: 12;
+      margin-bottom: 12;
+      tightening-threshold: 800;
+      maximum-size: 1000;
+
+      Box inner_box {
+        spacing: 18;
+        orientation: vertical;
+
+        Box top_songs {
+          spacing: 12;
+          orientation: vertical;
+          margin-top: 24;
+          margin-start: 12;
+          margin-end: 12;
+
+          Box {
+            Label {
+              label: "Top Songs";
+              halign: start;
+              xalign: 0;
+
+              styles [
+                "title-2",
+              ]
+            }
+
+            Button more_top_songs {
+              visible: false;
+              halign: end;
+              hexpand: true;
+              label: "More";
+
+              styles [
+                "flat",
+              ]
+            }
+          }
+
+          ListBox top_songs_list {
+            styles [
+              "background",
+            ]
+          }
+        }
+
+        Box content {
+        }
+      }
+    }
+  }
+}

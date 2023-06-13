@@ -1,0 +1,102 @@
+using Gtk 4.0;
+using Adw 1;
+
+template $LoginPage : Adw.Window {
+  default-width: 400;
+  default-height: 680;
+
+  Adw.ToastOverlay toast_overlay {
+    Box {
+      orientation: vertical;
+
+      HeaderBar {
+        title-widget: Label {
+          label: "Login";
+
+          styles [
+            "heading",
+          ]
+        };
+
+        styles [
+          "flat",
+        ]
+      }
+
+      Stack stack {
+        vexpand: true;
+
+        Spinner spinner {
+          spinning: true;
+          halign: center;
+          width-request: 48;
+        }
+
+        Box flow {
+          margin-top: 24;
+          margin-bottom: 24;
+          margin-start: 24;
+          margin-end: 24;
+          spacing: 24;
+          orientation: vertical;
+
+          Picture qr {
+            halign: center;
+
+            styles [
+              "br-9",
+            ]
+          }
+
+          Box title-1 {
+            halign: center;
+            orientation: vertical;
+            margin-start: 12;
+
+            Label {
+              label: "Scan with phone or go to";
+            }
+
+            LinkButton link {
+              styles [
+                "title-3",
+              ]
+            }
+          }
+
+          Box title-2 {
+            halign: center;
+            orientation: vertical;
+
+            Label {
+              label: "Enter the code";
+            }
+
+            Box {
+              spacing: 6;
+              halign: center;
+
+              Label code {
+                selectable: true;
+
+                styles [
+                  "title-3",
+                ]
+              }
+
+              Button button {
+                halign: center;
+                icon-name: "edit-copy-symbolic";
+                tooltip-text: "Copy authentication code";
+
+                styles [
+                  "flat",
+                ]
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

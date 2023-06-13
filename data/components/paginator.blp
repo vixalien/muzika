@@ -1,0 +1,33 @@
+using Gtk 4.0;
+
+template $Paginator : Revealer {
+  Box {
+    valign: start;
+    hexpand: true;
+    halign: center;
+    margin-top: 12;
+    margin-bottom: 12;
+    margin-start: 12;
+    margin-end: 12;
+
+    Stack stack {
+      visible-child: button;
+      transition-type: crossfade;
+
+      Button button {
+        styles [
+          "pill",
+        ]
+
+        label: "Load More";
+      }
+
+      [spinner]
+      Spinner spinner {
+        halign: center;
+        width-request: 30;
+        height-request: 30;
+      }
+    }
+  }
+}

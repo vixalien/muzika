@@ -1,0 +1,102 @@
+using Gtk 4.0;
+
+template $QueueItem : Box {
+  margin-top: 6;
+  margin-bottom: 6;
+  margin-start: 9;
+  margin-end: 9;
+  valign: center;
+
+  Box {
+    width-request: 320;
+    spacing: 12;
+    hexpand: true;
+    valign: center;
+
+    Overlay {
+      valign: start;
+
+      styles [
+        "image",
+      ]
+
+      overflow: hidden;
+
+      [overlay]
+      Button play_button {
+        halign: fill;
+        sensitive: false;
+        valign: fill;
+        hexpand: true;
+        vexpand: true;
+        icon-name: "media-playback-start-symbolic";
+
+        styles [
+          "osd",
+          "hover-child",
+          "focus-child",
+          "no-br",
+        ]
+      }
+
+      Box image_box {
+        styles [
+          "thumbnail",
+        ]
+
+        Image image {
+          icon-name: "image-missing-symbolic";
+          pixel-size: 48;
+          overflow: hidden;
+
+          styles [
+            "br-6",
+          ]
+        }
+      }
+    }
+
+    Box meta {
+      orientation: vertical;
+      valign: center;
+
+      Label title {
+        label: "";
+        hexpand: true;
+        max-width-chars: 1;
+        ellipsize: end;
+        lines: 2;
+        xalign: 0;
+        wrap: true;
+        wrap-mode: char;
+
+        styles [
+          "heading",
+        ]
+      }
+
+      Box second_line_scrolled {
+        halign: start;
+
+        FlowBox second_line {
+          halign: start;
+          min-children-per-line: 2;
+          max-children-per-line: 999;
+          selection-mode: none;
+          column-spacing: 3;
+
+          FlowBoxChild explicit_flowbox {
+            Image explicit {
+              valign: center;
+              icon-name: "network-cellular-edge-symbolic";
+
+              styles [
+                "dim-label",
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}

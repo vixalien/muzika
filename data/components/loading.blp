@@ -1,0 +1,16 @@
+using Gtk 4.0;
+
+template $Loading : Box {
+  visible: true;
+  hexpand: true;
+  vexpand: true;
+  halign: center;
+  margin-top: 32;
+  margin-bottom: 32;
+
+  Spinner {
+    width-request: 32;
+    height-request: 32;
+    spinning: true;
+  }
+}
