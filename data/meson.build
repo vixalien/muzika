@@ -12,8 +12,15 @@ if desktop_utils.found()
   test('Validate desktop file', desktop_utils, args: [desktop_file])
 endif
 
+appdata_conf = configuration_data()
+appdata_conf.set('app-id', 'com.vixalien.muzika')
+
 appstream_file = i18n.merge_file(
-        input: 'com.vixalien.muzika.appdata.xml.in',
+        input: configure_file(
+                  input: 'com.vixalien.muzika.appdata.xml.in.in',
+                 output: 'com.vixalien.muzika.appdata.xml.in',
+          configuration: appdata_conf
+        ),
        output: 'com.vixalien.muzika.appdata.xml',
        po_dir: '../po',
       install: true,
