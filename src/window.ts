@@ -190,7 +190,7 @@ export class Window extends Adw.ApplicationWindow {
       account.name,
       `navigator.visit("muzika:user:${account.channel_id}")`,
     );
-    const logout_item = Gio.MenuItem.new("Logout", "win.logout");
+    const logout_item = Gio.MenuItem.new(_("Logout"), "win.logout");
 
     menu.append_item(account_item);
     menu.append_item(logout_item);
@@ -199,9 +199,9 @@ export class Window extends Adw.ApplicationWindow {
   }
 
   logout() {
-    const dialog = Adw.MessageDialog.new(this, "Logout", "Are you sure?");
-    dialog.add_response("cancel", "Cancel");
-    dialog.add_response("logout", "Logout");
+    const dialog = Adw.MessageDialog.new(this, _("Logout"), _("Are you sure?"));
+    dialog.add_response("cancel", _("Cancel"));
+    dialog.add_response("logout", _("Logout"));
     dialog.default_response = "cancel";
     dialog.set_response_appearance(
       "logout",
@@ -236,7 +236,7 @@ export class Window extends Adw.ApplicationWindow {
 
     page.auth_flow(controller.signal)
       .then(() => {
-        this.add_toast("Successfully logged in!");
+        this.add_toast(_("Successfully logged in!"));
         this.navigator.reload();
       })
       .catch((error) => {
@@ -244,7 +244,7 @@ export class Window extends Adw.ApplicationWindow {
           return;
         }
 
-        this.add_toast("An error happened while logging in!");
+        this.add_toast(_("An error happened while logging in!"));
 
         console.log("an error happened while auth", error);
       })

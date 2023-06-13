@@ -30,10 +30,10 @@
                     </child>
                     <child>
                       <object class="AdwStatusPage" id="no_results">
-                        <property name="title">No Results</property>
+                        <property name="title" translatable="yes">No Results</property>
                         <property name="vexpand">true</property>
                         <property name="icon-name">system-search-symbolic</property>
-                        <property name="description">Try a different search</property>
+                        <property name="description" translatable="yes">Try a different search</property>
                       </object>
                     </child>
                   </object>

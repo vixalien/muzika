@@ -31,7 +31,7 @@
                 <property name="homogeneous">true</property>
                 <child>
                   <object class="GtkLabel" id="title">
-                    <property name="label">Title</property>
+                    <property name="label" translatable="yes">Title</property>
                     <property name="halign">1</property>
                     <property name="ellipsize">end</property>
                     <style>
@@ -41,7 +41,7 @@
                 </child>
                 <child>
                   <object class="GtkLabel" id="subtitle">
-                    <property name="label">Subtitle</property>
+                    <property name="label" translatable="yes">Subtitle</property>
                     <property name="halign">1</property>
                     <property name="ellipsize">end</property>
                   </object>
@@ -68,7 +68,7 @@
             <child>
               <object class="GtkToggleButton" id="shuffle_button">
                 <property name="icon-name">media-playlist-shuffle-symbolic</property>
-                <property name="tooltip-text">Toggle Shuffle</property>
+                <property name="tooltip-text" translatable="yes">Toggle Shuffle</property>
                 <property name="action-name">queue.toggle-shuffle</property>
                 <property name="valign">3</property>
                 <property name="margin-end">12</property>
@@ -81,7 +81,7 @@
             <child>
               <object class="GtkButton" id="prev_button">
                 <property name="icon-name">media-skip-backward-symbolic</property>
-                <property name="tooltip-text">Previous</property>
+                <property name="tooltip-text" translatable="yes">Previous</property>
                 <property name="action-name">player.previous</property>
                 <property name="valign">3</property>
                 <style>
@@ -91,7 +91,7 @@
             </child>
             <child>
               <object class="GtkButton" id="play_button">
-                <property name="tooltip-text">Play</property>
+                <property name="tooltip-text" translatable="yes">Play</property>
                 <property name="action-name">player.play-pause</property>
                 <style>
                   <class name="pill" />
@@ -107,7 +107,7 @@
             <child>
               <object class="GtkButton" id="next_button">
                 <property name="icon-name">media-skip-forward-symbolic</property>
-                <property name="tooltip-text">Next</property>
+                <property name="tooltip-text" translatable="yes">Next</property>
                 <property name="action-name">player.next</property>
                 <property name="valign">3</property>
                 <style>
@@ -118,7 +118,7 @@
             <child>
               <object class="GtkToggleButton" id="repeat_button">
                 <property name="icon-name">media-playlist-consecutive-symbolic</property>
-                <property name="tooltip-text">Toggle Repeat State</property>
+                <property name="tooltip-text" translatable="yes">Toggle Repeat State</property>
                 <property name="valign">3</property>
                 <property name="action-name">queue.toggle-repeat</property>
                 <property name="margin-start">12</property>
@@ -165,26 +165,26 @@
         <property name="margin-end">12</property>
         <child>
           <object class="GtkVolumeButton" id="volume_button">
-            <property name="tooltip-text">Adjust Volume</property>
+            <property name="tooltip-text" translatable="yes">Adjust Volume</property>
           </object>
         </child>
         <child>
           <object class="GtkToggleButton" id="queue_button">
-            <property name="tooltip-text">Show Queue</property>
+            <property name="tooltip-text" translatable="yes">Show Queue</property>
             <property name="icon-name">playlist2-symbolic</property>
           </object>
         </child>
         <child>
           <object class="GtkToggleButton" id="lyrics_button">
             <property name="group">queue_button</property>
-            <property name="tooltip-text">Show Lyrics</property>
+            <property name="tooltip-text" translatable="yes">Show Lyrics</property>
             <property name="icon-name">subtitles-symbolic</property>
           </object>
         </child>
         <child>
           <object class="GtkToggleButton" id="related_button">
             <property name="group">queue_button</property>
-            <property name="tooltip-text">Show Related songs</property>
+            <property name="tooltip-text" translatable="yes">Show Related songs</property>
             <property name="icon-name">navigate-symbolic</property>
           </object>
         </child>

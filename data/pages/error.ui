@@ -6,15 +6,15 @@
       <object class="AdwStatusPage" id="status">
         <property name="hexpand">true</property>
         <property name="icon-name">dialog-question-symbolic</property>
-        <property name="title">An error occurred</property>
-        <property name="description"></property>
+        <property name="description" translatable="yes"></property>
+        <property name="title" translatable="yes">An error occurred</property>
         <child>
           <object class="GtkBox" id="more">
             <property name="orientation">1</property>
             <property name="spacing">6</property>
             <child>
               <object class="GtkExpander" id="expander">
-                <property name="label">Details</property>
+                <property name="label" translatable="yes">Details</property>
                 <property name="halign">3</property>
               </object>
             </child>

@@ -71,7 +71,7 @@ export class LoginPage extends Adw.Window {
 
       this.get_clipboard().set(value);
 
-      this._toast_overlay.add_toast(Adw.Toast.new("Copied to clipboard"));
+      this._toast_overlay.add_toast(Adw.Toast.new(_("Copied to clipboard")));
     });
   }
 

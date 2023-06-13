@@ -42,7 +42,7 @@
                         <property name="spacing">6</property>
                         <child>
                           <object class="GtkLabel" id="trackCount">
-                            <property name="label">12 songs</property>
+                            <property name="label" translatable="yes">12 songs</property>
                           </object>
                         </child>
                         <child>
@@ -52,7 +52,7 @@
                         </child>
                         <child>
                           <object class="GtkLabel" id="duration">
-                            <property name="label">46 minutes</property>
+                            <property name="label" translatable="yes">46 minutes</property>
                           </object>
                         </child>
                       </object>

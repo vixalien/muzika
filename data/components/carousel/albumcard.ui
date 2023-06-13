@@ -88,7 +88,7 @@
                     <property name="spacing">6</property>
                     <child>
                       <object class="GtkLabel" id="album_type">
-                        <property name="label">Album</property>
+                        <property name="label" translatable="yes">Album</property>
                       </object>
                     </child>
                     <child>

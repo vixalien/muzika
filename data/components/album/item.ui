@@ -36,7 +36,7 @@
                 <property name="valign">3</property>
                 <child>
                   <object class="GtkLabel" id="title">
-                    <property name="label">Title</property>
+                    <property name="label" translatable="yes">Title</property>
                     <property name="hexpand">true</property>
                     <property name="valign">center</property>
                     <property name="max-width-chars">1</property>

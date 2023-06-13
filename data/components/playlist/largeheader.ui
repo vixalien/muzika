@@ -25,7 +25,7 @@
           <object class="AdwAvatar" id="avatar">
             <property name="valign">1</property>
             <property name="size">240</property>
-            <property name="text">Avatar</property>
+            <property name="text" translatable="yes">Avatar</property>
             <property name="visible">false</property>
             <style>
               <class name="br-9" />
@@ -44,7 +44,7 @@
                 <property name="orientation">1</property>
                 <child>
                   <object class="GtkLabel" id="title">
-                    <property name="label">Title</property>
+                    <property name="label" translatable="yes">Title</property>
                     <property name="xalign">0</property>
                     <property name="justify">0</property>
                     <style>
@@ -73,7 +73,7 @@
                 </child>
                 <child>
                   <object class="GtkLabel" id="genre">
-                    <property name="label">Single</property>
+                    <property name="label" translatable="yes">Single</property>
                     <property name="xalign">0</property>
                     <property name="justify">0</property>
                   </object>
@@ -85,7 +85,7 @@
                 </child>
                 <child>
                   <object class="GtkLabel" id="year">
-                    <property name="label">2022</property>
+                    <property name="label" translatable="yes">2022</property>
                     <property name="xalign">0</property>
                     <property name="justify">0</property>
                   </object>
@@ -122,7 +122,7 @@
             </child>
             <child>
               <object class="GtkExpander" id="more">
-                <property name="label">More</property>
+                <property name="label" translatable="yes">More</property>
                 <property name="margin-top">10</property>
                 <style>
                   <class name="inverted" />
@@ -137,7 +137,7 @@
                   <object class="GtkButton" id="shuffle">
                     <child>
                       <object class="AdwButtonContent">
-                        <property name="label">Shuffle</property>
+                        <property name="label" translatable="yes">Shuffle</property>
                         <property name="icon-name">media-playlist-shuffle-symbolic</property>
                       </object>
                     </child>
@@ -151,7 +151,7 @@
                   <object class="GtkToggleButton" id="add">
                     <child>
                       <object class="AdwButtonContent">
-                        <property name="label">Library</property>
+                        <property name="label" translatable="yes">Library</property>
                         <property name="icon-name">list-add-symbolic</property>
                       </object>
                     </child>

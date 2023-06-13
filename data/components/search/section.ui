@@ -12,7 +12,7 @@
         <property name="margin-bottom">6</property>
         <child>
           <object class="GtkLabel" id="title">
-            <property name="label">Songs</property>
+            <property name="label" translatable="yes">Songs</property>
             <style>
               <class name="title-3" />
             </style>
@@ -23,7 +23,7 @@
             <property name="visible">false</property>
             <property name="halign">2</property>
             <property name="hexpand">true</property>
-            <property name="label">More</property>
+            <property name="label" translatable="yes">More</property>
           </object>
         </child>
       </object>

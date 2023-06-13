@@ -53,7 +53,7 @@
             </child>
             <child>
               <object class="AdwAvatar" id="avatar">
-                <property name="text">After Hours</property>
+                <property name="text" translatable="yes">After Hours</property>
                 <property name="size">100</property>
               </object>
             </child>
@@ -66,7 +66,7 @@
             <property name="valign">3</property>
             <child>
               <object class="GtkLabel" id="title">
-                <property name="label">After Hours</property>
+                <property name="label" translatable="yes">After Hours</property>
                 <property name="hexpand">true</property>
                 <property name="max-width-chars">1</property>
                 <property name="ellipsize">3</property>
@@ -100,7 +100,7 @@
                     </style>
                     <child>
                       <object class="GtkLabel" id="type">
-                        <property name="label">Song</property>
+                        <property name="label" translatable="yes">Song</property>
                       </object>
                     </child>
                     <child>
@@ -135,7 +135,7 @@
                 <child>
                   <object class="AdwButtonContent" id="primary_content">
                     <property name="icon-name">media-playback-start-symbolic</property>
-                    <property name="label">Play</property>
+                    <property name="label" translatable="yes">Play</property>
                   </object>
                 </child>
               </object>
@@ -148,7 +148,7 @@
                 <child>
                   <object class="AdwButtonContent" id="secondary_content">
                     <property name="icon-name">media-playlist-shuffle-symbolic</property>
-                    <property name="label">Shuffle</property>
+                    <property name="label" translatable="yes">Shuffle</property>
                   </object>
                 </child>
               </object>
