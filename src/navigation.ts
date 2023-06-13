@@ -214,11 +214,10 @@ export class Navigator extends GObject.Object {
     if (url.searchParams.has("replace")) {
       this._view.animate_transitions = false;
       this._view.pop();
-      this._view.push(page);
     } else {
       this._view.animate_transitions = true;
-      this._view.push(page);
     }
+    this._view.push(page);
 
     let handle_error = (error: any) => {
       const error_page = this.prepare_error_page(error);
