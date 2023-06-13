@@ -174,11 +174,7 @@ export class MixedCard extends Gtk.ListBoxRow {
 
     this.show_type(false);
 
-    if (artist.subscribers) {
-      this.insert_only_text(artist.subscribers);
-    } else if (artist.songs) {
-      this.insert_only_text(artist.songs);
-    }
+    this.insert_only_text(artist.subscribers ?? artist.songs ?? "");
   }
 
   set_item(item: MixedCardItem) {
