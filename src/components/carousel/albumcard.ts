@@ -40,7 +40,7 @@ export class AlbumCard extends Gtk.Box {
   set_album(album: ParsedAlbum) {
     this.album = album;
 
-    this._title.set_label(album.title);
+    this._title.tooltip_text = this._title.label = album.title;
 
     const subtitle = album.artists[0]?.name ?? album.year;
 
