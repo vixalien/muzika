@@ -129,6 +129,13 @@ export class Window extends Adw.ApplicationWindow {
       }
     });
 
+    this._overlay_split_view.connect("notify::show-sidebar", () => {
+      console.log("show-sidebar", this._overlay_split_view.show_sidebar);
+      if (!this._overlay_split_view.show_sidebar) {
+        this.player_view.deselect_buttons();
+      }
+    });
+
     this._overlay_split_view.sidebar = this.sidebar;
 
     const navbar = new NavbarView(this);
