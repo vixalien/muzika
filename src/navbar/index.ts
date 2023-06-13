@@ -85,9 +85,11 @@ export class NavbarView extends Gtk.Box {
 
     get_option("auth").addEventListener("token-changed", () => {
       this.update_buttons();
+      this.update_playlists();
     });
 
     this.update_buttons();
+    this.update_playlists();
   }
 
   update_buttons() {
@@ -101,8 +103,6 @@ export class NavbarView extends Gtk.Box {
         }
       }
     });
-
-    this.update_playlists();
   }
 
   clear_playlists() {

@@ -35,6 +35,11 @@
                     <property name="hexpand">false</property>
                     <child type="top">
                       <object class="AdwHeaderBar" id="nav_header_bar">
+                        <child type="start">
+                          <object class="GtkMenuButton" id="account">
+                            <property name="icon-name">avatar-default-symbolic</property>
+                          </object>
+                        </child>
                         <property name="title-widget">
                           <object class="GtkLabel">
                             <property name="label">Muzika</property>
@@ -107,6 +112,10 @@
       <item>
         <attribute name="label" translatable="true">_Keyboard Shortcuts</attribute>
         <attribute name="action">win.show-help-overlay</attribute>
+      </item>
+      <item>
+        <attribute name="label" translatable="true">Log In</attribute>
+        <attribute name="action">win.login</attribute>
       </item>
       <item>
         <attribute name="label" translatable="true">_About Muzika</attribute>
