@@ -81,6 +81,10 @@
                 <property name="hexpand">true</property>
                 <property name="propagate-natural-height">true</property>
                 <property name="vscrollbar-policy">2</property>
+                <style>
+                  <class name="undershoot-start" />
+                  <class name="undershoot-end" />
+                </style>
                 <child>
                   <object class="GtkListView" id="list_view">
                     <property name="orientation">0</property>
@@ -99,6 +103,10 @@
                 <property name="hexpand">true</property>
                 <property name="propagate-natural-height">true</property>
                 <property name="vscrollbar-policy">2</property>
+                <style>
+                  <class name="undershoot-start" />
+                  <class name="undershoot-end" />
+                </style>
                 <child>
                   <object class="GtkGridView" id="grid_view">
                     <property name="margin-bottom">24</property>
