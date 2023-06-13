@@ -4,10 +4,10 @@ import Gtk from "gi://Gtk?version=4.0";
 
 import { match, MatchFunction } from "path-to-regexp";
 
-import { Window } from "../window";
+import { get_library_playlists, get_option } from "../../muse";
+import { Window } from "../../window";
 import { NavbarButton } from "./button";
 import { NavbarSection } from "./section";
-import { get_library_playlists, get_option } from "../muse";
 
 NavbarSection;
 
