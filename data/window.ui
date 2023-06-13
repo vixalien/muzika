@@ -23,6 +23,7 @@
     </child>
     <child>
       <object class="AdwToolbarView" id="toolbar_view">
+        <property name="bottom-bar-style">raised</property>
         <property name="content">
           <object class="AdwNavigationSplitView" id="split_view">
             <property name="min-sidebar-width">250</property>
