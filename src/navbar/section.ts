@@ -65,11 +65,9 @@ export class NavbarSection extends Gtk.Box {
     if (child instanceof Gtk.Widget) {
       if (this.items) {
         this.items.append(child as Gtk.Widget);
-      } else {
-        super.vfunc_add_child(_builder, child, type);
+        return;
       }
-    } else {
-      super.vfunc_add_child(_builder, child, type);
     }
+    super.vfunc_add_child(_builder, child, type);
   }
 }
