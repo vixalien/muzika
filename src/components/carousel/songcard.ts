@@ -85,8 +85,8 @@ export class SongCard extends Gtk.Box {
   set_song(song: ParsedSong) {
     this.song = song;
 
-    this._title.set_label(song.title);
-    this._subtitle.set_label(song.artists[0].name);
+    this._title.tooltip_text = this._title.label = song.title;
+    this._subtitle.tooltip_text = this._subtitle.label = song.artists[0].name;
     this._explicit.set_visible(song.isExplicit);
 
     load_thumbnails(this._dynamic_image.image, song.thumbnails, 160);

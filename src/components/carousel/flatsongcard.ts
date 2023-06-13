@@ -104,7 +104,7 @@ export class FlatSongCard extends Gtk.Box {
   set_song(song: FlatSong) {
     this.song = song;
 
-    this._title.set_label(song.title);
+    this._title.tooltip_text = this._title.label = song.title;
 
     if (song.artists && song.artists.length > 0) {
       song.artists.map((artist) => {

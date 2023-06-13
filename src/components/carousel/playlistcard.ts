@@ -43,8 +43,10 @@ export class PlaylistCard extends Gtk.Box {
       playlist.playlistId,
     );
 
-    this._title.set_label(playlist.title);
-    this._description_label.set_label(playlist.description ?? "");
+    this._title.tooltip_text = this._title.label = playlist.title;
+    this._description_label.tooltip_text =
+      this._description_label.label =
+        playlist.description ?? "";
 
     load_thumbnails(this._image, playlist.thumbnails, 160);
   }
