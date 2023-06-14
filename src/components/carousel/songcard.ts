@@ -95,7 +95,7 @@ export class SongCard extends Gtk.Box {
     this._popover.set_menu_model(this.build_menu());
 
     if (song.videoId) {
-      this._dynamic_image.setup_listeners(song.videoId);
+      this._dynamic_image.setup_video(song.videoId);
     } else {
       this._dynamic_image.reset_listeners();
     }

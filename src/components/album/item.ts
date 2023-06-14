@@ -118,6 +118,6 @@ export class AlbumItemCard extends Gtk.ListBoxRow {
 
     this._explicit.set_visible(item.isExplicit);
 
-    this.dynamic_image.setup_listeners(item.videoId, playlistId);
+    this.dynamic_image.setup_video(item.videoId, playlistId);
   }
 }

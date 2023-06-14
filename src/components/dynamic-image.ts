@@ -320,7 +320,7 @@ export class DynamicImage extends Gtk.Overlay {
   videoId: string | null = null;
   playlistId: string | null = null;
 
-  setup_listeners(videoId: string, playlistId: string | null = null) {
+  setup_video(videoId: string, playlistId: string | null = null) {
     this.videoId = videoId;
     this.playlistId = playlistId;
 
@@ -334,7 +334,7 @@ export class DynamicImage extends Gtk.Overlay {
 
     if (!player) {
       this.map_listener = this.connect("map", () => {
-        this.setup_listeners(videoId, playlistId);
+        this.setup_video(videoId, playlistId);
       });
       return;
     }
@@ -400,6 +400,89 @@ export class DynamicImage extends Gtk.Overlay {
         this.state = DynamicImageState.PAUSED;
       }),
       player.connect(`stop-playback::${videoId}`, () => {
+        this.state = DynamicImageState.DEFAULT;
+      }),
+    ]);
+  }
+
+  setup_playlist(playlistId: string) {
+    this.playlistId = playlistId;
+
+    if (this.map_listener != null) {
+      this.disconnect(this.map_listener);
+    }
+
+    this.reset_listeners();
+
+    const player = this.get_player();
+
+    if (!player) {
+      this.map_listener = this.connect("map", () => {
+        this.setup_playlist(playlistId);
+      });
+      return;
+    }
+
+    if (!this.setup_button) {
+      this._play.connect("clicked", () => {
+        this.emit("play");
+
+        if (
+          player.current_meta?.item?.settings.playlistId === this.playlistId
+        ) {
+          player.play();
+        } else if (this.playlistId) {
+          this.state = DynamicImageState.LOADING;
+          player.queue.play_playlist(this.playlistId);
+        }
+      });
+
+      this._pause.connect("clicked", () => {
+        if (
+          player.current_meta?.item?.settings.playlistId === this.playlistId
+        ) {
+          player.pause();
+        }
+      });
+
+      this.setup_button = true;
+    }
+
+    // if the playlist is already playing, we need to update the state
+    if (
+      player.current_meta?.item?.settings.playlistId === this.playlistId
+    ) {
+      if (player.playing) {
+        this.state = DynamicImageState.PLAYING;
+        this.emit("play");
+      } else {
+        this.state = DynamicImageState.PAUSED;
+        this.emit("pause");
+      }
+    }
+
+    this.listeners.push(...[
+      player.connect(`start-loading::playlist::${playlistId}`, () => {
+        this.state = DynamicImageState.LOADING;
+        this.emit("play");
+      }),
+      player.connect(`stop-loading::playlist::${playlistId}`, () => {
+        if (
+          player.current_meta?.item?.settings.playlistId === this.playlistId &&
+          player.playing
+        ) {
+          this.state = DynamicImageState.PLAYING;
+        } else {
+          this.state = DynamicImageState.PAUSED;
+        }
+      }),
+      player.connect(`start-playback::playlist::${playlistId}`, () => {
+        this.state = DynamicImageState.PLAYING;
+      }),
+      player.connect(`pause-playback::playlist::${playlistId}`, () => {
+        this.state = DynamicImageState.PAUSED;
+      }),
+      player.connect(`stop-playback::playlist::${playlistId}`, () => {
         this.state = DynamicImageState.DEFAULT;
       }),
     ]);

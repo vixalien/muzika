@@ -152,11 +152,14 @@ export class Player extends GObject.Object {
     this.notify("playing");
 
     const id = this.current_meta?.item?.track.videoId;
+    const playlist = this.current_meta?.item?.settings.playlistId;
     if (id) {
       if (this.playing) {
         this.emit(`start-playback::${id}`);
+        if (playlist) this.emit(`start-playback::playlist::${playlist}`);
       } else {
         this.emit(`pause-playback::${id}`);
+        if (playlist) this.emit(`pause-playback::playlist::${playlist}`);
       }
     }
   }
@@ -247,7 +250,10 @@ export class Player extends GObject.Object {
 
     this.queue.connect("notify::current", () => {
       this._last_position = 0;
-      this.change_current_track(this.queue.current?.item ?? null)
+      this.change_current_track(
+        this.queue.current?.item ?? null,
+        this.queue.settings?.playlistId ?? null,
+      )
         .catch((e) => {
           console.log("caught error", e);
         });
@@ -461,13 +467,18 @@ export class Player extends GObject.Object {
 
   private seek_to: number | null = null;
 
-  async change_current_track(track: QueueTrack | null) {
+  async change_current_track(
+    track: QueueTrack | null,
+    playlistId: string | null = null,
+  ) {
     this.playbin.set_state(Gst.State.NULL);
 
     const current = this.current_meta?.item?.track.videoId;
+    const current_playlist = this.current_meta?.item?.settings.playlistId;
 
     if (current) {
       this.emit(`stop-playback::${current}`);
+      this.emit(`stop-playback::playlist::${current_playlist}`);
     }
 
     if (!track) {
@@ -477,6 +488,7 @@ export class Player extends GObject.Object {
     this.buffering = true;
 
     this.emit(`start-loading::${track.videoId}`);
+    this.emit(`start-loading::playlist::${playlistId}`);
 
     const [song, settings] = await Promise.all([
       this.get_song(track.videoId),
@@ -494,6 +506,7 @@ export class Player extends GObject.Object {
     this.notify("current-meta");
 
     this.emit(`stop-loading::${track.videoId}`);
+    this.emit(`stop-loading::playlist::${playlistId}`);
 
     this.playbin.set_state(Gst.State.NULL);
     this.playbin.set_property("uri", format.url);

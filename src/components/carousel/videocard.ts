@@ -49,7 +49,7 @@ export class VideoCard extends Gtk.Box {
     load_thumbnails(this._dynamic_image.picture, video.thumbnails, 160);
 
     if (video.videoId) {
-      this._dynamic_image.setup_listeners(video.videoId);
+      this._dynamic_image.setup_video(video.videoId);
     } else {
       this._dynamic_image.reset_listeners();
     }
@@ -66,7 +66,7 @@ export class VideoCard extends Gtk.Box {
     load_thumbnails(this._dynamic_image.picture, video.thumbnails, 160);
 
     if (video.videoId) {
-      this._dynamic_image.setup_listeners(video.videoId);
+      this._dynamic_image.setup_video(video.videoId);
     } else {
       this._dynamic_image.reset_listeners();
     }

@@ -143,6 +143,6 @@ export class PlaylistItemCard extends Gtk.ListBoxRow {
 
     load_thumbnails(this.dynamic_image.image, item.thumbnails, 48);
 
-    this.dynamic_image.setup_listeners(item.videoId, playlistId);
+    this.dynamic_image.setup_video(item.videoId, playlistId);
   }
 }
