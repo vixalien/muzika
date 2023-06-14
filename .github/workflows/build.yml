@@ -27,3 +27,5 @@ jobs:
           cache: true
           restore-cache: true
           cache-key: flatpak-builder-${{ github.workflow_sha }}
+          repository-name: gnome-nightly
+          repository-url: https://nightly.gnome.org/gnome-nightly.flatpakrepo
