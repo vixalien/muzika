@@ -41,7 +41,7 @@ export class VideoCard extends Gtk.Box {
   set_video(video: ParsedVideo) {
     this.video = video;
 
-    this._title.set_label(video.title);
+    this._title.tooltip_text = this._title.label = video.title;
     this._subtitle.set_label(video.views ?? "");
     this._explicit.set_visible(false);
     this._channel.set_label(video.artists?.[0].name ?? "Video");
@@ -58,7 +58,7 @@ export class VideoCard extends Gtk.Box {
   set_inline_video(video: ParsedSong) {
     this.video = video;
 
-    this._title.set_label(video.title);
+    this._title.tooltip_text = this._title.label = video.title;
     this._subtitle.set_label(video.views ?? "");
     this._explicit.set_visible(video.isExplicit);
     this._channel.set_label(video.artists[0].name ?? "");
