@@ -45,6 +45,11 @@
                         </child>
                         <child>
                           <object class="GtkButton" id="playlist_button">
+                            <property name="cursor">
+                              <object class="GdkCursor">
+                                <property name="name">pointer</property>
+                              </object>
+                            </property>
                             <style>
                               <class name="inline" />
                               <class name="link" />
