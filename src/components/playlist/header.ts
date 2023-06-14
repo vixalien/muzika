@@ -1,4 +1,5 @@
 import Gtk from "gi://Gtk?version=4.0";
+import Gdk from "gi://Gdk?version=4.0";
 import GObject from "gi://GObject";
 import Adw from "gi://Adw";
 import GLib from "gi://GLib";
@@ -274,6 +275,7 @@ export class PlaylistHeader extends Gtk.Box {
               ),
             }
             : {}),
+          cursor: Gdk.Cursor.new_from_name("pointer", null),
         }),
         separator: new Gtk.Label({
           label: "·",
