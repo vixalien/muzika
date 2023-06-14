@@ -21,11 +21,12 @@
     <file preprocess="xml-stripblanks">components/navbar/index.ui</file>
     <file preprocess="xml-stripblanks">components/navbar/section.ui</file>
     <file preprocess="xml-stripblanks">components/navbar/title.ui</file>
+    <file preprocess="xml-stripblanks">components/player/full.ui</file>
     <file preprocess="xml-stripblanks">components/player/lyrics.ui</file>
+    <file preprocess="xml-stripblanks">components/player/mini.ui</file>
     <file preprocess="xml-stripblanks">components/player/queue.ui</file>
     <file preprocess="xml-stripblanks">components/player/queueitem.ui</file>
     <file preprocess="xml-stripblanks">components/player/related.ui</file>
-    <file preprocess="xml-stripblanks">components/player/view.ui</file>
     <file preprocess="xml-stripblanks">components/playlist/largeheader.ui</file>
     <file preprocess="xml-stripblanks">components/playlist/miniheader.ui</file>
     <file preprocess="xml-stripblanks">components/playlist/item.ui</file>

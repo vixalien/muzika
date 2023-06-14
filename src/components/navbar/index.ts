@@ -1,6 +1,7 @@
 import GLib from "gi://GLib";
 import GObject from "gi://GObject";
 import Gtk from "gi://Gtk?version=4.0";
+import Adw from "gi://Adw";
 
 import { match, MatchFunction } from "path-to-regexp";
 
@@ -40,7 +41,7 @@ export class NavbarView extends Gtk.Box {
   button_map = new Map<MatchFunction, NavbarButton>();
   playlists = new Map<MatchFunction, NavbarButton>();
 
-  constructor(window: Window) {
+  constructor(window: Window, view: Adw.NavigationSplitView) {
     super();
 
     this.window = window;
@@ -58,6 +59,13 @@ export class NavbarView extends Gtk.Box {
       if (!(child instanceof NavbarButton)) return;
 
       if (!child.link) return;
+
+      const is_navbar_hidden = view.collapsed && !view.show_content;
+
+      if (is_navbar_hidden && window.navigator.current_uri === child.link) {
+        // just close the navbar
+        return this.emit("activated", child.link);
+      }
 
       this.activate_action(
         "navigator.visit",

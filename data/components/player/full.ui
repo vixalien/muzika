@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <interface>
   <requires lib="gtk" version="4.0" />
-  <template class="PlayerView" parent="GtkActionBar">
+  <template class="FullPlayerView" parent="GtkActionBar">
     <child type="start">
       <object class="GtkBox">
         <child>
@@ -29,6 +29,7 @@
                 <property name="spacing">3</property>
                 <property name="valign">3</property>
                 <property name="homogeneous">true</property>
+                <property name="width-request">100</property>
                 <child>
                   <object class="GtkLabel" id="title">
                     <property name="label">Title</property>

@@ -30,7 +30,6 @@ import GLib from "gi://GLib";
 import Gio from "gi://Gio";
 
 import { Navigator } from "./navigation.js";
-import { PlayerView } from "./components/player/view.js";
 import { Application } from "./application.js";
 import {
   PlayerSidebar,
@@ -41,6 +40,7 @@ import { LoginPage } from "./pages/login.js";
 import { AddActionEntries } from "./util/action.js";
 import { NavbarView } from "./components/navbar/index.js";
 import { get_current_user, get_option } from "libmuse";
+import { PlayerView } from "./components/player/view.js";
 
 // make sure to first register PlayerSidebar
 PlayerSidebar;
@@ -122,7 +122,7 @@ export class Window extends Adw.ApplicationWindow {
       player: application.player,
     });
 
-    this.player_view.connect("sidebar-button-clicked", (_, view) => {
+    this.player_view.full.connect("sidebar-button-clicked", (_, view) => {
       this._overlay_split_view.show_sidebar = view !== PlayerSidebarView.NONE;
       if (view !== PlayerSidebarView.NONE) {
         this.sidebar.show_view(view);
@@ -131,13 +131,13 @@ export class Window extends Adw.ApplicationWindow {
 
     this._overlay_split_view.connect("notify::show-sidebar", () => {
       if (!this._overlay_split_view.show_sidebar) {
-        this.player_view.deselect_buttons();
+        this.player_view.full.deselect_buttons();
       }
     });
 
     this._overlay_split_view.sidebar = this.sidebar;
 
-    const navbar = new NavbarView(this);
+    const navbar = new NavbarView(this, this._split_view);
     navbar.connect("activated", () => {
       this._split_view.show_content = true;
     });
