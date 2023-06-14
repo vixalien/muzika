@@ -11,6 +11,7 @@
     <file preprocess="xml-stripblanks">components/carousel/playlistcard.ui</file>
     <file preprocess="xml-stripblanks">components/carousel/songcard.ui</file>
     <file preprocess="xml-stripblanks">components/carousel/videocard.ui</file>
+    <file preprocess="xml-stripblanks">components/carousel/watchplaylistcard.ui</file>
     <file preprocess="xml-stripblanks">components/library/history.ui</file>
     <file preprocess="xml-stripblanks">components/library/mixedcard.ui</file>
     <file preprocess="xml-stripblanks">components/library/songs.ui</file>

@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+  <requires lib="gtk" version="4.0" />
+  <template class="WatchPlaylistCard" parent="GtkBox">
+    <property name="valign">start</property>
+    <child>
+      <object class="GtkBox">
+        <property name="orientation">vertical</property>
+        <property name="hexpand">false</property>
+        <property name="spacing">6</property>
+        <child>
+          <object class="DynamicImage" id="dynamic_image">
+          </object>
+        </child>
+        <child>
+          <object class="GtkBox" id="meta">
+            <property name="orientation">vertical</property>
+            <property name="spacing">3</property>
+            <child>
+              <object class="GtkLabel" id="title">
+                <property name="label"></property>
+                <property name="hexpand">true</property>
+                <property name="max-width-chars">1</property>
+                <property name="ellipsize">end</property>
+                <property name="xalign">0</property>
+                <property name="wrap">true</property>
+                <property name="wrap-mode">char</property>
+                <style>
+                  <class name="heading" />
+                </style>
+              </object>
+            </child>
+            <child>
+              <object class="GtkBox" id="second-line">
+                <property name="spacing">6</property>
+                <style>
+                  <class name="dim-label" />
+                </style>
+                <child>
+                  <object class="GtkBox" id="subtitle_box">
+                    <property name="spacing">6</property>
+                    <child>
+                      <object class="GtkLabel" id="subtitle">
+                        <property name="label"></property>
+                        <property name="hexpand">true</property>
+                        <property name="max-width-chars">1</property>
+                        <property name="ellipsize">end</property>
+                        <property name="xalign">0</property>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+              </object>
+            </child>
+          </object>
+        </child>
+      </object>
+    </child>
+  </template>
+</interface>

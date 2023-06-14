@@ -116,6 +116,8 @@ export class DynamicImage extends Gtk.Overlay {
   }
 
   set state(state: DynamicImageState) {
+    if (this._state === state) return;
+
     this._state = state;
     this.update_stack(this.controller.contains_pointer);
   }
@@ -427,9 +429,7 @@ export class DynamicImage extends Gtk.Overlay {
       this._play.connect("clicked", () => {
         this.emit("play");
 
-        if (
-          player.current_meta?.item?.settings.playlistId === this.playlistId
-        ) {
+        if (player.current_meta?.item?.track.playlist === this.playlistId) {
           player.play();
         } else if (this.playlistId) {
           this.state = DynamicImageState.LOADING;
@@ -438,9 +438,7 @@ export class DynamicImage extends Gtk.Overlay {
       });
 
       this._pause.connect("clicked", () => {
-        if (
-          player.current_meta?.item?.settings.playlistId === this.playlistId
-        ) {
+        if (player.current_meta?.item?.track.playlist === this.playlistId) {
           player.pause();
         }
       });
@@ -450,7 +448,7 @@ export class DynamicImage extends Gtk.Overlay {
 
     // if the playlist is already playing, we need to update the state
     if (
-      player.current_meta?.item?.settings.playlistId === this.playlistId
+      player.current_meta?.item?.track.playlist === this.playlistId
     ) {
       if (player.playing) {
         this.state = DynamicImageState.PLAYING;
@@ -468,7 +466,7 @@ export class DynamicImage extends Gtk.Overlay {
       }),
       player.connect(`stop-loading::playlist::${playlistId}`, () => {
         if (
-          player.current_meta?.item?.settings.playlistId === this.playlistId &&
+          player.current_meta?.item?.track.playlist === this.playlistId &&
           player.playing
         ) {
           this.state = DynamicImageState.PLAYING;

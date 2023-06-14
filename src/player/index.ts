@@ -5,9 +5,13 @@ import GLib from "gi://GLib";
 
 import { debounce } from "lodash-es";
 
-import type { QueueTrack } from "libmuse/types/parsers/queue.js";
-
-import { Queue, QueueSettings, RepeatMode } from "./queue.js";
+import {
+  Queue,
+  QueueMeta,
+  QueueSettings,
+  RepeatMode,
+  tracks_to_meta,
+} from "./queue.js";
 import {
   add_history_item,
   AudioFormat,
@@ -30,7 +34,7 @@ type MaybeAdaptiveFormat = AudioFormat & {
 export type TrackMetadata = {
   song: Song;
   format: MaybeAdaptiveFormat;
-  track: QueueTrack;
+  track: QueueMeta;
   settings: QueueSettings;
 };
 
@@ -152,7 +156,8 @@ export class Player extends GObject.Object {
     this.notify("playing");
 
     const id = this.current_meta?.item?.track.videoId;
-    const playlist = this.current_meta?.item?.settings.playlistId;
+    const playlist = this.current_meta?.item?.track.playlist;
+
     if (id) {
       if (this.playing) {
         this.emit(`start-playback::${id}`);
@@ -250,10 +255,7 @@ export class Player extends GObject.Object {
 
     this.queue.connect("notify::current", () => {
       this._last_position = 0;
-      this.change_current_track(
-        this.queue.current?.item ?? null,
-        this.queue.settings?.playlistId ?? null,
-      )
+      this.change_current_track(this.queue.current?.item ?? null)
         .catch((e) => {
           console.log("caught error", e);
         });
@@ -468,27 +470,29 @@ export class Player extends GObject.Object {
   private seek_to: number | null = null;
 
   async change_current_track(
-    track: QueueTrack | null,
-    playlistId: string | null = null,
+    track: QueueMeta | null,
   ) {
     this.playbin.set_state(Gst.State.NULL);
 
     const current = this.current_meta?.item?.track.videoId;
-    const current_playlist = this.current_meta?.item?.settings.playlistId;
-
-    if (current) {
-      this.emit(`stop-playback::${current}`);
-      this.emit(`stop-playback::playlist::${current_playlist}`);
-    }
+    const playlist = this.current_meta?.item?.track.playlist ?? null;
 
     if (!track) {
       return;
+    }
+    if (current) {
+      this.emit(`stop-playback::${current}`);
+      if (playlist && playlist !== track.playlist) {
+        this.emit(`stop-playback::playlist::${playlist}`);
+      }
     }
 
     this.buffering = true;
 
     this.emit(`start-loading::${track.videoId}`);
-    this.emit(`start-loading::playlist::${playlistId}`);
+    if (playlist && playlist != track.playlist) {
+      this.emit(`start-loading::playlist::${track.playlist}`);
+    }
 
     const [song, settings] = await Promise.all([
       this.get_song(track.videoId),
@@ -497,7 +501,7 @@ export class Player extends GObject.Object {
 
     const format = this.negotiate_best_format(song);
 
-    this._current_meta = ObjectContainer.new({
+    this._current_meta = ObjectContainer.new<TrackMetadata>({
       song,
       track,
       format,
@@ -506,7 +510,7 @@ export class Player extends GObject.Object {
     this.notify("current-meta");
 
     this.emit(`stop-loading::${track.videoId}`);
-    this.emit(`stop-loading::playlist::${playlistId}`);
+    this.emit(`stop-loading::playlist::${track.playlist}`);
 
     this.playbin.set_state(Gst.State.NULL);
     this.playbin.set_property("uri", format.url);
@@ -713,12 +717,14 @@ export class Player extends GObject.Object {
     await Promise.all([
       this.queue.get_tracklist(state.tracks)
         .then((tracks) => {
-          this.queue.add(tracks, state.position ?? undefined);
+          this.queue.add(tracks_to_meta(tracks), state.position ?? undefined);
         }),
       this.queue.get_tracklist(state.original)
         .then((tracks) =>
           tracks.forEach((track) =>
-            this.queue._original.append(ObjectContainer.new(track))
+            this.queue._original.append(
+              ObjectContainer.new({ ...track, playlist: null }),
+            )
           )
         ),
     ]);

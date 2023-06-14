@@ -1,4 +1,4 @@
-import Soup from "gi://Soup?version=3.0";
+import Soup from "gi://Soup";
 import GLib from "gi://GLib";
 import Gio from "gi://Gio";
 
@@ -20,23 +20,6 @@ Gio._promisify(
   "read_bytes_async",
   "read_bytes_finish",
 );
-
-export function promiseTask(
-  object: any,
-  method: any,
-  finish: any,
-  ...args: any[]
-) {
-  return new Promise((resolve, reject) => {
-    object[method](...args, (self: any, asyncResult: any) => {
-      try {
-        resolve(object[finish](asyncResult));
-      } catch (err) {
-        reject(err);
-      }
-    });
-  });
-}
 
 export interface FetchOptions {
   body?: string | Uint8Array;

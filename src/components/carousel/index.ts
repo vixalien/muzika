@@ -14,6 +14,7 @@ import { PlaylistCard } from "./playlistcard.js";
 import { SongCard } from "./songcard.js";
 import { VideoCard } from "./videocard.js";
 import { ObjectContainer } from "src/util/objectcontainer.js";
+import { WatchPlaylistCard } from "./watchplaylistcard.js";
 
 export type RequiredMixedItem = NonNullable<MixedItem>;
 
@@ -191,9 +192,14 @@ export class Carousel<
           card = new PlaylistCard();
           card.set_playlist(item);
           break;
+        case "channel":
         case "artist":
           card = new ArtistCard();
           card.set_artist(item);
+          break;
+        case "watch-playlist":
+          card = new WatchPlaylistCard();
+          card.set_watch_playlist(item);
           break;
         default:
           console.warn("Invalid item in carousel", item.type);

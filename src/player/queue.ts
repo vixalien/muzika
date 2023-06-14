@@ -22,6 +22,10 @@ export enum RepeatMode {
   ONE = 2,
 }
 
+export interface QueueMeta extends QueueTrack {
+  playlist: string | null;
+}
+
 // Durstenfeld's modification of Fisher-Yates shuffle
 function durstenfeld_shuffle<T extends any>(array: T[]) {
   for (let i = array.length - 1; i > 0; i--) {
@@ -118,10 +122,10 @@ export class Queue extends GObject.Object {
     }, this);
   }
 
-  private _list: Gio.ListStore<ObjectContainer<QueueTrack>> = new Gio
+  private _list: Gio.ListStore<ObjectContainer<QueueMeta>> = new Gio
     .ListStore();
   // original is used to store unshuffled list
-  _original: Gio.ListStore<ObjectContainer<QueueTrack>> = new Gio
+  _original: Gio.ListStore<ObjectContainer<QueueMeta>> = new Gio
     .ListStore();
 
   get list() {
@@ -265,8 +269,8 @@ export class Queue extends GObject.Object {
   /**
    * A helper to turn a `Gio.ListStore` into an array
    */
-  _get_items(list: Gio.ListStore<ObjectContainer<QueueTrack>>) {
-    const items: ObjectContainer<QueueTrack>[] = [];
+  _get_items(list: Gio.ListStore<ObjectContainer<QueueMeta>>) {
+    const items: ObjectContainer<QueueMeta>[] = [];
 
     for (let i = 0; i < list.n_items; i++) {
       const item = list.get_item(i);
@@ -481,7 +485,8 @@ export class Queue extends GObject.Object {
         this.list.splice(
           this.position + 1,
           this.list.n_items - this.position - 1,
-          queue.tracks.map((track) => ObjectContainer.new(track)),
+          tracks_to_meta(queue.tracks, found_chip.playlistId)
+            .map((track) => ObjectContainer.new(track)),
         );
 
         this.active_chip = chip;
@@ -509,9 +514,12 @@ export class Queue extends GObject.Object {
     }
 
     if (options.next) {
-      this.play_next(queue.tracks, queue.current?.index);
+      this.play_next(
+        tracks_to_meta(queue.tracks, playlist_id),
+        queue.current?.index,
+      );
     } else {
-      this.add(queue.tracks, queue.current?.index);
+      this.add(tracks_to_meta(queue.tracks, playlist_id), queue.current?.index);
     }
 
     if (options.play) {
@@ -547,9 +555,9 @@ export class Queue extends GObject.Object {
     }
 
     if (options.next) {
-      this.play_next(tracks);
+      this.play_next(tracks_to_meta(tracks));
     } else {
-      this.add(tracks);
+      this.add(tracks_to_meta(tracks));
     }
 
     if (first_track_options) {
@@ -661,7 +669,7 @@ export class Queue extends GObject.Object {
   }
 
   private add_to_queue_at_position(
-    tracks: QueueTrack[],
+    tracks: QueueMeta[],
     position: number,
     new_position?: number,
   ) {
@@ -691,12 +699,23 @@ export class Queue extends GObject.Object {
     }
   }
 
-  private play_next(tracks: QueueTrack[], new_position?: number) {
-    this.add_to_queue_at_position(tracks, this.position + 1, new_position);
+  private play_next(
+    tracks: QueueMeta[],
+    new_position?: number,
+  ) {
+    this.add_to_queue_at_position(
+      tracks,
+      this.position + 1,
+      new_position,
+    );
   }
 
-  add(tracks: QueueTrack[], new_position?: number) {
-    this.add_to_queue_at_position(tracks, this.list.n_items, new_position);
+  add(tracks: QueueMeta[], new_position?: number) {
+    this.add_to_queue_at_position(
+      tracks,
+      this.list.n_items,
+      new_position,
+    );
   }
 }
 
@@ -724,4 +743,11 @@ function _omit<Object extends Record<string, any>, Key extends keyof Object>(
     delete new_object[key];
   }
   return new_object;
+}
+
+export function tracks_to_meta(
+  tracks: QueueTrack[],
+  playlist: string | null = null,
+): QueueMeta[] {
+  return tracks.map((track) => ({ ...track, playlist }));
 }
