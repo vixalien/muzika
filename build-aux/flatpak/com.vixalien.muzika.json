@@ -1,7 +1,7 @@
 {
   "id": "com.vixalien.muzika",
   "runtime": "org.gnome.Platform",
-  "runtime-version": "44",
+  "runtime-version": "master",
   "sdk": "org.gnome.Sdk",
   "sdk-extensions": [
     "org.freedesktop.Sdk.Extension.node18"
@@ -33,127 +33,9 @@
     "/share/pkgconfig",
     "*.la",
     "*.a",
-    "/yarn-mirror",
-    "/sfjgsdfksdf"
+    "/yarn-mirror"
   ],
   "modules": [
-    {
-      "name": "libadwaita",
-      "buildsystem": "meson",
-      "config-opts": [
-        "-Dvapi=false",
-        "-Dtests=false",
-        "-Dexamples=false"
-      ],
-      "sources": [
-        {
-          "type": "git",
-          "url": "https://gitlab.gnome.org/GNOME/libadwaita.git",
-          "commit": "daeb5a6b78a8530b78f7d495deb02f4e97f26e7b"
-        }
-      ],
-      "modules": [
-        {
-          "name": "appstream",
-          "buildsystem": "meson",
-          "config-opts": [
-            "-Dstemming=false",
-            "-Dgir=false",
-            "-Ddocs=false"
-          ],
-          "cleanup": [
-            "/bin/*",
-            "/etc/*",
-            "/share/metainfo"
-          ],
-          "sources": [
-            {
-              "type": "git",
-              "url": "https://github.com/ximion/appstream.git",
-              "commit": "97ef3461be9027fddca1af8c6ee4c1266a0ca185"
-            }
-          ],
-          "modules": [
-            {
-              "name": "libyaml",
-              "sources": [
-                {
-                  "type": "git",
-                  "url": "https://github.com/yaml/libyaml.git",
-                  "commit": "f8f760f7387d2cc56a2fc7b1be313a3bf3f7f58c"
-                }
-              ]
-            },
-            {
-              "name": "libxmlb",
-              "buildsystem": "meson",
-              "config-opts": [
-                "-Dintrospection=false",
-                "-Dgtkdoc=false",
-                "-Dstemmer=false",
-                "-Dcli=false",
-                "-Dtests=false"
-              ],
-              "sources": [
-                {
-                  "type": "git",
-                  "url": "https://github.com/hughsie/libxmlb.git",
-                  "commit": "a6cac6a715d57c393bbddee4d0381ad943341af9"
-                }
-              ]
-            }
-          ]
-        },
-        {
-          "name": "libsass",
-          "buildsystem": "meson",
-          "cleanup": [
-            "*"
-          ],
-          "sources": [
-            {
-              "type": "git",
-              "url": "https://github.com/lazka/libsass.git",
-              "commit": "302397c0c8ae2d7ab02f45ea461c2c3d768f248e"
-            }
-          ]
-        },
-        {
-          "name": "sassc",
-          "buildsystem": "meson",
-          "cleanup": [
-            "*"
-          ],
-          "sources": [
-            {
-              "type": "git",
-              "url": "https://github.com/lazka/sassc.git",
-              "commit": "82803377c33247265d779af034eceb5949e78354"
-            }
-          ]
-        },
-        {
-          "name": "gtk",
-          "buildsystem": "meson",
-          "config-opts": [
-            "-Ddemos=false",
-            "-Dbuild-testsuite=false",
-            "-Dbuild-examples=false",
-            "-Dbuild-tests=false"
-          ],
-          "cleanup": [
-            "/bin/*"
-          ],
-          "sources": [
-            {
-              "type": "git",
-              "url": "https://gitlab.gnome.org/GNOME/gtk.git",
-              "commit": "f1484df60a69ef370d8e1cf0627b718a14da070a"
-            }
-          ]
-        }
-      ]
-    },
     {
       "name": "yarn-deps",
       "buildsystem": "simple",
