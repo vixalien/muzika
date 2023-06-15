@@ -21,14 +21,18 @@
       </object>
     </child>
     <child>
-      <object class="GtkFlowBox" id="flowbox">
-        <property name="selection-mode">0</property>
-        <property name="max-children-per-line">2</property>
-        <property name="column-spacing">12</property>
-        <property name="row-spacing">12</property>
+      <object class="AdwBreakpointBin">
+        <property name="width-request">128</property>
+        <property name="height-request">128</property>
         <child>
-          <object class="GtkFlowBoxChild">
-            <property name="focusable">false</property>
+          <object class="AdwBreakpoint">
+            <condition>max-width: 800sp</condition>
+            <setter object="box" property="orientation">vertical</setter>
+          </object>
+        </child>
+        <child>
+          <object class="GtkBox" id="box">
+            <property name="spacing">6</property>
             <child>
               <object class="GtkListBox" id="content">
                 <property name="margin-start">6</property>

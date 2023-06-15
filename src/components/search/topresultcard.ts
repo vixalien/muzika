@@ -12,7 +12,7 @@ import {
 import { load_thumbnails } from "../webimage.js";
 import { TopResultVideo } from "libmuse/types/parsers/search.js";
 
-export class TopResultCard extends Gtk.FlowBoxChild {
+export class TopResultCard extends Adw.Bin {
   static {
     GObject.registerClass({
       GTypeName: "TopResult",
@@ -67,6 +67,12 @@ export class TopResultCard extends Gtk.FlowBoxChild {
   constructor() {
     super();
 
+    const click = new Gtk.GestureClick();
+    click.connect("pressed", () => {
+      this.on_click();
+    });
+    this.add_controller(click);
+
     this._breakpoint.connect("apply", () => {
       this.small_layout();
     });
@@ -102,6 +108,37 @@ export class TopResultCard extends Gtk.FlowBoxChild {
     this._grid.attach(this._image_stack, 0, 0, 1, 2);
     this._grid.attach(this._meta, 1, 0, 1, 1);
     this._grid.attach(this._actions, 1, 1, 1, 1);
+  }
+
+  on_click() {
+    if (!(this.result)) return;
+
+    let uri: string | null = null;
+
+    switch (this.result.type) {
+      case "artist":
+        uri = `artist:${this.result.browseId}`;
+        break;
+      case "album":
+        uri = `album:${this.result.browseId}`;
+        break;
+      case "song":
+      case "video":
+        this.activate_action(
+          "queue.play-song",
+          GLib.Variant.new_string(
+            this.result.videoId,
+          ),
+        );
+        break;
+    }
+
+    if (uri) {
+      this.activate_action(
+        "navigator.visit",
+        GLib.Variant.new_string("muzika:" + uri),
+      );
+    }
   }
 
   show_type(show: boolean) {
