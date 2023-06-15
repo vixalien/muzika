@@ -33,8 +33,7 @@
     "/share/pkgconfig",
     "*.la",
     "*.a",
-    "/yarn-mirror",
-    "/sfjgsdfksdf"
+    "/yarn-mirror"
   ],
   "modules": [
     {
