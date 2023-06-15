@@ -297,13 +297,10 @@ export class DynamicImage extends Gtk.Overlay {
   }
 
   private get_player() {
-    return ((this.get_root() as Window)?.application as Application)
-      ?.player;
+    return (Application.get_default() as Application)?.player;
   }
 
   private listeners: number[] = [];
-
-  private map_listener: number | null = null;
 
   private setup_button = false;
 
@@ -326,20 +323,9 @@ export class DynamicImage extends Gtk.Overlay {
     this.videoId = videoId;
     this.playlistId = playlistId;
 
-    if (this.map_listener != null) {
-      this.disconnect(this.map_listener);
-    }
-
     this.reset_listeners();
 
     const player = this.get_player();
-
-    if (!player) {
-      this.map_listener = this.connect("map", () => {
-        this.setup_video(videoId, playlistId);
-      });
-      return;
-    }
 
     if (!this.setup_button) {
       this._play.connect("clicked", () => {
@@ -410,20 +396,9 @@ export class DynamicImage extends Gtk.Overlay {
   setup_playlist(playlistId: string) {
     this.playlistId = playlistId;
 
-    if (this.map_listener != null) {
-      this.disconnect(this.map_listener);
-    }
-
     this.reset_listeners();
 
     const player = this.get_player();
-
-    if (!player) {
-      this.map_listener = this.connect("map", () => {
-        this.setup_playlist(playlistId);
-      });
-      return;
-    }
 
     if (!this.setup_button) {
       this._play.connect("clicked", () => {
@@ -484,6 +459,11 @@ export class DynamicImage extends Gtk.Overlay {
         this.state = DynamicImageState.DEFAULT;
       }),
     ]);
+  }
+
+  vfunc_dispose(): void {
+    this.reset_listeners();
+    super.vfunc_dispose();
   }
 }
 
