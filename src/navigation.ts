@@ -23,45 +23,43 @@ export type EndpointResponse = {
   title?: string;
 };
 
-export type Endpoint<C extends Gtk.Widget> = {
-  uri: string;
-  title: string;
-  component: () => C;
-  load: <D extends C>(
-    component: D,
-    ctx: EndpointCtx,
-  ) => void | Promise<void | EndpointResponse>;
-};
-
 export interface ShowPageOptions {
   title: string;
   page: Gtk.Widget;
-  endpoint: Endpoint<Gtk.Widget>;
+  endpoint: Endpoint<any>;
   uri: string;
 }
+
+export interface MuzikaPage<
+  Data extends any,
+  State extends any = null,
+> {
+  uri: string;
+  present(data: Data, state: State): void;
+  get_state(): State;
+  clear(): void;
+  load(context: EndpointContext): void | Promise<void | Data>;
+}
+
+export interface EndpointContext {
+  match: MatchResult<Record<string, string>>;
+  url: URL;
+  signal: AbortSignal;
+}
+
+export type Endpoint<Page extends MuzikaPage<Record<string, unknown>>> =
+  Page extends MuzikaPage<infer Data, infer State> ? {
+      uri: string;
+      page(): MuzikaPage<Data, State> & Adw.NavigationPage;
+    }
+    : never;
 
 export class Navigator extends GObject.Object {
   private _view: Adw.NavigationView;
 
-  private match_map: Map<MatchFunction, Endpoint<Gtk.Widget>> = new Map();
+  private match_map: Map<MatchFunction, Endpoint<MuzikaPage<any>>> = new Map();
 
   loading = false;
-
-  private static can_go_back_spec = GObject.ParamSpec.boolean(
-    "can-go-back",
-    "Can go back",
-    "Whether the navigator can go back",
-    GObject.ParamFlags.READWRITE,
-    false,
-  );
-
-  private static can_go_forward_spec = GObject.ParamSpec.boolean(
-    "can-go-forward",
-    "Can go forward",
-    "Whether the navigator can go forward",
-    GObject.ParamFlags.EXPLICIT_NOTIFY | GObject.ParamFlags.READABLE,
-    false,
-  );
 
   static {
     GObject.registerClass({
@@ -78,8 +76,6 @@ export class Navigator extends GObject.Object {
           GObject.ParamFlags.READWRITE,
           false,
         ),
-        can_go_back: this.can_go_back_spec,
-        can_go_forward: this.can_go_forward_spec,
         current_uri: GObject.ParamSpec.string(
           "current-uri",
           "Current URI",
@@ -123,43 +119,13 @@ export class Navigator extends GObject.Object {
           }
         },
       },
-      {
-        name: "back",
-        activate: () => {
-          this.back();
-        },
-      },
-      {
-        name: "push-state",
-        parameter_type: "s",
-        activate: (_action, param) => {
-          if (!param) return;
-
-          this.pushState({ uri: param.get_string()[0] });
-        },
-      },
-      {
-        name: "replace-state",
-        parameter_type: "s",
-        activate: (_action, param) => {
-          if (!param) return;
-
-          this.replaceState({ uri: param.get_string()[0] });
-        },
-      },
     ]);
-
-    action_group.action_enabled_changed("back", this.can_go_back);
-
-    this.connect("notify::can-go-back", () => {
-      action_group.action_enabled_changed("back", this.can_go_back);
-    });
 
     return action_group;
   }
 
   private prepare_error_page(error: any) {
-    if (error instanceof DOMException && error.code == DOMException.ABORT_ERR) {
+    if (error instanceof DOMException && error.name == "AbortError") {
       return;
     }
 
@@ -183,14 +149,13 @@ export class Navigator extends GObject.Object {
 
   last_controller: AbortController | null = null;
 
-  private endpoint(
+  private show_page(
     uri: string,
-    match: MatchResult,
-    endpoint: Endpoint<Gtk.Widget>,
-    history: boolean,
+    match: MatchResult<Record<string, string>>,
+    endpoint: Endpoint<MuzikaPage<any>>,
   ) {
     const url = new URL("muzika:" + uri);
-    const component = endpoint.component();
+    const page = endpoint.page();
 
     if (this.last_controller) {
       this.last_controller.abort();
@@ -198,129 +163,80 @@ export class Navigator extends GObject.Object {
 
     this.last_controller = new AbortController();
 
-    const response = endpoint.load(component, {
-      match: match as MatchResult<Record<string, string>>,
+    const response = page.load({
+      match,
       url,
       signal: this.last_controller.signal,
     });
 
-    if (!response) return null;
-
     this.loading = true;
 
-    const page = new Page();
-    page.title = endpoint.title;
-
-    if (url.searchParams.has("replace")) {
-      this._view.animate_transitions = false;
-      this._view.pop();
-    } else {
-      this._view.animate_transitions = true;
-    }
     this._view.push(page);
 
-    let handle_error = (error: any) => {
-      const error_page = this.prepare_error_page(error);
+    const handle_error = (error: any) => {
+      // TODO: handle this better
+      console.log("Got error", error);
 
-      if (error_page) {
-        page.content = error_page.page;
-        page.title = error_page.title;
-      }
+      // const error_page = new Page();
+      // const error_content = this.prepare_error_page(error);
+
+      // if (error_content) {
+      //   error_page.content = error_content.page;
+      //   error_page.title = error_content.title;
+      // }
+
+      // this._view.pop_to_page(error_page);
+      // this._view.push;
     };
 
-    try {
-      response.then((meta = {}) => {
+    Promise.resolve(response).then(
+      (data) => {
         this.loading = false;
         this.last_controller = null;
 
-        page.title = meta?.title ?? endpoint.title;
-        page.content = component;
-        // page.tag = uri;
-
-        if (history) {
-          if (url.searchParams.has("replace")) {
-            this.replaceState({ uri });
-          } else {
-            this.pushState({ uri });
-          }
+        if (data != null) {
+          page.present(data, null);
         }
-      }).catch((e) => {
-        this.pushState({ uri });
-        handle_error(e);
-      });
-    } catch (e) {
-      this.pushState({ uri });
-      handle_error(e);
-    }
-
-    return null;
+      },
+    ).catch(handle_error);
   }
 
-  get current_uri(): string | undefined {
-    return this.history[this.history.length - 1]?.uri;
+  get current_uri(): string | null {
+    const stack = this._view.navigation_stack;
+    const page = stack.get_item(stack.get_n_items() - 1) as
+      | MuzikaPage<any>
+      | null;
+
+    if (!page) return null;
+
+    return page.uri;
   }
 
-  private history: HistoryState[] = [];
-  private future: HistoryState[] = [];
-
-  get can_go_back() {
-    return this.history.length > 1;
-  }
-
-  get can_go_forward() {
-    return this.future.length > 0;
-  }
-
-  pushState(state: HistoryState) {
-    this.history.push(state);
-
-    this.notify("can-go-back");
-    this.notify("current-uri");
-  }
-
-  replaceState(state: HistoryState) {
-    this.history[this.history.length - 1] = state;
-
-    this.notify("current-uri");
-  }
-
-  go(n: number, navigate = true) {
-    if (n > 0) {
-      this.history.push(...this.future.splice(-n));
-    } else if (n < 0) {
-      this.future.push(...this.history.splice(n));
-    }
-
-    this.notify("can-go-back");
-    this.notify("can-go-forward");
-    this.notify("current-uri");
-
-    const state = this.history[this.history.length - 1];
-
-    if (!state) {
+  go(n: number) {
+    if (n >= 0) {
       return;
+    } else {
+      const page = this._view.navigation_stack.get_item(
+        this._view.navigation_stack.get_n_items() + n,
+      );
+
+      if (page) {
+        this._view.pop_to_page(page as Adw.NavigationPage);
+      }
     }
-
-    if (navigate) {
-      this.navigate(state.uri, false);
-    }
   }
 
-  back(navigate?: boolean) {
-    this.go(-1, navigate);
+  back() {
+    this.go(-1);
   }
 
-  forward(navigate?: boolean) {
-    this.go(1, navigate);
+  // reload(navigate?: boolean) {
+  //   this.go(0, navigate);
+  // }
+  reload() {
   }
 
-  reload(navigate?: boolean) {
-    this.go(0, navigate);
-  }
-
-  navigate(uri: string, history = true) {
-    this._view.animate_transitions = history;
-
+  private match_uri(uri: string) {
     // muzika:home to
     // muzika/home
     // only when it's not escaped (i.e not prefixed with \)
@@ -332,9 +248,19 @@ export class Navigator extends GObject.Object {
       const match = fn(path);
 
       if (match) {
-        console.log("navigating to", uri);
-        return this.endpoint(uri, match, endpoint, history);
+        return {
+          match: match as MatchResult<Record<string, string>>,
+          endpoint,
+        };
       }
+    }
+  }
+
+  navigate(uri: string) {
+    const match = this.match_uri(uri);
+
+    if (match) {
+      this.show_page(uri, match.match, match.endpoint);
     }
   }
 }

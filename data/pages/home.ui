@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+  <requires lib="gtk" version="4.0" />
+  <template class="HomePage" parent="AdwNavigationPage">
+    <property name="child">
+      <object class="AdwToolbarView">
+        <child type="top">
+          <object class="AdwHeaderBar"></object>
+        </child>
+        <property name="content">
+          <object class="GtkStack" id="stack">
+            <child>
+              <object class="Loading" id="loading"></object>
+            </child>
+            <child>
+              <object class="GtkScrolledWindow" id="scrolled">
+                <property name="vexpand">true</property>
+                <property name="hexpand">true</property>
+                <child>
+                  <object class="AdwClamp">
+                    <property name="margin-top">12</property>
+                    <property name="margin-bottom">12</property>
+                    <property name="maximum-size">1000</property>
+                    <property name="tightening-threshold">800</property>
+                    <child>
+                      <object class="GtkBox" id="box">
+                        <property name="orientation">1</property>
+                        <property name="spacing">12</property>
+                        <child>
+                          <object class="Paginator" id="paginator"></object>
+                        </child>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+              </object>
+            </child>
+          </object>
+        </property>
+      </object>
+    </property>
+  </template>
+</interface>

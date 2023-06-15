@@ -22,6 +22,13 @@ export class Paginator extends Gtk.Revealer {
           GObject.ParamFlags.READWRITE,
           false,
         ),
+        "can-paginate": GObject.ParamSpec.boolean(
+          "can-paginate",
+          "Can Paginate",
+          "Whether the content can be paginated and the paginator is visible",
+          GObject.ParamFlags.READWRITE,
+          false,
+        ),
       },
     }, this);
   }
@@ -48,8 +55,18 @@ export class Paginator extends Gtk.Revealer {
     }
   }
 
+  get can_paginate() {
+    return this.reveal_child;
+  }
+
+  set can_paginate(value: boolean) {
+    this.reveal_child = value;
+  }
+
   constructor() {
-    super();
+    super({
+      reveal_child: false,
+    });
 
     this._button.connect("clicked", () => {
       this.loading = true;

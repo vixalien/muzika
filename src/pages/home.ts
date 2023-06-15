@@ -7,57 +7,92 @@ import { Paginator } from "../components/paginator.js";
 import { get_home, Home, MixedContent } from "../muse.js";
 
 import { Carousel } from "../components/carousel/index.js";
+import { Loading } from "../components/loading.js";
+import { EndpointContext, MuzikaPage } from "src/navigation.js";
 
-export class HomePage extends Gtk.Box {
+Loading;
+Paginator;
+
+export class HomePage extends Adw.NavigationPage implements MuzikaPage<Home> {
   static {
     GObject.registerClass({
       GTypeName: "HomePage",
+      Template: "resource:///com/vixalien/muzika/pages/home.ui",
+      InternalChildren: ["scrolled", "box", "paginator", "stack", "loading"],
     }, this);
   }
-  _scrolled: Gtk.ScrolledWindow;
-  _clamp: Adw.Clamp;
-  _box: Gtk.Box;
-  _paginator: Paginator;
+
+  private _scrolled!: Gtk.ScrolledWindow;
+  private _box!: Gtk.Box;
+  private _paginator!: Paginator;
+  private _stack!: Gtk.Stack;
+  private _loading!: Loading;
 
   home?: Home;
 
   constructor() {
-    super({
-      orientation: Gtk.Orientation.VERTICAL,
-    });
+    super();
 
-    this._paginator = new Paginator();
-
-    this._box = new Gtk.Box({
-      orientation: Gtk.Orientation.VERTICAL,
-      spacing: 12,
-    });
-
-    this._box.append(this._paginator);
-
-    this._clamp = new Adw.Clamp({
-      margin_top: 12,
-      margin_bottom: 12,
-      maximum_size: 1000,
-      tightening_threshold: 800,
-    });
-    this._clamp.set_child(this._box);
-
-    this._scrolled = new Gtk.ScrolledWindow({ vexpand: true, hexpand: true });
-    this._scrolled.set_child(this._clamp);
+    this.title = "Home";
 
     this._scrolled.vadjustment.connect("value-changed", () => {
       if (this.check_if_almost_scrolled()) {
         this._paginator.loading = true;
-        this.load_home();
+        this.load_more();
       }
     });
 
     this._paginator.connect("activate", () => {
-      this.load_home();
+      this.load_more();
     });
+  }
 
-    this.append(this._scrolled);
+  uri = "home";
+
+  load(ctx: EndpointContext) {
+    this.loading = true;
+
+    return get_home({ limit: 3, signal: ctx.signal });
+  }
+
+  present(home: Home, state: null): void {
+    this.loading = false;
+    this._paginator.can_paginate = home.continuation != null;
+
+    this.append_contents(home.results);
+
+    this.check_height_and_load();
+
+    this.home = home;
+  }
+
+  get_state() {
+    return null;
+  }
+
+  clear() {
+    let child = this._box.get_first_child();
+
+    while (child) {
+      if (child instanceof Paginator) {
+        child = child.get_next_sibling();
+        continue;
+      }
+
+      const current = child;
+      child = child.get_next_sibling();
+      this._box.remove(current);
+    }
+
+    return;
+  }
+
+  get is_initial_loading() {
+    return this._stack.visible_child === this._loading;
+  }
+
+  set is_initial_loading(loading: boolean) {
+    this._stack.visible_child = loading ? this._loading : this._scrolled;
   }
 
   append_contents(result: MixedContent[]) {
@@ -93,56 +128,45 @@ export class HomePage extends Gtk.Box {
       this._scrolled.get_vadjustment().get_upper() -
           this._scrolled.get_vadjustment().get_page_size() < 0
     ) {
-      this.load_home();
+      this.load_more();
     }
 
     // scroll if the scrolled window is almost full
   }
 
-  _loading = false;
-
   get loading() {
-    return this._loading;
+    return this.is_initial_loading || this._paginator.loading;
   }
 
   set loading(value: boolean) {
     this._paginator.loading = value;
-    this._loading = value;
+
+    if (value == false) {
+      this.is_initial_loading = false;
+    }
   }
 
-  load_home(signal?: AbortSignal) {
+  load_more() {
     if (this.loading) return;
 
     this.loading = true;
 
-    if (!this.home) {
-      return get_home({ limit: 3, signal })
-        .then((home) => {
-          this.home = home;
+    if (this.home?.continuation) {
+      return get_home({ continuation: this.home.continuation })
+        .then((updated) => {
+          this.home!.continuation = updated.continuation;
+          this.home!.results.push(...updated.results);
 
           this.loading = false;
-          this._paginator.reveal_child = home.continuation != null;
+          this._paginator.can_paginate = updated.continuation != null;
 
-          this.append_contents(home.results);
-
-          this.check_height_and_load();
-        });
-    } else if (this.home.continuation) {
-      return get_home({ continuation: this.home.continuation, signal })
-        .then((new_home) => {
-          this.home!.continuation = new_home.continuation;
-          this.home!.results.push(...new_home.results);
-
-          this.loading = false;
-          this._paginator.reveal_child = new_home.continuation != null;
-
-          this.append_contents(new_home.results);
+          this.append_contents(updated.results);
 
           this.check_height_and_load();
         });
     } else {
       this.loading = false;
-      this._paginator.reveal_child = false;
+      this._paginator.can_paginate = false;
     }
   }
 }
