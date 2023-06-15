@@ -31,33 +31,78 @@ export class TopResultCard extends Gtk.FlowBoxChild {
         "primary_content",
         "secondary",
         "secondary_content",
-        // "second-line",
+        "image_stack",
+        "actions",
+        "meta",
+        "grid",
+        "breakpoint",
       ],
     }, this);
   }
 
-  constructor() {
-    super();
-  }
-
-  _avatar!: Adw.Avatar;
-  _image!: Gtk.Image;
-  _image_overlay!: Gtk.Overlay;
-  _title!: Gtk.Label;
-  _explicit!: Gtk.Label;
-  _label_box!: Gtk.Box;
-  _type!: Gtk.Label;
-  _type_box!: Gtk.Box;
-  _second_line!: Gtk.Box;
-  _primary!: Gtk.Button;
-  _primary_content!: Adw.ButtonContent;
-  _secondary!: Gtk.Button;
-  _secondary_content!: Adw.ButtonContent;
+  private _avatar!: Adw.Avatar;
+  private _image!: Gtk.Image;
+  private _image_overlay!: Gtk.Overlay;
+  private _title!: Gtk.Label;
+  private _explicit!: Gtk.Label;
+  private _label_box!: Gtk.Box;
+  private _type!: Gtk.Label;
+  private _type_box!: Gtk.Box;
+  private _second_line!: Gtk.Box;
+  private _primary!: Gtk.Button;
+  private _primary_content!: Adw.ButtonContent;
+  private _secondary!: Gtk.Button;
+  private _secondary_content!: Adw.ButtonContent;
+  private _image_stack!: Gtk.Stack;
+  private _actions!: Gtk.Box;
+  private _meta!: Gtk.Box;
+  private _grid!: Gtk.Grid;
+  private _breakpoint!: Adw.Breakpoint;
 
   image_size = 100;
   add_subsequent_middots = false;
 
   result?: TopResult;
+
+  constructor() {
+    super();
+
+    this._breakpoint.connect("apply", () => {
+      this.small_layout();
+    });
+
+    this._breakpoint.connect("unapply", () => {
+      this.large_layout();
+    });
+  }
+
+  private unparent_stack_children() {
+    for (const child of [this._image_stack, this._meta, this._actions]) {
+      this._grid.remove(child);
+    }
+  }
+
+  private small_layout() {
+    this.unparent_stack_children();
+
+    this._primary.add_css_class("compact");
+    this._secondary.add_css_class("compact");
+
+    this._grid.attach(this._image_stack, 0, 0, 1, 1);
+    this._grid.attach(this._meta, 1, 0, 1, 1);
+    this._grid.attach(this._actions, 0, 2, 2, 1);
+  }
+
+  private large_layout() {
+    this.unparent_stack_children();
+
+    this._primary.remove_css_class("compact");
+    this._secondary.remove_css_class("compact");
+
+    this._grid.attach(this._image_stack, 0, 0, 1, 2);
+    this._grid.attach(this._meta, 1, 0, 1, 1);
+    this._grid.attach(this._actions, 1, 1, 1, 1);
+  }
 
   show_type(show: boolean) {
     this._type_box.visible = show;
