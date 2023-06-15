@@ -144,11 +144,8 @@ export const endpoints: Endpoint<Gtk.Widget>[] = [
     uri: "history",
     title: "History",
     component: () => new HistoryPage(),
-    load(component: HistoryPage, ctx) {
-      return component.load_library({
-        signal: ctx.signal,
-        ...Object.fromEntries(ctx.url.searchParams as any),
-      });
+    load(component: HistoryPage) {
+      return component.load_library();
     },
   } as Endpoint<HistoryPage>,
 ];
