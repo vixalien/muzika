@@ -37,7 +37,6 @@ export class HomePage extends Adw.NavigationPage implements MuzikaPage<Home> {
 
     this._scrolled.vadjustment.connect("value-changed", () => {
       if (this.check_if_almost_scrolled()) {
-        this._paginator.loading = true;
         this.load_more();
       }
     });
