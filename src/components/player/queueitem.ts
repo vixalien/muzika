@@ -12,7 +12,7 @@ export class QueueItem extends Gtk.Box {
     GObject.registerClass({
       GTypeName: "QueueItem",
       Template:
-        "resource:///com/vixalien/muzika/components/player/queueitem.ui",
+        "resource:///com/vixalien/muzika/ui/components/player/queueitem.ui",
       InternalChildren: [
         "play_button",
         "image",

@@ -10,7 +10,7 @@ export class AuthenticationErrorPage extends Gtk.Box {
   static {
     GObject.registerClass({
       GTypeName: "AuthenticationErrorPage",
-      Template: "resource:///com/vixalien/muzika/pages/authentication-error.ui",
+      Template: "resource:///com/vixalien/muzika/ui/pages/authentication-error.ui",
       InternalChildren: [
         "status",
         "more",

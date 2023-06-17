@@ -17,7 +17,7 @@ export class HomePage extends Adw.NavigationPage implements MuzikaPage<Home> {
   static {
     GObject.registerClass({
       GTypeName: "HomePage",
-      Template: "resource:///com/vixalien/muzika/pages/home.ui",
+      Template: "resource:///com/vixalien/muzika/ui/pages/home.ui",
       InternalChildren: ["scrolled", "box", "paginator", "stack", "loading"],
     }, this);
   }

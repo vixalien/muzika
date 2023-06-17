@@ -32,7 +32,7 @@ export class CarouselCard extends Gtk.Box {
   static {
     GObject.registerClass({
       GTypeName: "CarouselCard",
-      Template: "resource:///com/vixalien/muzika/components/carousel/card.ui",
+      Template: "resource:///com/vixalien/muzika/ui/components/carousel/card.ui",
       InternalChildren: [
         "image_stack",
         "avatar",

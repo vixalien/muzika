@@ -11,7 +11,7 @@ export class Page extends Adw.NavigationPage {
   static {
     GObject.registerClass({
       GTypeName: "Page",
-      Template: "resource:///com/vixalien/muzika/components/nav/page.ui",
+      Template: "resource:///com/vixalien/muzika/ui/components/nav/page.ui",
       InternalChildren: [
         "stack",
         "loading",

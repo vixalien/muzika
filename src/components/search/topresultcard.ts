@@ -17,7 +17,7 @@ export class TopResultCard extends Adw.Bin {
     GObject.registerClass({
       GTypeName: "TopResult",
       Template:
-        "resource:///com/vixalien/muzika/components/search/topresult.ui",
+        "resource:///com/vixalien/muzika/ui/components/search/topresult.ui",
       InternalChildren: [
         "avatar",
         "image",

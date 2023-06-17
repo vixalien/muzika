@@ -22,7 +22,7 @@ export class MixedCard extends Gtk.ListBoxRow {
     GObject.registerClass({
       GTypeName: "MixedCard",
       Template:
-        "resource:///com/vixalien/muzika/components/library/mixedcard.ui",
+        "resource:///com/vixalien/muzika/ui/components/library/mixedcard.ui",
       InternalChildren: [
         "avatar",
         "image",

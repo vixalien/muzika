@@ -133,7 +133,7 @@ export class Carousel<
     GObject.registerClass({
       GTypeName: "Carousel",
       Template:
-        "resource:///com/vixalien/muzika/components/carousel/carousel.ui",
+        "resource:///com/vixalien/muzika/ui/components/carousel/carousel.ui",
       InternalChildren: [
         "title",
         "subtitle",

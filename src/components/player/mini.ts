@@ -15,7 +15,7 @@ export class MiniPlayerView extends Gtk.Overlay {
   static {
     GObject.registerClass({
       GTypeName: "MiniPlayerView",
-      Template: "resource:///com/vixalien/muzika/components/player/mini.ui",
+      Template: "resource:///com/vixalien/muzika/ui/components/player/mini.ui",
       InternalChildren: [
         "image",
         "title",

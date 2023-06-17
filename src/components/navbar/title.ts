@@ -6,7 +6,7 @@ export class NavbarTitle extends Gtk.Box {
     GObject.registerClass(
       {
         GTypeName: "NavbarTitle",
-        Template: "resource:///com/vixalien/muzika/components/navbar/title.ui",
+        Template: "resource:///com/vixalien/muzika/ui/components/navbar/title.ui",
         InternalChildren: [
           "label",
           "action",

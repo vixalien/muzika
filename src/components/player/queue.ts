@@ -12,7 +12,7 @@ export class QueueView extends Gtk.Stack {
   static {
     GObject.registerClass({
       GTypeName: "QueueView",
-      Template: "resource:///com/vixalien/muzika/components/player/queue.ui",
+      Template: "resource:///com/vixalien/muzika/ui/components/player/queue.ui",
       InternalChildren: [
         "no_queue",
         "list_view",

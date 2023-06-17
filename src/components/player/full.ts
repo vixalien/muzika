@@ -19,7 +19,7 @@ export class FullPlayerView extends Gtk.ActionBar {
   static {
     GObject.registerClass({
       GTypeName: "FullPlayerView",
-      Template: "resource:///com/vixalien/muzika/components/player/full.ui",
+      Template: "resource:///com/vixalien/muzika/ui/components/player/full.ui",
       InternalChildren: [
         "image",
         "title",

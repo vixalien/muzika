@@ -13,7 +13,7 @@ export class AlbumItemCard extends Gtk.ListBoxRow {
   static {
     GObject.registerClass({
       GTypeName: "AlbumItem",
-      Template: "resource:///com/vixalien/muzika/components/album/item.ui",
+      Template: "resource:///com/vixalien/muzika/ui/components/album/item.ui",
       InternalChildren: [
         "title",
         "explicit",

@@ -15,7 +15,7 @@ export class FlatSongCard extends Gtk.Box {
     GObject.registerClass({
       GTypeName: "FlatSongCard",
       Template:
-        "resource:///com/vixalien/muzika/components/carousel/flatsong.ui",
+        "resource:///com/vixalien/muzika/ui/components/carousel/flatsong.ui",
       InternalChildren: [
         "title",
         "explicit",

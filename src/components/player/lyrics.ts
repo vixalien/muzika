@@ -9,7 +9,7 @@ export class LyricsView extends Gtk.Stack {
   static {
     GObject.registerClass({
       GTypeName: "LyricsView",
-      Template: "resource:///com/vixalien/muzika/components/player/lyrics.ui",
+      Template: "resource:///com/vixalien/muzika/ui/components/player/lyrics.ui",
       InternalChildren: [
         "no_lyrics",
         "loading",

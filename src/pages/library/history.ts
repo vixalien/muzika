@@ -41,7 +41,7 @@ export class HistoryPage extends Gtk.Box {
   static {
     GObject.registerClass({
       GTypeName: "HistoryPage",
-      Template: "resource:///com/vixalien/muzika/components/library/history.ui",
+      Template: "resource:///com/vixalien/muzika/ui/components/library/history.ui",
       InternalChildren: ["list"],
     }, this);
   }

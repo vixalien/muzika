@@ -14,7 +14,7 @@ export class AlbumPage extends Gtk.Box {
   static {
     GObject.registerClass({
       GTypeName: "AlbumPage",
-      Template: "resource:///com/vixalien/muzika/pages/album.ui",
+      Template: "resource:///com/vixalien/muzika/ui/pages/album.ui",
       InternalChildren: [
         "inner_box",
         "trackCount",

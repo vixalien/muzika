@@ -14,7 +14,7 @@ export class RelatedView extends Gtk.Stack {
   static {
     GObject.registerClass({
       GTypeName: "RelatedView",
-      Template: "resource:///com/vixalien/muzika/components/player/related.ui",
+      Template: "resource:///com/vixalien/muzika/ui/components/player/related.ui",
       InternalChildren: [
         "no_related",
         "loading",

@@ -17,7 +17,7 @@ export class NavbarView extends Gtk.Box {
     GObject.registerClass(
       {
         GTypeName: "NavbarView",
-        Template: "resource:///com/vixalien/muzika/components/navbar/index.ui",
+        Template: "resource:///com/vixalien/muzika/ui/components/navbar/index.ui",
         InternalChildren: [
           "section",
           "search",

@@ -14,7 +14,7 @@ export class PlaylistItemCard extends Gtk.ListBoxRow {
   static {
     GObject.registerClass({
       GTypeName: "PlaylistItem",
-      Template: "resource:///com/vixalien/muzika/components/playlist/item.ui",
+      Template: "resource:///com/vixalien/muzika/ui/components/playlist/item.ui",
       InternalChildren: [
         "title",
         "explicit_flowbox",

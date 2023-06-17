@@ -20,7 +20,7 @@ export class LibrarySongsPage extends Gtk.Box {
   static {
     GObject.registerClass({
       GTypeName: "LibrarySongsPage",
-      Template: "resource:///com/vixalien/muzika/components/library/songs.ui",
+      Template: "resource:///com/vixalien/muzika/ui/components/library/songs.ui",
       InternalChildren: ["drop_down", "paginator"],
       Children: ["list"],
     }, this);

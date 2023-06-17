@@ -21,7 +21,7 @@ export class PlaylistImage extends Gtk.Overlay {
   static {
     GObject.registerClass({
       GTypeName: "PlaylistImage",
-      Template: "resource:///com/vixalien/muzika/components/playlist-image.ui",
+      Template: "resource:///com/vixalien/muzika/ui/components/playlist-image.ui",
       InternalChildren: [
         "stack",
         "play",

@@ -14,7 +14,7 @@ export class LibraryView extends Gtk.Box {
   static {
     GObject.registerClass({
       GTypeName: "LibraryView",
-      Template: "resource:///com/vixalien/muzika/components/library/view.ui",
+      Template: "resource:///com/vixalien/muzika/ui/components/library/view.ui",
       InternalChildren: [
         "drop_down",
         "grid_button",

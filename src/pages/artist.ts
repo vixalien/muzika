@@ -13,7 +13,7 @@ export class ArtistPage extends Gtk.Box {
   static {
     GObject.registerClass({
       GTypeName: "ArtistPage",
-      Template: "resource:///com/vixalien/muzika/pages/artist.ui",
+      Template: "resource:///com/vixalien/muzika/ui/pages/artist.ui",
       InternalChildren: [
         "inner_box",
         "content",

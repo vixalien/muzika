@@ -20,7 +20,7 @@ export class PlaylistPage extends Gtk.Box {
   static {
     GObject.registerClass({
       GTypeName: "PlaylistPage",
-      Template: "resource:///com/vixalien/muzika/pages/playlist.ui",
+      Template: "resource:///com/vixalien/muzika/ui/pages/playlist.ui",
       InternalChildren: [
         "inner_box",
         "trackCount",

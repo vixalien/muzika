@@ -13,7 +13,7 @@ export class LoginPage extends Adw.Window {
   static {
     GObject.registerClass({
       GTypeName: "LoginPage",
-      Template: "resource:///com/vixalien/muzika/pages/login.ui",
+      Template: "resource:///com/vixalien/muzika/ui/pages/login.ui",
       InternalChildren: [
         "stack",
         "spinner",

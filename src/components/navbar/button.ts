@@ -7,7 +7,7 @@ export class NavbarButton extends Gtk.Box {
     GObject.registerClass(
       {
         GTypeName: "NavbarButton",
-        Template: "resource:///com/vixalien/muzika/components/navbar/button.ui",
+        Template: "resource:///com/vixalien/muzika/ui/components/navbar/button.ui",
         InternalChildren: [
           "image",
           "label",

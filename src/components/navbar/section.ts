@@ -10,7 +10,7 @@ export class NavbarSection extends Gtk.Box {
       {
         GTypeName: "NavbarSection",
         Template:
-          "resource:///com/vixalien/muzika/components/navbar/section.ui",
+          "resource:///com/vixalien/muzika/ui/components/navbar/section.ui",
         Children: [
           "items",
         ],

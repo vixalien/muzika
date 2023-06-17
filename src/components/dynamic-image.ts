@@ -20,7 +20,7 @@ export class DynamicImage extends Gtk.Overlay {
   static {
     GObject.registerClass({
       GTypeName: "DynamicImage",
-      Template: "resource:///com/vixalien/muzika/components/dynamic-image.ui",
+      Template: "resource:///com/vixalien/muzika/ui/components/dynamic-image.ui",
       InternalChildren: [
         "stack",
         "play",

@@ -11,7 +11,7 @@ export class TopResultSection extends Gtk.Box {
     GObject.registerClass({
       GTypeName: "TopResultSection",
       Template:
-        "resource:///com/vixalien/muzika/components/search/topresultsection.ui",
+        "resource:///com/vixalien/muzika/ui/components/search/topresultsection.ui",
       InternalChildren: ["title", "box", "content"],
     }, this);
   }
