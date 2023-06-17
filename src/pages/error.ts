@@ -2,21 +2,7 @@ import Gtk from "gi://Gtk?version=4.0";
 import GObject from "gi://GObject";
 import Adw from "gi://Adw";
 
-export function escape_label(label: string) {
-  return label
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;");
-}
-
-export function indent_stack(stack: string) {
-  return escape_label(
-    stack
-      .split("\n")
-      .map((line) => `    ${escape_label(line)}`)
-      .join("\n"),
-  );
-}
+import { escape_label, indent_stack } from "src/util/text";
 
 export function error_to_string(error: Error) {
   // must show error name, message, and stack

@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+  <requires lib="gtk" version="4.0" />
+  <template class="PlaylistImage" parent="GtkOverlay">
+    <property name="overflow">1</property>
+    <property name="valign">1</property>
+    <style>
+      <class name="br-9" />
+      <class name="card" />
+    </style>
+    <child>
+      <object class="GtkImage" id="image">
+        <property name="pixel-size">160</property>
+        <property name="icon-name">image-missing-symbolic</property>
+      </object>
+    </child>
+    <child type="overlay">
+      <object class="GtkStack" id="stack">
+        <property name="halign">2</property>
+        <property name="valign">2</property>
+        <property name="margin-end">6</property>
+        <property name="margin-bottom">6</property>
+        <child>
+          <object class="AdwBin" id="blank"></object>
+        </child>
+        <child>
+          <object class="GtkButton" id="play">
+            <child>
+              <object class="GtkImage" id="play_image">
+                <property name="icon-name">media-playback-start-symbolic</property>
+              </object>
+            </child>
+            <style>
+              <class name="osd" />
+              <class name="floating-button" />
+            </style>
+          </object>
+        </child>
+        <child>
+          <object class="GtkButton" id="pause">
+            <child>
+              <object class="GtkImage" id="pause_image">
+                <property name="icon-name">media-playback-pause-symbolic</property>
+              </object>
+            </child>
+            <style>
+              <class name="osd" />
+              <class name="floating-button" />
+            </style>
+          </object>
+        </child>
+        <child>
+          <object class="GtkSpinner" id="loading">
+            <style>
+              <class name="osd" />
+              <class name="floating-button" />
+            </style>
+          </object>
+        </child>
+      </object>
+    </child>
+  </template>
+</interface>

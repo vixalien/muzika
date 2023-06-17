@@ -6,6 +6,7 @@
     <file preprocess="xml-stripblanks">components/album/item.ui</file>
     <file preprocess="xml-stripblanks">components/carousel/albumcard.ui</file>
     <file preprocess="xml-stripblanks">components/carousel/artistcard.ui</file>
+    <file preprocess="xml-stripblanks">components/carousel/card.ui</file>
     <file preprocess="xml-stripblanks">components/carousel/carousel.ui</file>
     <file preprocess="xml-stripblanks">components/carousel/flatsong.ui</file>
     <file preprocess="xml-stripblanks">components/carousel/playlistcard.ui</file>
@@ -36,6 +37,7 @@
     <file preprocess="xml-stripblanks">components/search/topresult.ui</file>
     <file preprocess="xml-stripblanks">components/search/topresultsection.ui</file>
     <file preprocess="xml-stripblanks">components/dynamic-image.ui</file>
+    <file preprocess="xml-stripblanks">components/playlist-image.ui</file>
     <file preprocess="xml-stripblanks">components/loading.ui</file>
     <file preprocess="xml-stripblanks">components/paginator.ui</file>
     <file preprocess="xml-stripblanks">pages/album.ui</file>

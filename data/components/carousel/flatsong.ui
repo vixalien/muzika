@@ -2,54 +2,50 @@
 <interface>
   <requires lib="gtk" version="4.0" />
   <template class="FlatSongCard" parent="GtkBox">
+    <property name="width-request">320</property>
+    <property name="spacing">12</property>
+    <property name="hexpand">false</property>
     <property name="valign">center</property>
+    <property name="orientation">horizontal</property>
+    <style>
+      <class name="hover-parent" />
+      <class name="padding-3" />
+    </style>
     <child>
-      <object class="GtkBox">
-        <property name="width-request">320</property>
-        <property name="spacing">12</property>
-        <property name="hexpand">false</property>
+      <object class="DynamicImage" id="dynamic_image">
+        <property name="image-size">48</property>
+        <property name="icon-size">16</property>
+        <property name="persistent-play-button">false</property>
+      </object>
+    </child>
+    <child>
+      <object class="GtkBox" id="meta">
+        <property name="orientation">vertical</property>
         <property name="valign">center</property>
-        <style>
-          <class name="hover-parent" />
-          <class name="padding-3" />
-        </style>
         <child>
-          <object class="DynamicImage" id="dynamic_image">
-            <property name="image-size">48</property>
-            <property name="icon-size">16</property>
-            <property name="persistent-play-button">false</property>
+          <object class="GtkLabel" id="title">
+            <property name="label"></property>
+            <property name="hexpand">true</property>
+            <property name="max-width-chars">1</property>
+            <property name="ellipsize">end</property>
+            <property name="xalign">0</property>
+            <property name="wrap">true</property>
+            <property name="wrap-mode">char</property>
+            <style>
+              <class name="heading" />
+            </style>
           </object>
         </child>
         <child>
-          <object class="GtkBox" id="meta">
-            <property name="orientation">vertical</property>
-            <property name="valign">center</property>
+          <object class="GtkBox" id="second-line">
+            <property name="spacing">6</property>
             <child>
-              <object class="GtkLabel" id="title">
-                <property name="label"></property>
-                <property name="hexpand">true</property>
-                <property name="max-width-chars">1</property>
-                <property name="ellipsize">end</property>
-                <property name="xalign">0</property>
-                <property name="wrap">true</property>
-                <property name="wrap-mode">char</property>
+              <object class="GtkImage" id="explicit">
+                <property name="valign">center</property>
+                <property name="icon-name">network-cellular-edge-symbolic</property>
                 <style>
-                  <class name="heading" />
+                  <class name="dim-label" />
                 </style>
-              </object>
-            </child>
-            <child>
-              <object class="GtkBox" id="second-line">
-                <property name="spacing">6</property>
-                <child>
-                  <object class="GtkImage" id="explicit">
-                    <property name="valign">center</property>
-                    <property name="icon-name">network-cellular-edge-symbolic</property>
-                    <style>
-                      <class name="dim-label" />
-                    </style>
-                  </object>
-                </child>
               </object>
             </child>
           </object>

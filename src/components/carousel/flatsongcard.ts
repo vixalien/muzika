@@ -33,9 +33,7 @@ export class FlatSongCard extends Gtk.Box {
   _dynamic_image!: DynamicImage;
 
   constructor() {
-    super({
-      orientation: Gtk.Orientation.VERTICAL,
-    });
+    super();
   }
 
   add_subsequent_middots = false;

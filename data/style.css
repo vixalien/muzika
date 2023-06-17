@@ -177,3 +177,33 @@ flowboxchild {
 .pill.compact {
   padding: 6px 10px;
 }
+
+label.flat-links:not(.hover) link {
+  color: inherit;
+}
+
+label.flat-links.hover link {
+  color: @accent_color;
+}
+
+label.flat-links.hover {
+  color: inherit;
+  text-decoration: none;
+}
+
+.carousel-list-view,
+.carousel-grid-view {
+  border-spacing: 6px;
+  padding-left: 6px;
+  padding-right: 6px;
+}
+
+.carousel-list-view>row {
+  border-radius: 12px;
+  padding: 6px;
+}
+
+.floating-button {
+  border-radius: 50px;
+  padding: 6px;
+}

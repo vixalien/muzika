@@ -6,17 +6,125 @@ import Gio from "gi://Gio";
 import GLib from "gi://GLib";
 import Adw from "gi://Adw";
 
-import { MixedContent, MixedItem } from "../../muse.js";
-import { AlbumCard } from "./albumcard.js";
-import { ArtistCard } from "./artistcard.js";
+import { FlatSong, MixedContent, MixedItem } from "../../muse.js";
 import { FlatSongCard } from "./flatsongcard.js";
-import { PlaylistCard } from "./playlistcard.js";
-import { SongCard } from "./songcard.js";
-import { VideoCard } from "./videocard.js";
 import { ObjectContainer } from "src/util/objectcontainer.js";
-import { WatchPlaylistCard } from "./watchplaylistcard.js";
+import { CarouselCard } from "./card.js";
+import { MixedCardItem } from "../library/mixedcard.js";
 
 export type RequiredMixedItem = NonNullable<MixedItem>;
+
+class CarouselListView extends Gtk.ListView {
+  static {
+    GObject.registerClass({
+      GTypeName: "CarouselListView",
+    }, this);
+  }
+
+  items = new Gio.ListStore<ObjectContainer<MixedCardItem>>({
+    item_type: GObject.TYPE_OBJECT,
+  });
+
+  constructor() {
+    super({
+      single_click_activate: true,
+      margin_bottom: 18,
+      orientation: Gtk.Orientation.HORIZONTAL,
+    });
+
+    this.add_css_class("transparent");
+    this.add_css_class("carousel-list-view");
+
+    const factory = Gtk.SignalListItemFactory.new();
+    factory.connect("bind", this.bind_cb.bind(this));
+    factory.connect("setup", this.setup_cb.bind(this));
+    factory.connect("unbind", this.unbind_cb.bind(this));
+    factory.connect("teardown", this.teardown_cb.bind(this));
+
+    this.factory = factory;
+    this.model = Gtk.NoSelection.new(this.items);
+  }
+
+  setup_cb(_factory: Gtk.ListItemFactory, list_item: Gtk.ListItem) {
+    const card = new CarouselCard();
+    list_item.set_child(card);
+  }
+
+  bind_cb(_factory: Gtk.ListItemFactory, list_item: Gtk.ListItem) {
+    const card = list_item.child as CarouselCard;
+    const item = list_item.item as ObjectContainer<MixedCardItem>;
+
+    if (item.item) {
+      card.show_item(item.item);
+    }
+  }
+
+  unbind_cb(_factory: Gtk.ListItemFactory, list_item: Gtk.ListItem) {
+    const card = list_item.child as CarouselCard;
+    card.clear();
+  }
+
+  teardown_cb(_factory: Gtk.ListItemFactory, list_item: Gtk.ListItem) {
+    list_item.child = null as any;
+  }
+}
+
+class CarouselGridView extends Gtk.GridView {
+  static {
+    GObject.registerClass({
+      GTypeName: "CarouselGridView",
+    }, this);
+  }
+
+  items = new Gio.ListStore<ObjectContainer<FlatSong>>({
+    item_type: GObject.TYPE_OBJECT,
+  });
+
+  constructor() {
+    super({
+      single_click_activate: true,
+      margin_bottom: 18,
+      min_columns: 4,
+      max_columns: 4,
+      orientation: Gtk.Orientation.HORIZONTAL,
+    });
+
+    this.add_css_class("transparent");
+    this.add_css_class("carousel-grid-view");
+
+    const factory = Gtk.SignalListItemFactory.new();
+    factory.connect("bind", this.bind_cb.bind(this));
+    factory.connect("setup", this.setup_cb.bind(this));
+    factory.connect("unbind", this.unbind_cb.bind(this));
+    factory.connect("teardown", this.teardown_cb.bind(this));
+
+    this.factory = factory;
+    this.model = Gtk.NoSelection.new(this.items);
+  }
+
+  setup_cb(_factory: Gtk.ListItemFactory, list_item: Gtk.ListItem) {
+    const card = new FlatSongCard();
+    list_item.set_child(card);
+  }
+
+  bind_cb(_factory: Gtk.ListItemFactory, list_item: Gtk.ListItem) {
+    const card = list_item.child as FlatSongCard;
+    const item = list_item.item as ObjectContainer<FlatSong>;
+
+    if (item.item) {
+      card.set_song(item.item);
+    }
+  }
+
+  unbind_cb(_factory: Gtk.ListItemFactory, list_item: Gtk.ListItem) {
+    const card = list_item.child as CarouselCard;
+    card.clear();
+  }
+
+  teardown_cb(_factory: Gtk.ListItemFactory, list_item: Gtk.ListItem) {
+    list_item.child = null as any;
+  }
+}
 
 export class Carousel<
   Content extends Partial<MixedContent> & Pick<MixedContent, "contents">,
@@ -31,11 +139,7 @@ export class Carousel<
         "subtitle",
         "text",
         "text_view",
-        "list_view",
-        "grid_view",
-        "grid_scrolled",
-        "list_scrolled",
-        "stack",
+        "scrolled",
         "buttons",
         "left_button",
         "right_button",
@@ -46,15 +150,11 @@ export class Carousel<
 
   content?: Content;
 
-  _stack!: Gtk.Stack;
-  _grid_scrolled!: Gtk.ScrolledWindow;
-  _list_scrolled!: Gtk.ScrolledWindow;
+  _scrolled!: Gtk.ScrolledWindow;
   _title!: Gtk.Label;
   _subtitle!: Gtk.Label;
   _text!: Gtk.Box;
   _text_view!: Gtk.TextView;
-  _list_view!: Gtk.ListView;
-  _grid_view!: Gtk.GridView;
   _left_button!: Gtk.Button;
   _right_button!: Gtk.Button;
   _carousel_stack!: Gtk.Stack;
@@ -67,14 +167,9 @@ export class Carousel<
   constructor(params?: Partial<Gtk.Box.ConstructorProperties>) {
     super(params);
 
-    this._list_view.remove_css_class("view");
-    this._grid_view.remove_css_class("view");
-
-    for (const scrolled of [this._grid_scrolled, this._list_scrolled]) {
-      const adjustment = scrolled.get_hadjustment();
-      adjustment.connect("changed", this.sync_scroll_buttons.bind(this));
-      adjustment.connect("value-changed", this.sync_scroll_buttons.bind(this));
-    }
+    const adjustment = this._scrolled.get_hadjustment();
+    adjustment.connect("changed", this.sync_scroll_buttons.bind(this));
+    adjustment.connect("value-changed", this.sync_scroll_buttons.bind(this));
 
     Gtk.DirectionType.RIGHT;
 
@@ -91,13 +186,11 @@ export class Carousel<
   begin_scroll_animation(
     direction: Gtk.DirectionType.RIGHT | Gtk.DirectionType.LEFT,
   ) {
-    const visible_child = this._stack
-      .get_visible_child() as Gtk.ScrolledWindow;
-    const hadjustment = visible_child.get_hadjustment();
+    const hadjustment = this._scrolled.get_hadjustment();
 
     const target = Adw.PropertyAnimationTarget.new(hadjustment, "value");
     const animation = Adw.TimedAnimation.new(
-      visible_child,
+      this._scrolled,
       hadjustment.value,
       (direction === Gtk.DirectionType.RIGHT)
         ? (hadjustment.value + hadjustment.page_size)
@@ -110,8 +203,7 @@ export class Carousel<
   }
 
   sync_scroll_buttons() {
-    const visible_child = this._stack.get_visible_child() as Gtk.ScrolledWindow;
-    const hadjustment = visible_child.get_hadjustment();
+    const hadjustment = this._scrolled.get_hadjustment();
 
     if (
       (hadjustment.get_upper() - hadjustment.get_lower()) ==
@@ -138,98 +230,50 @@ export class Carousel<
     }
   }
 
-  setup(grid = false) {
-    this.grid = grid;
+  show_listview(contents: MixedItem[]) {
+    const listview = new CarouselListView();
 
-    const factory = Gtk.SignalListItemFactory.new();
-    factory.connect("bind", this.bind_cb.bind(this));
+    listview.connect("activate", (_, position) => {
+      const item = listview.items.get_item(position);
 
-    if (grid) {
-      this._stack.set_visible_child(this._grid_scrolled);
+      this.activate_cb(item);
+    });
 
-      this._grid_view.factory = factory;
-      this._grid_view.model = Gtk.NoSelection.new(this.model);
-      this._grid_view.connect("activate", this.activate_cb.bind(this));
-    } else {
-      this._list_view.factory = factory;
-      this._list_view.model = Gtk.NoSelection.new(this.model);
-      this._list_view.connect("activate", this.activate_cb.bind(this));
+    for (const content of contents) {
+      if (!content) continue;
+
+      listview.items.append(ObjectContainer.new(content));
     }
+
+    this._scrolled.child = listview;
   }
 
-  bind_cb(_factory: Gtk.ListItemFactory, list_item: Gtk.ListItem) {
-    const object = list_item.get_item() as ObjectContainer<RequiredMixedItem>;
-    const item = object.item!;
+  show_gridview(contents: MixedItem[]) {
+    const gridview = new CarouselGridView();
 
-    let card;
+    gridview.connect("activate", (_, position) => {
+      const item = gridview.items.get_item(position);
 
-    if (this.grid) {
-      if (item.type !== "flat-song") {
-        console.warn("Invalid item in list", item);
-      } else {
-        card = new FlatSongCard();
-        card.set_song(item);
+      this.activate_cb(item);
+    });
+
+    for (const content of contents) {
+      if (!content) continue;
+
+      if (content.type != "flat-song") {
+        console.warn(
+          `CarouselGridView only supports flat-song items, got: ${content.type}`,
+        );
       }
-    } else {
-      switch (item.type) {
-        case "song":
-          card = new SongCard();
-          card.set_song(item);
-          break;
-        case "inline-video":
-          card = new VideoCard();
-          card.set_inline_video(item);
-          break;
-        case "video":
-          card = new VideoCard();
-          card.set_video(item);
-          break;
-        case "album":
-          card = new AlbumCard();
-          card.set_album(item);
-          break;
-        case "playlist":
-          card = new PlaylistCard();
-          card.set_playlist(item);
-          break;
-        case "channel":
-        case "artist":
-          card = new ArtistCard();
-          card.set_artist(item);
-          break;
-        case "watch-playlist":
-          card = new WatchPlaylistCard();
-          card.set_watch_playlist(item);
-          break;
-        default:
-          console.warn("Invalid item in carousel", item.type);
-      }
+
+      gridview.items.append(ObjectContainer.new(content as FlatSong));
     }
 
-    if (card) {
-      if (!this.grid) card.add_css_class("padding-6");
-
-      list_item.set_child(card);
-
-      const parent = card.get_parent();
-
-      if (parent) {
-        parent.margin_start = 6;
-        if (this.grid) {
-          parent.margin_bottom = 6;
-          parent.add_css_class("br-9");
-        } else {
-          parent.add_css_class("br-12");
-        }
-      }
-    }
+    this._scrolled.child = gridview;
   }
 
-  activate_cb(_list_view: Gtk.ListView, position: number) {
-    const object = this.model.get_item(position) as ObjectContainer<
-      RequiredMixedItem
-    >;
-    const item = object.item!;
+  activate_cb(object: ObjectContainer<MixedCardItem> | null) {
+    const item = object?.item!;
 
     if (!item) return;
 
@@ -289,16 +333,12 @@ export class Carousel<
 
       this._buttons.visible = false;
     } else {
-      this._carousel_stack.visible_child = this._stack;
+      this._carousel_stack.visible_child = this._scrolled;
 
-      this.setup(content.display == "list");
-
-      this.model.remove_all();
-
-      for (const item of content.contents) {
-        if (!item) continue;
-
-        this.model.append(ObjectContainer.new(item as RequiredMixedItem));
+      if (content.display == "list") {
+        this.show_gridview(content.contents);
+      } else {
+        this.show_listview(content.contents);
       }
     }
   }
