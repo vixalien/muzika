@@ -4,15 +4,9 @@
     <file>style.css</file>
     <!-- components -->
     <file preprocess="xml-stripblanks">components/album/item.ui</file>
-    <file preprocess="xml-stripblanks">components/carousel/albumcard.ui</file>
-    <file preprocess="xml-stripblanks">components/carousel/artistcard.ui</file>
     <file preprocess="xml-stripblanks">components/carousel/card.ui</file>
     <file preprocess="xml-stripblanks">components/carousel/carousel.ui</file>
     <file preprocess="xml-stripblanks">components/carousel/flatsong.ui</file>
-    <file preprocess="xml-stripblanks">components/carousel/playlistcard.ui</file>
-    <file preprocess="xml-stripblanks">components/carousel/songcard.ui</file>
-    <file preprocess="xml-stripblanks">components/carousel/videocard.ui</file>
-    <file preprocess="xml-stripblanks">components/carousel/watchplaylistcard.ui</file>
     <file preprocess="xml-stripblanks">components/library/history.ui</file>
     <file preprocess="xml-stripblanks">components/library/mixedcard.ui</file>
     <file preprocess="xml-stripblanks">components/library/songs.ui</file>
