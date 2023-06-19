@@ -17,7 +17,7 @@ import { load_thumbnails } from "../webimage.js";
 import { ParsedLibraryArtist } from "libmuse/types/parsers/library.js";
 import { DynamicImage, DynamicImageVisibleChild } from "../dynamic-image.js";
 import { PlaylistImage } from "../playlist-image.js";
-import { escape_label } from "src/util/text.js";
+import { pretty_subtitles } from "src/util/text.js";
 import { MixedCardItem } from "../library/mixedcard.js";
 
 enum CarouselImageType {
@@ -166,29 +166,13 @@ export class CarouselCard extends Gtk.Box {
   private subtitle_nodes: string[] = [];
 
   private update_subtitle() {
-    const author_markup: string[] = [];
-    const author_plain: string[] = [];
+    const subtitles = pretty_subtitles(
+      this.subtitle_authors,
+      this.subtitle_nodes,
+    );
 
-    for (const node of this.subtitle_authors) {
-      if (typeof node === "string") {
-        author_markup.push(escape_label(node));
-        author_plain.push(escape_label(node));
-      } else {
-        author_markup.push(
-          `<a href="muzika:artist:${node.id}">${escape_label(node.name)}</a>`,
-        );
-        author_plain.push(escape_label(node.name));
-      }
-    }
-
-    const merge = (authors: string[]) => {
-      return [authors.join(", "), this.subtitle_nodes.join(" • ")]
-        .filter(Boolean)
-        .join(" • ");
-    };
-
-    this._subtitle.label = merge(author_markup);
-    this._subtitle.tooltip_text = merge(author_plain);
+    this._subtitle.label = subtitles.markup;
+    this._subtitle.tooltip_text = subtitles.plain;
   }
 
   private set_title(title: string) {
