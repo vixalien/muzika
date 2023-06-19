@@ -8,6 +8,7 @@ import { DynamicImage } from "../dynamic-image.js";
 
 // first register the DynamicImage class
 import "../dynamic-image.js";
+import { pretty_subtitles } from "src/util/text.js";
 
 export class AlbumItemCard extends Gtk.ListBoxRow {
   static {
@@ -17,7 +18,7 @@ export class AlbumItemCard extends Gtk.ListBoxRow {
       InternalChildren: [
         "title",
         "explicit",
-        "second_line",
+        "subtitle",
       ],
       Children: [
         "dynamic_image",
@@ -31,73 +32,21 @@ export class AlbumItemCard extends Gtk.ListBoxRow {
 
   private _title!: Gtk.Label;
   private _explicit!: Gtk.Image;
-  private _second_line!: Gtk.Box;
+  private _subtitle!: Gtk.Label;
 
   constructor() {
     super({});
-  }
 
-  add_subsequent_middots = false;
+    this._subtitle.connect("activate-link", (_, uri) => {
+      if (uri && uri.startsWith("muzika:")) {
+        this.activate_action(
+          "navigator.visit",
+          GLib.Variant.new_string(uri),
+        );
 
-  insert_middot(force = false) {
-    const label = Gtk.Label.new("·");
-
-    label.add_css_class("dim-label");
-
-    const flowchild = new Gtk.FlowBoxChild({
-      halign: Gtk.Align.START,
-      child: label,
+        return true;
+      }
     });
-
-    if (this.add_subsequent_middots || force) {
-      this._second_line.append(flowchild);
-    } else {
-      this.add_subsequent_middots = true;
-    }
-  }
-
-  add_artist_only(artist: ArtistRun) {
-    let child: Gtk.Widget;
-
-    if (artist.id) {
-      const button = new Gtk.Button({
-        label: artist.name,
-        cursor: Gdk.Cursor.new_from_name("pointer", null),
-      });
-
-      button.add_css_class("inline");
-      button.add_css_class("flat");
-      button.add_css_class("link");
-      button.add_css_class("dim-label");
-
-      button.action_name = "navigator.visit";
-      button.action_target = GLib.Variant.new(
-        "s",
-        `muzika:artist:${artist.id}`,
-      );
-
-      child = button;
-    } else {
-      const label = Gtk.Label.new(artist.name);
-
-      label.add_css_class("dim-label");
-
-      child = label;
-    }
-
-    const flowchild = new Gtk.FlowBoxChild({
-      halign: Gtk.Align.START,
-      child: child,
-    });
-
-    flowchild.add_css_class("no-padding");
-
-    this._second_line.append(flowchild);
-  }
-
-  add_author(artist: ArtistRun) {
-    this.insert_middot();
-    this.add_artist_only(artist);
   }
 
   set_item(number: number, item: PlaylistItem, playlistId?: string) {
@@ -107,14 +56,10 @@ export class AlbumItemCard extends Gtk.ListBoxRow {
 
     this._title.set_label(item.title);
 
-    if (item.artists && item.artists.length > 0) {
-      this._second_line.show();
-      item.artists.map((artist) => {
-        this.add_author(artist);
-      });
-    } else {
-      this._second_line.hide();
-    }
+    const subtitles = pretty_subtitles(item.artists ?? []);
+
+    this._subtitle.label = subtitles.markup;
+    this._subtitle.tooltip_text = subtitles.plain;
 
     this._explicit.set_visible(item.isExplicit);
 
