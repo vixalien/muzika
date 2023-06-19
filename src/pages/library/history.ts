@@ -4,6 +4,7 @@ import Gtk from "gi://Gtk?version=4.0";
 import { get_history, History, PlaylistItem } from "../../muse.js";
 
 import { PlaylistItemCard } from "src/components/playlist/item.js";
+import { EndpointContext, MuzikaComponent } from "src/navigation.js";
 
 interface PlaylistItemWithCategory extends PlaylistItem {
   category?: string;
@@ -11,6 +12,10 @@ interface PlaylistItemWithCategory extends PlaylistItem {
 
 interface HistoryTitleOptions {
   title: string;
+}
+
+interface HistoryState {
+  results: History;
 }
 
 class HistoryTitle extends Gtk.Box {
@@ -37,18 +42,21 @@ class HistoryTitle extends Gtk.Box {
   }
 }
 
-export class HistoryPage extends Gtk.Box {
+export class HistoryPage extends Gtk.Box
+  implements MuzikaComponent<History, HistoryState> {
   static {
     GObject.registerClass({
       GTypeName: "HistoryPage",
-      Template: "resource:///com/vixalien/muzika/ui/components/library/history.ui",
+      Template:
+        "resource:///com/vixalien/muzika/ui/components/library/history.ui",
       InternalChildren: ["list"],
     }, this);
   }
 
+  uri = "library:history";
+
   private _list!: Gtk.ListBox;
 
-  loader = get_history;
   results?: History;
 
   constructor() {
@@ -69,7 +77,13 @@ export class HistoryPage extends Gtk.Box {
 
   loading = false;
 
-  show_library(library: History) {
+  present(history: History) {
+    this.results = history;
+
+    this.show_library(history);
+  }
+
+  private show_library(library: History) {
     library.categories.forEach((category) => {
       category.items
         .filter(Boolean)
@@ -90,9 +104,17 @@ export class HistoryPage extends Gtk.Box {
     });
   }
 
-  async load_library() {
-    this.results = await this.loader();
+  get_state() {
+    return {
+      results: this.results!,
+    };
+  }
 
-    this.show_library(this.results);
+  restore_state(state: HistoryState) {
+    this.present(state.results);
+  }
+
+  static load(context: EndpointContext) {
+    return get_history();
   }
 }

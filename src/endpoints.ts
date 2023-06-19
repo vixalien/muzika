@@ -86,39 +86,24 @@ export const endpoints: Endpoint<MuzikaComponent<unknown, unknown>>[] = [
     component: () => new LibraryPlaylistsPage(),
     load: LibraryPlaylistsPage.load,
   },
-  // {
-  //   uri: "library/albums",
-  //   title: "Library Albums",
-  //   component: () => new LibraryAlbumsPage(),
-  //   load(component: LibraryAlbumsPage, ctx) {
-  //     return component.load_library({
-  //       signal: ctx.signal,
-  //       ...Object.fromEntries(ctx.url.searchParams as any),
-  //     });
-  //   },
-  // } as Endpoint<LibraryAlbumsPage>,
-  // {
-  //   uri: "library/artists",
-  //   title: "Library Artists",
-  //   component: () => new LibraryArtistsPage(),
-  //   load(component: LibraryArtistsPage, ctx) {
-  //     return component.load_library({
-  //       signal: ctx.signal,
-  //       ...Object.fromEntries(ctx.url.searchParams as any),
-  //     });
-  //   },
-  // } as Endpoint<LibraryArtistsPage>,
-  // {
-  //   uri: "library/subscriptions",
-  //   title: "Library Subscriptions",
-  //   component: () => new LibrarySubscriptionsPage(),
-  //   load(component: LibrarySubscriptionsPage, ctx) {
-  //     return component.load_library({
-  //       signal: ctx.signal,
-  //       ...Object.fromEntries(ctx.url.searchParams as any),
-  //     });
-  //   },
-  // } as Endpoint<LibrarySubscriptionsPage>,
+  {
+    uri: "library/albums",
+    title: "Library Albums",
+    component: () => new LibraryAlbumsPage(),
+    load: LibraryAlbumsPage.load,
+  },
+  {
+    uri: "library/artists",
+    title: "Library Artists",
+    component: () => new LibraryArtistsPage(),
+    load: LibraryArtistsPage.load,
+  },
+  {
+    uri: "library/subscriptions",
+    title: "Library Subscriptions",
+    component: () => new LibrarySubscriptionsPage(),
+    load: LibrarySubscriptionsPage.load,
+  },
   // {
   //   uri: "library/songs",
   //   title: "Library Songs",
@@ -130,12 +115,10 @@ export const endpoints: Endpoint<MuzikaComponent<unknown, unknown>>[] = [
   //     });
   //   },
   // } as Endpoint<LibrarySongsPage>,
-  // {
-  //   uri: "history",
-  //   title: "History",
-  //   component: () => new HistoryPage(),
-  //   load(component: HistoryPage) {
-  //     return component.load_library();
-  //   },
-  // } as Endpoint<HistoryPage>,
+  {
+    uri: "history",
+    title: "History",
+    component: () => new HistoryPage(),
+    load: HistoryPage.load,
+  },
 ];
