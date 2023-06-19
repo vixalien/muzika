@@ -9,8 +9,14 @@ import { Loading } from "../components/loading.js";
 import { AlbumHeader } from "../components/album/header.js";
 import { AlbumItemCard } from "../components/album/item.js";
 import { DynamicImageState } from "src/components/dynamic-image.js";
+import { EndpointContext, MuzikaComponent } from "src/navigation.js";
 
-export class AlbumPage extends Gtk.Box {
+interface AlbumState {
+  album: AlbumResult;
+}
+
+export class AlbumPage extends Gtk.Box
+  implements MuzikaComponent<AlbumResult, AlbumState> {
   static {
     GObject.registerClass({
       GTypeName: "AlbumPage",
@@ -37,6 +43,8 @@ export class AlbumPage extends Gtk.Box {
   header: AlbumHeader;
 
   _loading: Loading;
+
+  uri = "album";
 
   constructor() {
     super({
@@ -106,7 +114,8 @@ export class AlbumPage extends Gtk.Box {
     this._content.append(carousel);
   }
 
-  show_album(album: AlbumResult) {
+  present(album: AlbumResult) {
+    this.album = album;
     this._loading.loading = false;
 
     this.header.load_thumbnails(album.thumbnails);
@@ -140,15 +149,6 @@ export class AlbumPage extends Gtk.Box {
     this.append_tracks(album.tracks);
   }
 
-  async load_album(channelId: string, signal?: AbortSignal) {
-    this._loading.loading = true;
-
-    this.album = await get_album(channelId, {
-      signal,
-    });
-    this.show_album(this.album);
-  }
-
   no_more = false;
 
   get isLoading() {
@@ -157,6 +157,22 @@ export class AlbumPage extends Gtk.Box {
 
   set isLoading(value: boolean) {
     this._loading.loading = value;
+  }
+
+  static load(context: EndpointContext) {
+    return get_album(context.match.params.albumId, {
+      signal: context.signal,
+    });
+  }
+
+  get_state(): AlbumState {
+    return {
+      album: this.album!,
+    };
+  }
+
+  restore_state(state: AlbumState) {
+    this.present(state.album);
   }
 }
 

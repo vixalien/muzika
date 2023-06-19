@@ -158,6 +158,8 @@ export class Navigator extends GObject.Object {
     const component = endpoint.component();
     const page = new Page(endpoint, component);
 
+    component.uri = uri;
+
     if (this.last_controller) {
       this.last_controller.abort();
     }
