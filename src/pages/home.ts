@@ -47,8 +47,6 @@ export class HomePage extends Adw.Bin
     });
   }
 
-  uri = "home";
-
   static load(ctx: EndpointContext) {
     return get_home({ limit: 3, signal: ctx.signal });
   }

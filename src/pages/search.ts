@@ -53,8 +53,6 @@ export class SearchPage extends Gtk.Box
   results?: SearchResults;
   args: Parameters<typeof search> = [""];
 
-  uri = "search";
-
   constructor() {
     super({
       orientation: Gtk.Orientation.VERTICAL,

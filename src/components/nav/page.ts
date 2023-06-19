@@ -7,7 +7,6 @@ import { Endpoint, MuzikaComponent } from "src/navigation";
 
 export interface PageState<State> {
   state: State;
-  title: string;
 }
 
 // register Loading
@@ -47,9 +46,7 @@ export class Page<Data extends unknown, State extends unknown = null>
   private _loading!: Loading;
   private _content!: Adw.Bin;
 
-  get uri() {
-    return this.page.uri;
-  }
+  uri: string;
 
   get loading() {
     return this._stack.visible_child === this._loading;
@@ -74,13 +71,16 @@ export class Page<Data extends unknown, State extends unknown = null>
 
   page: MuzikaComponent<Data, State>;
   endpoint: Endpoint<MuzikaComponent<Data, State>>;
-  __state: State | null = null;
+  __state: PageState<State> | null = null;
 
   constructor(
+    uri: string,
     endpoint: Endpoint<MuzikaComponent<Data, State>>,
     page: MuzikaComponent<Data, State>,
   ) {
     super();
+
+    this.uri = uri;
 
     this.endpoint = endpoint;
     this.page = page;
@@ -98,5 +98,22 @@ export class Page<Data extends unknown, State extends unknown = null>
 
     this.page = page;
     this._content.child = page;
+  }
+
+  vfunc_hidden(): void {
+    this.__state = {
+      state: this.page.get_state(),
+    };
+    this.page = this._content.child = null as any;
+  }
+
+  vfunc_showing(): void {
+    if (this.__state) {
+      const page = this.endpoint.component();
+      page.restore_state(this.__state.state);
+      this.page = page;
+      this._content.child = page;
+      this.__state = null;
+    }
   }
 }

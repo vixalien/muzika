@@ -44,8 +44,6 @@ export class AlbumPage extends Gtk.Box
 
   _loading: Loading;
 
-  uri = "album";
-
   constructor() {
     super({
       orientation: Gtk.Orientation.VERTICAL,

@@ -124,6 +124,7 @@ export class AbstractLibraryPage<PageOrder extends LibraryOrder | Order = Order>
 
     this.view.connect("filter-changed", this.handle_order_changed.bind(this));
 
+    this.results = state.results;
     this.show_library(state.results);
   }
 

@@ -64,7 +64,16 @@ export class NavbarSection extends Gtk.Box {
   ): void {
     if (child instanceof Gtk.Widget) {
       if (this.items) {
-        this.items.append(child as Gtk.Widget);
+        const row = Gtk.ListBoxRow.new();
+        row.child = child;
+
+        // transfer sensitive property
+        if (!child.sensitive) {
+          row.sensitive = false;
+          child.sensitive = true;
+        }
+
+        this.items.append(row);
         return;
       }
     }

@@ -53,8 +53,6 @@ export class HistoryPage extends Gtk.Box
     }, this);
   }
 
-  uri = "library:history";
-
   private _list!: Gtk.ListBox;
 
   results?: History;

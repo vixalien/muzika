@@ -54,11 +54,6 @@ export class PlaylistPage extends Gtk.Box
   header: PlaylistHeader;
 
   _loading: Loading;
-  // _box: Gtk.Box;
-  // _clamp: Adw.Clamp;
-  // _scrolled: Gtk.ScrolledWindow;
-
-  uri = "playlist";
 
   constructor() {
     super({

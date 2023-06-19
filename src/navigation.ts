@@ -31,7 +31,6 @@ export interface MuzikaComponent<
   State extends any,
 > {
   __page_state?: State;
-  uri: string;
   present(data: Data): void;
   get_state(): State;
   restore_state(state: State): void;
@@ -159,9 +158,7 @@ export class Navigator extends GObject.Object {
   ) {
     const url = new URL("muzika:" + uri);
     const component = endpoint.component();
-    const page = new Page(endpoint, component);
-
-    component.uri = uri;
+    const page = new Page(uri, endpoint, component);
 
     if (this.last_controller) {
       this.last_controller.abort();
@@ -216,7 +213,7 @@ export class Navigator extends GObject.Object {
   get current_uri(): string | null {
     const stack = this._view.navigation_stack;
     const page = stack.get_item(stack.get_n_items() - 1) as
-      | MuzikaComponent<unknown, unknown>
+      | Page<unknown, unknown>
       | null;
 
     if (!page) return null;

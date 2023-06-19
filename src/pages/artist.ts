@@ -40,8 +40,6 @@ export class ArtistPage extends Gtk.Box
   _top_songs_list!: Gtk.ListBox;
   _more_top_songs!: Gtk.Button;
 
-  uri = "artist";
-
   header: ArtistHeader;
 
   constructor() {

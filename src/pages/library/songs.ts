@@ -134,6 +134,7 @@ export class LibrarySongsPage extends Gtk.Box
 
     this.connect("filter-changed", this.handle_order_changed.bind(this));
 
+    this.results = state.results;
     this.show_library(state.results);
   }
 
