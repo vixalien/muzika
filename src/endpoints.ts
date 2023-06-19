@@ -1,6 +1,6 @@
 import Gtk from "gi://Gtk?version=4.0";
 
-import { Endpoint, MuzikaPage } from "./navigation.js";
+import { Endpoint, MuzikaComponent } from "./navigation.js";
 
 import { LibraryPage } from "./pages/library/index.js";
 import { HomePage } from "./pages/home.js";
@@ -15,10 +15,14 @@ import { LibrarySubscriptionsPage } from "./pages/library/subscriptions.js";
 import { LibrarySongsPage } from "./pages/library/songs.js";
 import { HistoryPage } from "./pages/library/history.js";
 
-export const endpoints: Endpoint<MuzikaPage<any>>[] = [
+export const endpoints: Endpoint<MuzikaComponent<unknown, unknown>>[] = [
   {
     uri: "home",
-    page: () => new HomePage(),
+    title: "Home",
+    component: () => new HomePage(),
+    load(context) {
+      return HomePage.load(context);
+    },
   },
   // {
   //   uri: "playlist/:playlistId",

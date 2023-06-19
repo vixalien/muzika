@@ -9,6 +9,7 @@
         </child>
         <property name="content">
           <object class="GtkStack" id="stack">
+            <property name="vhomogeneous">false</property>
             <child>
               <object class="Loading" id="loading" />
             </child>

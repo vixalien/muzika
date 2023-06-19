@@ -19,8 +19,9 @@ export type EndpointCtx = {
   signal: AbortSignal;
 };
 
-export type EndpointResponse = {
+export type EndpointResponse<Data> = {
   title?: string;
+  data: Data;
 };
 
 export interface ShowPageOptions {
@@ -30,15 +31,15 @@ export interface ShowPageOptions {
   uri: string;
 }
 
-export interface MuzikaPage<
+export interface MuzikaComponent<
   Data extends any,
-  State extends any = null,
+  State extends any,
 > {
+  __page_state?: State;
   uri: string;
-  present(data: Data, state: State): void;
+  present(data: Data): void;
   get_state(): State;
-  clear(): void;
-  load(context: EndpointContext): void | Promise<void | Data>;
+  restore_state(state: State): void;
 }
 
 export interface EndpointContext {
@@ -47,17 +48,22 @@ export interface EndpointContext {
   signal: AbortSignal;
 }
 
-export type Endpoint<Page extends MuzikaPage<Record<string, unknown>>> =
-  Page extends MuzikaPage<infer Data, infer State> ? {
+export type Endpoint<Page extends MuzikaComponent<unknown, unknown>> =
+  Page extends MuzikaComponent<infer Data, infer State> ? {
+      title: string;
       uri: string;
-      page(): MuzikaPage<Data, State> & Adw.NavigationPage;
+      component(): MuzikaComponent<Data, State> & Gtk.Widget;
+      load(context: EndpointContext): void | Promise<void | Data>;
     }
     : never;
 
 export class Navigator extends GObject.Object {
   private _view: Adw.NavigationView;
 
-  private match_map: Map<MatchFunction, Endpoint<MuzikaPage<any>>> = new Map();
+  private match_map: Map<
+    MatchFunction,
+    Endpoint<MuzikaComponent<unknown, unknown>>
+  > = new Map();
 
   loading = false;
 
@@ -152,10 +158,11 @@ export class Navigator extends GObject.Object {
   private show_page(
     uri: string,
     match: MatchResult<Record<string, string>>,
-    endpoint: Endpoint<MuzikaPage<any>>,
+    endpoint: Endpoint<MuzikaComponent<unknown, unknown>>,
   ) {
     const url = new URL("muzika:" + uri);
-    const page = endpoint.page();
+    const component = endpoint.component();
+    const page = new Page(endpoint, component);
 
     if (this.last_controller) {
       this.last_controller.abort();
@@ -163,7 +170,7 @@ export class Navigator extends GObject.Object {
 
     this.last_controller = new AbortController();
 
-    const response = page.load({
+    const response = endpoint.load({
       match,
       url,
       signal: this.last_controller.signal,
@@ -195,7 +202,7 @@ export class Navigator extends GObject.Object {
         this.last_controller = null;
 
         if (data != null) {
-          page.present(data, null);
+          page.loaded(data);
         }
       },
     ).catch(handle_error);
@@ -204,7 +211,7 @@ export class Navigator extends GObject.Object {
   get current_uri(): string | null {
     const stack = this._view.navigation_stack;
     const page = stack.get_item(stack.get_n_items() - 1) as
-      | MuzikaPage<any>
+      | MuzikaComponent<unknown, unknown>
       | null;
 
     if (!page) return null;

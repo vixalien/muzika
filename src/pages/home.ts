@@ -8,32 +8,33 @@ import { get_home, Home, MixedContent } from "../muse.js";
 
 import { Carousel } from "../components/carousel/index.js";
 import { Loading } from "../components/loading.js";
-import { EndpointContext, MuzikaPage } from "src/navigation.js";
+import { EndpointContext, MuzikaComponent } from "src/navigation.js";
 
 Loading;
 Paginator;
 
-export class HomePage extends Adw.NavigationPage implements MuzikaPage<Home> {
+export interface HomePageState {
+  home: Home;
+}
+
+export class HomePage extends Adw.Bin
+  implements MuzikaComponent<Home, HomePageState> {
   static {
     GObject.registerClass({
       GTypeName: "HomePage",
       Template: "resource:///com/vixalien/muzika/ui/pages/home.ui",
-      InternalChildren: ["scrolled", "box", "paginator", "stack", "loading"],
+      InternalChildren: ["scrolled", "box", "paginator"],
     }, this);
   }
 
   private _scrolled!: Gtk.ScrolledWindow;
   private _box!: Gtk.Box;
   private _paginator!: Paginator;
-  private _stack!: Gtk.Stack;
-  private _loading!: Loading;
 
   home?: Home;
 
   constructor() {
     super();
-
-    this.title = "Home";
 
     this._scrolled.vadjustment.connect("value-changed", () => {
       if (this.check_if_almost_scrolled()) {
@@ -48,25 +49,29 @@ export class HomePage extends Adw.NavigationPage implements MuzikaPage<Home> {
 
   uri = "home";
 
-  load(ctx: EndpointContext) {
-    this.loading = true;
-
+  static load(ctx: EndpointContext) {
     return get_home({ limit: 3, signal: ctx.signal });
   }
 
-  present(home: Home, state: null): void {
+  present(home: Home): void {
     this.loading = false;
     this._paginator.can_paginate = home.continuation != null;
 
     this.append_contents(home.results);
 
-    this.check_height_and_load();
+    // this.check_height_and_load();
 
     this.home = home;
   }
 
   get_state() {
-    return null;
+    return {
+      home: this.home!,
+    };
+  }
+
+  restore_state(state: HomePageState) {
+    this.present(state.home);
   }
 
   clear() {
@@ -84,14 +89,6 @@ export class HomePage extends Adw.NavigationPage implements MuzikaPage<Home> {
     }
 
     return;
-  }
-
-  get is_initial_loading() {
-    return this._stack.visible_child === this._loading;
-  }
-
-  set is_initial_loading(loading: boolean) {
-    this._stack.visible_child = loading ? this._loading : this._scrolled;
   }
 
   append_contents(result: MixedContent[]) {
@@ -134,15 +131,11 @@ export class HomePage extends Adw.NavigationPage implements MuzikaPage<Home> {
   }
 
   get loading() {
-    return this.is_initial_loading || this._paginator.loading;
+    return this._paginator.loading;
   }
 
   set loading(value: boolean) {
     this._paginator.loading = value;
-
-    if (value == false) {
-      this.is_initial_loading = false;
-    }
   }
 
   load_more() {

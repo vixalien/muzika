@@ -3,11 +3,18 @@ import Adw from "gi://Adw";
 import GObject from "gi://GObject";
 
 import { Loading } from "../loading";
+import { Endpoint, MuzikaComponent } from "src/navigation";
+
+export interface PageState<State> {
+  state: State;
+  title: string;
+}
 
 // register Loading
 Loading;
 
-export class Page extends Adw.NavigationPage {
+export class Page<Data extends unknown, State extends unknown = null>
+  extends Adw.NavigationPage {
   static {
     GObject.registerClass({
       GTypeName: "Page",
@@ -61,21 +68,31 @@ export class Page extends Adw.NavigationPage {
     }
   }
 
-  static new(child: Gtk.Widget, title: string) {
-    const page = new this({ title });
-    page.content = child;
+  page: MuzikaComponent<Data, State>;
+  endpoint: Endpoint<MuzikaComponent<Data, State>>;
+  __state: State | null = null;
 
-    return page;
+  constructor(
+    endpoint: Endpoint<MuzikaComponent<Data, State>>,
+    page: MuzikaComponent<Data, State>,
+  ) {
+    super();
+
+    this.endpoint = endpoint;
+    this.page = page;
+    this.title = endpoint.title;
+
+    this.loading = true;
   }
 
-  static new_with_tag(
-    child: Gtk.Widget,
-    title: string,
-    tag: string,
-  ): Adw.NavigationPage {
-    const page = new this({ title, tag });
-    page.content = child;
+  loaded(data: Data) {
+    const page = this.endpoint.component();
 
-    return page;
+    page.present(data);
+
+    this.loading = false;
+
+    this.page = page;
+    this._content.child = page;
   }
 }
