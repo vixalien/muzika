@@ -17,7 +17,8 @@ export class NavbarView extends Gtk.Box {
     GObject.registerClass(
       {
         GTypeName: "NavbarView",
-        Template: "resource:///com/vixalien/muzika/ui/components/navbar/index.ui",
+        Template:
+          "resource:///com/vixalien/muzika/ui/components/navbar/index.ui",
         InternalChildren: [
           "section",
           "search",
@@ -59,18 +60,6 @@ export class NavbarView extends Gtk.Box {
       if (!(child instanceof NavbarButton)) return;
 
       if (!child.link) return;
-
-      const is_navbar_hidden = view.collapsed && !view.show_content;
-
-      if (is_navbar_hidden && window.navigator.current_uri === child.link) {
-        // just close the navbar
-        return this.emit("activated", child.link);
-      }
-
-      this.activate_action(
-        "navigator.visit",
-        GLib.Variant.new_string(`muzika:${child.link}`),
-      );
 
       this.emit("activated", child.link);
     });

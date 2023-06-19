@@ -12,6 +12,7 @@ import { ErrorPage } from "./pages/error.js";
 import { AddActionEntries } from "./util/action.js";
 import { AuthenticationErrorPage } from "./pages/authentication-error.js";
 import { Page } from "./components/nav/page.js";
+import { list_model_to_array } from "./util/list.js";
 
 export type EndpointResponse<Data> = {
   title?: string;
@@ -58,6 +59,8 @@ export class Navigator extends GObject.Object {
     MatchFunction,
     Endpoint<MuzikaComponent<unknown, unknown>>
   > = new Map();
+
+  private stacks: Map<string, Adw.NavigationPage[]> = new Map();
 
   loading = false;
 
@@ -270,6 +273,31 @@ export class Navigator extends GObject.Object {
 
     if (match) {
       this.show_page(uri, match.match, match.endpoint);
+    }
+  }
+
+  switch_stack(uri: string) {
+    const stack = this._view.navigation_stack as Gio.ListModel<
+      Page<unknown, unknown>
+    >;
+
+    const first = stack.get_item(0);
+
+    if (!first) return;
+
+    if (first.uri === uri) {
+      return;
+    }
+
+    this.stacks.set(first.uri, list_model_to_array(stack));
+
+    const new_stack = this.stacks.get(uri);
+
+    if (new_stack) {
+      this._view.replace(new_stack);
+    } else {
+      this._view.replace([]);
+      this.navigate(uri);
     }
   }
 }

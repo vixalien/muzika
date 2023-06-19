@@ -13,6 +13,7 @@ import { QueueTrack } from "libmuse/types/parsers/queue.js";
 import { AddActionEntries } from "src/util/action.js";
 import { Application } from "src/application.js";
 import { Window } from "src/window.js";
+import { list_model_to_array } from "src/util/list.js";
 
 export type QueueSettings = Omit<MuseQueue, "tracks">;
 
@@ -229,7 +230,7 @@ export class Queue extends GObject.Object {
     if (shuffled) {
       this._original.remove_all();
 
-      const items = this._get_items(this._list);
+      const items = list_model_to_array(this._list);
 
       // store the items into original
       for (const item of items) {
@@ -243,7 +244,7 @@ export class Queue extends GObject.Object {
         durstenfeld_shuffle(items.slice(this.position + 1)),
       );
     } else {
-      const items = this._get_items(this._original);
+      const items = list_model_to_array(this._original);
 
       this._list.splice(
         this.position + 1,
@@ -264,21 +265,6 @@ export class Queue extends GObject.Object {
   set active_chip(chip: string | null) {
     this._active_chip = chip;
     this.notify("active-chip");
-  }
-
-  /**
-   * A helper to turn a `Gio.ListStore` into an array
-   */
-  _get_items(list: Gio.ListStore<ObjectContainer<QueueMeta>>) {
-    const items: ObjectContainer<QueueMeta>[] = [];
-
-    for (let i = 0; i < list.n_items; i++) {
-      const item = list.get_item(i);
-      if (!item) continue;
-      items.push(item);
-    }
-
-    return items;
   }
 
   app: Application;

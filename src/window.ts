@@ -138,8 +138,9 @@ export class Window extends Adw.ApplicationWindow {
     this._overlay_split_view.sidebar = this.sidebar;
 
     const navbar = new NavbarView(this, this._split_view);
-    navbar.connect("activated", () => {
+    navbar.connect("activated", (_, uri: string) => {
       this._split_view.show_content = true;
+      this.navigator.switch_stack(uri);
     });
     this._navbar_window.set_child(navbar);
 

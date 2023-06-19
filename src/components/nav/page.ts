@@ -47,6 +47,10 @@ export class Page<Data extends unknown, State extends unknown = null>
   private _loading!: Loading;
   private _content!: Adw.Bin;
 
+  get uri() {
+    return this.page.uri;
+  }
+
   get loading() {
     return this._stack.visible_child === this._loading;
   }
