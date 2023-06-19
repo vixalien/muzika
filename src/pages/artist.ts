@@ -8,8 +8,14 @@ import { ArtistHeader } from "../components/artistheader.js";
 import { Carousel } from "../components/carousel/index.js";
 import { PlaylistItemCard } from "../components/playlist/item.js";
 import { DynamicImageState } from "src/components/dynamic-image.js";
+import { EndpointContext, MuzikaComponent } from "src/navigation.js";
 
-export class ArtistPage extends Gtk.Box {
+interface ArtistState {
+  artist: Artist;
+}
+
+export class ArtistPage extends Gtk.Box
+  implements MuzikaComponent<Artist, ArtistState> {
   static {
     GObject.registerClass({
       GTypeName: "ArtistPage",
@@ -31,8 +37,10 @@ export class ArtistPage extends Gtk.Box {
   _content!: Gtk.Box;
   _scrolled!: Gtk.ScrolledWindow;
   _top_songs!: Gtk.Box;
-  _top_songs_list!: Gtk.Box;
+  _top_songs_list!: Gtk.ListBox;
   _more_top_songs!: Gtk.Button;
+
+  uri = "artist";
 
   header: ArtistHeader;
 
@@ -97,7 +105,8 @@ export class ArtistPage extends Gtk.Box {
     }
   }
 
-  set_artist(artist: Artist) {
+  present(artist: Artist) {
+    this.artist = artist;
     if (artist.thumbnails) this.header.load_thumbnails(artist.thumbnails);
     this.header.set_title(artist.name);
     this.header.set_description(artist.description);
@@ -126,12 +135,19 @@ export class ArtistPage extends Gtk.Box {
     this._inner_box.append(carousel);
   }
 
-  load_artist(id: string, signal?: AbortSignal) {
-    return get_artist(id, { signal })
-      .then((artist) => {
-        this.artist = artist;
+  static load(context: EndpointContext) {
+    return get_artist(context.match.params.channelId, {
+      signal: context.signal,
+    });
+  }
 
-        this.set_artist(this.artist);
-      });
+  get_state(): ArtistState {
+    return {
+      artist: this.artist!,
+    };
+  }
+
+  restore_state(state: ArtistState) {
+    this.present(state.artist);
   }
 }

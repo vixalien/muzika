@@ -35,19 +35,13 @@ export const endpoints: Endpoint<MuzikaComponent<unknown, unknown>>[] = [
     title: "Album",
     component: () => new AlbumPage(),
     load: AlbumPage.load,
-  } ,
-  // {
-  //   uri: "artist/:channelId",
-  //   title: "Artist",
-  //   component: () => new ArtistPage(),
-  //   async load(component: ArtistPage, ctx) {
-  //     await component.load_artist(ctx.match.params.channelId, ctx.signal);
-
-  //     return {
-  //       title: component.artist?.name,
-  //     };
-  //   },
-  // } as Endpoint<ArtistPage>,
+  },
+  {
+    uri: "artist/:channelId",
+    title: "Artist",
+    component: () => new ArtistPage(),
+    load: ArtistPage.load,
+  },
   // {
   //   uri: "search/:query",
   //   title: "Search Results",
