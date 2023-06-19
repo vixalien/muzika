@@ -77,7 +77,7 @@ export class CarouselCard extends Gtk.Box {
     this._subtitle.connect("activate-link", (_, uri) => {
       if (uri && uri.startsWith("muzika:")) {
         this.activate_action(
-          "navigator.navigate",
+          "navigator.visit",
           GLib.Variant.new_string(uri),
         );
 

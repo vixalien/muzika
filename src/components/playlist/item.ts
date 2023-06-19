@@ -1,5 +1,6 @@
 import Gtk from "gi://Gtk?version=4.0";
 import GObject from "gi://GObject";
+import GLib from "gi://GLib";
 
 import { PlaylistItem } from "../../muse.js";
 import { load_thumbnails } from "../webimage.js";
@@ -44,6 +45,17 @@ export class PlaylistItemCard extends Gtk.ListBoxRow {
 
   constructor() {
     super({});
+
+    this._subtitle.connect("activate-link", (_, uri) => {
+      if (uri && uri.startsWith("muzika:")) {
+        this.activate_action(
+          "navigator.visit",
+          GLib.Variant.new_string(uri),
+        );
+
+        return true;
+      }
+    });
   }
 
   set_item(item: PlaylistItem, playlistId?: string) {

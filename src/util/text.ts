@@ -24,14 +24,18 @@ export function pretty_subtitles(
   const author_plain: string[] = [];
 
   for (const node of artists) {
-    if (typeof node === "string") {
+    if (is_artist_run(node)) {
+      if (node.id) {
+        author_markup.push(
+          `<a href="muzika:artist:${node.id}">${escape_label(node.name)}</a>`,
+        );
+      } else {
+        author_markup.push(escape_label(node.name));
+      }
+      author_plain.push(escape_label(node.name));
+    } else if (typeof node === "string") {
       author_markup.push(escape_label(node));
       author_plain.push(escape_label(node));
-    } else if (node) {
-      author_markup.push(
-        `<a href="muzika:artist:${node.id}">${escape_label(node.name)}</a>`,
-      );
-      author_plain.push(escape_label(node.name));
     }
   }
 
@@ -42,4 +46,8 @@ export function pretty_subtitles(
   };
 
   return { markup: merge(author_markup), plain: merge(author_plain) };
+}
+
+function is_artist_run(node: any): node is ArtistRun {
+  return node && typeof node === "object" && "name" in node;
 }
