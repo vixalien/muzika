@@ -12,8 +12,9 @@ export class LibrarySubscriptionsPage extends AbstractLibraryPage {
 
   constructor() {
     super({
-      loader: get_library_subscriptions,
       uri: "library:subscriptions",
     });
   }
+
+  static load = this.get_loader(get_library_subscriptions);
 }

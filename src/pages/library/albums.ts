@@ -12,8 +12,9 @@ export class LibraryAlbumsPage extends AbstractLibraryPage {
 
   constructor() {
     super({
-      loader: get_library_albums,
       uri: "library:albums",
     });
   }
+
+  static load = this.get_loader(get_library_albums);
 }
