@@ -20,9 +20,7 @@ export const endpoints: Endpoint<MuzikaComponent<unknown, unknown>>[] = [
     uri: "home",
     title: "Home",
     component: () => new HomePage(),
-    load(context) {
-      return HomePage.load(context);
-    },
+    load: HomePage.load,
   },
   {
     uri: "playlist/:playlistId",
@@ -42,20 +40,12 @@ export const endpoints: Endpoint<MuzikaComponent<unknown, unknown>>[] = [
     component: () => new ArtistPage(),
     load: ArtistPage.load,
   },
-  // {
-  //   uri: "search/:query",
-  //   title: "Search Results",
-  //   component: () => new SearchPage(),
-  //   async load(component: SearchPage, ctx) {
-  //     await component.search(
-  //       decodeURIComponent(ctx.match.params.query),
-  //       {
-  //         signal: ctx.signal,
-  //         ...Object.fromEntries(ctx.url.searchParams as any),
-  //       },
-  //     );
-  //   },
-  // } as Endpoint<SearchPage>,
+  {
+    uri: "search/:query",
+    title: "Search Results",
+    component: () => new SearchPage(),
+    load: SearchPage.load,
+  },
   {
     uri: "library",
     title: "Library",

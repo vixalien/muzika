@@ -14,8 +14,20 @@ import { SearchSection } from "../components/search/section.js";
 import { TopResultSection } from "../components/search/topresultsection.js";
 import { Paginator } from "../components/paginator.js";
 import { InlineTabSwitcher, Tab } from "../components/inline-tab-switcher.js";
+import { EndpointContext, MuzikaComponent } from "src/navigation.js";
 
-export class SearchPage extends Gtk.Box {
+interface SearchState {
+  results: SearchResults;
+  args: Parameters<typeof search>;
+}
+
+interface SearchData {
+  results: SearchResults;
+  args: Parameters<typeof search>;
+}
+
+export class SearchPage extends Gtk.Box
+  implements MuzikaComponent<SearchData, SearchState> {
   static {
     GObject.registerClass({
       GTypeName: "SearchPage",
@@ -40,6 +52,8 @@ export class SearchPage extends Gtk.Box {
 
   results?: SearchResults;
   args: Parameters<typeof search> = [""];
+
+  uri = "search";
 
   constructor() {
     super({
@@ -162,7 +176,7 @@ export class SearchPage extends Gtk.Box {
     this._content.prepend(window);
   }
 
-  show_results(results: SearchResults, args: Parameters<typeof search>) {
+  present({ results, args }: SearchData) {
     this.results = results;
     this.args = args;
 
@@ -196,13 +210,6 @@ export class SearchPage extends Gtk.Box {
     });
   }
 
-  search(...args: Parameters<typeof search>) {
-    return search(...args).then((results) => {
-      this.results = results;
-      this.show_results(results, args);
-    });
-  }
-
   loading = false;
 
   search_more() {
@@ -228,6 +235,31 @@ export class SearchPage extends Gtk.Box {
         this.paginator.loading = this.loading = false;
         this.paginator.set_reveal_child(results.continuation != null);
       });
+  }
+
+  static load(context: EndpointContext) {
+    const args = [decodeURIComponent(context.match.params.query), {
+      signal: context.signal,
+      ...Object.fromEntries(context.url.searchParams as any),
+    }] as const;
+
+    return search(...args).then((results) => {
+      return {
+        results,
+        args,
+      };
+    });
+  }
+
+  get_state(): SearchState {
+    return {
+      results: this.results!,
+      args: this.args,
+    };
+  }
+
+  restore_state(state: SearchState) {
+    this.present(state);
   }
 }
 
