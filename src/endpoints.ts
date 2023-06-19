@@ -24,18 +24,12 @@ export const endpoints: Endpoint<MuzikaComponent<unknown, unknown>>[] = [
       return HomePage.load(context);
     },
   },
-  // {
-  //   uri: "playlist/:playlistId",
-  //   title: "Playlist",
-  //   component: () => new PlaylistPage(),
-  //   async load(component: PlaylistPage, ctx) {
-  //     await component.load_playlist(ctx.match.params.playlistId, ctx.signal);
-
-  //     return {
-  //       title: component.playlist?.title,
-  //     };
-  //   },
-  // } as Endpoint<PlaylistPage>,
+  {
+    uri: "playlist/:playlistId",
+    title: "Playlist",
+    component: () => new PlaylistPage(),
+    load: PlaylistPage.load,
+  },
   // {
   //   uri: "album/:albumId",
   //   title: "Album",

@@ -15,8 +15,14 @@ import { Loading } from "../components/loading.js";
 import { PlaylistHeader } from "../components/playlist/header.js";
 import { PlaylistItemCard } from "../components/playlist/item.js";
 import { DynamicImageState } from "src/components/dynamic-image.js";
+import { EndpointContext, MuzikaComponent } from "src/navigation.js";
 
-export class PlaylistPage extends Gtk.Box {
+interface PlaylistState {
+  playlist: Playlist;
+}
+
+export class PlaylistPage extends Gtk.Box
+  implements MuzikaComponent<Playlist, PlaylistState> {
   static {
     GObject.registerClass({
       GTypeName: "PlaylistPage",
@@ -43,7 +49,7 @@ export class PlaylistPage extends Gtk.Box {
   _separator!: Gtk.Label;
   _scrolled!: Gtk.ScrolledWindow;
   _data!: Gtk.Box;
-  _list_box!: Gtk.Box;
+  _list_box!: Gtk.ListBox;
 
   header: PlaylistHeader;
 
@@ -51,6 +57,8 @@ export class PlaylistPage extends Gtk.Box {
   // _box: Gtk.Box;
   // _clamp: Adw.Clamp;
   // _scrolled: Gtk.ScrolledWindow;
+
+  uri = "playlist";
 
   constructor() {
     super({
@@ -119,7 +127,9 @@ export class PlaylistPage extends Gtk.Box {
     this._content.append(carousel);
   }
 
-  show_playlist(playlist: Playlist) {
+  present(playlist: Playlist) {
+    this.playlist = playlist;
+
     this._loading.loading = false;
 
     // this.clear_box();
@@ -167,16 +177,6 @@ export class PlaylistPage extends Gtk.Box {
     this.append_tracks(playlist.tracks);
   }
 
-  async load_playlist(channelId: string, signal?: AbortSignal) {
-    this._loading.loading = true;
-
-    this.playlist = await get_playlist(channelId, {
-      related: true,
-      signal,
-    });
-    this.show_playlist(this.playlist);
-  }
-
   no_more = false;
 
   get isLoading() {
@@ -212,6 +212,23 @@ export class PlaylistPage extends Gtk.Box {
       this.isLoading = false;
       this.no_more = true;
     }
+  }
+
+  static load(context: EndpointContext) {
+    return get_playlist(context.match.params.playlistId, {
+      related: true,
+      signal: context.signal,
+    });
+  }
+
+  get_state(): PlaylistState {
+    return {
+      playlist: this.playlist!,
+    };
+  }
+
+  restore_state(state: PlaylistState) {
+    this.present(state.playlist);
   }
 }
 
