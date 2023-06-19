@@ -173,7 +173,7 @@ export class AbstractLibraryPage<PageOrder extends LibraryOrder | Order = Order>
   static load: ReturnType<typeof AbstractLibraryPage.get_loader>;
 }
 
-interface LoadedLibrary {
+export interface LoadedLibrary {
   results: LibraryResults;
   order?: LibraryOrder;
 }

@@ -4,10 +4,15 @@ import Gtk from "gi://Gtk?version=4.0";
 
 import { get_library_songs, LibrarySongs } from "../../muse.js";
 
-import { alphabetical_orders, order_id_to_name } from "./base.js";
+import {
+  alphabetical_orders,
+  LoadedLibrary,
+  order_id_to_name,
+} from "./base.js";
 import { Paginator } from "src/components/paginator.js";
 import { PlaylistItemCard } from "src/components/playlist/item.js";
 import type { Order, PaginationOptions } from "libmuse/types/mixins/utils.js";
+import { EndpointContext, MuzikaComponent } from "src/navigation.js";
 
 interface LibraryOptions extends PaginationOptions {
   order?: Order;
@@ -16,11 +21,13 @@ interface LibraryOptions extends PaginationOptions {
 // make sure paginator is registered before LibrarySongsPage
 Paginator;
 
-export class LibrarySongsPage extends Gtk.Box {
+export class LibrarySongsPage extends Gtk.Box
+  implements MuzikaComponent<LoadedSongs, LibrarySongsState> {
   static {
     GObject.registerClass({
       GTypeName: "LibrarySongsPage",
-      Template: "resource:///com/vixalien/muzika/ui/components/library/songs.ui",
+      Template:
+        "resource:///com/vixalien/muzika/ui/components/library/songs.ui",
       InternalChildren: ["drop_down", "paginator"],
       Children: ["list"],
     }, this);
@@ -35,6 +42,7 @@ export class LibrarySongsPage extends Gtk.Box {
   loader = get_library_songs;
   results?: LibrarySongs;
   filters = Array.from(alphabetical_orders.keys());
+  order?: Order;
 
   constructor() {
     super();
@@ -60,6 +68,8 @@ export class LibrarySongsPage extends Gtk.Box {
 
   handle_order_changed(order_name: string) {
     const order = alphabetical_orders.get(order_name);
+
+    this.order = order as Order ?? undefined;
 
     if (!order) return;
 
@@ -97,16 +107,34 @@ export class LibrarySongsPage extends Gtk.Box {
     this._paginator.reveal_child = library.continuation != null;
   }
 
-  async load_library(options: LibraryOptions) {
-    this.results = await this.loader(options);
-
-    if (options.order) {
-      const order = order_id_to_name(options.order, alphabetical_orders);
+  present(library: LoadedSongs) {
+    if (library.order) {
+      const order = order_id_to_name(library.order, alphabetical_orders);
 
       if (order) this.set_selected_filter(order);
     }
 
-    this.show_library(this.results);
+    this.results = library.results;
+    this.show_library(library.results);
+  }
+
+  get_state(): LibrarySongsState {
+    return {
+      results: this.results!,
+      order: this.order,
+    };
+  }
+
+  restore_state(state: LibrarySongsState): void {
+    if (state.order) {
+      const order = order_id_to_name(state.order, alphabetical_orders);
+
+      if (order) this.set_selected_filter(order);
+    }
+
+    this.connect("filter-changed", this.handle_order_changed.bind(this));
+
+    this.show_library(state.results);
   }
 
   set_selected_filter(filter: string) {
@@ -123,4 +151,27 @@ export class LibrarySongsPage extends Gtk.Box {
       }
     }
   }
+
+  static load(context: EndpointContext): Promise<LoadedSongs> {
+    return get_library_songs({
+      signal: context.signal,
+      order: context.url.searchParams.get("order") as Order ??
+        undefined,
+    }).then((results) => {
+      return {
+        results,
+        order: context.url.searchParams.get("order") as Order ?? undefined,
+      };
+    });
+  }
+}
+
+interface LoadedSongs {
+  results: LibrarySongs;
+  order?: Order;
+}
+
+interface LibrarySongsState {
+  results: LibrarySongs;
+  order?: string;
 }

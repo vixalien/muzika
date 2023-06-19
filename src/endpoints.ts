@@ -104,17 +104,12 @@ export const endpoints: Endpoint<MuzikaComponent<unknown, unknown>>[] = [
     component: () => new LibrarySubscriptionsPage(),
     load: LibrarySubscriptionsPage.load,
   },
-  // {
-  //   uri: "library/songs",
-  //   title: "Library Songs",
-  //   component: () => new LibrarySongsPage(),
-  //   load(component: LibrarySongsPage, ctx) {
-  //     return component.load_library({
-  //       signal: ctx.signal,
-  //       ...Object.fromEntries(ctx.url.searchParams as any),
-  //     });
-  //   },
-  // } as Endpoint<LibrarySongsPage>,
+  {
+    uri: "library/songs",
+    title: "Library Songs",
+    component: () => new LibrarySongsPage(),
+    load: LibrarySongsPage.load,
+  },
   {
     uri: "history",
     title: "History",
