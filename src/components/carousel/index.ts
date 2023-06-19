@@ -95,7 +95,6 @@ class CarouselGridView extends Gtk.GridView {
     const factory = Gtk.SignalListItemFactory.new();
     factory.connect("bind", this.bind_cb.bind(this));
     factory.connect("setup", this.setup_cb.bind(this));
-    factory.connect("unbind", this.unbind_cb.bind(this));
     factory.connect("teardown", this.teardown_cb.bind(this));
 
     this.factory = factory;
@@ -114,11 +113,6 @@ class CarouselGridView extends Gtk.GridView {
     if (item.item) {
       card.set_song(item.item);
     }
-  }
-
-  unbind_cb(_factory: Gtk.ListItemFactory, list_item: Gtk.ListItem) {
-    const card = list_item.child as CarouselCard;
-    card.clear();
   }
 
   teardown_cb(_factory: Gtk.ListItemFactory, list_item: Gtk.ListItem) {
