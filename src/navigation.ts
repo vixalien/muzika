@@ -126,29 +126,6 @@ export class Navigator extends GObject.Object {
     return action_group;
   }
 
-  private prepare_error_page(error: any) {
-    if (error instanceof DOMException && error.name == "AbortError") {
-      return;
-    }
-
-    this.loading = false;
-    this.last_controller = null;
-
-    if (error instanceof MuseError && error.code === ERROR_CODE.AUTH_REQUIRED) {
-      const error_page = new AuthenticationErrorPage({ error });
-      return {
-        page: error_page,
-        title: "Authentication Required",
-      };
-    } else {
-      const error_page = new ErrorPage({ error });
-      return {
-        page: error_page,
-        title: "Error",
-      };
-    }
-  }
-
   last_controller: AbortController | null = null;
 
   private show_page(
@@ -184,18 +161,10 @@ export class Navigator extends GObject.Object {
         return;
       }
 
-      console.log("Got error", error);
+      this.loading = false;
+      this.last_controller = null;
 
-      // const error_page = new Page();
-      // const error_content = this.prepare_error_page(error);
-
-      // if (error_content) {
-      //   error_page.content = error_content.page;
-      //   error_page.title = error_content.title;
-      // }
-
-      // this._view.pop_to_page(error_page);
-      // this._view.push;
+      page.show_error(error);
     };
 
     Promise.resolve(response).then(

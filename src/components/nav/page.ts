@@ -4,6 +4,9 @@ import GObject from "gi://GObject";
 
 import { Loading } from "../loading";
 import { Endpoint, MuzikaComponent } from "src/navigation";
+import { ERROR_CODE, MuseError } from "src/muse";
+import { AuthenticationErrorPage } from "src/pages/authentication-error";
+import { ErrorPage } from "src/pages/error";
 
 export interface PageState<State> {
   state: State;
@@ -71,7 +74,9 @@ export class Page<Data extends unknown, State extends unknown = null>
 
   page: MuzikaComponent<Data, State>;
   endpoint: Endpoint<MuzikaComponent<Data, State>>;
-  __state: PageState<State> | null = null;
+
+  private __state: PageState<State> | null = null;
+  private __error: any;
 
   constructor(
     uri: string,
@@ -101,10 +106,14 @@ export class Page<Data extends unknown, State extends unknown = null>
   }
 
   vfunc_hidden(): void {
-    this.__state = {
-      state: this.page.get_state(),
-    };
-    this.page = this._content.child = null as any;
+    if (this.__error) {
+      this.page = this._content.child = null as any;
+    } else {
+      this.__state = {
+        state: this.page.get_state(),
+      };
+      this.page = this._content.child = null as any;
+    }
   }
 
   vfunc_showing(): void {
@@ -114,6 +123,25 @@ export class Page<Data extends unknown, State extends unknown = null>
       this.page = page;
       this._content.child = page;
       this.__state = null;
+    } else if (this.__error) {
+      this.show_error(this.__error);
     }
+  }
+
+  show_error(error: any) {
+    this.__error = error;
+
+    let error_widget: Gtk.Widget;
+
+    if (error instanceof MuseError && error.code === ERROR_CODE.AUTH_REQUIRED) {
+      error_widget = new AuthenticationErrorPage({ error });
+      this.title = "Authentication Required";
+    } else {
+      error_widget = new ErrorPage({ error });
+      this.title = "Error";
+    }
+
+    this.loading = false;
+    this._content.child = error_widget;
   }
 }
