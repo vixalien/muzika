@@ -23,6 +23,7 @@ export class LibraryView extends Gtk.Box {
         "tools",
         "box",
       ],
+      Children: ["scrolled"],
       Signals: {
         "filter-changed": {
           param_types: [GObject.TYPE_STRING],
@@ -48,12 +49,14 @@ export class LibraryView extends Gtk.Box {
     }, this);
   }
 
-  _stack!: Gtk.Stack;
-  _drop_down!: Gtk.DropDown;
-  _grid_button!: Gtk.ToggleButton;
-  _list_button!: Gtk.ToggleButton;
-  _tools!: Gtk.Box;
-  _box!: Gtk.Box;
+  private _stack!: Gtk.Stack;
+  private _drop_down!: Gtk.DropDown;
+  private _grid_button!: Gtk.ToggleButton;
+  private _list_button!: Gtk.ToggleButton;
+  private _tools!: Gtk.Box;
+  private _box!: Gtk.Box;
+
+  scrolled!: Gtk.ScrolledWindow;
 
   grid: Grid;
   list: Gtk.Box;

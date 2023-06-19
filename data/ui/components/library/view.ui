@@ -3,7 +3,7 @@
   <requires lib="gtk" version="4.0" />
   <template class="LibraryView" parent="GtkBox">
     <child>
-      <object class="GtkScrolledWindow">
+      <object class="GtkScrolledWindow" id="scrolled">
         <property name="hexpand">true</property>
         <property name="hscrollbar-policy">2</property>
         <child>

@@ -8,12 +8,8 @@ import { MixedItem } from "../../muse.js";
 import { ObjectContainer } from "../../util/objectcontainer.js";
 
 import { RequiredMixedItem } from "../carousel/index.js";
-import { AlbumCard } from "../carousel/albumcard.js";
-import { ArtistCard } from "../carousel/artistcard.js";
-import { PlaylistCard } from "../carousel/playlistcard.js";
-import { SongCard } from "../carousel/songcard.js";
-import { VideoCard } from "../carousel/videocard.js";
 import { MixedCardItem } from "../library/mixedcard.js";
+import { CarouselCard } from "../carousel/card.js";
 
 export class Grid extends Gtk.GridView {
   static {
@@ -45,41 +41,8 @@ export class Grid extends Gtk.GridView {
     const object = list_item.get_item() as ObjectContainer<MixedCardItem>;
     const item = object.item!;
 
-    let card;
-
-    switch (item.type) {
-      case "song":
-        card = new SongCard();
-        card.set_song(item);
-        break;
-      case "inline-video":
-        card = new VideoCard();
-        card.set_inline_video(item);
-        break;
-      case "video":
-        card = new VideoCard();
-        card.set_video(item);
-        break;
-      case "album":
-        card = new AlbumCard();
-        card.set_album(item);
-        break;
-      case "playlist":
-        card = new PlaylistCard();
-        card.set_playlist(item);
-        break;
-      case "channel":
-      case "artist":
-        card = new ArtistCard();
-        card.set_artist(item);
-        break;
-      case "library-artist":
-        card = new ArtistCard();
-        card.set_library_artist(item);
-        break;
-      default:
-        console.warn("Invalid item in carousel", item.type);
-    }
+    const card = new CarouselCard();
+    card.show_item(item);
 
     if (card) {
       card.add_css_class("padding-6");

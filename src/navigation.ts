@@ -13,12 +13,6 @@ import { AddActionEntries } from "./util/action.js";
 import { AuthenticationErrorPage } from "./pages/authentication-error.js";
 import { Page } from "./components/nav/page.js";
 
-export type EndpointCtx = {
-  match: MatchResult<Record<string, string>>;
-  url: URL;
-  signal: AbortSignal;
-};
-
 export type EndpointResponse<Data> = {
   title?: string;
   data: Data;
@@ -182,6 +176,12 @@ export class Navigator extends GObject.Object {
 
     const handle_error = (error: any) => {
       // TODO: handle this better
+
+      if (error instanceof DOMException && error.name == "AbortError") {
+        this._view.remove(page);
+        return;
+      }
+
       console.log("Got error", error);
 
       // const error_page = new Page();

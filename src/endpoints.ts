@@ -74,28 +74,18 @@ export const endpoints: Endpoint<MuzikaComponent<unknown, unknown>>[] = [
   //     );
   //   },
   // } as Endpoint<SearchPage>,
-  // {
-  //   uri: "library",
-  //   title: "Library",
-  //   component: () => new LibraryPage(),
-  //   load(component: LibraryPage, ctx) {
-  //     return component.load_library({
-  //       signal: ctx.signal,
-  //       ...Object.fromEntries(ctx.url.searchParams as any),
-  //     });
-  //   },
-  // } as Endpoint<LibraryPage>,
-  // {
-  //   uri: "library/playlists",
-  //   title: "Library Playlists",
-  //   component: () => new LibraryPlaylistsPage(),
-  //   load(component: LibraryPlaylistsPage, ctx) {
-  //     return component.load_library({
-  //       signal: ctx.signal,
-  //       ...Object.fromEntries(ctx.url.searchParams as any),
-  //     });
-  //   },
-  // } as Endpoint<LibraryPlaylistsPage>,
+  {
+    uri: "library",
+    title: "Library",
+    component: () => new LibraryPage(),
+    load: LibraryPage.load,
+  },
+  {
+    uri: "library/playlists",
+    title: "Library Playlists",
+    component: () => new LibraryPlaylistsPage(),
+    load: LibraryPlaylistsPage.load,
+  },
   // {
   //   uri: "library/albums",
   //   title: "Library Albums",

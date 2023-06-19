@@ -12,8 +12,9 @@ export class LibraryPlaylistsPage extends AbstractLibraryPage {
 
   constructor() {
     super({
-      loader: get_library_playlists,
       uri: "library:playlists",
     });
   }
+
+  static load = this.get_loader(get_library_playlists);
 }

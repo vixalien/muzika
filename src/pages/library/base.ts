@@ -5,12 +5,9 @@ import GLib from "gi://GLib";
 import { LibraryItems } from "../../muse.js";
 import { LibraryView } from "../../components/library/view.js";
 
-import type {
-  LibraryOrder,
-  Order,
-  PaginationOptions,
-} from "libmuse/types/mixins/utils.js";
+import type { LibraryOrder, Order } from "libmuse/types/mixins/utils.js";
 import { MixedCardItem } from "src/components/library/mixedcard.js";
+import { EndpointContext, MuzikaComponent } from "src/navigation.js";
 
 export const library_orders = new Map<string, LibraryOrder>([
   ["Recent activity", "recent_activity"],
@@ -32,23 +29,29 @@ export function order_id_to_name(string: string, orders: Map<string, string>) {
   return null;
 }
 
-interface LibraryOptions extends PaginationOptions {
-  order?: LibraryOrder;
-}
-
 type LibraryResults = LibraryItems<MixedCardItem>;
 
-type LibraryLoader = (
-  options?: { continuation?: string; signal?: AbortSignal },
+export type LibraryLoader<PageOrder extends LibraryOrder | Order = Order> = (
+  options?: {
+    continuation?: string;
+    signal?: AbortSignal;
+    order?: PageOrder;
+  },
 ) => Promise<LibraryResults>;
 
 export interface LibraryPageOptions {
   orders?: Map<string, string>;
-  loader: LibraryLoader;
   uri: string;
 }
 
-export class AbstractLibraryPage extends Gtk.Box {
+interface LibraryState {
+  results: LibraryResults;
+  order?: string;
+}
+
+export class AbstractLibraryPage<PageOrder extends LibraryOrder | Order = Order>
+  extends Gtk.Box
+  implements MuzikaComponent<LoadedLibrary, LibraryState> {
   static {
     GObject.registerClass({
       GTypeName: "AbstractLibraryPage",
@@ -58,16 +61,15 @@ export class AbstractLibraryPage extends Gtk.Box {
   view: LibraryView;
   results?: LibraryResults;
 
-  loader: LibraryLoader;
   uri: string;
   orders: Map<string, string>;
+  order?: PageOrder;
 
   constructor(options: LibraryPageOptions) {
     super({
       orientation: Gtk.Orientation.VERTICAL,
     });
 
-    this.loader = options.loader;
     this.orders = options.orders ?? alphabetical_orders;
     this.uri = options.uri;
 
@@ -85,9 +87,11 @@ export class AbstractLibraryPage extends Gtk.Box {
   handle_order_changed(_: Gtk.Widget, order_name: string) {
     const order = this.orders.get(order_name);
 
+    this.order = order as PageOrder ?? undefined;
+
     if (!order) return;
 
-    let url = `muzika:${this.uri}?replace=true&order=${order}`;
+    const url = `muzika:${this.uri}?replace=true&order=${order}`;
 
     this.activate_action("navigator.visit", GLib.Variant.new_string(url));
   }
@@ -98,18 +102,36 @@ export class AbstractLibraryPage extends Gtk.Box {
     this.view.reveal_paginator = library.continuation != null;
   }
 
-  async load_library(options: LibraryOptions) {
-    this.results = await this.loader(options);
-
-    if (options.order) {
-      const order = order_id_to_name(options.order, this.orders);
+  present(library: LoadedLibrary) {
+    if (library.order) {
+      const order = order_id_to_name(library.order, this.orders);
 
       if (order) this.view.set_selected_filter(order);
     }
 
     this.view.connect("filter-changed", this.handle_order_changed.bind(this));
 
-    this.show_library(this.results);
+    this.results = library.results;
+    this.show_library(library.results);
+  }
+
+  restore_state(state: LibraryState): void {
+    if (state.order) {
+      const order = order_id_to_name(state.order, this.orders);
+
+      if (order) this.view.set_selected_filter(order);
+    }
+
+    this.view.connect("filter-changed", this.handle_order_changed.bind(this));
+
+    this.show_library(state.results);
+  }
+
+  get_state(): LibraryState {
+    return {
+      results: this.results!,
+      order: this.order,
+    };
   }
 
   loading = false;
@@ -117,7 +139,9 @@ export class AbstractLibraryPage extends Gtk.Box {
   load_more() {
     if (this.loading || !this.results?.continuation) return;
 
-    this.loader({ continuation: this.results.continuation })
+    (this.constructor as typeof AbstractLibraryPage).loader({
+      continuation: this.results.continuation,
+    })
       .then((library) => {
         this.results!.continuation = library.continuation;
 
@@ -126,4 +150,30 @@ export class AbstractLibraryPage extends Gtk.Box {
         this.view.paginator_loading = this.loading = false;
       });
   }
+
+  static loader: LibraryLoader<LibraryOrder> | LibraryLoader<Order>;
+
+  static get_loader(
+    loader: LibraryLoader<LibraryOrder> | LibraryLoader<Order>,
+  ) {
+    return function (context: EndpointContext) {
+      return (loader as LibraryLoader<LibraryOrder>)({
+        signal: context.signal,
+        order: context.url.searchParams.get("order") as LibraryOrder ??
+          undefined,
+      }).then((results) => {
+        return {
+          results,
+          order: context.url.searchParams.get("order"),
+        };
+      });
+    } as (context: EndpointContext) => Promise<LoadedLibrary>;
+  }
+
+  static load: ReturnType<typeof AbstractLibraryPage.get_loader>;
+}
+
+interface LoadedLibrary {
+  results: LibraryResults;
+  order?: LibraryOrder;
 }
