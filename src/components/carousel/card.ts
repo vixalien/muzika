@@ -1,6 +1,7 @@
 import Gtk from "gi://Gtk?version=4.0";
 import GObject from "gi://GObject";
 import Adw from "gi://Adw";
+import GLib from "gi://GLib";
 
 import {
   ArtistRun,
@@ -32,7 +33,8 @@ export class CarouselCard extends Gtk.Box {
   static {
     GObject.registerClass({
       GTypeName: "CarouselCard",
-      Template: "resource:///com/vixalien/muzika/ui/components/carousel/card.ui",
+      Template:
+        "resource:///com/vixalien/muzika/ui/components/carousel/card.ui",
       InternalChildren: [
         "image_stack",
         "avatar",
@@ -71,6 +73,17 @@ export class CarouselCard extends Gtk.Box {
     });
 
     this._subtitles.add_controller(hover);
+
+    this._subtitle.connect("activate-link", (_, uri) => {
+      if (uri && uri.startsWith("muzika:")) {
+        this.activate_action(
+          "navigator.navigate",
+          GLib.Variant.new_string(uri),
+        );
+
+        return true;
+      }
+    });
   }
 
   clear() {
