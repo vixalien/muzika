@@ -46,7 +46,7 @@
             <child>
               <object class="GtkImage" id="explicit">
                 <property name="visible">false</property>
-                <property name="valign">1</property>
+                <property name="valign">3</property>
                 <property name="icon-name">network-cellular-edge-symbolic</property>
               </object>
             </child>

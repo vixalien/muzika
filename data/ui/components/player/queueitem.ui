@@ -88,6 +88,7 @@
                       <object class="GtkFlowBoxChild" id="explicit_flowbox">
                         <child>
                           <object class="GtkImage" id="explicit">
+                            <property name="valign">3</property>
                             <property name="valign">center</property>
                             <property name="icon-name">network-cellular-edge-symbolic</property>
                             <style>

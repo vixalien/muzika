@@ -56,10 +56,16 @@ export class AlbumItemCard extends Gtk.ListBoxRow {
 
     this._title.set_label(item.title);
 
-    const subtitles = pretty_subtitles(item.artists ?? []);
+    if (item.artists.length > 0) {
+      this._subtitle.visible = true;
 
-    this._subtitle.label = subtitles.markup;
-    this._subtitle.tooltip_text = subtitles.plain;
+      const subtitles = pretty_subtitles(item.artists ?? []);
+
+      this._subtitle.label = subtitles.markup;
+      this._subtitle.tooltip_text = subtitles.plain;
+    } else {
+      this._subtitle.visible = false;
+    }
 
     this._explicit.set_visible(item.isExplicit);
 
