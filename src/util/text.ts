@@ -16,10 +16,33 @@ export function indent_stack(stack: string) {
   );
 }
 
+export interface PrettySubtitleOptions {
+  prefix?: string | (string | null)[];
+  suffix?: string | (string | null)[];
+}
+
+function normalize_nodes(nodes?: string | (string | null)[]): string[] {
+  if (nodes === undefined) {
+    return [];
+  } else if (typeof nodes === "string") {
+    return [nodes];
+  } else {
+    return nodes
+      .filter((node) => node != null) as string[];
+  }
+}
+
 export function pretty_subtitles(
   artists: (string | null | ArtistRun)[],
-  text: (string | null)[] = [],
+  options: (string | null)[] | PrettySubtitleOptions = [],
 ) {
+  const { prefix, suffix = [] } = Array.isArray(options)
+    ? { suffix: normalize_nodes(options), prefix: [] }
+    : {
+      prefix: normalize_nodes(options.prefix),
+      suffix: normalize_nodes(options.suffix),
+    };
+
   const author_markup: string[] = [];
   const author_plain: string[] = [];
 
@@ -40,7 +63,11 @@ export function pretty_subtitles(
   }
 
   const merge = (authors: string[]) => {
-    return [authors.join(", "), text.join(" • ")]
+    return [
+      prefix.map(escape_label).join(" • "),
+      authors.join(", "),
+      suffix.map(escape_label).join(" • "),
+    ]
       .filter(Boolean)
       .join(" • ");
   };

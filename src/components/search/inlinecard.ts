@@ -15,6 +15,10 @@ import {
   SearchVideo,
 } from "../../muse.js";
 import { load_thumbnails } from "../webimage.js";
+import { DynamicImage } from "../dynamic-image.js";
+import { pretty_subtitles } from "src/util/text.js";
+
+DynamicImage;
 
 export class InlineCard extends Gtk.ListBoxRow {
   static {
@@ -23,201 +27,134 @@ export class InlineCard extends Gtk.ListBoxRow {
       Template:
         "resource:///com/vixalien/muzika/ui/components/search/inlinecard.ui",
       InternalChildren: [
+        "stack",
         "avatar",
-        "image",
-        "image_overlay",
         "title",
         "explicit",
-        "label_box",
-        "type",
-        "type_box",
-        "type_separator",
-        // "second-line",
+        "subtitle",
+      ],
+      Children: [
+        "dynamic_image",
       ],
     }, this);
   }
 
   constructor() {
     super();
+
+    this._subtitle.connect("activate-link", (_, uri) => {
+      if (uri && uri.startsWith("muzika:")) {
+        this.activate_action(
+          "navigator.visit",
+          GLib.Variant.new_string(uri),
+        );
+
+        return true;
+      }
+    });
   }
 
-  _avatar!: Adw.Avatar;
-  _image!: Gtk.Image;
-  _image_overlay!: Gtk.Overlay;
-  _title!: Gtk.Label;
-  _explicit!: Gtk.Label;
-  _label_box!: Gtk.Box;
-  _type!: Gtk.Label;
-  _type_box!: Gtk.Box;
-  _type_separator!: Gtk.Label;
+  private _stack!: Gtk.Stack;
+  private _avatar!: Adw.Avatar;
+  private _title!: Gtk.Label;
+  private _explicit!: Gtk.Label;
+  private _subtitle!: Gtk.Label;
+
+  dynamic_image!: DynamicImage;
 
   image_size = 48;
   add_subsequent_middots = false;
 
   content?: SearchContent;
 
-  show_type(show: boolean) {
-    this._type_box.visible = show;
+  show_type = true;
+
+  set_subtitle(
+    type: string,
+    artists: Parameters<typeof pretty_subtitles>[0],
+    suffix?: null | string | (string | null)[],
+  ) {
+    const subtitles = pretty_subtitles(artists, {
+      prefix: this.show_type ? type : undefined,
+      suffix: suffix ?? undefined,
+    });
+
+    this._subtitle.set_markup(subtitles.markup);
+    this._subtitle.tooltip_markup = subtitles.plain;
   }
 
   show_avatar(show: boolean) {
-    this._avatar.visible = show;
-    this._image_overlay.visible = !show;
-  }
-
-  insert_middot(force = false) {
-    if (this.add_subsequent_middots || force) {
-      const label = Gtk.Label.new("·");
-
-      label.add_css_class("dim-label");
-
-      this._label_box.append(label);
-    } else {
-      this.add_subsequent_middots = true;
-    }
-  }
-
-  insert_only_text(text: string) {
-    this._type_separator.visible = true;
-
-    const label = Gtk.Label.new(text);
-
-    label.add_css_class("dim-label");
-
-    this._label_box.append(label);
-  }
-
-  insert_text(text: string) {
-    this.insert_middot();
-    this.insert_only_text(text);
-  }
-
-  add_artist_only(artist: ArtistRun) {
-    this._type_separator.visible = true;
-    let child: Gtk.Widget;
-
-    if (artist.id) {
-      const button = new Gtk.Button({
-        label: artist.name,
-        cursor: Gdk.Cursor.new_from_name("pointer", null),
-      });
-
-      button.add_css_class("inline");
-      button.add_css_class("flat");
-      button.add_css_class("link");
-      button.add_css_class("dim-label");
-
-      button.action_name = "navigator.visit";
-      button.action_target = GLib.Variant.new(
-        "s",
-        `muzika:artist:${artist.id}`,
-      );
-
-      child = button;
-    } else {
-      const label = Gtk.Label.new(artist.name);
-
-      label.add_css_class("dim-label");
-
-      child = label;
-    }
-
-    const flowchild = new Gtk.FlowBoxChild({
-      halign: Gtk.Align.START,
-      child: child,
-    });
-
-    flowchild.add_css_class("no-padding");
-
-    this._label_box.append(flowchild);
-  }
-
-  add_artist(artist: ArtistRun) {
-    this.insert_middot();
-    this.add_artist_only(artist);
+    this._stack.visible_child = show ? this._avatar : this.dynamic_image;
   }
 
   private set_song_or_video(track: SearchSong | SearchVideo) {
     this.content = track;
 
-    load_thumbnails(this._image, track.thumbnails, this.image_size);
-
     this._title.label = track.title;
     this._explicit.set_visible(track.isExplicit);
 
-    track.artists.forEach((artist) => {
-      this.add_artist(artist);
-    });
-
-    if (track.duration) this.insert_text(track.duration);
+    this.dynamic_image.load_thumbnails(track.thumbnails);
+    this.dynamic_image.setup_video(track.videoId);
   }
 
   set_song(song: SearchSong) {
     this.set_song_or_video(song);
-    this._type.label = "Song";
+
+    this.set_subtitle("Song", song.artists, song.duration);
   }
 
   set_video(video: SearchVideo) {
     // this._image.width_request = 85.5;
     this.set_song_or_video(video);
-    this._type.label = "Video";
+
+    this.set_subtitle("Song", video.artists, video.duration);
   }
 
   set_album(album: SearchAlbum) {
     this.content = album;
 
-    load_thumbnails(this._image, album.thumbnails, this.image_size);
-
     this._title.label = album.title;
     this._explicit.set_visible(album.isExplicit);
 
-    this._type.label = album.album_type;
+    this.show_type = true;
+    this.set_subtitle(album.album_type, album.artists);
 
-    this.show_type(true);
-
-    album.artists.forEach((artist) => {
-      this.add_artist(artist);
-    });
+    this.dynamic_image.load_thumbnails(album.thumbnails);
   }
 
   set_playlist(playlist: SearchPlaylist) {
     this.content = playlist;
 
-    load_thumbnails(this._image, playlist.thumbnails, this.image_size);
-
     this._title.label = playlist.title;
 
-    this._type.label = "Playlist";
+    this.set_subtitle("Playlist", playlist.authors);
 
-    playlist.authors.forEach((artist) => {
-      this.add_artist(artist);
-    });
+    this.dynamic_image.load_thumbnails(playlist.thumbnails);
+    this.dynamic_image.setup_playlist(playlist.browseId);
   }
 
   set_artist(artist: SearchArtist) {
     this.content = artist;
 
     this.show_avatar(true);
-    load_thumbnails(this._avatar, artist.thumbnails, this.image_size);
 
     this._title.label = artist.name;
 
-    this.show_type(false);
+    this.show_type = false;
+    this.set_subtitle("Artist", [artist.subscribers]);
 
-    if (artist.subscribers) {
-      this.insert_only_text(`${artist.subscribers} subscribers`);
-    }
+    load_thumbnails(this._avatar, artist.thumbnails, this.image_size);
   }
 
   set_radio(radio: SearchRadio) {
     this.content = radio;
 
-    load_thumbnails(this._image, radio.thumbnails, this.image_size);
-
     this._title.label = radio.title;
 
-    this._type.label = "Radio";
+    this.show_type = true;
+    this.set_subtitle("Radio", []);
 
-    this.show_type(true);
+    this.dynamic_image.load_thumbnails(radio.thumbnails);
+    this.dynamic_image.setup_playlist(radio.playlistId);
   }
 }

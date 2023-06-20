@@ -11,12 +11,14 @@ import {
 } from "../../muse.js";
 import { InlineCard } from "./inlinecard.js";
 import { search_args_to_url } from "../../pages/search.js";
+import { DynamicImageState } from "../dynamic-image.js";
 
 export class SearchSection extends Gtk.Box {
   static {
     GObject.registerClass({
       GTypeName: "SearchSection",
-      Template: "resource:///com/vixalien/muzika/ui/components/search/section.ui",
+      Template:
+        "resource:///com/vixalien/muzika/ui/components/search/section.ui",
       InternalChildren: ["title", "more", "content"],
     }, this);
   }
@@ -47,6 +49,8 @@ export class SearchSection extends Gtk.Box {
 
   row_activated(_: this, row: InlineCard) {
     if (!row.content) return;
+
+    row.dynamic_image.state = DynamicImageState.LOADING;
 
     let uri: string | null = null;
 
@@ -90,7 +94,7 @@ export class SearchSection extends Gtk.Box {
   add_content(content: SearchContent) {
     let card = new InlineCard();
 
-    if (!this.show_type) card.show_type(false);
+    if (!this.show_type) card.show_type = false;
 
     switch (content.type) {
       case "song":
