@@ -24,6 +24,9 @@
             <property name="halign">2</property>
             <property name="hexpand">true</property>
             <property name="label">More</property>
+            <style>
+              <class name="flat" />
+            </style>
           </object>
         </child>
       </object>

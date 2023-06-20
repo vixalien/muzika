@@ -186,7 +186,7 @@ label.flat-links.hover link {
   color: @accent_color;
 }
 
-label.flat-links {
+label.flat-links:hover {
   color: inherit;
   text-decoration: none;
 }
