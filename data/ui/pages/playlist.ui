@@ -34,6 +34,8 @@
                 <child>
                   <object class="GtkBox" id="more">
                     <property name="margin-bottom">24</property>
+                    <property name="margin-start">12</property>
+                    <property name="margin-end">12</property>
                     <child>
                       <object class="GtkBox" id="data">
                         <style>
