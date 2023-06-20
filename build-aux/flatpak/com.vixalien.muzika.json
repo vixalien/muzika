@@ -148,7 +148,7 @@
             {
               "type": "git",
               "url": "https://gitlab.gnome.org/GNOME/gtk.git",
-              "commit": "f1484df60a69ef370d8e1cf0627b718a14da070a"
+              "commit": "2d2df42a94ec96f1d8c17c261ef8fcf1d9eafe7c"
             }
           ]
         }
