@@ -115,7 +115,15 @@ export class SearchPage extends Gtk.Box
       }
     }
 
-    this._content.prepend(switcher);
+    const window = new Gtk.ScrolledWindow({
+      vscrollbar_policy: Gtk.PolicyType.NEVER,
+      // don't show the scrollbar, but allow scrolling
+      hscrollbar_policy: Gtk.PolicyType.EXTERNAL,
+    });
+
+    window.set_child(switcher);
+
+    this._content.prepend(window);
   }
 
   show_filter_tabs() {
