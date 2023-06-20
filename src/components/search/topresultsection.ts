@@ -12,16 +12,49 @@ export class TopResultSection extends Gtk.Box {
       GTypeName: "TopResultSection",
       Template:
         "resource:///com/vixalien/muzika/ui/components/search/topresultsection.ui",
-      InternalChildren: ["title", "box", "content"],
+      InternalChildren: ["title", "flowbox", "content"],
     }, this);
   }
 
-  private _title!: Gtk.Label;
-  private _box!: Gtk.Box;
-  private _content!: Gtk.Box;
+  _title!: Gtk.Label;
+  _flowbox!: Gtk.FlowBox;
+  _content!: Gtk.Box;
 
   constructor() {
     super();
+
+    this._flowbox.connect("child-activated", this.child_activated.bind(this));
+  }
+
+  child_activated(_: this, child: TopResultCard) {
+    if (!(child instanceof TopResultCard) || !(child.result)) return;
+
+    let uri: string | null = null;
+
+    switch (child.result.type) {
+      case "artist":
+        uri = `artist:${child.result.browseId}`;
+        break;
+      case "album":
+        uri = `album:${child.result.browseId}`;
+        break;
+      case "song":
+      case "video":
+        this.activate_action(
+          "queue.play-song",
+          GLib.Variant.new_string(
+            child.result.videoId,
+          ),
+        );
+        break;
+    }
+
+    if (uri) {
+      this.activate_action(
+        "navigator.visit",
+        GLib.Variant.new_string("muzika:" + uri),
+      );
+    }
   }
 
   add_more_content(content: SearchContent) {
@@ -77,10 +110,14 @@ export class TopResultSection extends Gtk.Box {
 
       this._content.connect("row-activated", this.row_activated.bind(this));
     } else {
-      this._content.visible = false;
+      const second_flowbox = this._flowbox.get_child_at_index(1);
+      if (second_flowbox) {
+        second_flowbox.visible = false;
+      }
+      this._flowbox.max_children_per_line = 1;
     }
 
-    this._box.prepend(card);
+    this._flowbox.prepend(card);
   }
 
   row_activated(_: this, row: InlineCard) {
