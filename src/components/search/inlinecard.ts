@@ -69,7 +69,7 @@ export class InlineCard extends Gtk.ListBoxRow {
 
   show_type = true;
 
-  set_subtitle(
+  private set_subtitle(
     type: string,
     artists: Parameters<typeof pretty_subtitles>[0],
     suffix?: null | string | (string | null)[],

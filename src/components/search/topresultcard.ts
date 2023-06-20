@@ -12,6 +12,7 @@ import {
 import { load_thumbnails } from "../webimage.js";
 import { TopResultVideo } from "libmuse/types/parsers/search.js";
 import { DynamicImage } from "../dynamic-image.js";
+import { pretty_subtitles } from "src/util/text.js";
 
 DynamicImage;
 
@@ -25,9 +26,7 @@ export class TopResultCard extends Gtk.FlowBoxChild {
         "avatar",
         "title",
         "explicit",
-        "label_box",
-        "type",
-        "type_box",
+        "subtitle",
         "primary",
         "primary_content",
         "secondary",
@@ -47,9 +46,7 @@ export class TopResultCard extends Gtk.FlowBoxChild {
   private _avatar!: Adw.Avatar;
   private _title!: Gtk.Label;
   private _explicit!: Gtk.Label;
-  private _label_box!: Gtk.Box;
-  private _type!: Gtk.Label;
-  private _type_box!: Gtk.Box;
+  private _subtitle!: Gtk.Label;
   private _primary!: Gtk.Button;
   private _primary_content!: Adw.ButtonContent;
   private _secondary!: Gtk.Button;
@@ -63,12 +60,21 @@ export class TopResultCard extends Gtk.FlowBoxChild {
   image_size = 100;
   dynamic_image!: DynamicImage;
 
-  add_subsequent_middots = false;
-
   result?: TopResult;
 
   constructor() {
     super();
+
+    this._subtitle.connect("activate-link", (_, uri) => {
+      if (uri && uri.startsWith("muzika:")) {
+        this.activate_action(
+          "navigator.visit",
+          GLib.Variant.new_string(uri),
+        );
+
+        return true;
+      }
+    });
 
     this._breakpoint.connect("apply", () => {
       this.small_layout();
@@ -107,33 +113,24 @@ export class TopResultCard extends Gtk.FlowBoxChild {
     this._grid.attach(this._actions, 1, 1, 1, 1);
   }
 
-  show_type(show: boolean) {
-    this._type_box.visible = show;
+  show_type = true;
+
+  private set_subtitle(
+    type: string,
+    artists: Parameters<typeof pretty_subtitles>[0],
+    suffix?: null | string | (string | null)[],
+  ) {
+    const subtitles = pretty_subtitles(artists, {
+      prefix: this.show_type ? type : undefined,
+      suffix: suffix ?? undefined,
+    });
+
+    this._subtitle.set_markup(subtitles.markup);
+    this._subtitle.tooltip_markup = subtitles.plain;
   }
 
   show_avatar(show: boolean) {
     this._image_stack.visible_child = show ? this._avatar : this.dynamic_image;
-  }
-
-  insert_middot(force = false) {
-    if (this.add_subsequent_middots || force) {
-      this._label_box.append(Gtk.Label.new("·"));
-    } else {
-      this.add_subsequent_middots = true;
-    }
-  }
-
-  insert_only_text(text: string) {
-    const label = Gtk.Label.new(text);
-
-    label.add_css_class("dim-label");
-
-    this._label_box.append(label);
-  }
-
-  insert_text(text: string) {
-    this.insert_middot();
-    this.insert_only_text(text);
   }
 
   private set_song_or_video(track: TopResultSong | TopResultVideo) {
@@ -142,14 +139,8 @@ export class TopResultCard extends Gtk.FlowBoxChild {
     this._title.label = track.title;
     this._explicit.set_visible(track.isExplicit);
 
-    track.artists.forEach((artist) => {
-      this.insert_text(artist.name);
-    });
-
     this.dynamic_image.load_thumbnails(track.thumbnails);
     this.dynamic_image.setup_video(track.videoId);
-
-    if (track.duration) this.insert_text(track.duration);
 
     this._primary.action_name = "queue.play-song";
     this._primary.action_target = GLib.Variant.new_string(track.videoId);
@@ -161,12 +152,14 @@ export class TopResultCard extends Gtk.FlowBoxChild {
 
   set_song(song: TopResultSong) {
     this.set_song_or_video(song);
-    this._type.label = "Song";
+
+    this.set_subtitle("Song", song.artists, [song.duration]);
   }
 
   set_video(video: TopResultVideo) {
     this.set_song_or_video(video);
-    this._type.label = "Video";
+
+    this.set_subtitle("Video", video.artists, [video.duration]);
   }
 
   set_album(album: TopResultAlbum) {
@@ -177,11 +170,7 @@ export class TopResultCard extends Gtk.FlowBoxChild {
     this._title.label = album.title;
     this._explicit.set_visible(album.isExplicit);
 
-    this._type.label = album.album_type;
-
-    album.artists.forEach((artist) => {
-      this.insert_text(artist.name);
-    });
+    this.set_subtitle(album.album_type, album.artists);
 
     this._primary.sensitive = false;
     this._secondary.sensitive = false;
@@ -195,11 +184,7 @@ export class TopResultCard extends Gtk.FlowBoxChild {
 
     this._title.label = artist.name;
 
-    this._type.label = "Artist";
-
-    if (artist.subscribers) {
-      this.insert_only_text(`${artist.subscribers} subscribers`);
-    }
+    this.set_subtitle("Artist", [], `${artist.subscribers} subscribers`);
 
     this._primary_content.label = "Shuffle";
     this._primary_content.icon_name = "media-playlist-shuffle-symbolic";
