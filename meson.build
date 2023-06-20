@@ -26,14 +26,6 @@ if yarnrc != ''
   ]
 endif
 
-# print yarnrc to console
-run_command(
-  'echo',
-  yarnrc,
-  '\n\n\n\n',
-  check: true,
-)
-
 yarn_deps = custom_target(
   'yarn-deps',
   command: [ yarn, 'install', yarn_args ],
