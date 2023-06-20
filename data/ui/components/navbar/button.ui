@@ -16,7 +16,6 @@
         </child>
         <child>
           <object class="GtkLabel" id="label">
-            <property name="label">Home</property>
             <property name="ellipsize">end</property>
           </object>
         </child>

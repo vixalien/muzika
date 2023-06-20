@@ -10,15 +10,15 @@ import { MixedCardItem } from "src/components/library/mixedcard.js";
 import { EndpointContext, MuzikaComponent } from "src/navigation.js";
 
 export const library_orders = new Map<string, LibraryOrder>([
-  ["Recent activity", "recent_activity"],
-  ["Recently added", "recently_added"],
-  ["Recently played", "recently_played"],
+  [_("Recent activity"), "recent_activity"],
+  [_("Recently added"), "recently_added"],
+  [_("Recently played"), "recently_played"],
 ]);
 
 export const alphabetical_orders = new Map<string, Order>([
-  ["Recently added", "recently_added"],
-  ["A to Z", "a_to_z"],
-  ["Z to A", "z_to_a"],
+  [_("Recently added"), "recently_added"],
+  [_("A to Z"), "a_to_z"],
+  [_("Z to A"), "z_to_a"],
 ]);
 
 export function order_id_to_name(string: string, orders: Map<string, string>) {

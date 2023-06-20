@@ -61,7 +61,6 @@
             <property name="valign">center</property>
             <child>
               <object class="GtkLabel" id="title">
-                <property name="label"></property>
                 <property name="hexpand">true</property>
                 <property name="max-width-chars">1</property>
                 <property name="ellipsize">end</property>

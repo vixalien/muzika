@@ -65,7 +65,7 @@ export class ErrorPage extends Gtk.Box {
       this.set_message(error.message);
       this.set_more(true, error_to_string(error));
     } else {
-      this.set_message(error ? "Error: " + error : "Unknown error");
+      this.set_message(error ? _(`Error: ${error}`) : _("Unknown error"));
       this.set_more(false);
     }
   }

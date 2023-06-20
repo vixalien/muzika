@@ -115,7 +115,7 @@ export class PlaylistPage extends Gtk.Box
     });
 
     carousel.show_content({
-      title: "Related playlists",
+      title: _("Related playlists"),
       contents: related,
     });
 

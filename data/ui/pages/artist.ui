@@ -28,7 +28,7 @@
                       <object class="GtkBox">
                         <child>
                           <object class="GtkLabel">
-                            <property name="label">Top Songs</property>
+                            <property name="label" translatable="yes">Top Songs</property>
                             <property name="halign">start</property>
                             <property name="xalign">0</property>
                             <style>
@@ -41,7 +41,7 @@
                             <property name="visible">false</property>
                             <property name="halign">2</property>
                             <property name="hexpand">true</property>
-                            <property name="label">More</property>
+                            <property name="label" translatable="yes">More</property>
                             <style>
                               <class name="flat" />
                             </style>

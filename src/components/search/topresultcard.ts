@@ -146,7 +146,7 @@ export class TopResultCard extends Gtk.FlowBoxChild {
     this._primary.action_target = GLib.Variant.new_string(track.videoId);
 
     this._secondary.sensitive = false;
-    this._secondary_content.label = "Add";
+    this._secondary_content.label = _("Add");
     this._secondary_content.icon_name = "list-add-symbolic";
   }
 
@@ -184,9 +184,9 @@ export class TopResultCard extends Gtk.FlowBoxChild {
 
     this._title.label = artist.name;
 
-    this.set_subtitle("Artist", [], `${artist.subscribers} subscribers`);
+    this.set_subtitle(_("Artist"), [], `${artist.subscribers} subscribers`);
 
-    this._primary_content.label = "Shuffle";
+    this._primary_content.label = _("Shuffle");
     this._primary_content.icon_name = "media-playlist-shuffle-symbolic";
 
     if (artist.shuffleId) {
@@ -197,7 +197,7 @@ export class TopResultCard extends Gtk.FlowBoxChild {
       this._primary.sensitive = false;
     }
 
-    this._secondary_content.label = "Radio";
+    this._secondary_content.label = _("Radio");
     this._secondary_content.icon_name = "sonar-symbolic";
 
     if (artist.radioId) {

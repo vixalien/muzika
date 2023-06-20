@@ -343,7 +343,7 @@ export class Queue extends GObject.Object {
       {
         name: "add-song",
         parameter_type: "s",
-        activate: (_, param) => {
+        activate: (__, param) => {
           if (!param) return;
 
           const url = new URL(`muzika:${param.get_string()[0]}`);
@@ -364,11 +364,11 @@ export class Queue extends GObject.Object {
               win.add_toast(
                 params.has("next")
                   ? tracks.length == 1
-                    ? `Playing "${normalized_title}" next`
-                    : `Playing ${tracks.length} songs next`
+                    ? _(`Playing "${normalized_title}" next`)
+                    : _(`Playing ${tracks.length} songs next`)
                   : tracks.length == 1
-                  ? `Added "${normalized_title}" to queue`
-                  : `Added ${tracks.length} songs to queue`,
+                  ? _(`Added "${normalized_title}" to queue`)
+                  : _(`Added ${tracks.length} songs to queue`),
               );
             }
           });

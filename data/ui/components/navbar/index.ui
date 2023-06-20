@@ -5,7 +5,7 @@
     <property name="orientation">1</property>
     <child>
       <object class="GtkSearchEntry" id="search">
-        <property name="placeholder-text">Search...</property>
+        <property name="placeholder-text" translatable="yes">Search…</property>
         <property name="margin-start">12</property>
         <property name="margin-end">12</property>
         <property name="margin-bottom">6</property>
@@ -24,7 +24,7 @@
         <child>
           <object class="NavbarButton">
             <property name="icon-name">compass2-symbolic</property>
-            <property name="label">Explore</property>
+            <property name="label" translatable="yes">Explore</property>
             <property name="link">explore</property>
             <property name="sensitive">false</property>
           </object>
@@ -32,16 +32,16 @@
         <child>
           <object class="NavbarButton">
             <property name="icon-name">library-symbolic</property>
-            <property name="label">Library</property>
+            <property name="label" translatable="yes">Library</property>
             <property name="link">library</property>
-            <property name="title">Library</property>
+            <property name="title" translatable="yes">Library</property>
             <property name="requires-login">true</property>
           </object>
         </child>
         <child>
           <object class="NavbarButton">
             <property name="icon-name">library-artists-symbolic</property>
-            <property name="label">Artists</property>
+            <property name="label" translatable="yes">Artists</property>
             <property name="link">library:artists</property>
             <property name="requires-login">true</property>
           </object>
@@ -49,7 +49,7 @@
         <child>
           <object class="NavbarButton">
             <property name="icon-name">music-artist-symbolic</property>
-            <property name="label">Subscriptions</property>
+            <property name="label" translatable="yes">Subscriptions</property>
             <property name="link">library:subscriptions</property>
             <property name="requires-login">true</property>
           </object>
@@ -57,7 +57,7 @@
         <child>
           <object class="NavbarButton">
             <property name="icon-name">library-music-symbolic</property>
-            <property name="label">Albums</property>
+            <property name="label" translatable="yes">Albums</property>
             <property name="link">library:albums</property>
             <property name="requires-login">true</property>
           </object>
@@ -65,7 +65,7 @@
         <child>
           <object class="NavbarButton">
             <property name="icon-name">music-note-single-symbolic</property>
-            <property name="label">Songs</property>
+            <property name="label" translatable="yes">Songs</property>
             <property name="link">library:songs</property>
             <property name="requires-login">true</property>
           </object>
@@ -73,16 +73,16 @@
         <child>
           <object class="NavbarButton">
             <property name="icon-name">preferences-system-time-symbolic</property>
-            <property name="label">History</property>
+            <property name="label" translatable="yes">History</property>
             <property name="link">history</property>
             <property name="requires-login">true</property>
           </object>
         </child>
         <child>
           <object class="NavbarButton" id="all_playlists">
-            <property name="title">Playlists</property>
+            <property name="title" translatable="yes">Playlists</property>
             <property name="icon-name">playlist-symbolic</property>
-            <property name="label">All Playlists</property>
+            <property name="label" translatable="yes">All Playlists</property>
             <property name="link">library:playlists</property>
             <property name="requires-login">true</property>
           </object>

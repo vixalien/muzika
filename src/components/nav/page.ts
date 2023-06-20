@@ -135,10 +135,10 @@ export class Page<Data extends unknown, State extends unknown = null>
 
     if (error instanceof MuseError && error.code === ERROR_CODE.AUTH_REQUIRED) {
       error_widget = new AuthenticationErrorPage({ error });
-      this.title = "Authentication Required";
+      this.title = _("Authentication Required");
     } else {
       error_widget = new ErrorPage({ error });
-      this.title = "Error";
+      this.title = _("Error");
     }
 
     this.loading = false;

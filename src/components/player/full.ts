@@ -255,15 +255,15 @@ export class FullPlayerView extends Gtk.ActionBar {
     switch (repeat_mode) {
       case RepeatMode.ALL:
         this._repeat_button.icon_name = "media-playlist-repeat-symbolic";
-        this._repeat_button.tooltip_text = "Repeat All Songs";
+        this._repeat_button.tooltip_text = _("Repeat All Songs");
         break;
       case RepeatMode.ONE:
         this._repeat_button.icon_name = "media-playlist-repeat-song-symbolic";
-        this._repeat_button.tooltip_text = "Repeat the Current Song";
+        this._repeat_button.tooltip_text = _("Repeat the Current Song");
         break;
       case RepeatMode.NONE:
         this._repeat_button.icon_name = "media-playlist-consecutive-symbolic";
-        this._repeat_button.tooltip_text = "Enable Repeat";
+        this._repeat_button.tooltip_text = _("Enable Repeat");
         break;
     }
   }

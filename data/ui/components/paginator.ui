@@ -20,7 +20,7 @@
                 <style>
                   <class name="pill"/>
                 </style>
-                <property name="label">Load More</property>
+                <property name="label" translatable="yes">Load More</property>
               </object>
             </child>
             <child type="spinner">

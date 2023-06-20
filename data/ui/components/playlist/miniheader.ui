@@ -46,7 +46,6 @@
                 <property name="orientation">vertical</property>
                 <child>
                   <object class="GtkLabel" id="title">
-                    <property name="label">Title</property>
                     <style>
                       <class name="title-1" />
                     </style>
@@ -75,7 +74,6 @@
                 </child>
                 <child>
                   <object class="GtkLabel" id="genre">
-                    <property name="label">Single</property>
                     <property name="xalign">0</property>
                     <property name="justify">left</property>
                   </object>
@@ -87,7 +85,6 @@
                 </child>
                 <child>
                   <object class="GtkLabel" id="year">
-                    <property name="label">2022</property>
                     <property name="xalign">0</property>
                     <property name="justify">left</property>
                   </object>
@@ -103,7 +100,7 @@
                   <object class="GtkButton" id="shuffle">
                     <child>
                       <object class="AdwButtonContent">
-                        <property name="label">Shuffle</property>
+                        <property name="label" translatable="yes">Shuffle</property>
                         <property name="icon-name">media-playlist-shuffle-symbolic</property>
                       </object>
                     </child>
@@ -117,7 +114,7 @@
                   <object class="GtkToggleButton" id="add">
                     <child>
                       <object class="AdwButtonContent">
-                        <property name="label">Library</property>
+                        <property name="label" translatable="yes">Library</property>
                         <property name="icon-name">list-add-symbolic</property>
                       </object>
                     </child>

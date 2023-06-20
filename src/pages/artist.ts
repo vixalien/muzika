@@ -111,13 +111,13 @@ export class ArtistPage extends Gtk.Box
 
     this.show_top_songs(artist.songs);
 
-    this.add_carousel("Albums", artist.albums);
-    this.add_carousel("Singles", artist.singles);
-    this.add_carousel("Videos", artist.videos);
-    this.add_carousel("From your library", artist.library);
-    this.add_carousel("Featured on", artist.featured);
-    this.add_carousel("Playlists", artist.playlists);
-    this.add_carousel("Fans might also like", artist.related);
+    this.add_carousel(_("Albums"), artist.albums);
+    this.add_carousel(_("Singles"), artist.singles);
+    this.add_carousel(_("Videos"), artist.videos);
+    this.add_carousel(_("From your library"), artist.library);
+    this.add_carousel(_("Featured on"), artist.featured);
+    this.add_carousel(_("Playlists"), artist.playlists);
+    this.add_carousel(_("Fans might also like"), artist.related);
   }
 
   add_carousel(title: string, data: Category<MixedItem>) {
