@@ -180,10 +180,7 @@ export class Navigator extends GObject.Object {
   }
 
   get current_uri(): string | null {
-    const stack = this._view.navigation_stack;
-    const page = stack.get_item(stack.get_n_items() - 1) as
-      | Page<unknown, unknown>
-      | null;
+    const page = this._view.get_visible_page() as Page<unknown> | null;
 
     if (!page) return null;
 
