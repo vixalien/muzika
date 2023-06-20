@@ -33,13 +33,13 @@ export class GioFileStore extends (Store as any) {
         this.map = new Map(Object.entries(json));
       }
     } catch (error) {
-      console.error("Failed to load store, resetting", error);
+      console.error(_("Failed to load store, resetting"), error);
 
       this.map = new Map();
       this.set("version", this.version);
     }
 
-    console.log("storing data at", this.path.get_path());
+    console.log(_("storing data at"), this.path.get_path());
   }
 
   get<T>(key: string): T | null {

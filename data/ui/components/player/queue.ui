@@ -5,8 +5,8 @@
     <child>
       <object class="AdwStatusPage" id="no_queue">
         <property name="icon-name">playlist2-symbolic</property>
-        <property name="title">The Queue is empty</property>
-        <property name="description">Play some tracks to see the queue</property>
+        <property name="title" translatable="yes">The Queue is empty</property>
+        <property name="description" translatable="yes">Play some tracks to see the queue</property>
       </object>
     </child>
     <child>
@@ -26,7 +26,7 @@
                     <property name="orientation">1</property>
                     <child>
                       <object class="GtkLabel">
-                        <property name="label">Playing From</property>
+                        <property name="label" translatable="yes">Playing From</property>
                         <property name="xalign">0</property>
                         <style>
                           <class name="caption" />
@@ -38,7 +38,7 @@
                       <object class="GtkStack" id="playlist_stack">
                         <child>
                           <object class="GtkLabel" id="playlist_name">
-                            <property name="label">Playlist Name</property>
+                            <property name="label" translatable="yes">Playlist Name</property>
                             <property name="xalign">0</property>
                             <property name="ellipsize">3</property>
                           </object>
@@ -57,7 +57,7 @@
                             </style>
                             <child>
                               <object class="GtkLabel" id="playlist_button_name">
-                                <property name="label">Playlist Name</property>
+                                <property name="label" translatable="yes">Playlist Name</property>
                                 <property name="xalign">0</property>
                                 <property name="ellipsize">3</property>
                               </object>

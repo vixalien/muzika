@@ -306,7 +306,7 @@ export class CarouselCard extends Gtk.Box {
     this.content = playlist;
 
     this.set_title(playlist.title);
-    this.set_subtitle("Start Radio");
+    this.set_subtitle(_("Start Radio"));
 
     this.setup_image(CarouselImageType.DYNAMIC_IMAGE, playlist.thumbnails);
     this.setup_playlist(playlist.playlistId);

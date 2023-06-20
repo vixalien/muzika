@@ -92,7 +92,7 @@ export class MixedCard extends Gtk.ListBoxRow {
 
   set_song(song: ParsedSong) {
     this.set_song_or_video(song);
-    this._type.label = "Song";
+    this._type.label = _("Song");
 
     this._explicit.set_visible(song.isExplicit);
     if (song.duration) this.insert_text(song.duration);
@@ -105,7 +105,7 @@ export class MixedCard extends Gtk.ListBoxRow {
   set_video(video: ParsedVideo) {
     // this._image.width_request = 85.5;
     this.set_song_or_video(video);
-    this._type.label = "Video";
+    this._type.label = _("Video");
   }
 
   set_album(album: ParsedAlbum) {
@@ -116,7 +116,7 @@ export class MixedCard extends Gtk.ListBoxRow {
     this._title.label = album.title;
     this._explicit.set_visible(album.isExplicit);
 
-    this._type.label = album.album_type ?? "Album";
+    this._type.label = album.album_type ?? _("Album");
 
     album.artists.forEach((artist) => {
       this.insert_text(artist.name);
@@ -130,7 +130,7 @@ export class MixedCard extends Gtk.ListBoxRow {
 
     this._title.label = playlist.title;
 
-    this._type.label = "Playlist";
+    this._type.label = _("Start Radio");
   }
 
   set_playlist(playlist: ParsedPlaylist) {
@@ -140,7 +140,7 @@ export class MixedCard extends Gtk.ListBoxRow {
 
     this._title.label = playlist.title;
 
-    this._type.label = "Playlist";
+    this._type.label = _("Playlist");
 
     if (playlist.authors) {
       playlist.authors.forEach((artist) => {

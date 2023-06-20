@@ -97,11 +97,11 @@ export class QueueView extends Gtk.Stack {
         `muzika:playlist:${settings.playlistId}`,
       );
 
-      this._playlist_button_name.label = settings?.playlist ?? "Queue";
+      this._playlist_button_name.label = settings?.playlist ?? _("Queue");
     } else {
       this._playlist_stack.set_visible_child(this._playlist_name);
 
-      this._playlist_name.label = settings?.playlist ?? "Queue";
+      this._playlist_name.label = settings?.playlist ?? _("Queue");
     }
 
     this.params_map.clear();

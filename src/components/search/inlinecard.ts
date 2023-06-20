@@ -100,14 +100,14 @@ export class InlineCard extends Gtk.ListBoxRow {
   set_song(song: SearchSong) {
     this.set_song_or_video(song);
 
-    this.set_subtitle("Song", song.artists, song.duration);
+    this.set_subtitle(_("Song"), song.artists, song.duration);
   }
 
   set_video(video: SearchVideo) {
     // this._image.width_request = 85.5;
     this.set_song_or_video(video);
 
-    this.set_subtitle("Song", video.artists, video.duration);
+    this.set_subtitle(_("Video"), video.artists, video.duration);
   }
 
   set_album(album: SearchAlbum) {
@@ -127,7 +127,7 @@ export class InlineCard extends Gtk.ListBoxRow {
 
     this._title.label = playlist.title;
 
-    this.set_subtitle("Playlist", playlist.authors);
+    this.set_subtitle(_("Playlist"), playlist.authors);
 
     this.dynamic_image.load_thumbnails(playlist.thumbnails);
     this.dynamic_image.setup_playlist(playlist.browseId);
@@ -141,7 +141,7 @@ export class InlineCard extends Gtk.ListBoxRow {
     this._title.label = artist.name;
 
     this.show_type = false;
-    this.set_subtitle("Artist", [artist.subscribers]);
+    this.set_subtitle(_("Artist"), [artist.subscribers]);
 
     load_thumbnails(this._avatar, artist.thumbnails, this.image_size);
   }
@@ -152,7 +152,7 @@ export class InlineCard extends Gtk.ListBoxRow {
     this._title.label = radio.title;
 
     this.show_type = true;
-    this.set_subtitle("Radio", []);
+    this.set_subtitle(_("Radio"), []);
 
     this.dynamic_image.load_thumbnails(radio.thumbnails);
     this.dynamic_image.setup_playlist(radio.playlistId);

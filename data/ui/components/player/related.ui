@@ -5,8 +5,8 @@
     <child>
       <object class="AdwStatusPage" id="no_related">
         <property name="icon-name">heart-broken-symbolic</property>
-        <property name="title">No related music</property>
-        <property name="description">We couldn't find any music related to this track.</property>
+        <property name="title" translatable="yes">No related music</property>
+        <property name="description" translatable="yes">We couldn't find any music related to this track.</property>
       </object>
     </child>
     <child>

@@ -40,7 +40,7 @@
                 </child>
                 <child>
                   <object class="GtkLabel" id="subtitle">
-                    <property name="label">Subtitle</property>
+                    <property name="label"></property>
                     <property name="halign">1</property>
                     <property name="ellipsize">3</property>
                   </object>
@@ -58,20 +58,20 @@
             <child>
               <object class="GtkButton" id="play_button">
                 <property name="icon-name">media-playback-start-symbolic</property>
-                <property name="tooltip-text">Play Next</property>
+                <property name="tooltip-text" translatable="yes">Toggle Play/Pause</property>
                 <property name="action-name">player.play-pause</property>
                 <accessibility>
-                  <property name="label">Play Next</property>
+                  <property name="label" translatable="yes">Toggle Play/Pause</property>
                 </accessibility>
               </object>
             </child>
             <child>
               <object class="GtkButton" id="next_button">
                 <property name="icon-name">media-skip-forward-symbolic</property>
-                <property name="tooltip-text">Play Next</property>
+                <property name="tooltip-text" translatable="yes">Play Next</property>
                 <property name="action-name">player.next</property>
                 <accessibility>
-                  <property name="label">Play Next</property>
+                  <property name="label" translatable="yes">Play Next</property>
                 </accessibility>
               </object>
             </child>

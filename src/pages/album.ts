@@ -105,7 +105,7 @@ export class AlbumPage extends Gtk.Box
     });
 
     carousel.show_content({
-      title: "Other versions",
+      title: _("Other versions"),
       contents: related,
     });
 
@@ -121,7 +121,7 @@ export class AlbumPage extends Gtk.Box
     this.header.set_title(album.title);
     this.header.set_explicit(album.isExplicit);
     this.header.set_genre(album.album_type);
-    this.header.set_year(album.year ?? "Unknown year");
+    this.header.set_year(album.year ?? _("Unknown year"));
 
     if (album.artists && album.artists.length > 0) {
       album.artists.forEach((artist) => {

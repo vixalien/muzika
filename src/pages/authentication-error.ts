@@ -10,7 +10,8 @@ export class AuthenticationErrorPage extends Gtk.Box {
   static {
     GObject.registerClass({
       GTypeName: "AuthenticationErrorPage",
-      Template: "resource:///com/vixalien/muzika/ui/pages/authentication-error.ui",
+      Template:
+        "resource:///com/vixalien/muzika/ui/pages/authentication-error.ui",
       InternalChildren: [
         "status",
         "more",
@@ -67,11 +68,11 @@ export class AuthenticationErrorPage extends Gtk.Box {
 
     if (get_option("auth").has_token()) {
       this._status.set_description(
-        `Your authentication details have expired. Please log in again or go to home.`,
+        _("Your authentication details have expired. Please log in again or go to home."),
       );
     } else {
       this._status.set_description(
-        `The page you were trying to access requires you to log in.`,
+        _("The page you were trying to access requires you to log in."),
       );
     }
   }

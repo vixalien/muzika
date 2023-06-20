@@ -1,0 +1,492 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the muzika package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: muzika\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2023-06-20 15:17+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: data/com.vixalien.muzika.desktop.in:3
+#: data/com.vixalien.muzika.appdata.xml.in.in:6
+msgid "Muzika"
+msgstr ""
+
+#: data/com.vixalien.muzika.appdata.xml.in.in:7
+msgid "Elegant music streaming application"
+msgstr ""
+
+#: data/com.vixalien.muzika.appdata.xml.in.in:9
+msgid ""
+"Play music from millions of songs available on the internet for free. Search "
+"for songs, albums, artists, and more. Discover new music from playlists and "
+"get a personalized &amp; curated experience."
+msgstr ""
+
+#: data/com.vixalien.muzika.appdata.xml.in.in:14
+msgid "Current features:"
+msgstr ""
+
+#: data/com.vixalien.muzika.appdata.xml.in.in:16
+msgid "play any music from YouTube Music"
+msgstr ""
+
+#: data/com.vixalien.muzika.appdata.xml.in.in:17
+msgid ""
+"allows sign in through OAuth with Google to play your playlists and more "
+"from your library or uploads"
+msgstr ""
+
+#: data/com.vixalien.muzika.appdata.xml.in.in:18
+msgid ""
+"search for songs, albums, artists, radios, community &amp; featured "
+"playlists and more"
+msgstr ""
+
+#: data/com.vixalien.muzika.appdata.xml.in.in:19
+msgid "access personalised music radios &amp; mixes"
+msgstr ""
+
+#: data/com.vixalien.muzika.appdata.xml.in.in:31
+msgid "Angelo Verlain"
+msgstr ""
+
+#: data/com.vixalien.muzika.gschema.xml:6
+msgid "Whether lists are preferred to grids"
+msgstr ""
+
+#: data/com.vixalien.muzika.gschema.xml:7
+msgid ""
+"If this option is enabled, the library view will show a list instead of the "
+"default grid."
+msgstr ""
+
+#: data/com.vixalien.muzika.gschema.xml:12
+msgid "Volume"
+msgstr ""
+
+#: data/com.vixalien.muzika.gschema.xml:13
+msgid "The volume of the player"
+msgstr ""
+
+#: data/ui/components/navbar/index.ui:8
+msgid "Search…"
+msgstr ""
+
+#: data/ui/components/navbar/index.ui:27
+msgid "Explore"
+msgstr ""
+
+#: data/ui/components/navbar/index.ui:35 data/ui/components/navbar/index.ui:37
+#: data/ui/components/playlist/largeheader.ui:152
+#: data/ui/components/playlist/miniheader.ui:117 src/endpoints.ts:51
+#: src/pages/search.ts:82
+msgid "Library"
+msgstr ""
+
+#: data/ui/components/navbar/index.ui:44 src/pages/search.ts:296
+msgid "Artists"
+msgstr ""
+
+#: data/ui/components/navbar/index.ui:52
+msgid "Subscriptions"
+msgstr ""
+
+#: data/ui/components/navbar/index.ui:60 src/pages/artist.ts:114
+#: src/pages/search.ts:294
+msgid "Albums"
+msgstr ""
+
+#: data/ui/components/navbar/index.ui:68 src/pages/search.ts:300
+msgid "Songs"
+msgstr ""
+
+#: data/ui/components/navbar/index.ui:76 src/endpoints.ts:87
+msgid "History"
+msgstr ""
+
+#: data/ui/components/navbar/index.ui:83 src/pages/artist.ts:119
+#: src/pages/search.ts:298
+msgid "Playlists"
+msgstr ""
+
+#: data/ui/components/navbar/index.ui:85
+msgid "All Playlists"
+msgstr ""
+
+#: data/ui/components/paginator.ui:23
+msgid "Load More"
+msgstr ""
+
+#: data/ui/components/player/full.ui:70
+msgid "Toggle Shuffle"
+msgstr ""
+
+#: data/ui/components/player/full.ui:83
+msgid "Previous"
+msgstr ""
+
+#: data/ui/components/player/full.ui:93
+#: data/ui/components/search/topresult.ui:118
+msgid "Play"
+msgstr ""
+
+#: data/ui/components/player/full.ui:102 data/ui/components/player/mini.ui:61
+#: data/ui/components/player/mini.ui:64
+msgid "Toggle Play/Pause"
+msgstr ""
+
+#: data/ui/components/player/full.ui:110
+msgid "Next"
+msgstr ""
+
+#: data/ui/components/player/full.ui:121
+msgid "Toggle Repeat State"
+msgstr ""
+
+#: data/ui/components/player/full.ui:168
+msgid "Adjust Volume"
+msgstr ""
+
+#: data/ui/components/player/full.ui:173
+msgid "Show Queue"
+msgstr ""
+
+#: data/ui/components/player/full.ui:180
+msgid "Show Lyrics"
+msgstr ""
+
+#: data/ui/components/player/full.ui:187
+msgid "Show Related songs"
+msgstr ""
+
+#: data/ui/components/player/lyrics.ui:8
+msgid "Lyrics are not available"
+msgstr ""
+
+#: data/ui/components/player/lyrics.ui:9
+msgid "If the song has lyrics, they'll appear here when they become available"
+msgstr ""
+
+#: data/ui/components/player/mini.ui:71 data/ui/components/player/mini.ui:74
+msgid "Play Next"
+msgstr ""
+
+#: data/ui/components/player/queue.ui:8
+msgid "The Queue is empty"
+msgstr ""
+
+#: data/ui/components/player/queue.ui:9
+msgid "Play some tracks to see the queue"
+msgstr ""
+
+#: data/ui/components/player/queue.ui:29
+msgid "Playing From"
+msgstr ""
+
+#: data/ui/components/player/queue.ui:41 data/ui/components/player/queue.ui:60
+msgid "Playlist Name"
+msgstr ""
+
+#: data/ui/components/player/related.ui:8
+msgid "No related music"
+msgstr ""
+
+#: data/ui/components/player/related.ui:9
+msgid "We couldn't find any music related to this track."
+msgstr ""
+
+#: data/ui/components/playlist/largeheader.ui:138
+#: data/ui/components/playlist/miniheader.ui:103
+#: data/ui/components/search/topresult.ui:132
+#: src/components/search/topresultcard.ts:189
+msgid "Shuffle"
+msgstr ""
+
+#: data/ui/pages/artist.ui:31
+msgid "Top Songs"
+msgstr ""
+
+#: data/ui/pages/artist.ui:44
+msgid "More"
+msgstr ""
+
+#: data/ui/pages/authentication-error.ui:9
+msgid "Authentication is required"
+msgstr ""
+
+#: data/ui/pages/authentication-error.ui:31
+msgid "Go to Home"
+msgstr ""
+
+#: data/ui/pages/authentication-error.ui:41
+msgid "Error Details"
+msgstr ""
+
+#: data/ui/pages/error.ui:9
+msgid "An error occurred"
+msgstr ""
+
+#: data/ui/pages/login.ui:16
+msgid "Login"
+msgstr ""
+
+#: data/ui/pages/login.ui:60
+msgid "Scan with phone or go to"
+msgstr ""
+
+#: data/ui/pages/login.ui:78
+msgid "Enter the code"
+msgstr ""
+
+#: data/ui/pages/login.ui:97
+msgid "Copy authentication code"
+msgstr ""
+
+#: data/ui/pages/search.ui:33
+msgid "No Results"
+msgstr ""
+
+#: data/ui/pages/search.ui:36
+msgid "Try a different search"
+msgstr ""
+
+#: data/ui/window.ui:107
+msgid "Log In"
+msgstr ""
+
+#: data/ui/window.ui:111
+msgid "_Preferences"
+msgstr ""
+
+#: data/ui/window.ui:115
+msgid "_Keyboard Shortcuts"
+msgstr ""
+
+#: data/ui/window.ui:119
+msgid "_About Muzika"
+msgstr ""
+
+#: src/components/carousel/card.ts:309 src/components/library/mixedcard.ts:133
+msgid "Start Radio"
+msgstr ""
+
+#: src/components/library/mixedcard.ts:95
+#: src/components/search/inlinecard.ts:103
+msgid "Song"
+msgstr ""
+
+#: src/components/library/mixedcard.ts:108
+#: src/components/search/inlinecard.ts:110
+msgid "Video"
+msgstr ""
+
+#: src/components/library/mixedcard.ts:119 src/endpoints.ts:33
+msgid "Album"
+msgstr ""
+
+#: src/components/library/mixedcard.ts:143
+#: src/components/search/inlinecard.ts:130 src/endpoints.ts:27
+msgid "Playlist"
+msgstr ""
+
+#: src/components/nav/page.ts:138
+msgid "Authentication Required"
+msgstr ""
+
+#: src/components/nav/page.ts:141
+msgid "Error"
+msgstr ""
+
+#: src/components/player/full.ts:258
+msgid "Repeat All Songs"
+msgstr ""
+
+#: src/components/player/full.ts:262
+msgid "Repeat the Current Song"
+msgstr ""
+
+#: src/components/player/full.ts:266
+msgid "Enable Repeat"
+msgstr ""
+
+#: src/components/player/queue.ts:100 src/components/player/queue.ts:104
+msgid "Queue"
+msgstr ""
+
+#: src/components/search/inlinecard.ts:144
+#: src/components/search/topresultcard.ts:187 src/endpoints.ts:39
+msgid "Artist"
+msgstr ""
+
+#: src/components/search/inlinecard.ts:155
+#: src/components/search/topresultcard.ts:200
+msgid "Radio"
+msgstr ""
+
+#: src/components/search/topresultcard.ts:149
+msgid "Add"
+msgstr ""
+
+#: src/endpoints.ts:21
+msgid "Home"
+msgstr ""
+
+#: src/endpoints.ts:45
+msgid "Search Results"
+msgstr ""
+
+#: src/endpoints.ts:57
+msgid "Library Playlists"
+msgstr ""
+
+#: src/endpoints.ts:63
+msgid "Library Albums"
+msgstr ""
+
+#: src/endpoints.ts:69
+msgid "Library Artists"
+msgstr ""
+
+#: src/endpoints.ts:75
+msgid "Library Subscriptions"
+msgstr ""
+
+#: src/endpoints.ts:81
+msgid "Library Songs"
+msgstr ""
+
+#: src/muse.ts:48
+msgid "caching data"
+msgstr ""
+
+#: src/pages/album.ts:108
+msgid "Other versions"
+msgstr ""
+
+#: src/pages/album.ts:124
+msgid "Unknown year"
+msgstr ""
+
+#: src/pages/artist.ts:115
+msgid "Singles"
+msgstr ""
+
+#: src/pages/artist.ts:116 src/pages/search.ts:302
+msgid "Videos"
+msgstr ""
+
+#: src/pages/artist.ts:117
+msgid "From your library"
+msgstr ""
+
+#: src/pages/artist.ts:118
+msgid "Featured on"
+msgstr ""
+
+#: src/pages/artist.ts:120
+msgid "Fans might also like"
+msgstr ""
+
+#: src/pages/authentication-error.ts:71
+msgid ""
+"Your authentication details have expired. Please log in again or go to home."
+msgstr ""
+
+#: src/pages/authentication-error.ts:75
+msgid "The page you were trying to access requires you to log in."
+msgstr ""
+
+#: src/pages/error.ts:68
+msgid "Unknown error"
+msgstr ""
+
+#: src/pages/library/base.ts:13
+msgid "Recent activity"
+msgstr ""
+
+#: src/pages/library/base.ts:14 src/pages/library/base.ts:19
+msgid "Recently added"
+msgstr ""
+
+#: src/pages/library/base.ts:15
+msgid "Recently played"
+msgstr ""
+
+#: src/pages/library/base.ts:20
+msgid "A to Z"
+msgstr ""
+
+#: src/pages/library/base.ts:21
+msgid "Z to A"
+msgstr ""
+
+#: src/pages/login.ts:74
+msgid "Copied to clipboard"
+msgstr ""
+
+#: src/pages/playlist.ts:118
+msgid "Related playlists"
+msgstr ""
+
+#: src/pages/search.ts:81
+msgid "Catalog"
+msgstr ""
+
+#: src/pages/search.ts:83
+msgid "Uploads"
+msgstr ""
+
+#: src/pages/search.ts:304
+msgid "Community Playlists"
+msgstr ""
+
+#: src/pages/search.ts:306
+msgid "Featured Playlists"
+msgstr ""
+
+#: src/player/queue.ts:367 src/player/queue.ts:370
+msgid "${normalized_title}"
+msgstr ""
+
+#: src/polyfills/fetch.ts:179
+msgid "caching soup requests at"
+msgstr ""
+
+#: src/util/giofilestore.ts:36
+msgid "Failed to load store, resetting"
+msgstr ""
+
+#: src/util/giofilestore.ts:42
+msgid "storing data at"
+msgstr ""
+
+#: src/window.ts:209 src/window.ts:211
+msgid "Logout"
+msgstr ""
+
+#: src/window.ts:209
+msgid "Are you sure?"
+msgstr ""
+
+#: src/window.ts:210
+msgid "Cancel"
+msgstr ""
+
+#: src/window.ts:246
+msgid "Successfully logged in!"
+msgstr ""
+
+#: src/window.ts:254 src/window.ts:256
+msgid "An error happened while logging in"
+msgstr ""

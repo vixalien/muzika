@@ -5,9 +5,8 @@
     <child>
       <object class="AdwStatusPage" id="no_lyrics">
         <property name="icon-name">heart-broken-symbolic</property>
-        <property name="title">Lyrics are not available</property>
-        <property name="description">If the song has lyrics, they'll appear here when they become
-          available</property>
+        <property name="title" translatable="yes">Lyrics are not available</property>
+        <property name="description" translatable="yes">If the song has lyrics, they'll appear here when they become available</property>
       </object>
     </child>
     <child>

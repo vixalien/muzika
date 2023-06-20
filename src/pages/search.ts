@@ -78,9 +78,9 @@ export class SearchPage extends Gtk.Box
     });
 
     const scopes = [
-      ["Catalog", undefined],
-      ["Library", "library"],
-      ["Uploads", "uploads"],
+      [_("Catalog"), undefined],
+      [_("Library"), "library"],
+      [_("Uploads"), "uploads"],
     ] as const;
 
     scopes.forEach(([label, scope]) => {
@@ -291,19 +291,19 @@ export function search_args_to_url(
 function filter_to_string(filter: Filter) {
   switch (filter) {
     case "albums":
-      return "Albums";
+      return _("Albums");
     case "artists":
-      return "Artists";
+      return _("Artists");
     case "playlists":
-      return "Playlists";
+      return _("Playlists");
     case "songs":
-      return "Songs";
+      return _("Songs");
     case "videos":
-      return "Videos";
+      return _("Videos");
     case "community_playlists":
-      return "Community Playlists";
+      return _("Community Playlists");
     case "featured_playlists":
-      return "Featured Playlists";
+      return _("Featured Playlists");
     default:
       return filter;
   }
