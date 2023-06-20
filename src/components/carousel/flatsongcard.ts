@@ -59,7 +59,7 @@ export class FlatSongCard extends Gtk.Box {
 
     this._explicit.set_visible(song.isExplicit);
 
-    load_thumbnails(this._dynamic_image.image, song.thumbnails, 160);
+    this._dynamic_image.load_thumbnails(song.thumbnails);
 
     if (song.videoId) {
       this._dynamic_image.setup_video(song.videoId);

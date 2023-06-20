@@ -89,7 +89,7 @@ export class PlaylistItemCard extends Gtk.ListBoxRow {
 
     this._explicit.set_visible(item.isExplicit);
 
-    load_thumbnails(this.dynamic_image.image, item.thumbnails, 48);
+    this.dynamic_image.load_thumbnails(item.thumbnails);
 
     this.dynamic_image.setup_video(item.videoId, playlistId);
   }

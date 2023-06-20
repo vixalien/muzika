@@ -2,6 +2,8 @@ import Gtk from "gi://Gtk?version=4.0";
 import GObject from "gi://GObject";
 
 import { Application } from "src/application.js";
+import { Thumbnail } from "libmuse";
+import { load_thumbnails } from "./webimage";
 
 export enum DynamicImageState {
   DEFAULT,
@@ -20,7 +22,8 @@ export class DynamicImage extends Gtk.Overlay {
   static {
     GObject.registerClass({
       GTypeName: "DynamicImage",
-      Template: "resource:///com/vixalien/muzika/ui/components/dynamic-image.ui",
+      Template:
+        "resource:///com/vixalien/muzika/ui/components/dynamic-image.ui",
       InternalChildren: [
         "stack",
         "play",
@@ -462,6 +465,23 @@ export class DynamicImage extends Gtk.Overlay {
   vfunc_dispose(): void {
     this.reset_listeners();
     super.vfunc_dispose();
+  }
+
+  load_thumbnails(
+    thumbnails: Thumbnail[],
+    options: Parameters<typeof load_thumbnails>[2] = this.image_size,
+  ) {
+    if (this.visible_child === DynamicImageVisibleChild.NUMBER) {
+      return;
+    }
+
+    return load_thumbnails(
+      this.visible_child === DynamicImageVisibleChild.IMAGE
+        ? this.image
+        : this.picture,
+      thumbnails,
+      options,
+    );
   }
 }
 
