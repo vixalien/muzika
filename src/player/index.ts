@@ -23,6 +23,7 @@ import { Application, Settings } from "../application.js";
 import { ObjectContainer } from "../util/objectcontainer.js";
 import { AddActionEntries } from "src/util/action.js";
 import { store } from "src/util/giofilestore.js";
+import { list_model_to_array } from "src/util/list.js";
 
 const preferred_quality: AudioFormat["audio_quality"] = "medium";
 const preferred_format: AudioFormat["audio_codec"] = "opus";
@@ -679,9 +680,11 @@ export class Player extends GObject.Object {
       return null;
     }
 
-    const get_tracks = (list: Gio.ListStore) => {
-      return this.queue._get_items(list).map((item) => item.item)
-        .filter(Boolean).map((track) => track?.videoId) as string[];
+    const get_tracks = (list: Gio.ListStore<ObjectContainer<QueueMeta>>) => {
+      return list_model_to_array(list)
+        .map((item) => item.item)
+        .filter(Boolean)
+        .map((track) => track?.videoId) as string[];
     };
 
     return {
