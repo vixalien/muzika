@@ -11,6 +11,9 @@ import {
 } from "../../muse.js";
 import { load_thumbnails } from "../webimage.js";
 import { TopResultVideo } from "libmuse/types/parsers/search.js";
+import { DynamicImage } from "../dynamic-image.js";
+
+DynamicImage;
 
 export class TopResultCard extends Gtk.FlowBoxChild {
   static {
@@ -20,8 +23,6 @@ export class TopResultCard extends Gtk.FlowBoxChild {
         "resource:///com/vixalien/muzika/ui/components/search/topresult.ui",
       InternalChildren: [
         "avatar",
-        "image",
-        "image_overlay",
         "title",
         "explicit",
         "label_box",
@@ -37,18 +38,18 @@ export class TopResultCard extends Gtk.FlowBoxChild {
         "grid",
         "breakpoint",
       ],
+      Children: [
+        "dynamic_image",
+      ],
     }, this);
   }
 
   private _avatar!: Adw.Avatar;
-  private _image!: Gtk.Image;
-  private _image_overlay!: Gtk.Overlay;
   private _title!: Gtk.Label;
   private _explicit!: Gtk.Label;
   private _label_box!: Gtk.Box;
   private _type!: Gtk.Label;
   private _type_box!: Gtk.Box;
-  private _second_line!: Gtk.Box;
   private _primary!: Gtk.Button;
   private _primary_content!: Adw.ButtonContent;
   private _secondary!: Gtk.Button;
@@ -60,6 +61,8 @@ export class TopResultCard extends Gtk.FlowBoxChild {
   private _breakpoint!: Adw.Breakpoint;
 
   image_size = 100;
+  dynamic_image!: DynamicImage;
+
   add_subsequent_middots = false;
 
   result?: TopResult;
@@ -109,8 +112,7 @@ export class TopResultCard extends Gtk.FlowBoxChild {
   }
 
   show_avatar(show: boolean) {
-    this._avatar.visible = show;
-    this._image_overlay.visible = !show;
+    this._image_stack.visible_child = show ? this._avatar : this.dynamic_image;
   }
 
   insert_middot(force = false) {
@@ -137,14 +139,15 @@ export class TopResultCard extends Gtk.FlowBoxChild {
   private set_song_or_video(track: TopResultSong | TopResultVideo) {
     this.result = track;
 
-    load_thumbnails(this._image, track.thumbnails, this.image_size);
-
     this._title.label = track.title;
     this._explicit.set_visible(track.isExplicit);
 
     track.artists.forEach((artist) => {
       this.insert_text(artist.name);
     });
+
+    this.dynamic_image.load_thumbnails(track.thumbnails);
+    this.dynamic_image.setup_video(track.videoId);
 
     if (track.duration) this.insert_text(track.duration);
 
@@ -169,7 +172,7 @@ export class TopResultCard extends Gtk.FlowBoxChild {
   set_album(album: TopResultAlbum) {
     this.result = album;
 
-    load_thumbnails(this._image, album.thumbnails, this.image_size);
+    this.dynamic_image.load_thumbnails(album.thumbnails);
 
     this._title.label = album.title;
     this._explicit.set_visible(album.isExplicit);

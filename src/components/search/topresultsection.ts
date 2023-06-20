@@ -5,6 +5,7 @@ import GLib from "gi://GLib";
 import { SearchContent, TopResult } from "../../muse.js";
 import { InlineCard } from "./inlinecard.js";
 import { TopResultCard } from "./topresultcard.js";
+import { DynamicImageState } from "../dynamic-image.js";
 
 export class TopResultSection extends Gtk.Box {
   static {
@@ -40,6 +41,7 @@ export class TopResultSection extends Gtk.Box {
         break;
       case "song":
       case "video":
+        child.dynamic_image.state = DynamicImageState.LOADING;
         this.activate_action(
           "queue.play-song",
           GLib.Variant.new_string(
@@ -85,7 +87,7 @@ export class TopResultSection extends Gtk.Box {
   }
 
   show_top_result(top_result: TopResult) {
-    let card = new TopResultCard();
+    const card = new TopResultCard();
 
     switch (top_result.type) {
       case "song":
@@ -136,6 +138,7 @@ export class TopResultSection extends Gtk.Box {
         uri = `album:${row.content.browseId}`;
         break;
       case "radio":
+        row.dynamic_image.state = DynamicImageState.LOADING;
         this.activate_action(
           "queue.play-playlist",
           GLib.Variant.new_string(
@@ -145,6 +148,7 @@ export class TopResultSection extends Gtk.Box {
         break;
       case "song":
       case "video":
+        row.dynamic_image.state = DynamicImageState.LOADING;
         this.activate_action(
           "queue.play-song",
           GLib.Variant.new_string(

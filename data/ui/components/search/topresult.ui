@@ -15,7 +15,8 @@
         <child>
           <object class="AdwBreakpoint" id="breakpoint">
             <condition>max-width: 420sp</condition>
-            <setter object="image" property="pixel-size">48</setter>
+            <setter object="dynamic_image" property="image-size">48</setter>
+            <setter object="dynamic_image" property="icon-size">16</setter>
             <setter object="avatar" property="size">48</setter>
             <setter object="primary" property="hexpand">True</setter>
             <setter object="secondary" property="hexpand">True</setter>
@@ -36,32 +37,10 @@
                   <property name="row-span">2</property>
                 </layout>
                 <child>
-                  <object class="GtkOverlay" id="image_overlay">
-                    <style>
-                      <class name="image" />
-                      <class name="br-12" />
-                      <class name="hover-parent" />
-                    </style>
-                    <property name="overflow">1</property>
-                    <child>
-                      <object class="GtkBox">
-                        <child>
-                          <object class="GtkImage" id="image">
-                            <property name="icon-name">image-missing-symbolic</property>
-                            <property name="pixel-size">100</property>
-                          </object>
-                        </child>
-                      </object>
-                    </child>
-                    <child type="overlay">
-                      <object class="GtkButton">
-                        <style>
-                          <class name="osd" />
-                          <class name="hover-child" />
-                        </style>
-                        <property name="icon-name">media-playback-start-symbolic</property>
-                      </object>
-                    </child>
+                  <object class="DynamicImage" id="dynamic_image">
+                    <property name="image-size">100</property>
+                    <property name="valign">center</property>
+                    <property name="persistent-play-button">false</property>
                   </object>
                 </child>
                 <child>
