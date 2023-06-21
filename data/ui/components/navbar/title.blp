@@ -1,0 +1,22 @@
+using Gtk 4.0;
+
+template $NavbarTitle : Box {
+  margin-start: 18;
+  margin-bottom: 6;
+  margin-end: 6;
+  margin-top: 6;
+  visible: false;
+
+  Label label {
+    hexpand: true;
+    label: "";
+    xalign: 0;
+
+    styles [
+      "dim-label",
+    ]
+  }
+
+  Box action {
+  }
+}

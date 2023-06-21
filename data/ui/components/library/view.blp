@@ -1,0 +1,46 @@
+using Gtk 4.0;
+
+template $LibraryView : Box {
+  ScrolledWindow scrolled {
+    hexpand: true;
+    hscrollbar-policy: never;
+
+    Box box {
+      orientation: vertical;
+      margin-top: 12;
+      margin-bottom: 12;
+      spacing: 12;
+
+      Box tools {
+        valign: start;
+        margin-start: 12;
+        margin-end: 12;
+
+        Box view_toggle {
+          styles [
+            "linked",
+          ]
+
+          ToggleButton grid_button {
+            icon-name: "view-grid-symbolic";
+          }
+
+          ToggleButton list_button {
+            icon-name: "view-list-symbolic";
+            group: grid_button;
+          }
+        }
+
+        DropDown drop_down {
+          halign: end;
+          hexpand: true;
+        }
+      }
+
+      Stack stack {
+        vhomogeneous: false;
+        transition-type: slide_left_right;
+      }
+    }
+  }
+}

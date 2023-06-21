@@ -59,12 +59,15 @@ if compile_schemas.found()
        args: ['--strict', '--dry-run', meson.current_source_dir()])
 endif
 
+subdir('ui')
+
 data_res = gnome.compile_resources(
   'com.vixalien.muzika.data',
   'com.vixalien.muzika.data.gresource.xml',
   gresource_bundle: true,
   install: true,
   install_dir: pkgdatadir,
+  dependencies: blueprints,
 )
 
 subdir('icons')

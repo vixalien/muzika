@@ -1,0 +1,160 @@
+using Gtk 4.0;
+using Adw 1;
+
+template $LargePlaylistHeader : Box {
+  Box header {
+    spacing: 24;
+    hexpand: true;
+    valign: start;
+    margin-start: 12;
+    margin-end: 12;
+
+    Image image {
+      valign: start;
+      pixel-size: 240;
+      overflow: hidden;
+      icon-name: "image-missing-symbolic";
+
+      styles [
+        "br-9",
+        "card",
+      ]
+    }
+
+    Adw.Avatar avatar {
+      valign: start;
+      size: 240;
+      text: "Avatar";
+      visible: false;
+
+      styles [
+        "br-9",
+        "card",
+        "rounded",
+      ]
+    }
+
+    Box {
+      valign: end;
+      orientation: vertical;
+      hexpand: true;
+
+      Box {
+        orientation: vertical;
+
+        Label title {
+          label: "Title";
+          xalign: 0;
+          justify: left;
+
+          styles [
+            "title-1",
+          ]
+        }
+
+        Box author_box {
+          spacing: 6;
+        }
+      }
+
+      Box submeta {
+        margin-top: 3;
+        spacing: 6;
+
+        styles [
+          "dim-label",
+        ]
+
+        Image explicit {
+          icon-name: "network-cellular-edge-symbolic";
+        }
+
+        Label genre {
+          xalign: 0;
+          justify: left;
+        }
+
+        Label subtitle_separator {
+          label: "•";
+        }
+
+        Label year {
+          xalign: 0;
+          justify: left;
+        }
+      }
+
+      Stack description_stack {
+        vhomogeneous: false;
+        hhomogeneous: false;
+        margin-top: 24;
+
+        Label description {
+          hexpand: true;
+          wrap: true;
+          lines: 3;
+          ellipsize: end;
+          width-chars: 10;
+          max-width-chars: 10;
+          xalign: 0;
+        }
+
+        Label description_long {
+          hexpand: true;
+          vexpand: true;
+          wrap: true;
+          width-chars: 10;
+          max-width-chars: 10;
+          xalign: 0;
+        }
+      }
+
+      Expander more {
+        label: "More";
+        margin-top: 10;
+
+        styles [
+          "inverted",
+        ]
+      }
+
+      Box buttons {
+        margin-top: 12;
+        spacing: 6;
+
+        Button shuffle {
+          Adw.ButtonContent {
+            label: _("Shuffle");
+            icon-name: "media-playlist-shuffle-symbolic";
+          }
+
+          styles [
+            "pill",
+            "suggested-action",
+          ]
+        }
+
+        ToggleButton add {
+          Adw.ButtonContent {
+            label: _("Library");
+            icon-name: "list-add-symbolic";
+          }
+
+          styles [
+            "pill",
+          ]
+        }
+
+        ToggleButton menu {
+          icon-name: "view-more-symbolic";
+
+          styles [
+            "flat",
+            "pill",
+            "small-pill",
+          ]
+        }
+      }
+    }
+  }
+}

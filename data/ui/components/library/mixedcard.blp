@@ -1,0 +1,115 @@
+using Gtk 4.0;
+using Adw 1;
+
+template $MixedCard : ListBoxRow {
+  valign: center;
+  margin-bottom: 6;
+
+  styles [
+    "br-6",
+    "hover-parent",
+    "focus-parent",
+  ]
+
+  Box {
+    width-request: 320;
+    spacing: 12;
+    hexpand: false;
+    valign: center;
+
+    styles [
+      "padding-3",
+    ]
+
+    Adw.Avatar avatar {
+      text: "s";
+      size: 48;
+      visible: false;
+    }
+
+    Overlay image_overlay {
+      styles [
+        "br-6",
+      ]
+
+      overflow: hidden;
+
+      [overlay]
+      Button play_button {
+        halign: fill;
+        valign: fill;
+        hexpand: true;
+        vexpand: true;
+        icon-name: "media-playback-start-symbolic";
+
+        styles [
+          "osd",
+          "hover-child",
+          "focus-child",
+          "no-br",
+        ]
+      }
+
+      Box {
+        styles [
+          "thumbnail",
+        ]
+
+        Image image {
+          icon-name: "image-missing-symbolic";
+          pixel-size: 48;
+        }
+      }
+    }
+
+    Box meta {
+      orientation: vertical;
+      spacing: 3;
+      valign: center;
+
+      Label title {
+        hexpand: true;
+        max-width-chars: 1;
+        ellipsize: end;
+        lines: 2;
+        xalign: 0;
+        wrap: true;
+        wrap-mode: char;
+
+        styles [
+          "heading",
+        ]
+      }
+
+      Box second-line {
+        spacing: 6;
+
+        styles [
+          "dim-label",
+        ]
+
+        Image explicit {
+          valign: center;
+          visible: false;
+          icon-name: "network-cellular-edge-symbolic";
+        }
+
+        Box type_box {
+          spacing: 6;
+
+          Label type {
+            label: "";
+          }
+
+          Label type_separator {
+            label: "·";
+          }
+        }
+
+        Box label_box {
+          spacing: 6;
+        }
+      }
+    }
+  }
+}

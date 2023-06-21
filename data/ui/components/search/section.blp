@@ -1,0 +1,41 @@
+using Gtk 4.0;
+
+template $SearchSection : Box {
+  valign: start;
+  orientation: vertical;
+
+  Box {
+    margin-top: 6;
+    margin-start: 12;
+    margin-end: 12;
+    margin-bottom: 6;
+
+    Label title {
+      styles [
+        "title-3",
+      ]
+    }
+
+    Button more {
+      visible: false;
+      halign: end;
+      hexpand: true;
+      label: "More";
+
+      styles [
+        "flat",
+      ]
+    }
+  }
+
+  ListBox content {
+    margin-start: 9;
+    margin-end: 9;
+    margin-bottom: 6;
+    selection-mode: none;
+
+    styles [
+      "background",
+    ]
+  }
+}

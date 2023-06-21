@@ -1,0 +1,67 @@
+using Gtk 4.0;
+using Adw 1;
+
+template $CarouselCard : Box {
+  valign: start;
+  orientation: vertical;
+  hexpand: false;
+  spacing: 6;
+
+  Stack image_stack {
+    Adw.Avatar avatar {
+      size: 160;
+      text: "Avatar";
+    }
+
+    $DynamicImage dynamic_image {
+    }
+
+    $PlaylistImage playlist_image {
+    }
+  }
+
+  Box meta {
+    orientation: vertical;
+    spacing: 3;
+
+    Label title {
+      label: "Title";
+      max-width-chars: 1;
+      ellipsize: end;
+      xalign: 0;
+      hexpand: true;
+      wrap: true;
+
+      styles [
+        "heading",
+      ]
+    }
+
+    Box subtitles {
+      spacing: 6;
+
+      styles [
+        "dim-label",
+      ]
+
+      Image explicit {
+        visible: false;
+        valign: center;
+        icon-name: "network-cellular-edge-symbolic";
+      }
+
+      Label subtitle {
+        use-markup: true;
+        hexpand: true;
+        max-width-chars: 1;
+        ellipsize: end;
+        xalign: 0;
+        wrap: true;
+
+        styles [
+          "flat-links",
+        ]
+      }
+    }
+  }
+}

@@ -1,0 +1,95 @@
+using Gtk 4.0;
+
+template $Carousel : Box {
+  spacing: 6;
+  orientation: vertical;
+
+  Box titlesandbuttons {
+    spacing: 6;
+    margin-start: 12;
+    margin-end: 12;
+    height-request: 42;
+
+    Box titles {
+      valign: center;
+      orientation: vertical;
+
+      Label subtitle {
+        halign: start;
+        ellipsize: end;
+
+        styles [
+          "dim-label",
+        ]
+      }
+
+      Label title {
+        halign: start;
+        ellipsize: end;
+
+        styles [
+          "title-2",
+        ]
+      }
+    }
+
+    Box buttons {
+      halign: end;
+      hexpand: true;
+      valign: start;
+      spacing: 6;
+
+      Button left_button {
+        icon-name: "go-previous-symbolic";
+        overflow: hidden;
+
+        styles [
+          "rounded",
+          "flat",
+        ]
+      }
+
+      Button right_button {
+        icon-name: "go-next-symbolic";
+        overflow: hidden;
+
+        styles [
+          "rounded",
+          "flat",
+        ]
+      }
+    }
+  }
+
+  Separator {
+    styles [
+      "spacer",
+    ]
+  }
+
+  Stack carousel_stack {
+    hexpand: true;
+
+    ScrolledWindow scrolled {
+      hexpand: true;
+      propagate-natural-height: true;
+      vscrollbar-policy: never;
+
+      styles [
+        "undershoot-start",
+        "undershoot-end",
+      ]
+    }
+
+    Box text {
+      TextView text_view {
+        hexpand: true;
+        wrap-mode: word_char;
+        left-margin: 12;
+        right-margin: 12;
+        editable: false;
+        cursor-visible: false;
+      }
+    }
+  }
+}

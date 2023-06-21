@@ -1,0 +1,89 @@
+using Gtk 4.0;
+using Adw 1;
+
+template $QueueView : Stack {
+  Adw.StatusPage no_queue {
+    icon-name: "playlist2-symbolic";
+    title: _("The Queue is empty");
+    description: _("Play some tracks to see the queue");
+  }
+
+  ScrolledWindow queue_window {
+    hscrollbar-policy: never;
+
+    Box {
+      orientation: vertical;
+
+      Box details {
+        margin-start: 9;
+        margin-end: 9;
+        margin-top: 9;
+        margin-bottom: 9;
+
+        Box labels {
+          orientation: vertical;
+
+          Label {
+            label: _("Playing From");
+            xalign: 0;
+
+            styles [
+              "caption",
+              "dim-label",
+            ]
+          }
+
+          Stack playlist_stack {
+            Label playlist_name {
+              label: _("Playlist Name");
+              xalign: 0;
+              ellipsize: end;
+            }
+
+            Button playlist_button {
+              cursor:               $GdkCursor {
+                name: "pointer";
+              }
+
+              ;
+
+              styles [
+                "inline",
+                "link",
+                "flat",
+              ]
+
+              Label playlist_button_name {
+                label: _("Playlist Name");
+                xalign: 0;
+                ellipsize: end;
+              }
+            }
+          }
+        }
+      }
+
+      ScrolledWindow params {
+        vscrollbar-policy: never;
+        hscrollbar-policy: external;
+
+        Box params_box {
+          valign: start;
+          margin-start: 9;
+          margin-end: 9;
+          margin-bottom: 9;
+
+          styles [
+            "linked",
+          ]
+        }
+      }
+
+      ListView list_view {
+        styles [
+          "transparent",
+        ]
+      }
+    }
+  }
+}

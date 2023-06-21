@@ -1,0 +1,51 @@
+using Gtk 4.0;
+using Adw 1;
+
+template $AlbumPage : Box {
+  ScrolledWindow scrolled {
+    vexpand: true;
+    hexpand: true;
+    hscrollbar-policy: never;
+
+    Adw.Clamp {
+      margin-top: 24;
+      margin-bottom: 24;
+      margin-start: 12;
+      margin-end: 12;
+      tightening-threshold: 800;
+      maximum-size: 1000;
+
+      Box inner_box {
+        spacing: 24;
+        orientation: vertical;
+
+        Box content {
+        }
+
+        Box more {
+          margin-bottom: 24;
+          margin-start: 12;
+          margin-end: 12;
+
+          Box data {
+            styles [
+              "dim-label",
+            ]
+
+            spacing: 6;
+
+            Label trackCount {
+            }
+
+            Label {
+              label: "·";
+            }
+
+            Label duration {
+            }
+          }
+        }
+      }
+    }
+  }
+}

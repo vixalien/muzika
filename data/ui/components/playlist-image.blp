@@ -1,0 +1,57 @@
+using Gtk 4.0;
+using Adw 1;
+
+template $PlaylistImage : Overlay {
+  overflow: hidden;
+  valign: start;
+
+  styles [
+    "br-9",
+    "card",
+  ]
+
+  Image image {
+    pixel-size: 160;
+    icon-name: "image-missing-symbolic";
+  }
+
+  [overlay]
+  Stack stack {
+    halign: end;
+    valign: end;
+    margin-end: 6;
+    margin-bottom: 6;
+
+    Adw.Bin blank {
+    }
+
+    Button play {
+      Image play_image {
+        icon-name: "media-playback-start-symbolic";
+      }
+
+      styles [
+        "osd",
+        "floating-button",
+      ]
+    }
+
+    Button pause {
+      Image pause_image {
+        icon-name: "media-playback-pause-symbolic";
+      }
+
+      styles [
+        "osd",
+        "floating-button",
+      ]
+    }
+
+    Spinner loading {
+      styles [
+        "osd",
+        "floating-button",
+      ]
+    }
+  }
+}

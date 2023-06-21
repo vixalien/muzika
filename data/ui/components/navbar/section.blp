@@ -1,0 +1,12 @@
+using Gtk 4.0;
+
+template $NavbarSection : Box {
+  orientation: vertical;
+  spacing: 6;
+
+  ListBox items {
+    styles [
+      "navigation-sidebar",
+    ]
+  }
+}

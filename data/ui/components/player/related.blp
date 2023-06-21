@@ -1,0 +1,26 @@
+using Gtk 4.0;
+using Adw 1;
+
+template $RelatedView : Stack {
+  Adw.StatusPage no_related {
+    icon-name: "heart-broken-symbolic";
+    title: _("No related music");
+    description: _("We couldn\'t find any music related to this track.");
+  }
+
+  Spinner loading {
+    hexpand: true;
+    halign: center;
+    width-request: 32;
+  }
+
+  ScrolledWindow related_window {
+    hscrollbar-policy: never;
+
+    Box box {
+      orientation: vertical;
+      margin-top: 12;
+      margin-bottom: 12;
+    }
+  }
+}

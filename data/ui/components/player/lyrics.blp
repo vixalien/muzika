@@ -1,0 +1,59 @@
+using Gtk 4.0;
+using Adw 1;
+
+template $LyricsView : Stack {
+  Adw.StatusPage no_lyrics {
+    icon-name: "heart-broken-symbolic";
+    title: _("Lyrics are not available");
+    description: _("If the song has lyrics, they\'ll appear here when they become available");
+  }
+
+  Spinner loading {
+    hexpand: true;
+    halign: center;
+    width-request: 32;
+  }
+
+  ScrolledWindow lyrics_window {
+    hscrollbar-policy: never;
+
+    Box {
+      orientation: vertical;
+      spacing: 6;
+      margin-start: 9;
+      margin-end: 9;
+      margin-top: 9;
+      margin-bottom: 9;
+
+      TextView view {
+        hexpand: true;
+
+        styles [
+          "background",
+          "transparent",
+        ]
+
+        editable: false;
+        cursor-visible: false;
+        wrap-mode: word_char;
+        buffer: 
+        TextBuffer buffer {
+          text: "";
+        }
+
+        ;
+      }
+
+      Label source {
+        wrap: true;
+        label: "";
+        xalign: 0;
+        selectable: true;
+
+        styles [
+          "dim-label",
+        ]
+      }
+    }
+  }
+}

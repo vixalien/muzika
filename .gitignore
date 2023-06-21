@@ -3,3 +3,4 @@ _build/
 .flatpak/
 .flatpak-builder/
 node_modules/
+/subprojects/blueprint-compiler

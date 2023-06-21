@@ -1,0 +1,75 @@
+using Gtk 4.0;
+
+template $MiniPlayerView : Overlay {
+  Box {
+    styles [
+      "toolbar",
+    ]
+
+    Box song_info_box {
+      spacing: 12;
+
+      Image image {
+        icon-name: "image-missing-symbolic";
+        pixel-size: 46;
+        valign: center;
+        overflow: hidden;
+
+        styles [
+          "br-9",
+          "card",
+        ]
+      }
+
+      Box now_playing_labels {
+        orientation: vertical;
+        spacing: 3;
+        valign: center;
+        homogeneous: true;
+
+        Label title {
+          label: "Title";
+          halign: start;
+          ellipsize: end;
+
+          styles [
+            "heading",
+          ]
+        }
+
+        Label subtitle {
+          label: "";
+          halign: start;
+          ellipsize: end;
+        }
+      }
+    }
+
+    Box buttons {
+      halign: end;
+      hexpand: true;
+      valign: center;
+      spacing: 6;
+
+      Button play_button {
+        icon-name: "media-playback-start-symbolic";
+        tooltip-text: _("Toggle Play/Pause");
+        action-name: "player.play-pause";
+
+        accessibility {
+          label: _("Toggle Play/Pause");
+        }
+      }
+
+      Button next_button {
+        icon-name: "media-skip-forward-symbolic";
+        tooltip-text: _("Play Next");
+        action-name: "player.next";
+
+        accessibility {
+          label: _("Play Next");
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,85 @@
+using Gtk 4.0;
+using Adw 1;
+
+template $InlineCard : ListBoxRow {
+  valign: center;
+  margin-bottom: 6;
+
+  styles [
+    "br-9",
+    "hover-parent",
+    "focus-parent",
+  ]
+
+  Box {
+    width-request: 320;
+    spacing: 12;
+    hexpand: false;
+    valign: center;
+
+    styles [
+      "padding-3",
+    ]
+
+    Stack stack {
+      $DynamicImage dynamic_image {
+        image-size: "48";
+        icon-size: "16";
+        persistent-play-button: "false";
+      }
+
+      Adw.Avatar avatar {
+        text: "s";
+        size: 48;
+      }
+    }
+
+    Box meta {
+      orientation: vertical;
+      valign: center;
+      spacing: 3;
+
+      Label title {
+        label: "";
+        hexpand: true;
+        max-width-chars: 1;
+        ellipsize: end;
+        lines: 2;
+        xalign: 0;
+        wrap: true;
+        wrap-mode: char;
+
+        styles [
+          "heading",
+        ]
+      }
+
+      Box subtitles {
+        spacing: 6;
+
+        styles [
+          "dim-label",
+        ]
+
+        Image explicit {
+          visible: false;
+          valign: center;
+          icon-name: "network-cellular-edge-symbolic";
+        }
+
+        Label subtitle {
+          use-markup: true;
+          hexpand: true;
+          max-width-chars: 1;
+          ellipsize: end;
+          xalign: 0;
+          wrap: true;
+
+          styles [
+            "flat-links",
+          ]
+        }
+      }
+    }
+  }
+}
