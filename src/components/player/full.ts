@@ -10,6 +10,7 @@ import { Settings } from "src/application.js";
 import { PlayerScale } from "./scale.js";
 import { PlayerSidebarView } from "./sidebar.js";
 import { QueueTrack } from "libmuse/types/parsers/queue.js";
+import { escape_label, pretty_subtitles } from "src/util/text.js";
 
 export interface FullPlayerViewOptions {
   player: Player;
@@ -92,6 +93,19 @@ export class FullPlayerView extends Gtk.ActionBar {
       "clicked",
       this.handle_sidebar_button.bind(this),
     );
+
+    [this._title, this._subtitle].forEach((label) => {
+      label.connect("activate-link", (_, uri) => {
+        if (uri && uri.startsWith("muzika:")) {
+          this.activate_action(
+            "navigator.visit",
+            GLib.Variant.new_string(uri),
+          );
+
+          return true;
+        }
+      });
+    });
   }
 
   private buttons_map = new Map<Gtk.ToggleButton, PlayerSidebarView>([
@@ -308,8 +322,22 @@ export class FullPlayerView extends Gtk.ActionBar {
     });
     // labels
 
-    this._title.label = track.title;
-    this._subtitle.label = track.artists[0].name;
+    if (track.album) {
+      this._title.set_markup(
+        `<a href="muzika:album:${track.album.id}">${
+          escape_label(track.title)
+        }</a>`,
+      );
+      this._title.tooltip_text = track.title;
+    } else {
+      this._title.label = track.title;
+      this._title.tooltip_text = track.title;
+    }
+
+    const subtitle = pretty_subtitles(track.artists);
+
+    this._subtitle.set_markup(subtitle.markup);
+    this._subtitle.tooltip_text = subtitle.plain;
 
     this._duration_label.label = track.duration_seconds
       ? seconds_to_string(track.duration_seconds)

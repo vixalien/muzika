@@ -55,10 +55,10 @@ export function pretty_subtitles(
       } else {
         author_markup.push(escape_label(node.name));
       }
-      author_plain.push(escape_label(node.name));
+      author_plain.push(node.name);
     } else if (typeof node === "string") {
       author_markup.push(escape_label(node));
-      author_plain.push(escape_label(node));
+      author_plain.push(node);
     }
   }
 

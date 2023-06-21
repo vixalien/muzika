@@ -32,16 +32,27 @@ template $FullPlayerView : ActionBar {
 
         Label title {
           halign: start;
+          use-markup: true;
+          hexpand: true;
           ellipsize: end;
+          xalign: 0;
 
           styles [
             "heading",
+            "flat-links",
           ]
         }
 
         Label subtitle {
           halign: start;
+          use-markup: true;
+          hexpand: true;
           ellipsize: end;
+          xalign: 0;
+
+          styles [
+            "flat-links",
+          ]
         }
       }
     }

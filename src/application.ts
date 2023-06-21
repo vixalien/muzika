@@ -41,7 +41,8 @@ export class Application extends Adw.Application {
   constructor(argv: string[]) {
     super({
       application_id: "com.vixalien.muzika",
-      flags: Gio.ApplicationFlags.DEFAULT_FLAGS,
+      flags: Gio.ApplicationFlags.DEFAULT_FLAGS |
+        Gio.ApplicationFlags.NON_UNIQUE,
     });
 
     this.set_argv(argv);
