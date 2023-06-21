@@ -2,16 +2,6 @@
   border-radius: 12px;
 }
 
-.song-play-button {
-  color: alpha(white, .9);
-  transition: .2s background-color;
-}
-
-.song-play-button:hover {
-  background-color: alpha(black, 0.5);
-
-}
-
 label.link:hover {
   color: @accent_color;
   text-decoration: underline;
@@ -205,5 +195,5 @@ label.flat-links:hover {
 
 .floating-button {
   border-radius: 50px;
-  padding: 6px;
+  padding: 2px;
 }
