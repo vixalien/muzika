@@ -29,6 +29,7 @@
     <file preprocess="xml-stripblanks">ui/components/playlist-image.ui</file>
     <file preprocess="xml-stripblanks">ui/components/playlist/item.ui</file>
     <file preprocess="xml-stripblanks">ui/components/playlist/largeheader.ui</file>
+    <file preprocess="xml-stripblanks">ui/components/playlist/listitem.ui</file>
     <file preprocess="xml-stripblanks">ui/components/playlist/miniheader.ui</file>
     <file preprocess="xml-stripblanks">ui/components/search/inlinecard.ui</file>
     <file preprocess="xml-stripblanks">ui/components/search/section.ui</file>
@@ -59,6 +60,7 @@
     <file preprocess="xml-stripblanks" alias="music-artist-symbolic.svg">icons/music-artist-symbolic.svg</file>
     <file preprocess="xml-stripblanks" alias="music-note-single-symbolic.svg">icons/music-note-single-symbolic.svg</file>
     <file preprocess="xml-stripblanks" alias="navigate-symbolic.svg">icons/navigate-symbolic.svg</file>
+    <file preprocess="xml-stripblanks" alias="play-white-symbolic.svg">icons/play-white-symbolic.svg</file>
     <file preprocess="xml-stripblanks" alias="play-white.svg">icons/play-white.svg</file>
     <file preprocess="xml-stripblanks" alias="playlist-symbolic.svg">icons/playlist-symbolic.svg</file>
     <file preprocess="xml-stripblanks" alias="playlist2-symbolic.svg">icons/playlist2-symbolic.svg</file>

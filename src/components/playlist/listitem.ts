@@ -3,18 +3,18 @@ import GObject from "gi://GObject";
 import GLib from "gi://GLib";
 
 import { PlaylistItem } from "../../muse.js";
-import { DynamicImage } from "../dynamic-image.js";
-
-// first register the DynamicImage class
-import "../dynamic-image.js";
+import { DynamicImage, DynamicImageVisibleChild } from "../dynamic-image.js";
 import { pretty_subtitles } from "src/util/text.js";
 
-export class PlaylistItemCard extends Gtk.ListBoxRow {
+// first register the DynamicImage class
+DynamicImage;
+
+export class PlaylistListItem extends Gtk.Box {
   static {
     GObject.registerClass({
-      GTypeName: "PlaylistItem",
+      GTypeName: "PlaylistListItem",
       Template:
-        "resource:///com/vixalien/muzika/ui/components/playlist/item.ui",
+        "resource:///com/vixalien/muzika/ui/components/playlist/listitem.ui",
       InternalChildren: [
         "title",
         "explicit",
@@ -63,10 +63,15 @@ export class PlaylistItemCard extends Gtk.ListBoxRow {
 
     this._title.set_label(item.title);
 
-    const subtitles = pretty_subtitles(item.artists ?? []);
+    if (item.artists && item.artists.length > 0) {
+      this._subtitle.visible = true;
+      const subtitles = pretty_subtitles(item.artists ?? []);
 
-    this._subtitle.label = subtitles.markup;
-    this._subtitle.tooltip_text = subtitles.plain;
+      this._subtitle.label = subtitles.markup;
+      this._subtitle.tooltip_text = subtitles.plain;
+    } else {
+      this._subtitle.visible = false;
+    }
 
     if (item.rank) {
       this._chart_rank.visible = true;
@@ -88,7 +93,12 @@ export class PlaylistItemCard extends Gtk.ListBoxRow {
 
     this._explicit.set_visible(item.isExplicit);
 
-    this.dynamic_image.load_thumbnails(item.thumbnails);
+    if (
+      this.dynamic_image.visible_child != DynamicImageVisibleChild.NUMBER &&
+      item.thumbnails
+    ) {
+      this.dynamic_image.load_thumbnails(item.thumbnails);
+    }
 
     this.dynamic_image.setup_video(item.videoId, playlistId);
   }

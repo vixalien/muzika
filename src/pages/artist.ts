@@ -1,94 +1,89 @@
 import Gtk from "gi://Gtk?version=4.0";
 import GObject from "gi://GObject";
 import GLib from "gi://GLib";
+import Gio from "gi://Gio";
+import Adw from "gi://Adw";
 
-import { Artist, Category, get_artist, MixedItem } from "../muse.js";
+import {
+  Artist,
+  Category,
+  get_artist,
+  MixedItem,
+  PlaylistItem,
+} from "../muse.js";
 
 import { ArtistHeader } from "../components/artistheader.js";
 import { Carousel } from "../components/carousel/index.js";
-import { PlaylistItemCard } from "../components/playlist/item.js";
-import { DynamicImageState } from "src/components/dynamic-image.js";
 import { EndpointContext, MuzikaComponent } from "src/navigation.js";
+import { PlaylistListView } from "src/components/playlist/listview.js";
+import { ObjectContainer } from "src/util/objectcontainer.js";
+import { PlaylistItemView } from "src/components/playlist/itemview.js";
 
 interface ArtistState {
   artist: Artist;
 }
 
-export class ArtistPage extends Gtk.Box
+ArtistHeader;
+PlaylistListView;
+
+export class ArtistPage extends Adw.Bin
   implements MuzikaComponent<Artist, ArtistState> {
   static {
     GObject.registerClass({
       GTypeName: "ArtistPage",
       Template: "resource:///com/vixalien/muzika/ui/pages/artist.ui",
       InternalChildren: [
+        "breakpoint",
         "inner_box",
-        "content",
-        "scrolled",
-        "top_songs_list",
         "top_songs",
         "more_top_songs",
+        "playlist_item_view",
+        "header",
       ],
     }, this);
   }
 
   artist?: Artist;
 
-  _inner_box!: Gtk.Box;
-  _content!: Gtk.Box;
-  _scrolled!: Gtk.ScrolledWindow;
-  _top_songs!: Gtk.Box;
-  _top_songs_list!: Gtk.ListBox;
-  _more_top_songs!: Gtk.Button;
+  private _breakpoint!: Adw.Breakpoint;
+  private _inner_box!: Gtk.Box;
+  private _top_songs!: Gtk.Box;
+  private _more_top_songs!: Gtk.Button;
+  private _playlist_item_view!: PlaylistItemView;
+  private _header!: ArtistHeader;
 
-  header: ArtistHeader;
+  model = new Gio.ListStore<ObjectContainer<PlaylistItem>>({
+    item_type: ObjectContainer.$gtype,
+  });
 
   constructor() {
-    super({
-      orientation: Gtk.Orientation.VERTICAL,
+    super();
+
+    this._playlist_item_view.model = this.model;
+
+    this._breakpoint.connect("apply", () => {
+      this._playlist_item_view.show_column = true;
+      this._header.show_large_header = true;
     });
 
-    this.header = new ArtistHeader();
-
-    this._inner_box.prepend(this.header);
-
-    this._top_songs_list.connect(
-      "row-activated",
-      (_, row: PlaylistItemCard) => {
-        if (
-          !(row instanceof PlaylistItemCard) || !this.artist || !row.item
-        ) {
-          return;
-        }
-
-        row.dynamic_image.state = DynamicImageState.LOADING;
-
-        row.activate_action(
-          "queue.play-playlist",
-          GLib.Variant.new_string(
-            `${this.artist.songs.browseId}?video=${row.item.videoId}`,
-          ),
-        );
-      },
-    );
+    this._breakpoint.connect("unapply", () => {
+      this._playlist_item_view.show_column = false;
+      this._header.show_large_header = false;
+    });
   }
 
   show_top_songs(songs: Artist["songs"]) {
+    this._playlist_item_view.playlistId = songs.browseId ?? undefined;
+
     if (songs.results && songs.results.length > 0) {
-      for (const track of songs.results) {
-        const card = new PlaylistItemCard();
+      this._top_songs.visible = true;
+      const n = this.model.get_n_items();
 
-        card.dynamic_image.connect("play", () => {
-          this._top_songs_list.select_row(card);
-        });
-
-        card.dynamic_image.connect("pause", () => {
-          this._top_songs_list.select_row(card);
-        });
-
-        card.set_item(track, songs.browseId ?? undefined);
-
-        this._top_songs_list.append(card);
-      }
+      this.model.splice(
+        n > 0 ? n - 1 : 0,
+        0,
+        songs.results.map((track) => ObjectContainer.new(track)),
+      );
     } else {
       this._top_songs.visible = false;
     }
@@ -104,10 +99,14 @@ export class ArtistPage extends Gtk.Box
   }
 
   present(artist: Artist) {
+    this.model.remove_all();
+
     this.artist = artist;
-    if (artist.thumbnails) this.header.load_thumbnails(artist.thumbnails);
-    this.header.set_title(artist.name);
-    this.header.set_description(artist.description);
+
+    if (artist.thumbnails) this._header.load_thumbnails(artist.thumbnails);
+
+    this._header.set_title(artist.name);
+    this._header.set_description(artist.description);
 
     this.show_top_songs(artist.songs);
 

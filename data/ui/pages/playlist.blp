@@ -1,54 +1,63 @@
 using Gtk 4.0;
 using Adw 1;
 
-template $PlaylistPage : Box {
-  ScrolledWindow scrolled {
-    vexpand: true;
-    hexpand: true;
-    hscrollbar-policy: never;
+template $PlaylistPage : Adw.Bin {
+  Adw.BreakpointBin {
+    width-request: 200;
+    height-request: 200;
+    
+    Adw.Breakpoint breakpoint {
+      condition ("min-width: 700sp")
+    }
 
-    Adw.Clamp {
-      margin-top: 24;
-      margin-bottom: 24;
-      tightening-threshold: 800;
-      maximum-size: 1000;
+    ScrolledWindow scrolled {
+      vexpand: true;
+      hexpand: true;
+      hscrollbar-policy: never;
 
-      Box inner_box {
-        spacing: 24;
-        orientation: vertical;
+      Adw.Clamp {
+        margin-top: 24;
+        margin-bottom: 24;
+        tightening-threshold: 1200;
+        maximum-size: 1400;
 
-        Box content {
-          ListBox list_box {
+        Box inner_box {
+          spacing: 24;
+          orientation: vertical;
+
+          $PlaylistHeader header {}
+
+          Box content {
+            orientation: vertical;
+
+
+            $PlaylistItemView playlist_item_view {
+            }
+
+            $Paginator paginator {}
+          }
+
+          Box more {
+            margin-bottom: 24;
             margin-start: 12;
             margin-end: 12;
-            selection-mode: single;
 
-            styles [
-              "background",
-            ]
-          }
-        }
+            Box data {
+              styles [
+                "dim-label",
+              ]
 
-        Box more {
-          margin-bottom: 24;
-          margin-start: 12;
-          margin-end: 12;
+              spacing: 6;
 
-          Box data {
-            styles [
-              "dim-label",
-            ]
+              Label trackCount {
+              }
 
-            spacing: 6;
+              Label separator {
+                label: "·";
+              }
 
-            Label trackCount {
-            }
-
-            Label separator {
-              label: "·";
-            }
-
-            Label duration {
+              Label duration {
+              }
             }
           }
         }

@@ -198,8 +198,10 @@ export class DynamicImage extends Gtk.Overlay {
     }
 
     if (child === DynamicImageVisibleChild.NUMBER) {
+      this._play_image.icon_name = "play-white-symbolic";
       this.remove_css_class("card");
     } else {
+      this._play_image.icon_name = "play-white";
       this.add_css_class("card");
     }
   }
@@ -214,16 +216,10 @@ export class DynamicImage extends Gtk.Overlay {
     this.visible_child = DynamicImageVisibleChild.NUMBER;
   }
 
-  private controller: Gtk.EventControllerMotion;
+  private controller = new Gtk.EventControllerMotion();
 
   constructor(props: DynamicImageProps = {}) {
-    super(props);
-
-    this.icon_size = props.icon_size ?? 32;
-    this.image_size = props.image_size ?? 160;
-
-    // hover events
-    this.controller = new Gtk.EventControllerMotion();
+    super();
 
     this.controller.connect("enter", () => {
       this.update_stack(true);
@@ -239,6 +235,14 @@ export class DynamicImage extends Gtk.Overlay {
     this._pause.connect("clicked", () => {
       this.emit("pause");
     });
+
+    if (props.icon_size) this.icon_size = props.icon_size;
+    if (props.image_size) this.image_size = props.image_size;
+    if (props.visible_child) this.visible_child = props.visible_child;
+    if (props.persistent_play_button != null) {
+      this.persistent_play_button = props.persistent_play_button;
+    }
+    if (props.track_number) this.track_number = props.track_number.toString();
   }
 
   private update_stack(hovering = false) {
@@ -489,4 +493,7 @@ export interface DynamicImageProps
   extends Partial<Gtk.Overlay.ConstructorProperties> {
   icon_size?: number;
   image_size?: number;
+  persistent_play_button?: boolean;
+  visible_child?: DynamicImageVisibleChild;
+  track_number?: number | string;
 }

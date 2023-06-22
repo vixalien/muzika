@@ -1,60 +1,69 @@
 using Gtk 4.0;
 using Adw 1;
 
-template $ArtistPage : Box {
-  ScrolledWindow scrolled {
-    vexpand: true;
-    hexpand: true;
-    hscrollbar-policy: never;
+template $ArtistPage : Adw.Bin {
+  Adw.BreakpointBin {
+    width-request: 200;
+    height-request: 200;
+    
+    Adw.Breakpoint breakpoint {
+      condition ("min-width: 700sp")
+    }
 
-    Adw.Clamp {
-      margin-top: 12;
-      margin-bottom: 12;
-      tightening-threshold: 800;
-      maximum-size: 1000;
+    ScrolledWindow {
+      vexpand: true;
+      hexpand: true;
+      hscrollbar-policy: never;
 
-      Box inner_box {
-        spacing: 18;
-        orientation: vertical;
+      Adw.Clamp {
+        margin-top: 12;
+        margin-bottom: 12;
+        tightening-threshold: 1200;
+        maximum-size: 1400;
 
-        Box top_songs {
-          spacing: 12;
+        Box inner_box {
+          spacing: 18;
           orientation: vertical;
-          margin-top: 24;
-          margin-start: 12;
-          margin-end: 12;
 
-          Box {
-            Label {
-              label: _("Top Songs");
-              halign: start;
-              xalign: 0;
+          $ArtistHeader header {}
 
-              styles [
-                "title-2",
-              ]
+          Box top_songs {
+            spacing: 12;
+            orientation: vertical;
+            height-request: 42;
+
+            Box {
+              margin-start: 12;
+              margin-end: 12;
+
+              Label {
+                label: _("Top Songs");
+                halign: start;
+                xalign: 0;
+
+                styles [
+                  "title-2",
+                ]
+              }
+
+              Button more_top_songs {
+                visible: false;
+                halign: end;
+                hexpand: true;
+                label: _("More");
+
+                styles [
+                  "flat",
+                ]
+              }
             }
 
-            Button more_top_songs {
-              visible: false;
-              halign: end;
-              hexpand: true;
-              label: _("More");
-
-              styles [
-                "flat",
-              ]
+            $PlaylistItemView playlist_item_view {
             }
           }
 
-          ListBox top_songs_list {
-            styles [
-              "background",
-            ]
+          Box content {
           }
-        }
-
-        Box content {
         }
       }
     }

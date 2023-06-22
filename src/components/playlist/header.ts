@@ -206,17 +206,35 @@ export class PlaylistHeader extends Gtk.Box {
   static {
     GObject.registerClass({
       GTypeName: "PlaylistHeader",
+      Properties: {
+        "show-large-header": GObject.ParamSpec.boolean(
+          "show-large-header",
+          "Show Large Header",
+          "Whether to show the larger header",
+          GObject.ParamFlags.READWRITE,
+          true,
+        ),
+      },
     }, this);
   }
 
   _large: LargePlaylistHeader;
   _mini: MiniPlaylistHeader;
-  _squeezer: Adw.Squeezer;
+  _stack: Gtk.Stack;
+
+  get show_large_header() {
+    return this._stack.visible_child_name === "large";
+  }
+
+  set show_large_header(value: boolean) {
+    this._stack.visible_child_name = value ? "large" : "mini";
+  }
 
   constructor() {
     super();
-    this._squeezer = new Adw.Squeezer({
-      homogeneous: false,
+    this._stack = new Gtk.Stack({
+      vhomogeneous: false,
+      hhomogeneous: false,
     });
 
     this._large = new LargePlaylistHeader();
@@ -232,10 +250,10 @@ export class PlaylistHeader extends Gtk.Box {
       (_, value) => this._large.toggle_more(value, true),
     );
 
-    this._squeezer.add(this._large);
-    this._squeezer.add(this._mini);
+    this._stack.add_named(this._large, "large");
+    this._stack.add_named(this._mini, "mini");
 
-    this.append(this._squeezer);
+    this.append(this._stack);
   }
 
   load_thumbnails(thumbnails: Thumbnail[]) {

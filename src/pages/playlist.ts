@@ -1,6 +1,7 @@
 import Gtk from "gi://Gtk?version=4.0";
 import GObject from "gi://GObject";
-import GLib from "gi://GLib";
+import Gio from "gi://Gio";
+import Adw from "gi://Adw";
 
 import {
   get_more_playlist_tracks,
@@ -11,23 +12,28 @@ import {
 } from "../muse.js";
 
 import { Carousel } from "../components/carousel/index.js";
-import { Loading } from "../components/loading.js";
 import { PlaylistHeader } from "../components/playlist/header.js";
-import { PlaylistItemCard } from "../components/playlist/item.js";
-import { DynamicImageState } from "src/components/dynamic-image.js";
 import { EndpointContext, MuzikaComponent } from "src/navigation.js";
+import { ObjectContainer } from "src/util/objectcontainer.js";
+import { PlaylistItemView } from "src/components/playlist/itemview.js";
+import { Paginator } from "src/components/paginator.js";
 
 interface PlaylistState {
   playlist: Playlist;
 }
 
-export class PlaylistPage extends Gtk.Box
+Paginator;
+PlaylistHeader;
+PlaylistItemView;
+
+export class PlaylistPage extends Adw.Bin
   implements MuzikaComponent<Playlist, PlaylistState> {
   static {
     GObject.registerClass({
       GTypeName: "PlaylistPage",
       Template: "resource:///com/vixalien/muzika/ui/pages/playlist.ui",
       InternalChildren: [
+        "breakpoint",
         "inner_box",
         "trackCount",
         "separator",
@@ -35,39 +41,33 @@ export class PlaylistPage extends Gtk.Box
         "content",
         "scrolled",
         "data",
-        "list_box",
+        "playlist_item_view",
+        "paginator",
+        "header",
       ],
     }, this);
   }
 
   playlist?: Playlist;
 
-  _inner_box!: Gtk.Box;
-  _trackCount!: Gtk.Label;
-  _duration!: Gtk.Label;
-  _content!: Gtk.Box;
-  _separator!: Gtk.Label;
-  _scrolled!: Gtk.ScrolledWindow;
-  _data!: Gtk.Box;
-  _list_box!: Gtk.ListBox;
+  private _breakpoint!: Adw.Breakpoint;
+  private _inner_box!: Gtk.Box;
+  private _trackCount!: Gtk.Label;
+  private _duration!: Gtk.Label;
+  private _content!: Gtk.Box;
+  private _separator!: Gtk.Label;
+  private _scrolled!: Gtk.ScrolledWindow;
+  private _data!: Gtk.Box;
+  private _playlist_item_view!: PlaylistItemView;
+  private _paginator!: Paginator;
+  private _header!: PlaylistHeader;
 
-  header: PlaylistHeader;
-
-  _loading: Loading;
+  model = new Gio.ListStore<ObjectContainer<PlaylistItem>>({
+    item_type: ObjectContainer.$gtype,
+  });
 
   constructor() {
-    super({
-      orientation: Gtk.Orientation.VERTICAL,
-    });
-
-    this.header = new PlaylistHeader();
-
-    this._loading = new Loading();
-
-    this._inner_box.prepend(this.header);
-    this._content.append(this._loading);
-
-    this._content.set_orientation(Gtk.Orientation.VERTICAL);
+    super();
 
     this._scrolled.connect("edge-reached", (_, pos) => {
       if (pos === Gtk.PositionType.BOTTOM) {
@@ -75,38 +75,31 @@ export class PlaylistPage extends Gtk.Box
       }
     });
 
-    this._list_box.connect("row-activated", (_, row: PlaylistItemCard) => {
-      if (!(row instanceof PlaylistItemCard) || !this.playlist || !row.item) {
-        return;
-      }
+    this._playlist_item_view.model = this.model;
 
-      row.dynamic_image.state = DynamicImageState.LOADING;
+    this._paginator.connect("activate", () => {
+      this.load_more();
+    });
 
-      row.activate_action(
-        "queue.play-playlist",
-        GLib.Variant.new_string(
-          `${this.playlist!.id}?video=${row.item.videoId}`,
-        ),
-      );
+    this._breakpoint.connect("apply", () => {
+      this._playlist_item_view.show_column = true;
+      this._header.show_large_header = true;
+    });
+
+    this._breakpoint.connect("unapply", () => {
+      this._playlist_item_view.show_column = false;
+      this._header.show_large_header = false;
     });
   }
 
   append_tracks(tracks: PlaylistItem[]) {
-    for (const track of tracks) {
-      const card = new PlaylistItemCard();
+    const n = this.model.get_n_items();
 
-      card.dynamic_image.connect("play", () => {
-        this._list_box.select_row(card);
-      });
-
-      card.dynamic_image.connect("pause", () => {
-        this._list_box.select_row(card);
-      });
-
-      this._list_box.append(card);
-
-      card.set_item(track, this.playlist?.id);
-    }
+    this.model.splice(
+      n > 0 ? n - 1 : 0,
+      0,
+      tracks.map((track) => ObjectContainer.new(track)),
+    );
   }
 
   show_related(related: ParsedPlaylist[]) {
@@ -123,22 +116,23 @@ export class PlaylistPage extends Gtk.Box
   }
 
   present(playlist: Playlist) {
+    this.model.remove_all();
+
     this.playlist = playlist;
+    this._playlist_item_view.playlistId = playlist.id;
 
-    this._loading.loading = false;
+    this._playlist_item_view.show_rank = playlist.tracks[0].rank != null;
 
-    // this.clear_box();
-
-    this.header.load_thumbnails(playlist.thumbnails);
-    this.header.set_description(playlist.description);
-    this.header.set_title(playlist.title);
-    this.header.set_explicit(false);
-    this.header.set_genre(playlist.type);
-    this.header.set_year(playlist.year);
+    this._header.load_thumbnails(playlist.thumbnails);
+    this._header.set_description(playlist.description);
+    this._header.set_title(playlist.title);
+    this._header.set_explicit(false);
+    this._header.set_genre(playlist.type);
+    this._header.set_year(playlist.year);
 
     if (playlist.authors && playlist.authors.length >= 1) {
       playlist.authors.forEach((author) => {
-        this.header.add_author({
+        this._header.add_author({
           ...author,
           // can only be an artist when we are viewing the playlist of
           // all songs by an artist
@@ -169,17 +163,19 @@ export class PlaylistPage extends Gtk.Box
       this.show_related(playlist.related);
     }
 
+    this._paginator.can_paginate = this.playlist.continuation != null;
+
     this.append_tracks(playlist.tracks);
   }
 
   no_more = false;
 
   get isLoading() {
-    return this._loading.loading;
+    return this._paginator.loading;
   }
 
   set isLoading(value: boolean) {
-    this._loading.loading = value;
+    this._paginator.loading = value;
   }
 
   async load_more() {
@@ -200,6 +196,7 @@ export class PlaylistPage extends Gtk.Box
       this.isLoading = false;
 
       this.playlist.continuation = more.continuation;
+      this._paginator.can_paginate = more.continuation != null;
       this.playlist.tracks.push(...more.tracks);
 
       this.append_tracks(more.tracks);

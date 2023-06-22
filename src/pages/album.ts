@@ -1,102 +1,79 @@
 import Gtk from "gi://Gtk?version=4.0";
 import GObject from "gi://GObject";
-import GLib from "gi://GLib";
+import Gio from "gi://Gio";
+import Adw from "gi://Adw";
 
 import { AlbumResult, get_album, ParsedAlbum, PlaylistItem } from "../muse.js";
 
 import { Carousel } from "../components/carousel/index.js";
-import { Loading } from "../components/loading.js";
 import { AlbumHeader } from "../components/album/header.js";
-import { AlbumItemCard } from "../components/album/item.js";
-import { DynamicImageState } from "src/components/dynamic-image.js";
 import { EndpointContext, MuzikaComponent } from "src/navigation.js";
+import { PlaylistItemView } from "src/components/playlist/itemview.js";
+import { ObjectContainer } from "src/util/objectcontainer.js";
 
 interface AlbumState {
   album: AlbumResult;
 }
 
-export class AlbumPage extends Gtk.Box
+AlbumHeader;
+PlaylistItemView;
+
+export class AlbumPage extends Adw.Bin
   implements MuzikaComponent<AlbumResult, AlbumState> {
   static {
     GObject.registerClass({
       GTypeName: "AlbumPage",
       Template: "resource:///com/vixalien/muzika/ui/pages/album.ui",
       InternalChildren: [
+        "breakpoint",
         "inner_box",
         "trackCount",
         "duration",
         "content",
         "scrolled",
+        "playlist_item_view",
+        "header",
       ],
     }, this);
   }
 
   album?: AlbumResult;
 
-  _inner_box!: Gtk.Box;
-  _trackCount!: Gtk.Label;
-  _duration!: Gtk.Label;
-  _content!: Gtk.Box;
-  _scrolled!: Gtk.ScrolledWindow;
+  private _breakpoint!: Adw.Breakpoint;
+  private _trackCount!: Gtk.Label;
+  private _duration!: Gtk.Label;
+  private _content!: Gtk.Box;
+  private _playlist_item_view!: PlaylistItemView;
+  private _header!: AlbumHeader;
 
-  list_box: Gtk.ListBox;
-  header: AlbumHeader;
-
-  _loading: Loading;
+  model = new Gio.ListStore<ObjectContainer<PlaylistItem>>({
+    item_type: ObjectContainer.$gtype,
+  });
 
   constructor() {
-    super({
-      orientation: Gtk.Orientation.VERTICAL,
+    super();
+
+    this._playlist_item_view.model = this.model;
+
+    this._breakpoint.connect("apply", () => {
+      this._playlist_item_view.show_column = true;
+      this._header.show_large_header = true;
     });
 
-    this.header = new AlbumHeader();
-
-    this.list_box = new Gtk.ListBox();
-    this.list_box.add_css_class("background");
-
-    this._loading = new Loading();
-
-    this._inner_box.prepend(this.header);
-    this._content.append(this.list_box);
-    this._content.append(this._loading);
-
-    this._content.set_orientation(Gtk.Orientation.VERTICAL);
-
-    this.list_box.connect("row-activated", (_, row: AlbumItemCard) => {
-      if (
-        !(row instanceof AlbumItemCard) || !this.album?.audioPlaylistId ||
-        !row.item
-      ) {
-        return;
-      }
-
-      row.dynamic_image.state = DynamicImageState.LOADING;
-
-      row.activate_action(
-        "queue.play-playlist",
-        GLib.Variant.new_string(
-          `${this.album.audioPlaylistId}?video=${row.item.videoId}`,
-        ),
-      );
+    this._breakpoint.connect("unapply", () => {
+      this._playlist_item_view.show_column = false;
+      this._header.show_large_header = false;
     });
   }
 
   append_tracks(tracks: PlaylistItem[]) {
-    tracks.forEach((track, index) => {
-      const card = new AlbumItemCard();
+    const n = this.model.get_n_items();
 
-      card.dynamic_image.connect("play", () => {
-        this.list_box.select_row(card);
-      });
-
-      card.dynamic_image.connect("pause", () => {
-        this.list_box.select_row(card);
-      });
-
-      card.set_item(index + 1, track, this.album?.audioPlaylistId ?? undefined);
-
-      this.list_box.append(card);
-    });
+    this.model.splice(
+      n > 0 ? n - 1 : 0,
+      0,
+      tracks.map((track) => ObjectContainer.new(track)),
+    );
   }
 
   show_other_versions(related: ParsedAlbum[]) {
@@ -113,19 +90,21 @@ export class AlbumPage extends Gtk.Box
   }
 
   present(album: AlbumResult) {
-    this.album = album;
-    this._loading.loading = false;
+    this.model.remove_all();
 
-    this.header.load_thumbnails(album.thumbnails);
-    this.header.set_description(album.description);
-    this.header.set_title(album.title);
-    this.header.set_explicit(album.isExplicit);
-    this.header.set_genre(album.album_type);
-    this.header.set_year(album.year ?? _("Unknown year"));
+    this.album = album;
+    this._playlist_item_view.playlistId = album.audioPlaylistId ?? undefined;
+
+    this._header.load_thumbnails(album.thumbnails);
+    this._header.set_description(album.description);
+    this._header.set_title(album.title);
+    this._header.set_explicit(album.isExplicit);
+    this._header.set_genre(album.album_type);
+    this._header.set_year(album.year ?? _("Unknown year"));
 
     if (album.artists && album.artists.length > 0) {
       album.artists.forEach((artist) => {
-        this.header.add_author({
+        this._header.add_author({
           name: artist.name,
           id: artist.id,
           artist: true,
@@ -148,14 +127,6 @@ export class AlbumPage extends Gtk.Box
   }
 
   no_more = false;
-
-  get isLoading() {
-    return this._loading.loading;
-  }
-
-  set isLoading(value: boolean) {
-    this._loading.loading = value;
-  }
 
   static load(context: EndpointContext) {
     return get_album(context.match.params.albumId, {
