@@ -29,6 +29,7 @@ src/components/library/mixedcard.ts
 src/components/nav/page.ts
 src/components/player/full.ts
 src/components/player/queue.ts
+src/components/playlist/columnview.ts
 src/components/search/inlinecard.ts
 src/components/search/topresultcard.ts
 src/endpoints.ts
