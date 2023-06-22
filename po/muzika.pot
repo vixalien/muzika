@@ -470,8 +470,28 @@ msgstr ""
 msgid "Featured Playlists"
 msgstr ""
 
-#: src/player/queue.ts:367 src/player/queue.ts:370
-msgid "${normalized_title}"
+#. Translators: %s is a playlist's name
+#. Translators: %s is a song's name
+#: src/player/queue.ts:337 src/player/queue.ts:390
+#, c-format
+msgid "Playing \"%s\" next"
+msgstr ""
+
+#. Translators: %s is a playlist name
+#. Translators: %s is a song's name
+#: src/player/queue.ts:339 src/player/queue.ts:396
+#, c-format
+msgid "Added \"%s\" to queue"
+msgstr ""
+
+#: src/player/queue.ts:391
+#, c-format
+msgid "Playing %d songs next"
+msgstr ""
+
+#: src/player/queue.ts:397
+#, c-format
+msgid "Added %d songs to queue"
 msgstr ""
 
 #: src/polyfills/fetch.ts:179
