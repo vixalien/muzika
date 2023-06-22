@@ -17,43 +17,27 @@ template $LyricsView : Stack {
   ScrolledWindow lyrics_window {
     hscrollbar-policy: never;
 
-    Box {
-      orientation: vertical;
-      spacing: 6;
-      margin-start: 9;
-      margin-end: 9;
-      margin-top: 9;
-      margin-bottom: 9;
+    TextView view {
+      left-margin: 9;
+      right-margin: 9;
+      top-margin: 9;
+      bottom-margin: 9;
+      hexpand: true;
 
-      TextView view {
-        hexpand: true;
+      styles [
+        "background",
+        "transparent",
+      ]
 
-        styles [
-          "background",
-          "transparent",
-        ]
-
-        editable: false;
-        cursor-visible: false;
-        wrap-mode: word_char;
-        buffer: 
-        TextBuffer buffer {
-          text: "";
-        }
-
-        ;
+      editable: false;
+      cursor-visible: false;
+      wrap-mode: word_char;
+      buffer: 
+      TextBuffer buffer {
+        text: "";
       }
 
-      Label source {
-        wrap: true;
-        label: "";
-        xalign: 0;
-        selectable: true;
-
-        styles [
-          "dim-label",
-        ]
-      }
+      ;
     }
   }
 }

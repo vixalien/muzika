@@ -1,10 +1,9 @@
+import GLib from "gi://GLib";
+
 import { ArtistRun } from "../muse";
 
 export function escape_label(label: string) {
-  return label
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;");
+  return GLib.markup_escape_text(label, -1);
 }
 
 export function indent_stack(stack: string) {
