@@ -45,7 +45,7 @@ class CustomFetch extends FetchClient {
   constructor() {
     super();
 
-    console.log(_("caching data"), this.cache_dir.get_path());
+    console.log("caching data", this.cache_dir.get_path());
 
     // console.log("exists", !this.cache_dir.get_parent()!.query_exists(null));
 

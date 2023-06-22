@@ -253,7 +253,7 @@ export class Window extends Adw.ApplicationWindow {
 
         this.add_toast(_("An error happened while logging in"));
 
-        console.log(_("An error happened while logging in"), error);
+        console.log("An error happened while logging in", error);
       })
       .finally(() => {
         page.destroy();
