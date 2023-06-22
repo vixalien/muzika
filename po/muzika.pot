@@ -225,6 +225,21 @@ msgstr ""
 msgid "Shuffle"
 msgstr ""
 
+#: data/ui/gtk/help-overlay.blp:11
+msgctxt "shortcut window"
+msgid "General"
+msgstr ""
+
+#: data/ui/gtk/help-overlay.blp:14
+msgctxt "shortcut window"
+msgid "Show Shortcuts"
+msgstr ""
+
+#: data/ui/gtk/help-overlay.blp:19
+msgctxt "shortcut window"
+msgid "Quit"
+msgstr ""
+
 #: data/ui/pages/artist.blp:40
 msgid "Top Songs"
 msgstr ""
@@ -381,10 +396,6 @@ msgstr ""
 msgid "Library Songs"
 msgstr ""
 
-#: src/muse.ts:48
-msgid "caching data"
-msgstr ""
-
 #: src/pages/album.ts:85
 msgid "Other versions"
 msgstr ""
@@ -522,6 +533,6 @@ msgstr ""
 msgid "Successfully logged in!"
 msgstr ""
 
-#: src/window.ts:254 src/window.ts:256
+#: src/window.ts:254
 msgid "An error happened while logging in"
 msgstr ""
