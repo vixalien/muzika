@@ -197,7 +197,7 @@ export class Window extends Adw.ApplicationWindow {
       account.name,
       `navigator.visit("muzika:user:${account.channel_id}")`,
     );
-    const logout_item = Gio.MenuItem.new("Logout", "win.logout");
+    const logout_item = Gio.MenuItem.new(_("Logout"), "win.logout");
 
     menu.append_item(account_item);
     menu.append_item(logout_item);

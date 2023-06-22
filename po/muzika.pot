@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: muzika\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-06-20 15:17+0200\n"
+"POT-Creation-Date: 2023-06-22 19:19+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -79,201 +79,213 @@ msgstr ""
 msgid "The volume of the player"
 msgstr ""
 
-#: data/ui/components/navbar/index.ui:8
+#: data/ui/components/navbar/index.blp:7
 msgid "Search…"
 msgstr ""
 
-#: data/ui/components/navbar/index.ui:27
+#: data/ui/components/navbar/index.blp:17 src/endpoints.ts:21
+msgid "Home"
+msgstr ""
+
+#: data/ui/components/navbar/index.blp:23
 msgid "Explore"
 msgstr ""
 
-#: data/ui/components/navbar/index.ui:35 data/ui/components/navbar/index.ui:37
-#: data/ui/components/playlist/largeheader.ui:152
-#: data/ui/components/playlist/miniheader.ui:117 src/endpoints.ts:51
+#: data/ui/components/navbar/index.blp:30
+#: data/ui/components/navbar/index.blp:32
+#: data/ui/components/playlist/largeheader.blp:139
+#: data/ui/components/playlist/miniheader.blp:105 src/endpoints.ts:51
 #: src/pages/search.ts:82
 msgid "Library"
 msgstr ""
 
-#: data/ui/components/navbar/index.ui:44 src/pages/search.ts:296
+#: data/ui/components/navbar/index.blp:38 src/pages/search.ts:296
 msgid "Artists"
 msgstr ""
 
-#: data/ui/components/navbar/index.ui:52
+#: data/ui/components/navbar/index.blp:45
 msgid "Subscriptions"
 msgstr ""
 
-#: data/ui/components/navbar/index.ui:60 src/pages/artist.ts:114
+#: data/ui/components/navbar/index.blp:52 src/pages/artist.ts:113
 #: src/pages/search.ts:294
 msgid "Albums"
 msgstr ""
 
-#: data/ui/components/navbar/index.ui:68 src/pages/search.ts:300
+#: data/ui/components/navbar/index.blp:59 src/pages/search.ts:300
 msgid "Songs"
 msgstr ""
 
-#: data/ui/components/navbar/index.ui:76 src/endpoints.ts:87
+#: data/ui/components/navbar/index.blp:66 src/endpoints.ts:87
 msgid "History"
 msgstr ""
 
-#: data/ui/components/navbar/index.ui:83 src/pages/artist.ts:119
+#: data/ui/components/navbar/index.blp:72 src/pages/artist.ts:118
 #: src/pages/search.ts:298
 msgid "Playlists"
 msgstr ""
 
-#: data/ui/components/navbar/index.ui:85
+#: data/ui/components/navbar/index.blp:74
 msgid "All Playlists"
 msgstr ""
 
-#: data/ui/components/paginator.ui:23
+#: data/ui/components/paginator.blp:22
 msgid "Load More"
 msgstr ""
 
-#: data/ui/components/player/full.ui:70
+#: data/ui/components/player/full.blp:77
 msgid "Toggle Shuffle"
 msgstr ""
 
-#: data/ui/components/player/full.ui:83
+#: data/ui/components/player/full.blp:90
 msgid "Previous"
 msgstr ""
 
-#: data/ui/components/player/full.ui:93
-#: data/ui/components/search/topresult.ui:118
+#: data/ui/components/player/full.blp:100
+#: data/ui/components/search/topresult.blp:118
 msgid "Play"
 msgstr ""
 
-#: data/ui/components/player/full.ui:102 data/ui/components/player/mini.ui:61
-#: data/ui/components/player/mini.ui:64
+#: data/ui/components/player/full.blp:110 data/ui/components/player/mini.blp:56
+#: data/ui/components/player/mini.blp:60
 msgid "Toggle Play/Pause"
 msgstr ""
 
-#: data/ui/components/player/full.ui:110
+#: data/ui/components/player/full.blp:116
 msgid "Next"
 msgstr ""
 
-#: data/ui/components/player/full.ui:121
+#: data/ui/components/player/full.blp:127
 msgid "Toggle Repeat State"
 msgstr ""
 
-#: data/ui/components/player/full.ui:168
+#: data/ui/components/player/full.blp:168
 msgid "Adjust Volume"
 msgstr ""
 
-#: data/ui/components/player/full.ui:173
+#: data/ui/components/player/full.blp:172
 msgid "Show Queue"
 msgstr ""
 
-#: data/ui/components/player/full.ui:180
+#: data/ui/components/player/full.blp:178
 msgid "Show Lyrics"
 msgstr ""
 
-#: data/ui/components/player/full.ui:187
+#: data/ui/components/player/full.blp:184
 msgid "Show Related songs"
 msgstr ""
 
-#: data/ui/components/player/lyrics.ui:8
+#: data/ui/components/player/lyrics.blp:7
 msgid "Lyrics are not available"
 msgstr ""
 
-#: data/ui/components/player/lyrics.ui:9
+#: data/ui/components/player/lyrics.blp:8
 msgid "If the song has lyrics, they'll appear here when they become available"
 msgstr ""
 
-#: data/ui/components/player/mini.ui:71 data/ui/components/player/mini.ui:74
+#: data/ui/components/player/mini.blp:66 data/ui/components/player/mini.blp:70
 msgid "Play Next"
 msgstr ""
 
-#: data/ui/components/player/queue.ui:8
+#: data/ui/components/player/queue.blp:7
 msgid "The Queue is empty"
 msgstr ""
 
-#: data/ui/components/player/queue.ui:9
+#: data/ui/components/player/queue.blp:8
 msgid "Play some tracks to see the queue"
 msgstr ""
 
-#: data/ui/components/player/queue.ui:29
+#: data/ui/components/player/queue.blp:27
 msgid "Playing From"
 msgstr ""
 
-#: data/ui/components/player/queue.ui:41 data/ui/components/player/queue.ui:60
+#: data/ui/components/player/queue.blp:38
+#: data/ui/components/player/queue.blp:57
 msgid "Playlist Name"
 msgstr ""
 
-#: data/ui/components/player/related.ui:8
+#: data/ui/components/player/related.blp:7
 msgid "No related music"
 msgstr ""
 
-#: data/ui/components/player/related.ui:9
+#: data/ui/components/player/related.blp:8
 msgid "We couldn't find any music related to this track."
 msgstr ""
 
-#: data/ui/components/playlist/largeheader.ui:138
-#: data/ui/components/playlist/miniheader.ui:103
-#: data/ui/components/search/topresult.ui:132
+#: data/ui/components/playlist/largeheader.blp:113
+#: data/ui/components/playlist/miniheader.blp:153
+#: data/ui/components/search/section.blp:23 data/ui/pages/artist.blp:53
+msgid "More"
+msgstr ""
+
+#: data/ui/components/playlist/largeheader.blp:127
+#: data/ui/components/playlist/miniheader.blp:93
+#: data/ui/components/search/topresult.blp:130
 #: src/components/search/topresultcard.ts:189
 msgid "Shuffle"
 msgstr ""
 
-#: data/ui/pages/artist.ui:31
+#: data/ui/pages/artist.blp:40
 msgid "Top Songs"
 msgstr ""
 
-#: data/ui/pages/artist.ui:44
-msgid "More"
-msgstr ""
-
-#: data/ui/pages/authentication-error.ui:9
+#: data/ui/pages/authentication-error.blp:8
 msgid "Authentication is required"
 msgstr ""
 
-#: data/ui/pages/authentication-error.ui:31
+#: data/ui/pages/authentication-error.blp:20
+msgid "Log in"
+msgstr ""
+
+#: data/ui/pages/authentication-error.blp:30
 msgid "Go to Home"
 msgstr ""
 
-#: data/ui/pages/authentication-error.ui:41
+#: data/ui/pages/authentication-error.blp:39 data/ui/pages/error.blp:16
 msgid "Error Details"
 msgstr ""
 
-#: data/ui/pages/error.ui:9
+#: data/ui/pages/error.blp:8
 msgid "An error occurred"
 msgstr ""
 
-#: data/ui/pages/login.ui:16
+#: data/ui/pages/login.blp:14
 msgid "Login"
 msgstr ""
 
-#: data/ui/pages/login.ui:60
+#: data/ui/pages/login.blp:59
 msgid "Scan with phone or go to"
 msgstr ""
 
-#: data/ui/pages/login.ui:78
+#: data/ui/pages/login.blp:74
 msgid "Enter the code"
 msgstr ""
 
-#: data/ui/pages/login.ui:97
+#: data/ui/pages/login.blp:92
 msgid "Copy authentication code"
 msgstr ""
 
-#: data/ui/pages/search.ui:33
+#: data/ui/pages/search.blp:30
 msgid "No Results"
 msgstr ""
 
-#: data/ui/pages/search.ui:36
+#: data/ui/pages/search.blp:33
 msgid "Try a different search"
 msgstr ""
 
-#: data/ui/window.ui:107
+#: data/ui/window.blp:111
 msgid "Log In"
 msgstr ""
 
-#: data/ui/window.ui:111
+#: data/ui/window.blp:116
 msgid "_Preferences"
 msgstr ""
 
-#: data/ui/window.ui:115
+#: data/ui/window.blp:121
 msgid "_Keyboard Shortcuts"
 msgstr ""
 
-#: data/ui/window.ui:119
+#: data/ui/window.blp:126
 msgid "_About Muzika"
 msgstr ""
 
@@ -282,6 +294,7 @@ msgid "Start Radio"
 msgstr ""
 
 #: src/components/library/mixedcard.ts:95
+#: src/components/playlist/columnview.ts:161
 #: src/components/search/inlinecard.ts:103
 msgid "Song"
 msgstr ""
@@ -291,7 +304,8 @@ msgstr ""
 msgid "Video"
 msgstr ""
 
-#: src/components/library/mixedcard.ts:119 src/endpoints.ts:33
+#: src/components/library/mixedcard.ts:119
+#: src/components/playlist/columnview.ts:253 src/endpoints.ts:33
 msgid "Album"
 msgstr ""
 
@@ -308,15 +322,15 @@ msgstr ""
 msgid "Error"
 msgstr ""
 
-#: src/components/player/full.ts:258
+#: src/components/player/full.ts:272
 msgid "Repeat All Songs"
 msgstr ""
 
-#: src/components/player/full.ts:262
+#: src/components/player/full.ts:276
 msgid "Repeat the Current Song"
 msgstr ""
 
-#: src/components/player/full.ts:266
+#: src/components/player/full.ts:280
 msgid "Enable Repeat"
 msgstr ""
 
@@ -324,9 +338,14 @@ msgstr ""
 msgid "Queue"
 msgstr ""
 
+#: src/components/playlist/columnview.ts:200
 #: src/components/search/inlinecard.ts:144
 #: src/components/search/topresultcard.ts:187 src/endpoints.ts:39
 msgid "Artist"
+msgstr ""
+
+#: src/components/playlist/columnview.ts:318
+msgid "Time"
 msgstr ""
 
 #: src/components/search/inlinecard.ts:155
@@ -336,10 +355,6 @@ msgstr ""
 
 #: src/components/search/topresultcard.ts:149
 msgid "Add"
-msgstr ""
-
-#: src/endpoints.ts:21
-msgid "Home"
 msgstr ""
 
 #: src/endpoints.ts:45
@@ -370,31 +385,31 @@ msgstr ""
 msgid "caching data"
 msgstr ""
 
-#: src/pages/album.ts:108
+#: src/pages/album.ts:85
 msgid "Other versions"
 msgstr ""
 
-#: src/pages/album.ts:124
+#: src/pages/album.ts:103
 msgid "Unknown year"
 msgstr ""
 
-#: src/pages/artist.ts:115
+#: src/pages/artist.ts:114
 msgid "Singles"
 msgstr ""
 
-#: src/pages/artist.ts:116 src/pages/search.ts:302
+#: src/pages/artist.ts:115 src/pages/search.ts:302
 msgid "Videos"
 msgstr ""
 
-#: src/pages/artist.ts:117
+#: src/pages/artist.ts:116
 msgid "From your library"
 msgstr ""
 
-#: src/pages/artist.ts:118
+#: src/pages/artist.ts:117
 msgid "Featured on"
 msgstr ""
 
-#: src/pages/artist.ts:120
+#: src/pages/artist.ts:119
 msgid "Fans might also like"
 msgstr ""
 
@@ -435,7 +450,7 @@ msgstr ""
 msgid "Copied to clipboard"
 msgstr ""
 
-#: src/pages/playlist.ts:118
+#: src/pages/playlist.ts:111
 msgid "Related playlists"
 msgstr ""
 
@@ -471,7 +486,7 @@ msgstr ""
 msgid "storing data at"
 msgstr ""
 
-#: src/window.ts:209 src/window.ts:211
+#: src/window.ts:200 src/window.ts:209 src/window.ts:211
 msgid "Logout"
 msgstr ""
 
