@@ -22,7 +22,6 @@
     "typeRoots": [
       "gi-types"
     ],
-    "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true
   },
   "include": [
