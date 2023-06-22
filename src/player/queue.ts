@@ -14,6 +14,9 @@ import { AddActionEntries } from "src/util/action.js";
 import { Application } from "src/application.js";
 import { Window } from "src/window.js";
 import { list_model_to_array } from "src/util/list.js";
+import { ngettext } from "gettext";
+
+const vprintf = imports.format.vprintf;
 
 export type QueueSettings = Omit<MuseQueue, "tracks">;
 
@@ -308,7 +311,7 @@ export class Queue extends GObject.Object {
       {
         name: "add-playlist",
         parameter_type: "s",
-        activate: (_, param) => {
+        activate: (__, param) => {
           if (!param) return;
 
           const url = new URL(`muzika:${param.get_string()}`);
@@ -317,7 +320,26 @@ export class Queue extends GObject.Object {
           this.add_playlist(url.pathname, params.get("video") ?? undefined, {
             next: params.has("next"),
             shuffle: params.has("shuffle"),
-          });
+          }).then((queue) => {
+            const win = this.app.active_window;
+
+            if (win instanceof Window) {
+              if (!queue.playlist) return;
+
+              const normalized_title = GLib.markup_escape_text(
+                queue.playlist,
+                -1,
+              );
+
+              win.add_toast(
+                params.has("next")
+                  // Translators: %s is a playlist's name
+                  ? vprintf(_("Playing \"%s\" next"), [normalized_title])
+                  // Translators: %s is a playlist name
+                  : vprintf(_("Added \"%s\" to queue"), [normalized_title]),
+              );
+            }
+          })
         },
       },
       {
@@ -334,7 +356,7 @@ export class Queue extends GObject.Object {
           if (ids.length == 1) {
             this.play_song(ids[0]);
           } else {
-            this.play_songs(url.pathname.split(","), {
+            this.play_songs(ids, {
               shuffle: params.has("shuffle"),
             });
           }
@@ -363,12 +385,18 @@ export class Queue extends GObject.Object {
 
               win.add_toast(
                 params.has("next")
-                  ? tracks.length == 1
-                    ? _(`Playing "${normalized_title}" next`)
-                    : _(`Playing ${tracks.length} songs next`)
-                  : tracks.length == 1
-                  ? _(`Added "${normalized_title}" to queue`)
-                  : _(`Added ${tracks.length} songs to queue`),
+                  ? ngettext(
+                    // Translators: %s is a song's name
+                    vprintf(_("Playing \"%s\" next"), [normalized_title]),
+                    vprintf(_("Playing %d songs next"), [tracks.length]),
+                    tracks.length,
+                  )
+                  : ngettext(
+                    // Translators: %s is a song's name
+                    vprintf(_("Added \"%s\" to queue"), [normalized_title]),
+                    vprintf(_("Added %d songs to queue"), [tracks.length]),
+                    tracks.length,
+                  ),
               );
             }
           });
@@ -518,6 +546,8 @@ export class Queue extends GObject.Object {
       this.emit("wants-to-play");
       this.change_position(position);
     }
+
+    return queue;
   }
 
   async add_songs(song_ids: string[], options: AddSongOptions = {}) {
