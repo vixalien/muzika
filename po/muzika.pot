@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: muzika\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-06-22 20:56+0200\n"
+"POT-Creation-Date: 2023-06-22 14:56+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -83,17 +83,13 @@ msgstr ""
 msgid "Search…"
 msgstr ""
 
-#: data/ui/components/navbar/index.blp:17 src/endpoints.ts:21
-msgid "Home"
-msgstr ""
-
 #: data/ui/components/navbar/index.blp:23
 msgid "Explore"
 msgstr ""
 
 #: data/ui/components/navbar/index.blp:30
 #: data/ui/components/navbar/index.blp:32
-#: data/ui/components/playlist/largeheader.blp:136
+#: data/ui/components/playlist/largeheader.blp:139
 #: data/ui/components/playlist/miniheader.blp:105 src/endpoints.ts:51
 #: src/pages/search.ts:82
 msgid "Library"
@@ -212,20 +208,11 @@ msgstr ""
 msgid "We couldn't find any music related to this track."
 msgstr ""
 
-#: data/ui/components/playlist/largeheader.blp:109
-#: data/ui/components/playlist/miniheader.blp:149
-msgid "Read more"
-msgstr ""
-
-#: data/ui/components/playlist/largeheader.blp:124
+#: data/ui/components/playlist/largeheader.blp:127
 #: data/ui/components/playlist/miniheader.blp:93
 #: data/ui/components/search/topresult.blp:130
 #: src/components/search/topresultcard.ts:189
 msgid "Shuffle"
-msgstr ""
-
-#: data/ui/components/search/section.blp:23 data/ui/pages/artist.blp:53
-msgid "More"
 msgstr ""
 
 #: data/ui/gtk/help-overlay.blp:11
@@ -247,19 +234,19 @@ msgstr ""
 msgid "Top Songs"
 msgstr ""
 
-#: data/ui/pages/authentication-error.blp:8
-msgid "Authentication is required"
+#: data/ui/pages/artist.blp:53
+msgid "More"
 msgstr ""
 
-#: data/ui/pages/authentication-error.blp:20
-msgid "Log in"
+#: data/ui/pages/authentication-error.blp:8
+msgid "Authentication is required"
 msgstr ""
 
 #: data/ui/pages/authentication-error.blp:30
 msgid "Go to Home"
 msgstr ""
 
-#: data/ui/pages/authentication-error.blp:39 data/ui/pages/error.blp:16
+#: data/ui/pages/authentication-error.blp:39
 msgid "Error Details"
 msgstr ""
 
@@ -484,25 +471,26 @@ msgstr ""
 msgid "Featured Playlists"
 msgstr ""
 
+#. Translators: %s is a playlist's name
 #. Translators: %s is a song's name
-#: src/player/queue.ts:336 src/player/queue.ts:389
+#: src/player/queue.ts:337 src/player/queue.ts:390
 #, c-format
 msgid "Playing \"%s\" next"
 msgstr ""
 
 #. Translators: %s is a playlist name
 #. Translators: %s is a song's name
-#: src/player/queue.ts:338 src/player/queue.ts:395
+#: src/player/queue.ts:339 src/player/queue.ts:396
 #, c-format
 msgid "Added \"%s\" to queue"
 msgstr ""
 
-#: src/player/queue.ts:390
+#: src/player/queue.ts:391
 #, c-format
 msgid "Playing %d songs next"
 msgstr ""
 
-#: src/player/queue.ts:396
+#: src/player/queue.ts:397
 #, c-format
 msgid "Added %d songs to queue"
 msgstr ""
