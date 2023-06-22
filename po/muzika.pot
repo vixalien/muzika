@@ -505,18 +505,6 @@ msgstr ""
 msgid "Added %d songs to queue"
 msgstr ""
 
-#: src/polyfills/fetch.ts:179
-msgid "caching soup requests at"
-msgstr ""
-
-#: src/util/giofilestore.ts:36
-msgid "Failed to load store, resetting"
-msgstr ""
-
-#: src/util/giofilestore.ts:42
-msgid "storing data at"
-msgstr ""
-
 #: src/window.ts:200 src/window.ts:209 src/window.ts:211
 msgid "Logout"
 msgstr ""
