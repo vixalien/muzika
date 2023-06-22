@@ -333,7 +333,6 @@ export class Queue extends GObject.Object {
 
               win.add_toast(
                 params.has("next")
-                  // Translators: %s is a playlist's name
                   ? vprintf(_("Playing \"%s\" next"), [normalized_title])
                   // Translators: %s is a playlist name
                   : vprintf(_("Added \"%s\" to queue"), [normalized_title]),
