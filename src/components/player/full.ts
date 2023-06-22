@@ -330,6 +330,7 @@ export class FullPlayerView extends Gtk.ActionBar {
       );
       this._title.tooltip_text = track.title;
     } else {
+      this._title.use_markup = false;
       this._title.label = track.title;
       this._title.tooltip_text = track.title;
     }
