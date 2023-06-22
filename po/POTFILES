@@ -15,6 +15,7 @@ data/ui/components/playlist/largeheader.blp
 data/ui/components/playlist/miniheader.blp
 data/ui/components/search/section.blp
 data/ui/components/search/topresult.blp
+data/ui/gtk/help-overlay.blp
 data/ui/pages/album.blp
 data/ui/pages/artist.blp
 data/ui/pages/authentication-error.blp
