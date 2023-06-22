@@ -3,30 +3,30 @@ import GObject from "gi://GObject";
 import Adw from "gi://Adw";
 
 import { Player } from "src/player";
-import { get_lyrics } from "libmuse";
+import { get_lyrics } from "src/muse";
+import { escape_label } from "src/util/text";
 
 export class LyricsView extends Gtk.Stack {
   static {
     GObject.registerClass({
       GTypeName: "LyricsView",
-      Template: "resource:///com/vixalien/muzika/ui/components/player/lyrics.ui",
+      Template:
+        "resource:///com/vixalien/muzika/ui/components/player/lyrics.ui",
       InternalChildren: [
         "no_lyrics",
         "loading",
         "lyrics_window",
         "view",
-        "source",
         "buffer",
       ],
     }, this);
   }
 
-  _no_lyrics!: Adw.StatusPage;
-  _loading!: Gtk.Spinner;
-  _lyrics_window!: Gtk.ScrolledWindow;
-  _view!: Gtk.TextView;
-  _source!: Gtk.Label;
-  _buffer!: Gtk.TextBuffer;
+  private _no_lyrics!: Adw.StatusPage;
+  private _loading!: Gtk.Spinner;
+  private _lyrics_window!: Gtk.ScrolledWindow;
+  private _view!: Gtk.TextView;
+  private _buffer!: Gtk.TextBuffer;
 
   player: Player;
 
@@ -69,8 +69,14 @@ export class LyricsView extends Gtk.Stack {
       await get_lyrics(this.lyrics, {
         signal: this.controller.signal,
       }).then((lyrics) => {
-        this._source.label = lyrics.source;
         this._buffer.text = lyrics.lyrics;
+
+        this._buffer.insert_markup(
+          this._buffer.get_end_iter(),
+          `\n\n<i>${escape_label(lyrics.source)}</i>`,
+          -1,
+        );
+
         this.loaded = true;
 
         this.set_visible_child(this._lyrics_window);
