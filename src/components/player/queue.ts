@@ -76,6 +76,10 @@ export class QueueView extends Gtk.Stack {
     this._list_view.remove_css_class("view");
     this._list_view.remove_css_class("background");
 
+    this._list_view.connect("activate", (_, position) => {
+      this.player.queue.change_position(position);
+    });
+
     this.update_visible_child();
     this.update_settings();
   }
