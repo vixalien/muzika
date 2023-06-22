@@ -15,7 +15,6 @@ export class QueueItem extends Gtk.Box {
       Template:
         "resource:///com/vixalien/muzika/ui/components/player/queueitem.ui",
       InternalChildren: [
-        "play_button",
         "image",
         "title",
         "explicit",
@@ -26,7 +25,6 @@ export class QueueItem extends Gtk.Box {
 
   item?: QueueTrack;
 
-  private _play_button!: Gtk.Button;
   private _image!: Gtk.Image;
   private _title!: Gtk.Label;
   private _explicit!: Gtk.Image;
