@@ -59,8 +59,10 @@ template $QueueItem : Box {
     Box meta {
       orientation: vertical;
       valign: center;
+      spacing: 3;
 
       Label title {
+        label: "";
         hexpand: true;
         max-width-chars: 1;
         ellipsize: end;
@@ -74,26 +76,30 @@ template $QueueItem : Box {
         ]
       }
 
-      Box second_line_scrolled {
-        halign: start;
+      Box subtitles {
+        spacing: 6;
 
-        FlowBox second_line {
-          halign: start;
-          min-children-per-line: 2;
-          max-children-per-line: 999;
-          selection-mode: none;
-          column-spacing: 3;
+        styles [
+          "dim-label",
+        ]
 
-          FlowBoxChild explicit_flowbox {
-            Image explicit {
-              valign: center;
-              icon-name: "network-cellular-edge-symbolic";
+        Image explicit {
+          visible: false;
+          valign: center;
+          icon-name: "network-cellular-edge-symbolic";
+        }
 
-              styles [
-                "dim-label",
-              ]
-            }
-          }
+        Label subtitle {
+          use-markup: true;
+          hexpand: true;
+          max-width-chars: 1;
+          ellipsize: end;
+          xalign: 0;
+          wrap: true;
+
+          styles [
+            "flat-links",
+          ]
         }
       }
     }
