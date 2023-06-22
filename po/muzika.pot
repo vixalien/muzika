@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: muzika\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-06-22 14:53+0200\n"
+"POT-Creation-Date: 2023-06-22 14:56+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -215,6 +215,21 @@ msgstr ""
 msgid "Shuffle"
 msgstr ""
 
+#: data/ui/gtk/help-overlay.blp:11
+msgctxt "shortcut window"
+msgid "General"
+msgstr ""
+
+#: data/ui/gtk/help-overlay.blp:14
+msgctxt "shortcut window"
+msgid "Show Shortcuts"
+msgstr ""
+
+#: data/ui/gtk/help-overlay.blp:19
+msgctxt "shortcut window"
+msgid "Quit"
+msgstr ""
+
 #: data/ui/pages/artist.blp:40
 msgid "Top Songs"
 msgstr ""
@@ -368,10 +383,6 @@ msgstr ""
 msgid "Library Songs"
 msgstr ""
 
-#: src/muse.ts:48
-msgid "caching data"
-msgstr ""
-
 #: src/pages/album.ts:85
 msgid "Other versions"
 msgstr ""
@@ -481,18 +492,6 @@ msgstr ""
 msgid "Added %d songs to queue"
 msgstr ""
 
-#: src/polyfills/fetch.ts:179
-msgid "caching soup requests at"
-msgstr ""
-
-#: src/util/giofilestore.ts:36
-msgid "Failed to load store, resetting"
-msgstr ""
-
-#: src/util/giofilestore.ts:42
-msgid "storing data at"
-msgstr ""
-
 #: src/window.ts:209 src/window.ts:211
 msgid "Logout"
 msgstr ""
@@ -509,6 +508,6 @@ msgstr ""
 msgid "Successfully logged in!"
 msgstr ""
 
-#: src/window.ts:254 src/window.ts:256
+#: src/window.ts:254
 msgid "An error happened while logging in"
 msgstr ""
