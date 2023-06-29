@@ -141,7 +141,11 @@ export class Page<Data extends unknown, State extends unknown = null>
       this.title = _("Error");
     }
 
+    const toolbar_view = new Adw.ToolbarView();
+    toolbar_view.add_top_bar(Adw.HeaderBar.new());
+    toolbar_view.content = error_widget;
+
     this.loading = false;
-    this._content.child = error_widget;
+    this._content.child = toolbar_view;
   }
 }

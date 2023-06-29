@@ -1,5 +1,3 @@
-import Gtk from "gi://Gtk?version=4.0";
-
 import { Endpoint, MuzikaComponent } from "./navigation.js";
 
 import { LibraryPage } from "./pages/library/index.js";

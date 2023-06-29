@@ -1,6 +1,7 @@
 import Gtk from "gi://Gtk?version=4.0";
 import GObject from "gi://GObject";
 import GLib from "gi://GLib";
+import Adw from "gi://Adw";
 
 import { LibraryItems } from "../../muse.js";
 import { LibraryView } from "../../components/library/view.js";
@@ -50,7 +51,7 @@ interface LibraryState {
 }
 
 export class AbstractLibraryPage<PageOrder extends LibraryOrder | Order = Order>
-  extends Gtk.Box
+  extends Adw.Bin
   implements MuzikaComponent<LoadedLibrary, LibraryState> {
   static {
     GObject.registerClass({
@@ -58,17 +59,17 @@ export class AbstractLibraryPage<PageOrder extends LibraryOrder | Order = Order>
     }, this);
   }
 
-  view: LibraryView;
+  private view: LibraryView;
   results?: LibraryResults;
 
   uri: string;
   orders: Map<string, string>;
   order?: PageOrder;
 
+  private toolbar_view: Adw.ToolbarView;
+
   constructor(options: LibraryPageOptions) {
-    super({
-      orientation: Gtk.Orientation.VERTICAL,
-    });
+    super();
 
     this.orders = options.orders ?? alphabetical_orders;
     this.uri = options.uri;
@@ -81,7 +82,11 @@ export class AbstractLibraryPage<PageOrder extends LibraryOrder | Order = Order>
       this.load_more();
     });
 
-    this.append(this.view);
+    this.toolbar_view = new Adw.ToolbarView();
+    this.toolbar_view.add_top_bar(Adw.HeaderBar.new());
+    this.toolbar_view.content = this.view;
+
+    this.child = this.toolbar_view;
   }
 
   handle_order_changed(_: Gtk.Widget, order_name: string) {
