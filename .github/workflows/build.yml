@@ -26,4 +26,3 @@ jobs:
           manifest-path: build-aux/flatpak/com.vixalien.muzika.json
           cache: true
           restore-cache: true
-          cache-key: flatpak-builder-${{ github.workflow_sha }}
