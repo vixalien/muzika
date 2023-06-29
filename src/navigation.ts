@@ -249,6 +249,8 @@ export class Navigator extends GObject.Object {
     if (!first) return;
 
     if (first.uri === uri) {
+      // go to the first page
+      this._view.pop_to_page(first);
       return;
     }
 
