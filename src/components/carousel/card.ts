@@ -93,7 +93,8 @@ export class CarouselCard extends Gtk.Box {
     this.subtitle_authors = [];
     this.content = undefined;
     this.set_align(Gtk.Align.FILL);
-    this._dynamic_image.reset_listeners();
+    this._dynamic_image.clear();
+    this._playlist_image.clear()
   }
 
   // utils

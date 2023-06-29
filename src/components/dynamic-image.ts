@@ -4,6 +4,7 @@ import GObject from "gi://GObject";
 import { Application } from "src/application.js";
 import { Thumbnail } from "libmuse";
 import { load_thumbnails } from "./webimage";
+import { SignalListeners } from "src/util/signal-listener";
 
 export enum DynamicImageState {
   DEFAULT,
@@ -216,10 +217,12 @@ export class DynamicImage extends Gtk.Overlay {
     this.visible_child = DynamicImageVisibleChild.NUMBER;
   }
 
-  private controller = new Gtk.EventControllerMotion();
+  private controller: Gtk.EventControllerMotion;
 
   constructor(props: DynamicImageProps = {}) {
     super();
+
+    this.controller = new Gtk.EventControllerMotion();
 
     this.controller.connect("enter", () => {
       this.update_stack(true);
@@ -232,9 +235,12 @@ export class DynamicImage extends Gtk.Overlay {
     this.add_controller(this.controller);
 
     // pause button
-    this._pause.connect("clicked", () => {
-      this.emit("pause");
-    });
+    this.listeners.add(
+      this._pause,
+      this._pause.connect("clicked", () => {
+        this.emit("pause");
+      }),
+    );
 
     if (props.icon_size) this.icon_size = props.icon_size;
     if (props.image_size) this.image_size = props.image_size;
@@ -305,20 +311,12 @@ export class DynamicImage extends Gtk.Overlay {
     return (Application.get_default() as Application)?.player;
   }
 
-  private listeners: number[] = [];
+  private listeners = new SignalListeners();
 
   private setup_button = false;
 
   reset_listeners() {
-    const player = this.get_player();
-
-    if (player) {
-      this.listeners.forEach((listener) => {
-        player.disconnect(listener);
-      });
-    }
-
-    this.listeners = [];
+    this.listeners.clear();
   }
 
   videoId: string | null = null;
@@ -333,27 +331,33 @@ export class DynamicImage extends Gtk.Overlay {
     const player = this.get_player();
 
     if (!this.setup_button) {
-      this._play.connect("clicked", () => {
-        this.emit("play");
+      this.listeners.add(
+        this._play,
+        this._play.connect("clicked", () => {
+          this.emit("play");
 
-        if (player.current_meta?.item?.track.videoId === this.videoId) {
-          player.play();
-        } else if (this.videoId) {
-          if (this.playlistId) {
-            this.state = DynamicImageState.LOADING;
-            player.queue.play_playlist(this.playlistId, this.videoId);
-          } else {
-            this.state = DynamicImageState.LOADING;
-            player.queue.play_song(this.videoId);
+          if (player.current_meta?.item?.track.videoId === this.videoId) {
+            player.play();
+          } else if (this.videoId) {
+            if (this.playlistId) {
+              this.state = DynamicImageState.LOADING;
+              player.queue.play_playlist(this.playlistId, this.videoId);
+            } else {
+              this.state = DynamicImageState.LOADING;
+              player.queue.play_song(this.videoId);
+            }
           }
-        }
-      });
+        }),
+      );
 
-      this._pause.connect("clicked", () => {
-        if (player.current_meta?.item?.track.videoId === this.videoId) {
-          player.pause();
-        }
-      });
+      this.listeners.add(
+        this._pause,
+        this._pause.connect("clicked", () => {
+          if (player.current_meta?.item?.track.videoId === this.videoId) {
+            player.pause();
+          }
+        }),
+      );
 
       this.setup_button = true;
     }
@@ -371,7 +375,7 @@ export class DynamicImage extends Gtk.Overlay {
       }
     }
 
-    this.listeners.push(...[
+    this.listeners.add(player, [
       player.connect(`start-loading::${videoId}`, () => {
         this.state = DynamicImageState.LOADING;
         this.emit("play");
@@ -406,22 +410,28 @@ export class DynamicImage extends Gtk.Overlay {
     const player = this.get_player();
 
     if (!this.setup_button) {
-      this._play.connect("clicked", () => {
-        this.emit("play");
+      this.listeners.add(
+        this._play,
+        this._play.connect("clicked", () => {
+          this.emit("play");
 
-        if (player.current_meta?.item?.track.playlist === this.playlistId) {
-          player.play();
-        } else if (this.playlistId) {
-          this.state = DynamicImageState.LOADING;
-          player.queue.play_playlist(this.playlistId);
-        }
-      });
+          if (player.current_meta?.item?.track.playlist === this.playlistId) {
+            player.play();
+          } else if (this.playlistId) {
+            this.state = DynamicImageState.LOADING;
+            player.queue.play_playlist(this.playlistId);
+          }
+        }),
+      );
 
-      this._pause.connect("clicked", () => {
-        if (player.current_meta?.item?.track.playlist === this.playlistId) {
-          player.pause();
-        }
-      });
+      this.listeners.add(
+        this._pause,
+        this._pause.connect("clicked", () => {
+          if (player.current_meta?.item?.track.playlist === this.playlistId) {
+            player.pause();
+          }
+        }),
+      );
 
       this.setup_button = true;
     }
@@ -439,7 +449,7 @@ export class DynamicImage extends Gtk.Overlay {
       }
     }
 
-    this.listeners.push(...[
+    this.listeners.add(player, [
       player.connect(`start-loading::playlist::${playlistId}`, () => {
         this.state = DynamicImageState.LOADING;
         this.emit("play");
@@ -466,8 +476,13 @@ export class DynamicImage extends Gtk.Overlay {
     ]);
   }
 
-  vfunc_dispose(): void {
+  clear() {
     this.reset_listeners();
+    this.remove_controller(this.controller);
+  }
+
+  vfunc_dispose(): void {
+    this.clear();
     super.vfunc_dispose();
   }
 
