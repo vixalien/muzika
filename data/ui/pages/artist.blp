@@ -2,70 +2,75 @@ using Gtk 4.0;
 using Adw 1;
 
 template $ArtistPage : Adw.Bin {
-  Adw.BreakpointBin {
-    width-request: 200;
-    height-request: 200;
-    
-    Adw.Breakpoint breakpoint {
-      condition ("min-width: 700sp")
-    }
+  Adw.ToolbarView {
+    [top]
+    Adw.HeaderBar {}
+  
+    content: Adw.BreakpointBin {
+      width-request: 200;
+      height-request: 200;
+      
+      Adw.Breakpoint breakpoint {
+        condition ("min-width: 700sp")
+      }
 
-    ScrolledWindow {
-      vexpand: true;
-      hexpand: true;
-      hscrollbar-policy: never;
+      ScrolledWindow {
+        vexpand: true;
+        hexpand: true;
+        hscrollbar-policy: never;
 
-      Adw.Clamp {
-        margin-top: 12;
-        margin-bottom: 12;
-        tightening-threshold: 1200;
-        maximum-size: 1400;
+        Adw.Clamp {
+          margin-top: 12;
+          margin-bottom: 12;
+          tightening-threshold: 1200;
+          maximum-size: 1400;
 
-        Box inner_box {
-          spacing: 18;
-          orientation: vertical;
-
-          $ArtistHeader header {}
-
-          Box top_songs {
-            spacing: 12;
+          Box inner_box {
+            spacing: 18;
             orientation: vertical;
-            height-request: 42;
 
-            Box {
-              margin-start: 12;
-              margin-end: 12;
+            $ArtistHeader header {}
 
-              Label {
-                label: _("Top Songs");
-                halign: start;
-                xalign: 0;
+            Box top_songs {
+              spacing: 12;
+              orientation: vertical;
+              height-request: 42;
 
-                styles [
-                  "title-2",
-                ]
+              Box {
+                margin-start: 12;
+                margin-end: 12;
+
+                Label {
+                  label: _("Top Songs");
+                  halign: start;
+                  xalign: 0;
+
+                  styles [
+                    "title-2",
+                  ]
+                }
+
+                Button more_top_songs {
+                  visible: false;
+                  halign: end;
+                  hexpand: true;
+                  label: _("More");
+
+                  styles [
+                    "flat",
+                  ]
+                }
               }
 
-              Button more_top_songs {
-                visible: false;
-                halign: end;
-                hexpand: true;
-                label: _("More");
-
-                styles [
-                  "flat",
-                ]
+              $PlaylistItemView playlist_item_view {
               }
             }
 
-            $PlaylistItemView playlist_item_view {
+            Box content {
             }
-          }
-
-          Box content {
           }
         }
       }
-    }
+    };
   }
 }

@@ -2,23 +2,28 @@ using Gtk 4.0;
 using Adw 1;
 
 template $HomePage : Adw.Bin {
-  ScrolledWindow scrolled {
-    vexpand: true;
-    hexpand: true;
+  Adw.ToolbarView {
+    [top]
+    Adw.HeaderBar {}
+  
+    content: ScrolledWindow scrolled {
+      vexpand: true;
+      hexpand: true;
 
-    Adw.Clamp {
-      margin-top: 12;
-      margin-bottom: 12;
-      maximum-size: 1000;
-      tightening-threshold: 800;
+      Adw.Clamp {
+        margin-top: 12;
+        margin-bottom: 12;
+        maximum-size: 1000;
+        tightening-threshold: 800;
 
-      Box box {
-        orientation: vertical;
-        spacing: 12;
+        Box box {
+          orientation: vertical;
+          spacing: 12;
 
-        $Paginator paginator {
+          $Paginator paginator {
+          }
         }
       }
-    }
+    };
   }
 }

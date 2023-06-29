@@ -1,4 +1,5 @@
 import GObject from "gi://GObject";
+import Adw from "gi://Adw";
 import Gtk from "gi://Gtk?version=4.0";
 
 import { get_history, History, PlaylistItem } from "../../muse.js";
@@ -42,7 +43,7 @@ class HistoryTitle extends Gtk.Box {
   }
 }
 
-export class HistoryPage extends Gtk.Box
+export class HistoryPage extends Adw.Bin
   implements MuzikaComponent<History, HistoryState> {
   static {
     GObject.registerClass({

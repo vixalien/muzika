@@ -1,6 +1,7 @@
 import Gtk from "gi://Gtk?version=4.0";
 import GObject from "gi://GObject";
 import GLib from "gi://GLib";
+import Adw from "gi://Adw";
 
 import {
   Filter,
@@ -26,7 +27,7 @@ interface SearchData {
   args: Parameters<typeof search>;
 }
 
-export class SearchPage extends Gtk.Box
+export class SearchPage extends Adw.Bin
   implements MuzikaComponent<SearchData, SearchState> {
   static {
     GObject.registerClass({
@@ -54,9 +55,7 @@ export class SearchPage extends Gtk.Box
   args: Parameters<typeof search> = [""];
 
   constructor() {
-    super({
-      orientation: Gtk.Orientation.VERTICAL,
-    });
+    super();
 
     this.paginator = new Paginator();
     this.paginator.connect("activate", () => {

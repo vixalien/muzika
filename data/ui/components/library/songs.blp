@@ -1,35 +1,41 @@
 using Gtk 4.0;
+using Adw 1;
 
-template $LibrarySongsPage : Box {
-  ScrolledWindow {
-    hexpand: true;
-    hscrollbar-policy: never;
+template $LibrarySongsPage : Adw.Bin {
+  Adw.ToolbarView {
+    [top]
+    Adw.HeaderBar {}
+  
+    content: ScrolledWindow {
+      hexpand: true;
+      hscrollbar-policy: never;
 
-    Box box {
-      orientation: vertical;
-      margin-top: 12;
-      margin-bottom: 12;
-      margin-start: 12;
-      margin-end: 12;
-      spacing: 12;
+      Box box {
+        orientation: vertical;
+        margin-top: 12;
+        margin-bottom: 12;
+        margin-start: 12;
+        margin-end: 12;
+        spacing: 12;
 
-      Box tools {
-        valign: start;
+        Box tools {
+          valign: start;
 
-        DropDown drop_down {
-          halign: end;
-          hexpand: true;
+          DropDown drop_down {
+            halign: end;
+            hexpand: true;
+          }
+        }
+
+        ListBox list {
+          styles [
+            "background",
+          ]
+        }
+
+        $Paginator paginator {
         }
       }
-
-      ListBox list {
-        styles [
-          "background",
-        ]
-      }
-
-      $Paginator paginator {
-      }
-    }
+    };
   }
 }

@@ -1,23 +1,29 @@
 using Gtk 4.0;
+using Adw 1;
 
-template $HistoryPage : Box {
-  ScrolledWindow {
-    hexpand: true;
-    hscrollbar-policy: never;
+template $HistoryPage : Adw.Bin {
+  Adw.ToolbarView {
+    [top]
+    Adw.HeaderBar {}
+  
+    content: ScrolledWindow {
+      hexpand: true;
+      hscrollbar-policy: never;
 
-    Box box {
-      orientation: vertical;
-      margin-top: 12;
-      margin-bottom: 12;
-      margin-start: 12;
-      margin-end: 12;
-      spacing: 12;
+      Box box {
+        orientation: vertical;
+        margin-top: 12;
+        margin-bottom: 12;
+        margin-start: 12;
+        margin-end: 12;
+        spacing: 12;
 
-      ListBox list {
-        styles [
-          "background",
-        ]
+        ListBox list {
+          styles [
+            "background",
+          ]
+        }
       }
-    }
+    };
   }
 }

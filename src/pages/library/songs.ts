@@ -1,5 +1,6 @@
 import GObject from "gi://GObject";
 import GLib from "gi://GLib";
+import Adw from "gi://Adw";
 import Gtk from "gi://Gtk?version=4.0";
 
 import { get_library_songs, LibrarySongs } from "../../muse.js";
@@ -21,7 +22,7 @@ interface LibraryOptions extends PaginationOptions {
 // make sure paginator is registered before LibrarySongsPage
 Paginator;
 
-export class LibrarySongsPage extends Gtk.Box
+export class LibrarySongsPage extends Adw.Bin
   implements MuzikaComponent<LoadedSongs, LibrarySongsState> {
   static {
     GObject.registerClass({
