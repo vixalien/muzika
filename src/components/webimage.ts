@@ -129,11 +129,18 @@ export interface LoadOptions {
   upscale?: boolean;
 }
 
-export function load_image(
-  image: Gtk.Image | Gtk.Picture | Adw.Avatar,
+const thumbnails_map = new Map<string, GdkPixbuf.Pixbuf>();
+
+export function fetch_image(
   href: string,
   options: LoadOptions,
 ) {
+  const cache_key = JSON.stringify({ href, options });
+
+  if (thumbnails_map.has(cache_key)) {
+    return Promise.resolve(thumbnails_map.get(cache_key)!);
+  }
+
   const url = new URL(href);
 
   return fetch(url, {
@@ -157,6 +164,25 @@ export function load_image(
       )!;
     }
 
+    thumbnails_map.set(cache_key, pixbuf);
+
+    return pixbuf;
+  }).catch((e) => {
+    if (e.name !== "AbortError") {
+      console.error("Couldn't load thumbnail:", e);
+    }
+    return null;
+  });
+}
+
+export async function load_image(
+  image: Gtk.Image | Gtk.Picture | Adw.Avatar,
+  href: string,
+  options: LoadOptions,
+) {
+  const pixbuf = await fetch_image(href, options);
+
+  if (pixbuf) {
     if (image instanceof Gtk.Picture) {
       image.set_pixbuf(pixbuf);
     } else if (image instanceof Gtk.Image) {
@@ -165,9 +191,5 @@ export function load_image(
       const texture = Gdk.Texture.new_for_pixbuf(pixbuf);
       image.set_custom_image(texture);
     }
-  }).catch((e) => {
-    if (e.name !== "AbortError") {
-      console.error("Couldn't load thumbnail:", e);
-    }
-  });
+  }
 }

@@ -275,7 +275,7 @@ export async function fetch(url: string | URL, options: FetchOptions = {}) {
     const stream = new ReadableStream({
       async pull(controller) {
         return inputStream.read_bytes_async(
-          4096,
+          1024 * 256,
           GLib.PRIORITY_DEFAULT,
           null,
         ).then((result) => {
