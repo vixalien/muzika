@@ -10,10 +10,18 @@ import { escape_label, pretty_subtitles } from "src/util/text";
 
 class ImageColumn extends Gtk.ColumnViewColumn {
   static {
-    GObject.registerClass({ GTypeName: "ImageColumn" }, this);
+    GObject.registerClass({
+      GTypeName: "ImageColumn",
+      Signals: {
+        "selection-mode-toggled": {
+          param_types: [GObject.TYPE_UINT64, GObject.TYPE_BOOLEAN],
+        },
+      },
+    }, this);
   }
 
   album = false;
+  selection_mode = false;
 
   constructor(public playlistId?: string) {
     super();
@@ -45,13 +53,24 @@ class ImageColumn extends Gtk.ColumnViewColumn {
 
     const playlist_item = container.item!;
 
+    dynamic_image.connect("selection-mode-toggled", (_dynamic_image, value) => {
+      this.emit("selection-mode-toggled", list_item.position, value);
+    });
+
     if (this.album) {
       dynamic_image.track_number = (list_item.position + 1).toString();
     } else {
       dynamic_image.load_thumbnails(playlist_item.thumbnails);
     }
 
+    dynamic_image.selection_mode = this.selection_mode;
+    dynamic_image.selected = list_item.selected;
+
     dynamic_image.setup_video(playlist_item.videoId, this.playlistId);
+
+    container.connect("notify", () => {
+      dynamic_image.selection_mode = this.selection_mode;
+    });
   }
 }
 
@@ -410,6 +429,14 @@ export class PlaylistColumnView extends Gtk.ColumnView {
   private _album_column = new AlbumColumn();
   private _duration_column = new DurationColumn();
 
+  get selection_mode() {
+    return this._image_column.selection_mode;
+  }
+
+  set selection_mode(value: boolean) {
+    this._image_column.selection_mode = value;
+  }
+
   get show_rank() {
     return this._rank_column.visible;
   }
@@ -426,7 +453,7 @@ export class PlaylistColumnView extends Gtk.ColumnView {
 
   set playlistId(value: string | undefined) {
     this._playlistId = value;
-    this.regenerate_image_column();
+    this._image_column.playlistId = value;
   }
 
   private _album = false;
@@ -438,15 +465,27 @@ export class PlaylistColumnView extends Gtk.ColumnView {
   set album(value: boolean) {
     this._album = value;
     this._album_column.visible = !value;
-    this.regenerate_image_column();
+    this._image_column.album = value;
   }
 
   constructor(options: PlaylistColumnViewOptions = {}) {
     super({
       margin_start: 12,
       margin_end: 12,
-      single_click_activate: true,
     });
+
+    this._image_column.connect(
+      "selection-mode-toggled",
+      (_, position: number, value: boolean) => {
+        const selection_model = this.model as Gtk.SelectionModel;
+
+        if (value) {
+          selection_model.select_item(position, false);
+        } else {
+          selection_model.unselect_item(position);
+        }
+      },
+    );
 
     if (options.album != null) {
       this.album = options.album;
@@ -492,12 +531,8 @@ export class PlaylistColumnView extends Gtk.ColumnView {
     });
   }
 
-  private regenerate_image_column() {
-    this.remove_column(this._image_column);
-    this._image_column = new ImageColumn();
-    this._image_column.playlistId = this._playlistId;
-    this._image_column.album = this._album;
-    this.insert_column(0, this._image_column);
+  update() {
+    this.sorter.changed(Gtk.SorterChange.DIFFERENT);
   }
 }
 

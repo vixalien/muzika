@@ -27,6 +27,7 @@
     <file preprocess="xml-stripblanks">ui/components/player/queueitem.ui</file>
     <file preprocess="xml-stripblanks">ui/components/player/related.ui</file>
     <file preprocess="xml-stripblanks">ui/components/playlist-image.ui</file>
+    <file preprocess="xml-stripblanks">ui/components/playlist/bar.ui</file>
     <file preprocess="xml-stripblanks">ui/components/playlist/item.ui</file>
     <file preprocess="xml-stripblanks">ui/components/playlist/largeheader.ui</file>
     <file preprocess="xml-stripblanks">ui/components/playlist/listitem.ui</file>

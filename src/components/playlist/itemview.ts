@@ -4,6 +4,8 @@ import Gio from "gi://Gio";
 
 import { PlaylistColumnView } from "./columnview";
 import { PlaylistListView } from "./listview";
+import { ObjectContainer } from "src/util/objectcontainer";
+import { PlaylistItem } from "src/muse";
 
 export class PlaylistItemView extends Gtk.Stack {
   static {
@@ -38,9 +40,33 @@ export class PlaylistItemView extends Gtk.Stack {
           GObject.ParamFlags.READWRITE,
           false,
         ),
+        "selection-mode": GObject.ParamSpec.boolean(
+          "selection-mode",
+          "Selection Mode",
+          "Whether this view is in selection mode",
+          GObject.ParamFlags.READWRITE,
+          false,
+        ),
       },
     }, this);
   }
+
+  // property: selection-mode
+
+  get selection_mode() {
+    return this._column_view.selection_mode;
+  }
+
+  set selection_mode(value: boolean) {
+    this._column_view.selection_mode = value;
+    this._list_view.selection_mode = value;
+
+    if (this.selection_mode == false) {
+      this.multi_selection_model?.unselect_all();
+    }
+  }
+
+  // property: playlistId
 
   private _playlistId?: string;
 
@@ -52,8 +78,11 @@ export class PlaylistItemView extends Gtk.Stack {
     if (!playlistId) return;
 
     this._playlistId = playlistId;
+
     this._column_view.playlistId = playlistId;
-    this.regenerate_list_view();
+    this._list_view.playlistId = playlistId;
+
+    this.update();
   }
 
   private _album = false;
@@ -64,8 +93,11 @@ export class PlaylistItemView extends Gtk.Stack {
 
   set album(album: boolean) {
     this._album = album;
+
     this._column_view.album = album;
-    this.regenerate_list_view();
+    this._list_view.album = album;
+
+    this.update();
   }
 
   private _model: Gio.ListModel | null = null;
@@ -74,16 +106,19 @@ export class PlaylistItemView extends Gtk.Stack {
     return this._model;
   }
 
+  multi_selection_model:
+    | Gtk.MultiSelection<ObjectContainer<PlaylistItem>>
+    | null = null;
+
   set model(model: Gio.ListModel | null) {
     this._model = model;
 
-    const selection_model = new Gtk.SingleSelection({
+    this.multi_selection_model = new Gtk.MultiSelection({
       model: model as any,
-      autoselect: false,
     });
 
-    this._list_view.model = selection_model;
-    this._column_view.model = selection_model;
+    this._list_view.model = this.multi_selection_model;
+    this._column_view.model = this.multi_selection_model;
   }
 
   private _list_view: PlaylistListView;
@@ -120,16 +155,15 @@ export class PlaylistItemView extends Gtk.Stack {
     this.set_visible_child_name(column ? "column" : "list");
   }
 
-  private regenerate_list_view() {
-    const list_view = new PlaylistListView();
-    list_view.model = this._list_view.model;
-    list_view.album = this.album;
-    list_view.playlistId = this.playlistId;
+  editable = false;
 
-    this.remove(this._list_view);
+  update() {
+    if (!this._model) return;
 
-    this._list_view = list_view;
-    this.add_named(list_view, "list");
+    for (let i = 0; i < this._model.get_n_items(); i++) {
+      const item = this._model.get_item(i);
+      if (item) item.notify("item");
+    }
   }
 }
 

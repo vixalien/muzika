@@ -218,3 +218,7 @@ label.flat-links:hover {
 .playlist-list-view>row:not(:hover):not(:selected):nth-child(2n+1) {
   background-color: shade(@card_bg_color, .93);
 }
+
+.dynamic-image {
+  transition: background-color .2s, box-shadow .2s;
+}

@@ -3,8 +3,15 @@ using Adw 1;
 
 template $PlaylistPage : Adw.Bin {
   Adw.ToolbarView {
+    bottom-bar-style: raised;
+    
     [top]
-    Adw.HeaderBar {}
+    Adw.HeaderBar {
+      [end]
+      ToggleButton select {
+        icon-name: "selection-mode-symbolic";
+      }
+    }
   
     content: Adw.BreakpointBin {
       width-request: 200;
@@ -68,5 +75,8 @@ template $PlaylistPage : Adw.Bin {
         }
       }
     };
+
+    [bottom]
+    $PlaylistBar bar {}
   }
 }

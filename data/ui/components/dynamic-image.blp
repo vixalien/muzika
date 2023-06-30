@@ -7,17 +7,17 @@ template $DynamicImage : Overlay {
   styles [
     "br-9",
     "card",
+    "dynamic-image"
   ]
 
   [overlay]
   Stack stack {
     transition-type: crossfade;
+    visible-child: play;
 
     styles [
       "background-transition",
     ]
-
-    visible-child: play;
 
     Box blank {
     }
@@ -72,16 +72,13 @@ template $DynamicImage : Overlay {
   }
 
   Stack image_stack {
-    hhomogeneous: false;
+    transition-type: crossfade;
 
     Image image {
-      pixel-size: 160;
       icon-name: "image-missing-symbolic";
     }
 
     Picture picture {
-      height-request: 160;
-      width-request: 285;
       content-fit: cover;
     }
 
@@ -94,6 +91,13 @@ template $DynamicImage : Overlay {
         "heading",
         "dim-label",
       ]
+    }
+
+    CheckButton check_button {
+      valign: center;
+      halign: center;
+      
+      styles ["selection-mode"]
     }
   }
 }

@@ -17,6 +17,7 @@ import { EndpointContext, MuzikaComponent } from "src/navigation.js";
 import { ObjectContainer } from "src/util/objectcontainer.js";
 import { PlaylistItemView } from "src/components/playlist/itemview.js";
 import { Paginator } from "src/components/paginator.js";
+import { PlaylistBar } from "src/components/playlist/bar.js";
 
 interface PlaylistState {
   playlist: Playlist;
@@ -25,6 +26,7 @@ interface PlaylistState {
 Paginator;
 PlaylistHeader;
 PlaylistItemView;
+PlaylistBar;
 
 export class PlaylistPage extends Adw.Bin
   implements MuzikaComponent<Playlist, PlaylistState> {
@@ -44,6 +46,8 @@ export class PlaylistPage extends Adw.Bin
         "playlist_item_view",
         "paginator",
         "header",
+        "select",
+        "bar",
       ],
     }, this);
   }
@@ -61,6 +65,8 @@ export class PlaylistPage extends Adw.Bin
   private _playlist_item_view!: PlaylistItemView;
   private _paginator!: Paginator;
   private _header!: PlaylistHeader;
+  private _select!: Gtk.ToggleButton;
+  private _bar!: PlaylistBar;
 
   model = new Gio.ListStore<ObjectContainer<PlaylistItem>>({
     item_type: ObjectContainer.$gtype,
@@ -76,6 +82,7 @@ export class PlaylistPage extends Adw.Bin
     });
 
     this._playlist_item_view.model = this.model;
+    this._bar.model = this._playlist_item_view.multi_selection_model!;
 
     this._paginator.connect("activate", () => {
       this.load_more();
@@ -89,6 +96,13 @@ export class PlaylistPage extends Adw.Bin
     this._breakpoint.connect("unapply", () => {
       this._playlist_item_view.show_column = false;
       this._header.show_large_header = false;
+    });
+
+    this._select.connect("toggled", () => {
+      this._playlist_item_view.selection_mode = this._select.active;
+      this._bar.selection_mode = this._select.active;
+      this._bar.update_selection();
+      this._playlist_item_view.update();
     });
   }
 
@@ -119,8 +133,9 @@ export class PlaylistPage extends Adw.Bin
     this.model.remove_all();
 
     this.playlist = playlist;
-    this._playlist_item_view.playlistId = playlist.id;
 
+    this._playlist_item_view.playlistId = playlist.id;
+    this._playlist_item_view.editable = this._bar.editable = playlist.editable;
     this._playlist_item_view.show_rank = playlist.tracks[0].rank != null;
 
     this._header.load_thumbnails(playlist.thumbnails);

@@ -33,9 +33,9 @@ export class DynamicImage extends Gtk.Overlay {
         "loading",
         "pause",
         "pause_image",
-        "blank",
         "image_stack",
         "number",
+        "check_button",
       ],
       Children: ["image", "picture"],
       Properties: {
@@ -89,10 +89,27 @@ export class DynamicImage extends Gtk.Overlay {
           GObject.ParamFlags.READWRITE,
           "",
         ),
+        "selection-mode": GObject.ParamSpec.boolean(
+          "selection-mode",
+          "Selection mode",
+          "Whether the image is in selection mode",
+          GObject.ParamFlags.READWRITE,
+          false,
+        ),
+        selected: GObject.ParamSpec.boolean(
+          "selected",
+          "Selected",
+          "Whether the image is selected",
+          GObject.ParamFlags.READWRITE,
+          false,
+        ),
       },
       Signals: {
         pause: {},
         play: {},
+        "selection-mode-toggled": {
+          param_types: [GObject.TYPE_BOOLEAN],
+        },
       },
     }, this);
   }
@@ -104,9 +121,9 @@ export class DynamicImage extends Gtk.Overlay {
   private _loading!: Gtk.Spinner;
   private _pause!: Gtk.Button;
   private _pause_image!: Gtk.Image;
-  private _blank!: Gtk.Box;
   private _image_stack!: Gtk.Stack;
   private _number!: Gtk.Label;
+  private _check_button!: Gtk.CheckButton;
 
   image!: Gtk.Image;
   picture!: Gtk.Picture;
@@ -144,16 +161,16 @@ export class DynamicImage extends Gtk.Overlay {
   }
 
   get image_size() {
-    return this.image.pixel_size;
+    return this._image_stack.height_request;
   }
 
   set image_size(size: number) {
-    this.image.pixel_size = size;
-
-    this._number.width_request = this._number.height_request = size;
-
-    this.picture.height_request = size;
-    this.picture.width_request = size * (16 / 9);
+    if (this.visible_child === DynamicImageVisibleChild.PICTURE) {
+      this._image_stack.height_request = size;
+      this._image_stack.width_request = size * (16 / 9);
+    } else {
+      this._image_stack.width_request = this._image_stack.height_request = size;
+    }
 
     ["br-6", "br-9"].map((br_class) => {
       this.remove_css_class(br_class);
@@ -177,12 +194,40 @@ export class DynamicImage extends Gtk.Overlay {
     this.update_stack(this.controller.contains_pointer);
   }
 
+  get selected() {
+    return this._check_button.active;
+  }
+
+  set selected(selected: boolean) {
+    this._check_button.active = selected;
+  }
+
+  get selection_mode() {
+    return this._image_stack.visible_child === this._check_button;
+  }
+
+  set selection_mode(selection_mode: boolean) {
+    if (selection_mode) {
+      this._image_stack.visible_child = this._check_button;
+      this.remove_css_class("card");
+    } else {
+      this.visible_child = this._visible_child;
+    }
+  }
+
+  private _visible_child = DynamicImageVisibleChild.IMAGE;
+
   get visible_child() {
-    return this._image_stack.visible_child === this.picture
-      ? DynamicImageVisibleChild.PICTURE
-      : this._image_stack.visible_child === this._number
-      ? DynamicImageVisibleChild.NUMBER
-      : DynamicImageVisibleChild.IMAGE;
+    switch (this._image_stack.visible_child) {
+      case this.picture:
+        return DynamicImageVisibleChild.PICTURE;
+      case this._number:
+        return DynamicImageVisibleChild.NUMBER;
+      case this.image:
+        return DynamicImageVisibleChild.IMAGE;
+      default:
+        return this._visible_child;
+    }
   }
 
   set visible_child(child: DynamicImageVisibleChild) {
@@ -205,6 +250,11 @@ export class DynamicImage extends Gtk.Overlay {
       this._play_image.icon_name = "play-white";
       this.add_css_class("card");
     }
+
+    this._visible_child = child;
+
+    // recalculate the image size (for picture)
+    this.image_size = this.image_size;
   }
 
   get track_number() {
@@ -235,10 +285,17 @@ export class DynamicImage extends Gtk.Overlay {
     this.add_controller(this.controller);
 
     // pause button
-    this.listeners.add(
+    this.root_listeners.add(
       this._pause,
       this._pause.connect("clicked", () => {
         this.emit("pause");
+      }),
+    );
+
+    this.root_listeners.add(
+      this._check_button,
+      this._check_button.connect("toggled", () => {
+        this.emit("selection-mode-toggled", this._check_button.active);
       }),
     );
 
@@ -255,46 +312,56 @@ export class DynamicImage extends Gtk.Overlay {
     let stop_spinning = true;
 
     let osd = false;
+    let visible = true;
 
-    switch (this.state) {
-      case DynamicImageState.DEFAULT:
-        if (hovering) {
-          osd = true;
-          this._stack.visible_child = this._play;
-        } else {
-          if (this.persistent_play_button) {
+    if (this.selection_mode) {
+      visible = false;
+    } else {
+      switch (this.state) {
+        case DynamicImageState.DEFAULT:
+          if (hovering) {
+            osd = true;
             this._stack.visible_child = this._play;
           } else {
-            this._stack.visible_child = this._blank;
+            if (this.persistent_play_button) {
+              this._stack.visible_child = this._play;
+            } else {
+              visible = false;
+            }
           }
-        }
-        break;
-      case DynamicImageState.LOADING:
-        stop_spinning = false;
-        this._stack.visible_child = this._loading;
-        this._loading.spinning = true;
-        osd = true;
-        break;
-      case DynamicImageState.PLAYING:
-        if (hovering) {
-          this._stack.visible_child = this._pause;
-        } else {
-          this._stack.visible_child = this._wave;
-        }
-        osd = true;
-        break;
-      case DynamicImageState.PAUSED:
-        this._stack.visible_child = this._play;
-        osd = true;
-        break;
+          break;
+        case DynamicImageState.LOADING:
+          stop_spinning = false;
+          this._stack.visible_child = this._loading;
+          this._loading.spinning = true;
+          osd = true;
+          break;
+        case DynamicImageState.PLAYING:
+          if (hovering) {
+            this._stack.visible_child = this._pause;
+          } else {
+            this._stack.visible_child = this._wave;
+          }
+          osd = true;
+          break;
+        case DynamicImageState.PAUSED:
+          this._stack.visible_child = this._play;
+          osd = true;
+          break;
+      }
     }
 
-    if (stop_spinning && this._loading.spinning) {
+    this._stack.visible = visible;
+
+    if ((stop_spinning || !this._stack.visible) && this._loading.spinning) {
       this._loading.spinning = false;
     }
 
     // for number, don't use osd, but instead hide the number label
-    if (this.visible_child === DynamicImageVisibleChild.NUMBER) {
+    if (
+      this._stack.visible &&
+      this.visible_child === DynamicImageVisibleChild.NUMBER
+    ) {
       this._image_stack.opacity = osd ? 0 : 1;
       this._stack.remove_css_class("osd");
     } else {
@@ -312,11 +379,17 @@ export class DynamicImage extends Gtk.Overlay {
   }
 
   private listeners = new SignalListeners();
+  private root_listeners = new SignalListeners();
 
   private setup_button = false;
 
   reset_listeners() {
     this.listeners.clear();
+  }
+
+  reset_all_listeners() {
+    this.reset_listeners();
+    this.root_listeners.clear();
   }
 
   videoId: string | null = null;
@@ -477,7 +550,7 @@ export class DynamicImage extends Gtk.Overlay {
   }
 
   clear() {
-    this.reset_listeners();
+    this.reset_all_listeners();
     this.remove_controller(this.controller);
   }
 
