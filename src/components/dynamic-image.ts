@@ -213,6 +213,7 @@ export class DynamicImage extends Gtk.Overlay {
     } else {
       this.visible_child = this._visible_child;
     }
+    this.update_stack();
   }
 
   private _visible_child = DynamicImageVisibleChild.IMAGE;
