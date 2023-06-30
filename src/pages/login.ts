@@ -1,7 +1,7 @@
 import Gtk from "gi://Gtk?version=4.0";
+import Gdk from "gi://Gdk?version=4.0";
 import GObject from "gi://GObject";
 import Adw from "gi://Adw";
-import GdkPixbuf from "gi://GdkPixbuf";
 
 /// @ts-expect-error
 import QRCode from "@lemaik/qrcode-svg";
@@ -42,17 +42,16 @@ export class LoginPage extends Adw.Window {
     this._stack.visible_child = this._flow;
     this._spinner.stop();
 
-    const loader = GdkPixbuf.PixbufLoader.new();
-
     const qr = new QRCode({
       content: code.verification_url,
       padding: 1,
     });
 
-    loader.write(qr.svg());
-    loader.close();
+    const encoder = new TextEncoder();
 
-    this._qr.set_pixbuf(loader.get_pixbuf());
+    const texture = Gdk.Texture.new_from_bytes(encoder.encode(qr.svg()));
+
+    this._qr.set_paintable(texture);
 
     this._link.uri = code.verification_url;
     this._link.label = code.verification_url;

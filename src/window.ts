@@ -49,6 +49,7 @@ export class Window extends Adw.ApplicationWindow {
   static {
     GObject.registerClass(
       {
+        GTypeName: "MuzikaWindow",
         Template: "resource:///com/vixalien/muzika/ui/window.ui",
         InternalChildren: [
           "navigation_view",

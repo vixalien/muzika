@@ -1,4 +1,3 @@
-import GdkPixbuf from "gi://GdkPixbuf";
 import Gtk from "gi://Gtk?version=4.0";
 import Gdk from "gi://Gdk?version=4.0";
 import Adw from "gi://Adw";
@@ -129,7 +128,7 @@ export interface LoadOptions {
   upscale?: boolean;
 }
 
-const thumbnails_map = new Map<string, GdkPixbuf.Pixbuf>();
+const thumbnails_map = new Map<string, Gdk.Texture>();
 
 export function fetch_image(
   href: string,
@@ -149,24 +148,20 @@ export function fetch_image(
   }).then(async (response) => {
     const buffer = await response.arrayBuffer();
 
-    const loader = new GdkPixbuf.PixbufLoader();
-    loader.write(new Uint8Array(buffer));
-    loader.close();
-
-    let pixbuf = loader.get_pixbuf()!;
+    const texture = Gdk.Texture.new_from_bytes(new Uint8Array(buffer));
 
     if (options.width && options.height) {
-      pixbuf = pixbuf?.scale_simple(
-        options.width,
-        options.height,
-        // crop
-        GdkPixbuf.InterpType.HYPER,
-      )!;
+      // pixbuf = pixbuf?.scale_simple(
+      //   options.width,
+      //   options.height,
+      //   // crop
+      //   GdkPixbuf.InterpType.HYPER,
+      // )!;
     }
 
-    thumbnails_map.set(cache_key, pixbuf);
+    thumbnails_map.set(cache_key, texture);
 
-    return pixbuf;
+    return texture;
   }).catch((e) => {
     if (e.name !== "AbortError") {
       console.error("Couldn't load thumbnail:", e);
@@ -180,15 +175,14 @@ export async function load_image(
   href: string,
   options: LoadOptions,
 ) {
-  const pixbuf = await fetch_image(href, options);
+  const texture = await fetch_image(href, options);
 
-  if (pixbuf) {
+  if (texture) {
     if (image instanceof Gtk.Picture) {
-      image.set_pixbuf(pixbuf);
+      image.set_paintable(texture);
     } else if (image instanceof Gtk.Image) {
-      image.set_from_pixbuf(pixbuf);
+      image.set_from_paintable(texture);
     } else if (image instanceof Adw.Avatar) {
-      const texture = Gdk.Texture.new_for_pixbuf(pixbuf);
       image.set_custom_image(texture);
     }
   }
