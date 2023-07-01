@@ -40,6 +40,7 @@ export interface EndpointContext {
   match: MatchResult<Record<string, string>>;
   url: URL;
   signal: AbortSignal;
+  set_title(title: string): void;
 }
 
 export type Endpoint<Page extends MuzikaComponent<unknown, unknown>> =
@@ -147,6 +148,9 @@ export class Navigator extends GObject.Object {
       match,
       url,
       signal: this.last_controller.signal,
+      set_title(title) {
+        page.title = title;
+      },
     });
 
     this.loading = true;

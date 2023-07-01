@@ -221,11 +221,15 @@ export class PlaylistPage extends Adw.Bin
     }
   }
 
-  static load(context: EndpointContext) {
-    return get_playlist(context.match.params.playlistId, {
+  static async load(context: EndpointContext) {
+    const data = await get_playlist(context.match.params.playlistId, {
       related: true,
       signal: context.signal,
     });
+
+    context.set_title(data.title);
+
+    return data;
   }
 
   get_state(): PlaylistState {

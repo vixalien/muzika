@@ -132,10 +132,14 @@ export class ArtistPage extends Adw.Bin
     this._inner_box.append(carousel);
   }
 
-  static load(context: EndpointContext) {
-    return get_artist(context.match.params.channelId, {
+  static async load(context: EndpointContext) {
+    const artist = await get_artist(context.match.params.channelId, {
       signal: context.signal,
     });
+
+    context.set_title(artist.name);
+
+    return artist;
   }
 
   get_state(): ArtistState {

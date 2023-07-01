@@ -128,10 +128,14 @@ export class AlbumPage extends Adw.Bin
 
   no_more = false;
 
-  static load(context: EndpointContext) {
-    return get_album(context.match.params.albumId, {
+  static async load(context: EndpointContext) {
+    const album = await get_album(context.match.params.albumId, {
       signal: context.signal,
     });
+
+    context.set_title(album.title);
+
+    return album;
   }
 
   get_state(): AlbumState {
