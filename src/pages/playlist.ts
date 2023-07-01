@@ -18,6 +18,7 @@ import { ObjectContainer } from "src/util/objectcontainer.js";
 import { PlaylistItemView } from "src/components/playlist/itemview.js";
 import { Paginator } from "src/components/paginator.js";
 import { PlaylistBar } from "src/components/playlist/bar.js";
+import { list_model_to_array } from "src/util/list.js";
 
 interface PlaylistState {
   playlist: Playlist;
@@ -138,6 +139,8 @@ export class PlaylistPage extends Adw.Bin
     this._playlist_item_view.editable = this._bar.editable = playlist.editable;
     this._playlist_item_view.show_rank = playlist.tracks[0].rank != null;
 
+    this._bar.playlistId = this.playlist.id;
+
     this._header.load_thumbnails(playlist.thumbnails);
     this._header.set_description(playlist.description);
     this._header.set_title(playlist.title);
@@ -234,22 +237,16 @@ export class PlaylistPage extends Adw.Bin
 
   get_state(): PlaylistState {
     return {
-      playlist: this.playlist!,
+      playlist: {
+        ...this.playlist!,
+        tracks: list_model_to_array(this.model)
+          .map((container) => container.item)
+          .filter((item) => item != null) as PlaylistItem[],
+      },
     };
   }
 
   restore_state(state: PlaylistState) {
     this.present(state.playlist);
   }
-}
-
-function secondsToDuration(seconds: number) {
-  const minutes = Math.floor(seconds / 60);
-  const hours = Math.floor(minutes / 60);
-
-  const secondsStr = (seconds % 60).toString().padStart(2, "0");
-  const minutesStr = (minutes % 60).toString().padStart(2, "0");
-  const hoursStr = hours.toString().padStart(2, "0");
-
-  return `${hoursStr}:${minutesStr}:${secondsStr}`;
 }

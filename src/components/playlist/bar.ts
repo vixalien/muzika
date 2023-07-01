@@ -5,8 +5,10 @@ import Adw from "gi://Adw";
 
 import { ngettext } from "gettext";
 
+import { edit_playlist, PlaylistItem } from "src/muse";
 import { ObjectContainer } from "src/util/objectcontainer";
-import { PlaylistItem } from "libmuse";
+import { get_selected } from "src/util/list";
+import { Window } from "src/window";
 
 const vprintf = imports.format.vprintf;
 
@@ -65,7 +67,13 @@ export class PlaylistBar extends Adw.Bin {
         this._model.unselect_all();
       }
     });
+
+    this._delete.connect("clicked", () => {
+      this.delete_selected();
+    });
   }
+
+  playlistId: string | null = null;
 
   // property: revealed
 
@@ -121,31 +129,97 @@ export class PlaylistBar extends Adw.Bin {
     });
   }
 
-  private update_model() {
-    const items = this.model.get_selection().get_size();
+  private get_window() {
+    return this.root as Window;
+  }
 
-    const selected: (PlaylistItem | null)[] = [];
+  private deleted_items: { item: PlaylistItem; position: number }[] = [];
 
-    const [has_selection, bitset, first] = Gtk.BitsetIter.init_first(
-      this.model.get_selection(),
-    );
+  private async undo_deletion() {
+    const underlying_model = (this.model as Gtk.MultiSelection)
+      .model as Gio.ListStore<ObjectContainer<PlaylistItem>>;
 
-    if (has_selection) {
-      selected.push(this.model.get_item(first)?.item ?? null);
+    this.deleted_items
+      // order by position ascending
+      .sort((a, b) => a.position - b.position)
+      .forEach(({ item, position }) => {
+        underlying_model.insert(position, ObjectContainer.new(item));
+      });
 
-      while (bitset.next()[0]) {
-        selected.push(
-          this.model.get_item(bitset.get_value())?.item ?? null,
-        );
-      }
+    this.update_selection();
+  }
+
+  private async delete_selected() {
+    if (!this.playlistId) return;
+
+    // if there are tracks pending to get deleted, wait till they are done
+    if (this.deleted_items.length > 0) {
+      const toast = new Adw.Toast({
+        title: _("Please wait until the current operation is finished"),
+        priority: Adw.ToastPriority.HIGH,
+      });
+
+      this.get_window().toast_overlay.add_toast(toast);
+
+      return;
     }
 
-    const selected_filtered = selected.filter((item) =>
-      item !== null
-    ) as PlaylistItem[];
-    const ids = selected_filtered.map((item) => item.videoId).join(",");
+    const items = get_selected(this.model)
+      .map((position) => {
+        return {
+          item: this.model.get_item(position)?.item as PlaylistItem,
+          position,
+        };
+      })
+      .filter((item) => item.item !== null)
+      // order by position descending
+      .sort((a, b) => b.position - a.position);
 
-    if (items > 0) {
+    this.deleted_items = items;
+
+    const underlying_model = (this.model as Gtk.MultiSelection)
+      .model as Gio.ListStore<ObjectContainer<PlaylistItem>>;
+
+    for (const { position } of items) {
+      underlying_model.remove(position);
+    }
+
+    this.update_selection();
+
+    const toast = new Adw.Toast({
+      title: _("Songs removed from playlist"),
+      button_label: "Undo",
+    });
+
+    toast.connect("button-clicked", () => {
+      this.undo_deletion();
+    });
+
+    toast.connect("dismissed", () => {
+      this.deleted_items = [];
+
+      // remove the videos from the playlist on the server
+      edit_playlist(this.playlistId!, {
+        remove_videos: items.map((item) => {
+          return {
+            videoId: item.item.videoId,
+            setVideoId: item.item.setVideoId!,
+          };
+        }),
+      });
+    });
+
+    this.get_window().toast_overlay.add_toast(toast);
+  }
+
+  private update_model() {
+    const items = get_selected(this.model)
+      .map((position) => this.model.get_item(position)?.item)
+      .filter((item) => item != null) as PlaylistItem[];
+
+    const ids = items.map((item) => item.videoId).join(",");
+
+    if (items.length > 0) {
       const model = Gio.Menu.new();
 
       model.append(_("Play next"), `queue.add-song("${ids}?next=true")`);

@@ -55,10 +55,12 @@ export class Window extends Adw.ApplicationWindow {
           "navigation_view",
           "toolbar_view",
           "overlay_split_view",
-          "toast_overlay",
           "navbar_window",
           "split_view",
           "account",
+        ],
+        Children: [
+          "toast_overlay",
         ],
         Properties: {
           navigator: GObject.ParamSpec.object(
@@ -77,7 +79,6 @@ export class Window extends Adw.ApplicationWindow {
   private _navigation_view!: Adw.NavigationView;
   private _toolbar_view!: Adw.ToolbarView;
   private _overlay_split_view!: Adw.OverlaySplitView;
-  private _toast_overlay!: Adw.ToastOverlay;
   private _navbar_window!: Gtk.ScrolledWindow;
   private _split_view!: Adw.NavigationSplitView;
   private _account!: Gtk.MenuButton;
@@ -85,6 +86,7 @@ export class Window extends Adw.ApplicationWindow {
   navigator: Navigator;
   player_view: PlayerView;
   sidebar: PlayerSidebar;
+  toast_overlay!: Adw.ToastOverlay;
 
   mpris: MPRIS;
 
@@ -98,7 +100,7 @@ export class Window extends Adw.ApplicationWindow {
     });
 
     this.navigator.navigate(
-      "playlist:LM",
+      "playlist:PLCwfwQhurMOsNTcOUOs0ORFn79l5h4ikp",
     );
 
     const application = this.application as Application;
@@ -226,7 +228,7 @@ export class Window extends Adw.ApplicationWindow {
   }
 
   add_toast(text: string) {
-    this._toast_overlay.add_toast(Adw.Toast.new(text));
+    this.toast_overlay.add_toast(Adw.Toast.new(text));
   }
 
   auth_flow() {
