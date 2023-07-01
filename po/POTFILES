@@ -15,6 +15,7 @@ data/ui/components/playlist/largeheader.blp
 data/ui/components/playlist/miniheader.blp
 data/ui/components/search/section.blp
 data/ui/components/search/topresult.blp
+data/ui/components/search/topresultsection.blp
 data/ui/gtk/help-overlay.blp
 data/ui/pages/album.blp
 data/ui/pages/artist.blp
@@ -29,6 +30,7 @@ src/components/library/mixedcard.ts
 src/components/nav/page.ts
 src/components/player/full.ts
 src/components/player/queue.ts
+src/components/playlist/bar.ts
 src/components/playlist/columnview.ts
 src/components/search/inlinecard.ts
 src/components/search/topresultcard.ts

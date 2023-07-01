@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: muzika\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-06-22 23:52+0300\n"
+"POT-Creation-Date: 2023-07-02 00:18+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -83,7 +83,7 @@ msgstr ""
 msgid "Search…"
 msgstr ""
 
-#: data/ui/components/navbar/index.blp:17 src/endpoints.ts:21
+#: data/ui/components/navbar/index.blp:17 src/endpoints.ts:19
 msgid "Home"
 msgstr ""
 
@@ -93,13 +93,13 @@ msgstr ""
 
 #: data/ui/components/navbar/index.blp:30
 #: data/ui/components/navbar/index.blp:32
-#: data/ui/components/playlist/largeheader.blp:136
-#: data/ui/components/playlist/miniheader.blp:105 src/endpoints.ts:51
-#: src/pages/search.ts:82
+#: data/ui/components/playlist/largeheader.blp:137
+#: data/ui/components/playlist/miniheader.blp:107 src/endpoints.ts:49
+#: src/pages/search.ts:81
 msgid "Library"
 msgstr ""
 
-#: data/ui/components/navbar/index.blp:38 src/pages/search.ts:296
+#: data/ui/components/navbar/index.blp:38 src/pages/search.ts:295
 msgid "Artists"
 msgstr ""
 
@@ -108,20 +108,20 @@ msgid "Subscriptions"
 msgstr ""
 
 #: data/ui/components/navbar/index.blp:52 src/pages/artist.ts:113
-#: src/pages/search.ts:294
+#: src/pages/search.ts:293
 msgid "Albums"
 msgstr ""
 
-#: data/ui/components/navbar/index.blp:59 src/pages/search.ts:300
+#: data/ui/components/navbar/index.blp:59 src/pages/search.ts:299
 msgid "Songs"
 msgstr ""
 
-#: data/ui/components/navbar/index.blp:66 src/endpoints.ts:87
+#: data/ui/components/navbar/index.blp:66 src/endpoints.ts:85
 msgid "History"
 msgstr ""
 
 #: data/ui/components/navbar/index.blp:72 src/pages/artist.ts:118
-#: src/pages/search.ts:298
+#: src/pages/search.ts:297
 msgid "Playlists"
 msgstr ""
 
@@ -212,20 +212,24 @@ msgstr ""
 msgid "We couldn't find any music related to this track."
 msgstr ""
 
-#: data/ui/components/playlist/largeheader.blp:109
-#: data/ui/components/playlist/miniheader.blp:149
+#: data/ui/components/playlist/largeheader.blp:110
+#: data/ui/components/playlist/miniheader.blp:151
 msgid "Read more"
 msgstr ""
 
-#: data/ui/components/playlist/largeheader.blp:124
-#: data/ui/components/playlist/miniheader.blp:93
+#: data/ui/components/playlist/largeheader.blp:125
+#: data/ui/components/playlist/miniheader.blp:95
 #: data/ui/components/search/topresult.blp:130
 #: src/components/search/topresultcard.ts:189
 msgid "Shuffle"
 msgstr ""
 
-#: data/ui/components/search/section.blp:23 data/ui/pages/artist.blp:53
+#: data/ui/components/search/section.blp:23 data/ui/pages/artist.blp:57
 msgid "More"
+msgstr ""
+
+#: data/ui/components/search/topresultsection.blp:14
+msgid "Top Result"
 msgstr ""
 
 #: data/ui/gtk/help-overlay.blp:11
@@ -243,7 +247,7 @@ msgctxt "shortcut window"
 msgid "Quit"
 msgstr ""
 
-#: data/ui/pages/artist.blp:40
+#: data/ui/pages/artist.blp:44
 msgid "Top Songs"
 msgstr ""
 
@@ -283,11 +287,11 @@ msgstr ""
 msgid "Copy authentication code"
 msgstr ""
 
-#: data/ui/pages/search.blp:30
+#: data/ui/pages/search.blp:34
 msgid "No Results"
 msgstr ""
 
-#: data/ui/pages/search.blp:33
+#: data/ui/pages/search.blp:37
 msgid "Try a different search"
 msgstr ""
 
@@ -307,12 +311,12 @@ msgstr ""
 msgid "_About Muzika"
 msgstr ""
 
-#: src/components/carousel/card.ts:309 src/components/library/mixedcard.ts:133
+#: src/components/carousel/card.ts:310 src/components/library/mixedcard.ts:133
 msgid "Start Radio"
 msgstr ""
 
 #: src/components/library/mixedcard.ts:95
-#: src/components/playlist/columnview.ts:161
+#: src/components/playlist/columnview.ts:212
 #: src/components/search/inlinecard.ts:103
 msgid "Song"
 msgstr ""
@@ -323,12 +327,12 @@ msgid "Video"
 msgstr ""
 
 #: src/components/library/mixedcard.ts:119
-#: src/components/playlist/columnview.ts:253 src/endpoints.ts:33
+#: src/components/playlist/columnview.ts:300 src/endpoints.ts:31
 msgid "Album"
 msgstr ""
 
 #: src/components/library/mixedcard.ts:143
-#: src/components/search/inlinecard.ts:130 src/endpoints.ts:27
+#: src/components/search/inlinecard.ts:130 src/endpoints.ts:25
 msgid "Playlist"
 msgstr ""
 
@@ -356,13 +360,53 @@ msgstr ""
 msgid "Queue"
 msgstr ""
 
-#: src/components/playlist/columnview.ts:200
+#: src/components/playlist/bar.ts:158
+msgid "Please wait until the current operation is finished"
+msgstr ""
+
+#: src/components/playlist/bar.ts:191
+#, c-format
+msgid "%d song removed from playlist"
+msgstr ""
+
+#: src/components/playlist/bar.ts:192
+#, c-format
+msgid "%d songs removed from playlist"
+msgstr ""
+
+#: src/components/playlist/bar.ts:195
+msgid "Undo"
+msgstr ""
+
+#: src/components/playlist/bar.ts:229
+msgid "Play next"
+msgstr ""
+
+#: src/components/playlist/bar.ts:230
+msgid "Add to queue"
+msgstr ""
+
+#: src/components/playlist/bar.ts:243
+msgid "No song selected"
+msgstr ""
+
+#: src/components/playlist/bar.ts:244
+#, c-format
+msgid "%d song selected"
+msgstr ""
+
+#: src/components/playlist/bar.ts:245
+#, c-format
+msgid "%d songs selected"
+msgstr ""
+
+#: src/components/playlist/columnview.ts:247
 #: src/components/search/inlinecard.ts:144
-#: src/components/search/topresultcard.ts:187 src/endpoints.ts:39
+#: src/components/search/topresultcard.ts:187 src/endpoints.ts:37
 msgid "Artist"
 msgstr ""
 
-#: src/components/playlist/columnview.ts:318
+#: src/components/playlist/columnview.ts:365
 msgid "Time"
 msgstr ""
 
@@ -375,27 +419,27 @@ msgstr ""
 msgid "Add"
 msgstr ""
 
-#: src/endpoints.ts:45
+#: src/endpoints.ts:43
 msgid "Search Results"
 msgstr ""
 
-#: src/endpoints.ts:57
+#: src/endpoints.ts:55
 msgid "Library Playlists"
 msgstr ""
 
-#: src/endpoints.ts:63
+#: src/endpoints.ts:61
 msgid "Library Albums"
 msgstr ""
 
-#: src/endpoints.ts:69
+#: src/endpoints.ts:67
 msgid "Library Artists"
 msgstr ""
 
-#: src/endpoints.ts:75
+#: src/endpoints.ts:73
 msgid "Library Subscriptions"
 msgstr ""
 
-#: src/endpoints.ts:81
+#: src/endpoints.ts:79
 msgid "Library Songs"
 msgstr ""
 
@@ -411,7 +455,7 @@ msgstr ""
 msgid "Singles"
 msgstr ""
 
-#: src/pages/artist.ts:115 src/pages/search.ts:302
+#: src/pages/artist.ts:115 src/pages/search.ts:301
 msgid "Videos"
 msgstr ""
 
@@ -440,47 +484,47 @@ msgstr ""
 msgid "Unknown error"
 msgstr ""
 
-#: src/pages/library/base.ts:13
+#: src/pages/library/base.ts:14
 msgid "Recent activity"
 msgstr ""
 
-#: src/pages/library/base.ts:14 src/pages/library/base.ts:19
+#: src/pages/library/base.ts:15 src/pages/library/base.ts:20
 msgid "Recently added"
 msgstr ""
 
-#: src/pages/library/base.ts:15
+#: src/pages/library/base.ts:16
 msgid "Recently played"
 msgstr ""
 
-#: src/pages/library/base.ts:20
+#: src/pages/library/base.ts:21
 msgid "A to Z"
 msgstr ""
 
-#: src/pages/library/base.ts:21
+#: src/pages/library/base.ts:22
 msgid "Z to A"
 msgstr ""
 
-#: src/pages/login.ts:74
+#: src/pages/login.ts:73
 msgid "Copied to clipboard"
 msgstr ""
 
-#: src/pages/playlist.ts:111
+#: src/pages/playlist.ts:126
 msgid "Related playlists"
 msgstr ""
 
-#: src/pages/search.ts:81
+#: src/pages/search.ts:80
 msgid "Catalog"
 msgstr ""
 
-#: src/pages/search.ts:83
+#: src/pages/search.ts:82
 msgid "Uploads"
 msgstr ""
 
-#: src/pages/search.ts:304
+#: src/pages/search.ts:303
 msgid "Community Playlists"
 msgstr ""
 
-#: src/pages/search.ts:306
+#: src/pages/search.ts:305
 msgid "Featured Playlists"
 msgstr ""
 
@@ -507,22 +551,22 @@ msgstr ""
 msgid "Added %d songs to queue"
 msgstr ""
 
-#: src/window.ts:200 src/window.ts:209 src/window.ts:211
+#: src/window.ts:203 src/window.ts:212 src/window.ts:214
 msgid "Logout"
 msgstr ""
 
-#: src/window.ts:209
+#: src/window.ts:212
 msgid "Are you sure?"
 msgstr ""
 
-#: src/window.ts:210
+#: src/window.ts:213
 msgid "Cancel"
 msgstr ""
 
-#: src/window.ts:246
+#: src/window.ts:249
 msgid "Successfully logged in!"
 msgstr ""
 
-#: src/window.ts:254
+#: src/window.ts:257
 msgid "An error happened while logging in"
 msgstr ""

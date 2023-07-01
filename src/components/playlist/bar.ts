@@ -187,8 +187,12 @@ export class PlaylistBar extends Adw.Bin {
     this.update_selection();
 
     const toast = new Adw.Toast({
-      title: _("Songs removed from playlist"),
-      button_label: "Undo",
+      title: ngettext(
+        vprintf(_("%d song removed from playlist"), [items.length]),
+        vprintf(_("%d songs removed from playlist"), [items.length]),
+        items.length,
+      ),
+      button_label: _("Undo"),
     });
 
     toast.connect("button-clicked", () => {
