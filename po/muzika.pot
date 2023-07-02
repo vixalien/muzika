@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: muzika\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-07-02 00:18+0200\n"
+"POT-Creation-Date: 2023-07-02 03:01+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -410,6 +410,34 @@ msgstr ""
 msgid "Time"
 msgstr ""
 
+#: src/components/playlist/edit.ts:67
+msgid "Public"
+msgstr ""
+
+#: src/components/playlist/edit.ts:68
+msgid "Anyone can search for and view"
+msgstr ""
+
+#: src/components/playlist/edit.ts:75
+msgid "Unlisted"
+msgstr ""
+
+#: src/components/playlist/edit.ts:76
+msgid "Anyone with the link can view"
+msgstr ""
+
+#: src/components/playlist/edit.ts:83
+msgid "Private"
+msgstr ""
+
+#: src/components/playlist/edit.ts:84
+msgid "Only you can view"
+msgstr ""
+
+#: src/components/playlist/edit.ts:205
+msgid "Playlist saved"
+msgstr ""
+
 #: src/components/search/inlinecard.ts:155
 #: src/components/search/topresultcard.ts:200
 msgid "Radio"
@@ -508,7 +536,7 @@ msgstr ""
 msgid "Copied to clipboard"
 msgstr ""
 
-#: src/pages/playlist.ts:126
+#: src/pages/playlist.ts:158
 msgid "Related playlists"
 msgstr ""
 

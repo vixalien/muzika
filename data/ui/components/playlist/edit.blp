@@ -1,0 +1,38 @@
+using Gtk 4.0;
+using Adw 1;
+
+template $EditPlaylistDialog : Adw.PreferencesWindow {
+  Adw.PreferencesPage {
+    title: "Edit Playlist";
+
+    Adw.PreferencesGroup {
+      title: "General";
+
+      Adw.EntryRow title {
+        title: _("Title");
+      }
+
+      Adw.EntryRow description {
+        title: _("Description");
+      }
+
+      Adw.ComboRow privacy {
+        title: _("Privacy");
+        factory: SignalListItemFactory {};
+      }
+    }
+
+    Adw.PreferencesGroup {
+      Button save {
+        halign: center;
+        label: "Save";
+        clicked => $save_cb();
+
+        styles [
+          "pill",
+          "suggested-action",
+        ]
+      }
+    }
+  }
+}

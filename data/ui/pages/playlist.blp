@@ -11,6 +11,12 @@ template $PlaylistPage : Adw.Bin {
       ToggleButton select {
         icon-name: "selection-mode-symbolic";
       }
+
+      [end]
+      Button edit {
+        icon-name: "document-edit-symbolic";
+        clicked => $edit_cb();
+      }
     }
   
     content: Adw.BreakpointBin {

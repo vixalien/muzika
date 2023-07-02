@@ -32,6 +32,7 @@ src/components/player/full.ts
 src/components/player/queue.ts
 src/components/playlist/bar.ts
 src/components/playlist/columnview.ts
+src/components/playlist/edit.ts
 src/components/search/inlinecard.ts
 src/components/search/topresultcard.ts
 src/endpoints.ts

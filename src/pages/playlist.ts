@@ -19,6 +19,10 @@ import { PlaylistItemView } from "src/components/playlist/itemview.js";
 import { Paginator } from "src/components/paginator.js";
 import { PlaylistBar } from "src/components/playlist/bar.js";
 import { list_model_to_array } from "src/util/list.js";
+import {
+  EditedValues,
+  EditPlaylistDialog,
+} from "src/components/playlist/edit.js";
 
 interface PlaylistState {
   playlist: Playlist;
@@ -49,6 +53,7 @@ export class PlaylistPage extends Adw.Bin
         "header",
         "select",
         "bar",
+        "edit",
       ],
     }, this);
   }
@@ -68,6 +73,7 @@ export class PlaylistPage extends Adw.Bin
   private _header!: PlaylistHeader;
   private _select!: Gtk.ToggleButton;
   private _bar!: PlaylistBar;
+  private _edit!: Gtk.Button;
 
   model = new Gio.ListStore<ObjectContainer<PlaylistItem>>({
     item_type: ObjectContainer.$gtype,
@@ -107,6 +113,32 @@ export class PlaylistPage extends Adw.Bin
     });
   }
 
+  private edit_cb() {
+    if (!this.playlist?.editable) return;
+
+    const edit_dialog = new EditPlaylistDialog(this.playlist);
+
+    edit_dialog.set_transient_for(this.get_root() as Gtk.Window);
+
+    edit_dialog.connect("saved", (_, values: ObjectContainer<EditedValues>) => {
+      this.update_values(values.item!);
+    });
+
+    edit_dialog.present();
+  }
+
+  update_values(values: EditedValues) {
+    if (!this.playlist) return;
+
+    this.playlist.title = values.title;
+    this.playlist.description = values.description;
+    this.playlist.privacy = values.privacy.id as any;
+
+    this._header.set_title(values.title);
+    this._header.set_description(values.description);
+    this._header.set_genre(values.privacy.name);
+  }
+
   append_tracks(tracks: PlaylistItem[]) {
     const n = this.model.get_n_items();
 
@@ -140,6 +172,7 @@ export class PlaylistPage extends Adw.Bin
     this._playlist_item_view.show_rank = playlist.tracks[0].rank != null;
 
     this._bar.playlistId = this.playlist.id;
+    this._edit.visible = this.playlist.editable;
 
     this._header.load_thumbnails(playlist.thumbnails);
     this._header.set_description(playlist.description);

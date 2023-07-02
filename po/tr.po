@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: com.vixalien.muzika\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-07-02 00:18+0200\n"
+"POT-Creation-Date: 2023-07-02 03:01+0200\n"
 "PO-Revision-Date: 2023-06-23 00:36+0300\n"
 "Last-Translator: Sabri Ünal <libreajans@gmail.com>\n"
 "Language-Team: Turkish <takim@gnome.org.tr>\n"
@@ -423,6 +423,35 @@ msgstr "Sanatçı"
 msgid "Time"
 msgstr "Süre"
 
+#: src/components/playlist/edit.ts:67
+msgid "Public"
+msgstr ""
+
+#: src/components/playlist/edit.ts:68
+msgid "Anyone can search for and view"
+msgstr ""
+
+#: src/components/playlist/edit.ts:75
+msgid "Unlisted"
+msgstr ""
+
+#: src/components/playlist/edit.ts:76
+msgid "Anyone with the link can view"
+msgstr ""
+
+#: src/components/playlist/edit.ts:83
+msgid "Private"
+msgstr ""
+
+#: src/components/playlist/edit.ts:84
+msgid "Only you can view"
+msgstr ""
+
+#: src/components/playlist/edit.ts:205
+#, fuzzy
+msgid "Playlist saved"
+msgstr "Çalma Listesi Adı"
+
 #: src/components/search/inlinecard.ts:155
 #: src/components/search/topresultcard.ts:200
 msgid "Radio"
@@ -523,7 +552,7 @@ msgstr "Z-A"
 msgid "Copied to clipboard"
 msgstr "Panoya kopyalandı"
 
-#: src/pages/playlist.ts:126
+#: src/pages/playlist.ts:158
 msgid "Related playlists"
 msgstr "İlgili çalma listeleri"
 
