@@ -320,8 +320,7 @@ export class CarouselCard extends Gtk.Box {
     this.set_subtitle(album.artists ?? [], [album.year]);
 
     this.setup_image(CarouselImageType.PLAYLIST_IMAGE, album.thumbnails);
-
-    // this.setup_playlist(album.audioPlaylistId);
+    this.setup_playlist(album.audioPlaylistId);
   }
 
   show_item(content: MixedCardItem) {
