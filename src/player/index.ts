@@ -266,7 +266,7 @@ export class Player extends GObject.Object {
       this.playing = true;
     });
 
-    this.playbin = Gst.ElementFactory.make("playbin", "player")!;
+    this.playbin = Gst.ElementFactory.make("playbin3", "player")!;
     this.fakesink = Gst.ElementFactory.make("fakesink", "fakesink")!;
 
     this.playbin.set_property("video-sink", this.fakesink);
