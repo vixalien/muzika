@@ -80,7 +80,7 @@ export class InlineCard extends Gtk.ListBoxRow {
     });
 
     this._subtitle.set_markup(subtitles.markup);
-    this._subtitle.tooltip_markup = subtitles.plain;
+    this._subtitle.tooltip_text = subtitles.plain;
   }
 
   show_avatar(show: boolean) {
