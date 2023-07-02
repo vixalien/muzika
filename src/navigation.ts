@@ -70,6 +70,9 @@ export class Navigator extends GObject.Object {
         navigate: {},
         "load-start": {},
         "load-end": {},
+        "search-changed": {
+          param_types: [GObject.TYPE_STRING],
+        },
       },
       Properties: {
         loading: GObject.ParamSpec.boolean(
@@ -222,6 +225,15 @@ export class Navigator extends GObject.Object {
     const url = new URL("muzika:" + uri);
 
     const path = url.pathname.replace(/(?<!\\):/g, "/");
+
+    const search_match = match("search/:query")(path);
+
+    if (search_match) {
+      this.emit(
+        "search-changed",
+        decodeURIComponent((search_match.params as any).query),
+      );
+    }
 
     for (const [fn, endpoint] of this.match_map) {
       const match = fn(path);

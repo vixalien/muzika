@@ -147,6 +147,10 @@ export class Window extends Adw.ApplicationWindow {
     });
     this._navbar_window.set_child(navbar);
 
+    this.navigator.connect("search-changed", (_, search: string) => {
+      navbar.set_search(search);
+    });
+
     this.add_actions();
     this.token_changed();
   }

@@ -221,19 +221,19 @@ export class SearchPage extends Adw.Bin
     if (!this.results?.autocorrect) return;
 
     const original_link = `<a href="${
-      search_args_to_url(this.results.autocorrect.original.query, this.args[1])
-    }">${search_runs_to_string(this.results.autocorrect.original.search)}</a>`;
-
-    const corrected_link = `<a href="${
-      search_args_to_url(this.results.autocorrect.corrected.query, {
+      search_args_to_url(this.results.autocorrect.original.query, {
         ...this.args[1],
         autocorrect: false,
       })
     }">${search_runs_to_string(this.results.autocorrect.original.search)}</a>`;
 
+    const corrected_link = `<a href="${
+      search_args_to_url(this.results.autocorrect.corrected.query, this.args[1])
+    }">${search_runs_to_string(this.results.autocorrect.corrected.search)}</a>`;
+
     const label = new Gtk.Label({
-      label: vprintf(_("Showing results for: %s"), [original_link]) + "\n" +
-        vprintf(_("Search instead for: %s"), [corrected_link]),
+      label: vprintf(_("Showing results for: %s"), [corrected_link]) + "\n" +
+        vprintf(_("Search instead for: %s"), [original_link]),
       use_markup: true,
       xalign: 0,
       margin_start: 12,
@@ -320,9 +320,12 @@ export class SearchPage extends Adw.Bin
   }
 
   static load(context: EndpointContext) {
+    const autocorrect = context.url.searchParams.get("autocorrect");
+
     const args = [decodeURIComponent(context.match.params.query), {
       signal: context.signal,
       ...Object.fromEntries(context.url.searchParams as any),
+      autocorrect: autocorrect ? autocorrect === "true" : undefined,
     }] as const;
 
     return search(...args).then((results) => {

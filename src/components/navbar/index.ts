@@ -209,4 +209,13 @@ export class NavbarView extends Gtk.Box {
       row = row.get_next_sibling() as Gtk.ListBoxRow;
     }
   }
+
+  set_search(query: string) {
+    if (this._search.text === query) return;
+
+    this._search.text = query;
+
+    // move cursor to end
+    this._search.set_position(query.length);
+  }
 }
