@@ -176,6 +176,8 @@ export class DynamicImage extends Gtk.Overlay {
       this.remove_css_class(br_class);
     });
 
+    this.image.pixel_size = size;
+
     if (size <= 48) {
       this.add_css_class("br-6");
     } else {
