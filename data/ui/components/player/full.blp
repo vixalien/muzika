@@ -141,15 +141,23 @@ template $FullPlayerView : ActionBar {
 
       Box scale_and_timer {
         Label progress_label {
-          label: "00:00";
+          label: "0:00";
           halign: start;
           valign: center;
+
+          styles [
+            "numeric"
+          ]
         }
 
         Label duration_label {
           label: "0:00";
           halign: start;
           valign: center;
+
+          styles [
+            "numeric"
+          ]
         }
       }
     }
