@@ -10,12 +10,16 @@ import {
   search,
   SearchOptions,
   SearchResults,
+  SearchRuns,
 } from "../muse.js";
 import { SearchSection } from "../components/search/section.js";
 import { TopResultSection } from "../components/search/topresultsection.js";
 import { Paginator } from "../components/paginator.js";
 import { InlineTabSwitcher, Tab } from "../components/inline-tab-switcher.js";
 import { EndpointContext, MuzikaComponent } from "src/navigation.js";
+import { escape_label } from "src/util/text.js";
+
+const vprintf = imports.format.vprintf;
 
 interface SearchState {
   results: SearchResults;
@@ -39,15 +43,17 @@ export class SearchPage extends Adw.Bin
         "sections",
         "stack",
         "no_results",
+        "details",
       ],
     }, this);
   }
 
-  _scrolled!: Gtk.ScrolledWindow;
-  _content!: Gtk.Box;
-  _sections!: Gtk.Box;
-  _stack!: Gtk.Stack;
-  _no_results!: Gtk.Label;
+  private _scrolled!: Gtk.ScrolledWindow;
+  private _content!: Gtk.Box;
+  private _sections!: Gtk.Box;
+  private _stack!: Gtk.Stack;
+  private _no_results!: Gtk.Label;
+  private _details!: Gtk.Box;
 
   paginator: Paginator;
 
@@ -73,7 +79,6 @@ export class SearchPage extends Adw.Bin
       halign: Gtk.Align.START,
       margin_start: 12,
       margin_end: 12,
-      margin_top: 12,
     });
 
     const scopes = [
@@ -122,7 +127,7 @@ export class SearchPage extends Adw.Bin
 
     window.set_child(switcher);
 
-    this._content.prepend(window);
+    this._details.append(window);
   }
 
   show_filter_tabs() {
@@ -133,7 +138,6 @@ export class SearchPage extends Adw.Bin
       spacing: 12,
       margin_start: 12,
       margin_end: 12,
-      margin_top: 12,
     });
 
     this.results.filters
@@ -178,7 +182,79 @@ export class SearchPage extends Adw.Bin
     });
     window.set_child(box);
 
-    this._content.prepend(window);
+    this._details.append(window);
+  }
+
+  show_did_you_mean() {
+    if (!this.results?.did_you_mean) return;
+
+    const link = `<a href="${
+      search_args_to_url(this.results.did_you_mean.query, this.args[1])
+    }">${search_runs_to_string(this.results.did_you_mean.search)}</a>`;
+
+    const label = new Gtk.Label({
+      label: vprintf(_("Did you mean: %s"), [link]),
+      use_markup: true,
+      xalign: 0,
+      margin_start: 12,
+      margin_end: 12,
+    });
+
+    label.connect("activate-link", (_, uri) => {
+      if (uri && uri.startsWith("muzika:")) {
+        this.activate_action(
+          "navigator.visit",
+          GLib.Variant.new_string(uri),
+        );
+
+        return true;
+      }
+    });
+
+    label.add_css_class("flat-links");
+    label.add_css_class("dim-label");
+
+    this._details.append(label);
+  }
+
+  show_autocorrect() {
+    if (!this.results?.autocorrect) return;
+
+    const original_link = `<a href="${
+      search_args_to_url(this.results.autocorrect.original.query, this.args[1])
+    }">${search_runs_to_string(this.results.autocorrect.original.search)}</a>`;
+
+    const corrected_link = `<a href="${
+      search_args_to_url(this.results.autocorrect.corrected.query, {
+        ...this.args[1],
+        autocorrect: false,
+      })
+    }">${search_runs_to_string(this.results.autocorrect.original.search)}</a>`;
+
+    const label = new Gtk.Label({
+      label: vprintf(_("Showing results for: %s"), [original_link]) + "\n" +
+        vprintf(_("Search instead for: %s"), [corrected_link]),
+      use_markup: true,
+      xalign: 0,
+      margin_start: 12,
+      margin_end: 12,
+    });
+
+    label.connect("activate-link", (_, uri) => {
+      if (uri && uri.startsWith("muzika:")) {
+        this.activate_action(
+          "navigator.visit",
+          GLib.Variant.new_string(uri),
+        );
+
+        return true;
+      }
+    });
+
+    label.add_css_class("flat-links");
+    label.add_css_class("dim-label");
+
+    this._details.append(label);
   }
 
   present({ results, args }: SearchData) {
@@ -191,9 +267,10 @@ export class SearchPage extends Adw.Bin
       this._stack.set_visible_child(this._sections);
     }
 
-    this.show_filter_tabs();
-
     this.show_scope_tabs();
+    this.show_filter_tabs();
+    this.show_autocorrect();
+    this.show_did_you_mean();
 
     this.paginator.set_reveal_child(results.continuation != null);
 
@@ -306,4 +383,16 @@ function filter_to_string(filter: Filter) {
     default:
       return filter;
   }
+}
+
+function search_runs_to_string(runs: SearchRuns) {
+  return runs.map((run) => {
+    if (run.italics) {
+      return `<i>${escape_label(run.text)}</i>`;
+    } else if (run.bold) {
+      return `<b>${escape_label(run.text)}</b>`;
+    } else {
+      return escape_label(run.text);
+    }
+  }).join("");
 }

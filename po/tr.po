@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: com.vixalien.muzika\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-07-02 03:01+0200\n"
+"POT-Creation-Date: 2023-07-02 11:58+0200\n"
 "PO-Revision-Date: 2023-06-23 00:36+0300\n"
 "Last-Translator: Sabri Ünal <libreajans@gmail.com>\n"
 "Language-Team: Turkish <takim@gnome.org.tr>\n"
@@ -103,14 +103,13 @@ msgid "Explore"
 msgstr "Keşfet"
 
 #: data/ui/components/navbar/index.blp:30
-#: data/ui/components/navbar/index.blp:32
-#: data/ui/components/playlist/largeheader.blp:137
-#: data/ui/components/playlist/miniheader.blp:107 src/endpoints.ts:49
-#: src/pages/search.ts:81
+#: data/ui/components/navbar/index.blp:32 src/endpoints.ts:49
+#: src/pages/search.ts:86
 msgid "Library"
 msgstr "Kitaplık"
 
-#: data/ui/components/navbar/index.blp:38 src/pages/search.ts:295
+#: data/ui/components/navbar/index.blp:38 src/pages/album.ts:185
+#: src/pages/search.ts:372
 msgid "Artists"
 msgstr "Sanatçılar"
 
@@ -118,12 +117,12 @@ msgstr "Sanatçılar"
 msgid "Subscriptions"
 msgstr "Abonelikler"
 
-#: data/ui/components/navbar/index.blp:52 src/pages/artist.ts:113
-#: src/pages/search.ts:293
+#: data/ui/components/navbar/index.blp:52 src/pages/artist.ts:114
+#: src/pages/search.ts:370
 msgid "Albums"
 msgstr "Albümler"
 
-#: data/ui/components/navbar/index.blp:59 src/pages/search.ts:299
+#: data/ui/components/navbar/index.blp:59 src/pages/search.ts:376
 msgid "Songs"
 msgstr "Şarkılar"
 
@@ -131,8 +130,8 @@ msgstr "Şarkılar"
 msgid "History"
 msgstr "Geçmiş"
 
-#: data/ui/components/navbar/index.blp:72 src/pages/artist.ts:118
-#: src/pages/search.ts:297
+#: data/ui/components/navbar/index.blp:72 src/pages/artist.ts:119
+#: src/pages/search.ts:374
 msgid "Playlists"
 msgstr "Çalma Listeleri"
 
@@ -153,7 +152,7 @@ msgid "Previous"
 msgstr "Önceki"
 
 #: data/ui/components/player/full.blp:100
-#: data/ui/components/search/topresult.blp:118
+#: data/ui/components/search/topresult.blp:118 src/pages/album.ts:137
 msgid "Play"
 msgstr "Oynat"
 
@@ -195,6 +194,7 @@ msgid "If the song has lyrics, they'll appear here when they become available"
 msgstr "Şarkının sözleri varsa, kullanılabilir olduklarında burada görünürler"
 
 #: data/ui/components/player/mini.blp:66 data/ui/components/player/mini.blp:70
+#: src/pages/album.ts:162 src/pages/playlist.ts:261
 msgid "Play Next"
 msgstr "Sonrakini Çal"
 
@@ -224,20 +224,19 @@ msgid "We couldn't find any music related to this track."
 msgstr "Bu parçayla ilişkili müzik bulunamadı."
 
 #: data/ui/components/playlist/largeheader.blp:110
-#: data/ui/components/playlist/miniheader.blp:151
+#: data/ui/components/playlist/miniheader.blp:118
 msgid "Read more"
 msgstr "Daha fazla oku"
-
-#: data/ui/components/playlist/largeheader.blp:125
-#: data/ui/components/playlist/miniheader.blp:95
-#: data/ui/components/search/topresult.blp:130
-#: src/components/search/topresultcard.ts:189
-msgid "Shuffle"
-msgstr "Karıştır"
 
 #: data/ui/components/search/section.blp:23 data/ui/pages/artist.blp:57
 msgid "More"
 msgstr "Daha Fazlası"
+
+#: data/ui/components/search/topresult.blp:130
+#: src/components/search/topresultcard.ts:189 src/pages/album.ts:147
+#: src/pages/artist.ts:129 src/pages/playlist.ts:231
+msgid "Shuffle"
+msgstr "Karıştır"
 
 #: data/ui/components/search/topresultsection.blp:14
 msgid "Top Result"
@@ -298,11 +297,11 @@ msgstr "Kodu giriniz"
 msgid "Copy authentication code"
 msgstr "Kimlik doğrulama kodunu kopyala"
 
-#: data/ui/pages/search.blp:34
+#: data/ui/pages/search.blp:39
 msgid "No Results"
 msgstr "Sonuç Yok"
 
-#: data/ui/pages/search.blp:37
+#: data/ui/pages/search.blp:42
 msgid "Try a different search"
 msgstr "Başka bir arama deneyin"
 
@@ -323,6 +322,7 @@ msgid "_About Muzika"
 msgstr "Muzika _Hakkında"
 
 #: src/components/carousel/card.ts:310 src/components/library/mixedcard.ts:133
+#: src/pages/album.ts:158 src/pages/playlist.ts:257
 msgid "Start Radio"
 msgstr "Radyo Başlat"
 
@@ -394,7 +394,8 @@ msgstr ""
 msgid "Play next"
 msgstr "Sonrakini Çal"
 
-#: src/components/playlist/bar.ts:230
+#: src/components/playlist/bar.ts:230 src/pages/album.ts:166
+#: src/pages/playlist.ts:265
 #, fuzzy
 msgid "Add to queue"
 msgstr "\"%s\" kuyruğa eklendi"
@@ -453,7 +454,7 @@ msgid "Playlist saved"
 msgstr "Çalma Listesi Adı"
 
 #: src/components/search/inlinecard.ts:155
-#: src/components/search/topresultcard.ts:200
+#: src/components/search/topresultcard.ts:200 src/pages/artist.ts:138
 msgid "Radio"
 msgstr "Radyo"
 
@@ -485,31 +486,35 @@ msgstr "Kitaplık Abonelikleri"
 msgid "Library Songs"
 msgstr "Kitaplık Şarkıları"
 
-#: src/pages/album.ts:85
+#: src/pages/album.ts:86
 msgid "Other versions"
 msgstr "Diğer sürümler"
 
-#: src/pages/album.ts:103
+#: src/pages/album.ts:104
 msgid "Unknown year"
 msgstr "Yıl bilinmiyor"
 
-#: src/pages/artist.ts:114
+#: src/pages/album.ts:172
+msgid "Go to artist"
+msgstr ""
+
+#: src/pages/artist.ts:115
 msgid "Singles"
 msgstr "Tekliler"
 
-#: src/pages/artist.ts:115 src/pages/search.ts:301
+#: src/pages/artist.ts:116 src/pages/search.ts:378
 msgid "Videos"
 msgstr "Videolar"
 
-#: src/pages/artist.ts:116
+#: src/pages/artist.ts:117
 msgid "From your library"
 msgstr "Kitaplığınızdan"
 
-#: src/pages/artist.ts:117
+#: src/pages/artist.ts:118
 msgid "Featured on"
 msgstr "Öne Çıkanlar"
 
-#: src/pages/artist.ts:119
+#: src/pages/artist.ts:120
 msgid "Fans might also like"
 msgstr "Sevenler belki hoşlanabilir"
 
@@ -552,45 +557,70 @@ msgstr "Z-A"
 msgid "Copied to clipboard"
 msgstr "Panoya kopyalandı"
 
-#: src/pages/playlist.ts:158
+#: src/pages/playlist.ts:159
 msgid "Related playlists"
 msgstr "İlgili çalma listeleri"
 
-#: src/pages/search.ts:80
+#: src/pages/playlist.ts:241
+#, fuzzy
+msgid "Edit Playlist"
+msgstr "Çalma Listesi"
+
+#: src/pages/playlist.ts:249
+#, fuzzy
+msgid "Add to Library"
+msgstr "Kitaplık"
+
+#: src/pages/search.ts:85
 msgid "Catalog"
 msgstr "Katalog"
 
-#: src/pages/search.ts:82
+#: src/pages/search.ts:87
 msgid "Uploads"
 msgstr "Yüklemeler"
 
-#: src/pages/search.ts:303
+#: src/pages/search.ts:196
+#, c-format
+msgid "Did you mean: %s"
+msgstr ""
+
+#: src/pages/search.ts:235
+#, c-format
+msgid "Showing results for: %s"
+msgstr ""
+
+#: src/pages/search.ts:236
+#, c-format
+msgid "Search instead for: %s"
+msgstr ""
+
+#: src/pages/search.ts:380
 msgid "Community Playlists"
 msgstr "Topluluk Çalma Listeleri"
 
-#: src/pages/search.ts:305
+#: src/pages/search.ts:382
 msgid "Featured Playlists"
 msgstr "Öne Çıkan Oynatma Listeleri"
 
 #. Translators: %s is a song's name
-#: src/player/queue.ts:336 src/player/queue.ts:389
+#: src/player/queue.ts:337 src/player/queue.ts:390
 #, c-format
 msgid "Playing \"%s\" next"
 msgstr "\"%s\" sonraki çalınıyor"
 
 #. Translators: %s is a playlist name
 #. Translators: %s is a song's name
-#: src/player/queue.ts:338 src/player/queue.ts:395
+#: src/player/queue.ts:339 src/player/queue.ts:396
 #, c-format
 msgid "Added \"%s\" to queue"
 msgstr "\"%s\" kuyruğa eklendi"
 
-#: src/player/queue.ts:390
+#: src/player/queue.ts:391
 #, c-format
 msgid "Playing %d songs next"
 msgstr "%d sonraki şarkı çalınıyor"
 
-#: src/player/queue.ts:396
+#: src/player/queue.ts:397
 #, c-format
 msgid "Added %d songs to queue"
 msgstr "%d şarkı kuyruğa eklendi"
