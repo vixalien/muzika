@@ -46,7 +46,7 @@ export class PlaylistListView extends Gtk.ListView {
     const item = list_item.child as PlaylistListItem;
     const container = list_item.item as ObjectContainer<PlaylistItem>;
 
-    const playlist_item = container.item!;
+    const playlist_item = container.object;
 
     item.dynamic_image.connect(
       "selection-mode-toggled",

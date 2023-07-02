@@ -204,7 +204,7 @@ export class EditPlaylistDialog extends Adw.PreferencesWindow {
 
     this.get_window().add_toast(_("Playlist saved"));
 
-    this.emit("saved", ObjectContainer.new(values));
+    this.emit("saved", new ObjectContainer(values));
     this.close();
   }
 }

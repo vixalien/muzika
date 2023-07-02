@@ -63,6 +63,6 @@ export class PlayerView extends Gtk.Revealer {
   }
 
   song_changed() {
-    this.reveal_child = this.player.queue.current?.item != null;
+    this.reveal_child = this.player.queue.current?.object != null;
   }
 }

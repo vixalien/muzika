@@ -51,7 +51,7 @@ export class MiniPlayerView extends Gtk.Overlay {
     this.progress_bar.reset();
     this.progress_bar.value = 0;
 
-    const song = this.player.queue.current?.item;
+    const song = this.player.queue.current?.object;
     if (song) {
       this.show_song(song!);
     }

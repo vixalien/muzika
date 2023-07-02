@@ -337,7 +337,7 @@ export class MPRIS extends DBusInterface {
   _get_metadata() {
     const song_dbus_path = this._get_song_dbus_path();
 
-    const track = this.player.queue.current?.item;
+    const track = this.player.queue.current?.object;
 
     if (!track) {
       return {
@@ -378,11 +378,11 @@ export class MPRIS extends DBusInterface {
   }
 
   _get_song_dbus_path() {
-    if (!this.player.queue.current?.item) {
+    if (!this.player.queue.current?.object) {
       return "/org/mpris/MediaPlayer2/TrackList/NoTrack";
     } else {
       return `/com/vixalien/muzika/TrackList/${
-        hex_encode(this.player.queue.current.item.videoId.replace(/-/g, "_"))
+        hex_encode(this.player.queue.current.object.videoId.replace(/-/g, "_"))
       }`;
     }
   }

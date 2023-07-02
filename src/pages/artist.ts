@@ -82,7 +82,7 @@ export class ArtistPage extends Adw.Bin
       this.model.splice(
         n > 0 ? n - 1 : 0,
         0,
-        songs.results.map((track) => ObjectContainer.new(track)),
+        songs.results.map((track) => new ObjectContainer(track)),
       );
     } else {
       this._top_songs.visible = false;

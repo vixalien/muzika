@@ -39,7 +39,7 @@ export class Grid extends Gtk.GridView {
 
   bind_cb(_factory: Gtk.ListItemFactory, list_item: Gtk.ListItem) {
     const object = list_item.get_item() as ObjectContainer<MixedCardItem>;
-    const item = object.item!;
+    const item = object.object;
 
     const card = new CarouselCard();
     card.show_item(item);
@@ -63,10 +63,10 @@ export class Grid extends Gtk.GridView {
   }
 
   activate_cb(_list_view: Gtk.ListView, position: number) {
-    const object = this.model.get_item(position) as ObjectContainer<
+    const container = this.model.get_item(position) as ObjectContainer<
       MixedCardItem
     >;
-    const item = object.item!;
+    const item = container.object;
 
     if (!item) return;
 
@@ -112,7 +112,7 @@ export class Grid extends Gtk.GridView {
     for (const item of items) {
       if (!item) continue;
 
-      this.list_model.append(ObjectContainer.new(item as RequiredMixedItem));
+      this.list_model.append(new ObjectContainer(item as RequiredMixedItem));
     }
   }
 }

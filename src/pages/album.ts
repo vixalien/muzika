@@ -73,7 +73,7 @@ export class AlbumPage extends Adw.Bin
     this.model.splice(
       n > 0 ? n - 1 : 0,
       0,
-      tracks.map((track) => ObjectContainer.new(track)),
+      tracks.map((track) => new ObjectContainer(track)),
     );
   }
 

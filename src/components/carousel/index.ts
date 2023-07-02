@@ -52,10 +52,10 @@ class CarouselListView extends Gtk.ListView {
 
   bind_cb(_factory: Gtk.ListItemFactory, list_item: Gtk.ListItem) {
     const card = list_item.child as CarouselCard;
-    const item = list_item.item as ObjectContainer<MixedCardItem>;
+    const container = list_item.item as ObjectContainer<MixedCardItem>;
 
-    if (item.item) {
-      card.show_item(item.item);
+    if (container.object) {
+      card.show_item(container.object);
     }
   }
 
@@ -108,10 +108,10 @@ class CarouselGridView extends Gtk.GridView {
 
   bind_cb(_factory: Gtk.ListItemFactory, list_item: Gtk.ListItem) {
     const card = list_item.child as FlatSongCard;
-    const item = list_item.item as ObjectContainer<FlatSong>;
+    const container = list_item.item as ObjectContainer<FlatSong>;
 
-    if (item.item) {
-      card.set_song(item.item);
+    if (container.object) {
+      card.set_song(container.object);
     }
   }
 
@@ -236,7 +236,7 @@ export class Carousel<
     for (const content of contents) {
       if (!content) continue;
 
-      listview.items.append(ObjectContainer.new(content));
+      listview.items.append(new ObjectContainer(content));
     }
 
     this._scrolled.child = listview;
@@ -260,14 +260,14 @@ export class Carousel<
         );
       }
 
-      gridview.items.append(ObjectContainer.new(content as FlatSong));
+      gridview.items.append(new ObjectContainer(content as FlatSong));
     }
 
     this._scrolled.child = gridview;
   }
 
   activate_cb(object: ObjectContainer<MixedCardItem> | null) {
-    const item = object?.item!;
+    const item = object?.object;
 
     if (!item) return;
 

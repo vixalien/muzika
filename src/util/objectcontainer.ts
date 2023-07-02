@@ -6,10 +6,10 @@ export class ObjectContainer<T extends Object> extends GObject.Object {
       GObject.registerClass({
         GTypeName: "ObjectContainer",
         Properties: {
-          item: GObject.ParamSpec.object(
-            "item",
-            "item",
-            "item",
+          object: GObject.ParamSpec.object(
+            "object",
+            "Object",
+            "The contained object",
             GObject.ParamFlags.READWRITE,
             GObject.Object.$gtype,
           ),
@@ -18,15 +18,36 @@ export class ObjectContainer<T extends Object> extends GObject.Object {
     }
   }
 
-  item?: T;
+  object: T;
 
-  constructor() {
+  constructor(object: T) {
     super();
+
+    this.object = object;
+  }
+}
+
+export class OptionalObjectContainer<T extends Object> extends GObject.Object {
+  static {
+    GObject.registerClass({
+      GTypeName: "OptionalObjectContainer",
+      Properties: {
+        object: GObject.ParamSpec.object(
+          "object",
+          "Object",
+          "The contained object",
+          GObject.ParamFlags.READWRITE,
+          GObject.Object.$gtype,
+        ),
+      },
+    }, this);
   }
 
-  static new<T extends Object>(item: T) {
-    const obj = new ObjectContainer<T>();
-    obj.item = item;
-    return obj;
+  object?: T;
+
+  constructor(item?: T) {
+    super();
+
+    this.object = item;
   }
 }

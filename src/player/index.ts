@@ -156,8 +156,8 @@ export class Player extends GObject.Object {
     this._playing = value;
     this.notify("playing");
 
-    const id = this.current_meta?.item?.track.videoId;
-    const playlist = this.current_meta?.item?.track.playlist;
+    const id = this.current_meta?.object.track.videoId;
+    const playlist = this.current_meta?.object.track.playlist;
 
     if (id) {
       if (this.playing) {
@@ -256,7 +256,7 @@ export class Player extends GObject.Object {
 
     this.queue.connect("notify::current", () => {
       this._last_position = 0;
-      this.change_current_track(this.queue.current?.item ?? null)
+      this.change_current_track(this.queue.current?.object ?? null)
         .catch((e) => {
           console.log("caught error", e);
         });
@@ -379,8 +379,8 @@ export class Player extends GObject.Object {
 
       if (this.add_history) {
         // add history entry, but don't wait for the promise to resolve
-        if (this.current_meta?.item?.song && get_option("auth").has_token()) {
-          add_history_item(this.current_meta?.item?.song);
+        if (this.current_meta?.object.song && get_option("auth").has_token()) {
+          add_history_item(this.current_meta?.object.song);
         }
 
         this.add_history = false;
@@ -475,8 +475,8 @@ export class Player extends GObject.Object {
   ) {
     this.playbin.set_state(Gst.State.NULL);
 
-    const current = this.current_meta?.item?.track.videoId;
-    const playlist = this.current_meta?.item?.track.playlist ?? null;
+    const current = this.current_meta?.object.track.videoId;
+    const playlist = this.current_meta?.object.track.playlist ?? null;
 
     if (!track) {
       return;
@@ -502,7 +502,7 @@ export class Player extends GObject.Object {
 
     const format = this.negotiate_best_format(song);
 
-    this._current_meta = ObjectContainer.new<TrackMetadata>({
+    this._current_meta = new ObjectContainer<TrackMetadata>({
       song,
       track,
       format,
@@ -676,13 +676,13 @@ export class Player extends GObject.Object {
   }
 
   private get_state(): PlayerState | null {
-    if (!this.queue.current?.item) {
+    if (!this.queue.current?.object) {
       return null;
     }
 
     const get_tracks = (list: Gio.ListStore<ObjectContainer<QueueMeta>>) => {
       return list_model_to_array(list)
-        .map((item) => item.item)
+        .map((container) => container.object)
         .filter(Boolean)
         .map((track) => track?.videoId) as string[];
     };
@@ -726,7 +726,7 @@ export class Player extends GObject.Object {
         .then((tracks) =>
           tracks.forEach((track) =>
             this.queue._original.append(
-              ObjectContainer.new({ ...track, playlist: null }),
+              new ObjectContainer({ ...track, playlist: null }),
             )
           )
         ),

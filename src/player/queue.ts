@@ -194,11 +194,11 @@ export class Queue extends GObject.Object {
       this.settings_abort_controller = undefined;
     }
 
-    if (this.current?.item?.videoId) {
+    if (this.current?.object.videoId) {
       this.settings_abort_controller = new AbortController();
 
       this.get_track_settings(
-        this.current?.item?.videoId,
+        this.current?.object.videoId,
         this.settings_abort_controller.signal,
       )
         .then((settings) => {
@@ -500,7 +500,7 @@ export class Queue extends GObject.Object {
           this.position + 1,
           this.list.n_items - this.position - 1,
           tracks_to_meta(queue.tracks, found_chip.playlistId)
-            .map((track) => ObjectContainer.new(track)),
+            .map((track) => new ObjectContainer(track)),
         );
 
         this.active_chip = chip;
@@ -624,7 +624,7 @@ export class Queue extends GObject.Object {
       }
     }
 
-    return [position, this.list.get_item(position)?.item ?? null];
+    return [position, this.list.get_item(position)?.object ?? null];
   }
 
   next(): QueueTrack | null {
@@ -644,7 +644,7 @@ export class Queue extends GObject.Object {
       return this.peek_next();
     }
 
-    return [position, this.list.get_item(position)?.item ?? null];
+    return [position, this.list.get_item(position)?.object ?? null];
   }
 
   repeat_or_next(): QueueTrack | null {
@@ -673,7 +673,7 @@ export class Queue extends GObject.Object {
 
       this.update_track_settings();
 
-      return this.list.get_item(this.position)?.item!;
+      return this.list.get_item(this.position)?.object!;
     } else {
       if (this.position <= 0) return null;
 
@@ -681,7 +681,7 @@ export class Queue extends GObject.Object {
 
       this.update_track_settings();
 
-      return this.list.get_item(this.position)?.item!;
+      return this.list.get_item(this.position)?.object!;
     }
   }
 
@@ -693,14 +693,14 @@ export class Queue extends GObject.Object {
     this.list.splice(
       position,
       0,
-      tracks.map((song) => ObjectContainer.new(song)),
+      tracks.map((song) => new ObjectContainer(song)),
     );
 
     if (this.shuffle) {
       this._original.splice(
         position,
         0,
-        tracks.map((song) => ObjectContainer.new(song)),
+        tracks.map((song) => new ObjectContainer(song)),
       );
     }
 

@@ -7,6 +7,7 @@ import {
   Filter,
   get_more_search_results,
   get_option,
+  get_playlist_suggestions,
   search,
   SearchOptions,
   SearchResults,

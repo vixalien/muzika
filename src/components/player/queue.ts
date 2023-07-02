@@ -148,8 +148,8 @@ export class QueueView extends Gtk.Stack {
   }
 
   bind_cb(_factory: Gtk.ListItemFactory, list_item: Gtk.ListItem) {
-    const object = list_item.get_item() as ObjectContainer<QueueTrack>;
-    const track = object.item!;
+    const container = list_item.get_item() as ObjectContainer<QueueTrack>;
+    const track = container.object;
 
     const card = new QueueItem();
     card.set_track(track);

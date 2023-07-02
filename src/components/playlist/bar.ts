@@ -116,7 +116,7 @@ export class PlaylistBar extends Adw.Bin {
   private _model: Gtk.SelectionModel<ObjectContainer<PlaylistItem>> = Gtk
     .NoSelection.new(
       Gio.ListStore.new(Gtk.Widget.$gtype),
-    );
+    ) as Gtk.NoSelection<ObjectContainer<PlaylistItem>>;
 
   get model() {
     return this._model;
@@ -143,7 +143,7 @@ export class PlaylistBar extends Adw.Bin {
       // order by position ascending
       .sort((a, b) => a.position - b.position)
       .forEach(({ item, position }) => {
-        underlying_model.insert(position, ObjectContainer.new(item));
+        underlying_model.insert(position, new ObjectContainer(item));
       });
 
     this.update_selection();
@@ -167,7 +167,7 @@ export class PlaylistBar extends Adw.Bin {
     const items = get_selected(this.model)
       .map((position) => {
         return {
-          item: this.model.get_item(position)?.item as PlaylistItem,
+          item: this.model.get_item(position)?.object as PlaylistItem,
           position,
         };
       })
@@ -218,7 +218,7 @@ export class PlaylistBar extends Adw.Bin {
 
   private update_model() {
     const items = get_selected(this.model)
-      .map((position) => this.model.get_item(position)?.item)
+      .map((position) => this.model.get_item(position)?.object)
       .filter((item) => item != null) as PlaylistItem[];
 
     const ids = items.map((item) => item.videoId).join(",");

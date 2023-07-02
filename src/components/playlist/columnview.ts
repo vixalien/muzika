@@ -51,7 +51,7 @@ class ImageColumn extends Gtk.ColumnViewColumn {
     const dynamic_image = list_item.child as DynamicImage;
     const container = list_item.item as ObjectContainer<PlaylistItem>;
 
-    const playlist_item = container.item!;
+    const playlist_item = container.object;
 
     dynamic_image.connect("selection-mode-toggled", (_dynamic_image, value) => {
       this.emit("selection-mode-toggled", list_item.position, value);
@@ -146,7 +146,7 @@ class ChartRankColumn extends Gtk.ColumnViewColumn {
     const box = list_item.child as ChartRankBox;
     const container = list_item.item as ObjectContainer<PlaylistItem>;
 
-    const playlist_item = container.item!;
+    const playlist_item = container.object;
 
     if (playlist_item.rank) {
       box.rank = playlist_item.rank;
@@ -230,7 +230,7 @@ class TitleColumn extends Gtk.ColumnViewColumn {
     const title = list_item.child as TitleBox;
     const container = list_item.item as ObjectContainer<PlaylistItem>;
 
-    const playlist_item = container.item!;
+    const playlist_item = container.object;
 
     title.label.tooltip_text = title.label.label = playlist_item.title;
     title.explicit.visible = playlist_item.isExplicit;
@@ -281,7 +281,7 @@ class ArtistColumn extends Gtk.ColumnViewColumn {
     const label = list_item.child as Gtk.Label;
     const container = list_item.item as ObjectContainer<PlaylistItem>;
 
-    const playlist_item = container.item!;
+    const playlist_item = container.object;
 
     const subtitle = pretty_subtitles(playlist_item.artists);
 
@@ -334,7 +334,7 @@ class AlbumColumn extends Gtk.ColumnViewColumn {
     const label = list_item.child as Gtk.Label;
     const container = list_item.item as ObjectContainer<PlaylistItem>;
 
-    const playlist_item = container.item!;
+    const playlist_item = container.object;
 
     if (playlist_item.album) {
       if (playlist_item.album.id) {
@@ -386,7 +386,7 @@ class DurationColumn extends Gtk.ColumnViewColumn {
     const label = list_item.child as Gtk.Label;
     const container = list_item.item as ObjectContainer<PlaylistItem>;
 
-    const playlist_item = container.item!;
+    const playlist_item = container.object;
 
     label.label = playlist_item.duration ?? "";
   }
@@ -509,23 +509,21 @@ export class PlaylistColumnView extends Gtk.ColumnView {
     this.append_column(this._duration_column);
 
     this.connect("activate", (_, position) => {
-      const item = this.model.get_item(position) as ObjectContainer<
+      const container = this.model.get_item(position) as ObjectContainer<
         PlaylistItem
       >;
-
-      if (!item?.item) return null;
 
       if (this.playlistId) {
         this.activate_action(
           "queue.play-playlist",
           GLib.Variant.new_string(
-            `${this.playlistId}?video=${item.item.videoId}`,
+            `${this.playlistId}?video=${container.object.videoId}`,
           ),
         );
       } else {
         this.activate_action(
           "queue.play-song",
-          GLib.Variant.new_string(item.item.videoId),
+          GLib.Variant.new_string(container.object.videoId),
         );
       }
     });

@@ -249,7 +249,7 @@ export class PlaylistImage extends Gtk.Overlay {
         this._play.connect("clicked", () => {
           this.emit("play");
 
-          if (player.current_meta?.item?.track.playlist === this.playlistId) {
+          if (player.current_meta?.object.track.playlist === this.playlistId) {
             player.play();
           } else if (this.playlistId) {
             this.state = PlaylistImageState.LOADING;
@@ -261,7 +261,7 @@ export class PlaylistImage extends Gtk.Overlay {
       this.listeners.add(
         this._pause,
         this._pause.connect("clicked", () => {
-          if (player.current_meta?.item?.track.playlist === this.playlistId) {
+          if (player.current_meta?.object.track.playlist === this.playlistId) {
             player.pause();
           }
         }),
@@ -272,7 +272,7 @@ export class PlaylistImage extends Gtk.Overlay {
 
     // if the playlist is already playing, we need to update the state
     if (
-      player.current_meta?.item?.track.playlist === this.playlistId
+      player.current_meta?.object.track.playlist === this.playlistId
     ) {
       if (player.playing) {
         this.state = PlaylistImageState.PLAYING;
@@ -292,7 +292,7 @@ export class PlaylistImage extends Gtk.Overlay {
         }),
         player.connect(`stop-loading::playlist::${playlistId}`, () => {
           if (
-            player.current_meta?.item?.track.playlist === this.playlistId &&
+            player.current_meta?.object.track.playlist === this.playlistId &&
             player.playing
           ) {
             this.state = PlaylistImageState.PLAYING;

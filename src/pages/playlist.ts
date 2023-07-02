@@ -122,7 +122,7 @@ export class PlaylistPage extends Adw.Bin
     edit_dialog.set_transient_for(this.get_root() as Gtk.Window);
 
     edit_dialog.connect("saved", (_, values: ObjectContainer<EditedValues>) => {
-      this.update_values(values.item!);
+      this.update_values(values.object);
     });
 
     edit_dialog.present();
@@ -146,7 +146,7 @@ export class PlaylistPage extends Adw.Bin
     this.model.splice(
       n > 0 ? n - 1 : 0,
       0,
-      tracks.map((track) => ObjectContainer.new(track)),
+      tracks.map((track) => new ObjectContainer(track)),
     );
   }
 
@@ -325,7 +325,7 @@ export class PlaylistPage extends Adw.Bin
       playlist: {
         ...this.playlist!,
         tracks: list_model_to_array(this.model)
-          .map((container) => container.item)
+          .map((container) => container.object)
           .filter((item) => item != null) as PlaylistItem[],
       },
     };

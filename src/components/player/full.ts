@@ -157,7 +157,7 @@ export class FullPlayerView extends Gtk.ActionBar {
     this.scale.value = 0;
     this._progress_label.label = seconds_to_string(0);
 
-    const song = this.player.queue.current?.item;
+    const song = this.player.queue.current?.object;
     if (song) {
       this.show_song(song!);
     }
