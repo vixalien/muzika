@@ -49,7 +49,11 @@ label.link:hover {
   border-radius: 50%;
 }
 
-.small-pill {
+.small-pill:not(menubutton) {
+  padding: 10px;
+}
+
+menubutton.small-pill > button {
   padding: 10px;
 }
 

@@ -107,6 +107,7 @@ export class ArtistPage extends Adw.Bin
 
     this._header.set_title(artist.name);
     this._header.set_description(artist.description);
+    this.update_header_buttons()
 
     this.show_top_songs(artist.songs);
 
@@ -117,6 +118,30 @@ export class ArtistPage extends Adw.Bin
     this.add_carousel(_("Featured on"), artist.featured);
     this.add_carousel(_("Playlists"), artist.playlists);
     this.add_carousel(_("Fans might also like"), artist.related);
+  }
+
+  update_header_buttons() {
+    if (!this.artist) return;
+
+    this._header.clear_buttons();
+
+    this._header.add_button({
+      label: _("Shuffle"),
+      icon_name: "media-playlist-shuffle-symbolic",
+      action_name: "queue.play-playlist",
+      action_target: GLib.Variant.new_string(
+        `${this.artist.shuffleId}`,
+      ),
+    });
+
+    this._header.add_button({
+      label: _("Radio"),
+      icon_name: "sonar-symbolic",
+      action_name: "queue.play-playlist",
+      action_target: GLib.Variant.new_string(
+        `${this.artist.radioId}`,
+      ),
+    });
   }
 
   add_carousel(title: string, data: Category<MixedItem>) {

@@ -2,6 +2,7 @@ import Gtk from "gi://Gtk?version=4.0";
 import GObject from "gi://GObject";
 import Gio from "gi://Gio";
 import Adw from "gi://Adw";
+import GLib from "gi://GLib";
 
 import {
   get_more_playlist_tracks,
@@ -192,6 +193,8 @@ export class PlaylistPage extends Adw.Bin
       });
     }
 
+    this.update_header_buttons();
+
     if (playlist.trackCount) {
       this._trackCount.set_label(playlist.trackCount.toString() + " songs");
     } else {
@@ -217,6 +220,55 @@ export class PlaylistPage extends Adw.Bin
     this._paginator.can_paginate = this.playlist.continuation != null;
 
     this.append_tracks(playlist.tracks);
+  }
+
+  update_header_buttons() {
+    if (!this.playlist) return;
+
+    this._header.clear_buttons();
+
+    this._header.add_button({
+      label: _("Shuffle"),
+      icon_name: "media-playlist-shuffle-symbolic",
+      action_name: "queue.play-playlist",
+      action_target: GLib.Variant.new_string(
+        `${this.playlist.id}?shuffle=true`,
+      ),
+    });
+
+    if (this.playlist.editable) {
+      this._header.add_button({
+        label: _("Edit Playlist"),
+        icon_name: "document-edit-symbolic",
+        on_clicked: () => {
+          this.edit_cb();
+        },
+      });
+    } else {
+      this._header.add_button({
+        label: _("Add to Library"),
+        icon_name: "list-add-symbolic",
+      });
+    }
+
+    const menu = Gio.Menu.new();
+
+    menu.append(
+      _("Start Radio"),
+      `queue.play-playlist("${this.playlist.id}?radio=true")`,
+    );
+    menu.append(
+      _("Play Next"),
+      `queue.add-playlist("${this.playlist.id}?next=true")`,
+    );
+    menu.append(
+      _("Add to queue"),
+      `queue.add-playlist("${this.playlist.id}")`,
+    );
+
+    this._header.add_menu_button({
+      menu_model: menu,
+    });
   }
 
   no_more = false;

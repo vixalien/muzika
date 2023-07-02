@@ -2,6 +2,7 @@ import Gtk from "gi://Gtk?version=4.0";
 import GObject from "gi://GObject";
 import Gio from "gi://Gio";
 import Adw from "gi://Adw";
+import GLib from "gi://GLib";
 
 import { AlbumResult, get_album, ParsedAlbum, PlaylistItem } from "../muse.js";
 
@@ -101,6 +102,7 @@ export class AlbumPage extends Adw.Bin
     this._header.set_explicit(album.isExplicit);
     this._header.set_genre(album.album_type);
     this._header.set_year(album.year ?? _("Unknown year"));
+    this.update_header_buttons();
 
     if (album.artists && album.artists.length > 0) {
       album.artists.forEach((artist) => {
@@ -124,6 +126,68 @@ export class AlbumPage extends Adw.Bin
     }
 
     this.append_tracks(album.tracks);
+  }
+
+  update_header_buttons() {
+    if (!this.album) return;
+
+    this._header.clear_buttons();
+
+    this._header.add_button({
+      label: _("Play"),
+      icon_name: "media-playback-start-symbolic",
+      action_name: "queue.play-playlist",
+      action_target: GLib.Variant.new_string(
+        `${this.album.audioPlaylistId}`,
+      ),
+      styles: ["suggested-action"],
+    });
+
+    this._header.add_button({
+      label: _("Shuffle"),
+      icon_name: "media-playlist-shuffle-symbolic",
+      action_name: "queue.play-playlist",
+      action_target: GLib.Variant.new_string(
+        `${this.album.shuffleId}`,
+      ),
+    });
+
+    const menu = Gio.Menu.new();
+
+    menu.append(
+      _("Start Radio"),
+      `queue.play-playlist("${this.album.audioPlaylistId}?radio=true")`,
+    );
+    menu.append(
+      _("Play Next"),
+      `queue.add-playlist("${this.album.audioPlaylistId}?next=true")`,
+    );
+    menu.append(
+      _("Add to queue"),
+      `queue.add-playlist("${this.album.audioPlaylistId}")`,
+    );
+
+    if (this.album.artists && this.album.artists.length == 0) {
+      menu.append(
+        _("Go to artist"),
+        `navigator.visit("muzika:artist:${this.album.artists[0].id}")`,
+      );
+    } else {
+      const section = Gio.Menu.new();
+
+      this.album.artists.forEach((artist) => {
+        section.append(
+          artist.name,
+          `navigator.visit("muzika:artist:${artist.id}")`,
+        );
+      });
+
+      menu.append_section(_("Artists"), section);
+    }
+
+    this._header.add_menu_button({
+      menu_model: menu,
+    });
   }
 
   no_more = false;

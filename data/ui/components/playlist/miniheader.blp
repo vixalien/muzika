@@ -89,39 +89,6 @@ template $MiniPlaylistHeader : Box {
         margin-top: 12;
         spacing: 6;
         halign: center;
-
-        Button shuffle {
-          Adw.ButtonContent {
-            label: _("Shuffle");
-            icon-name: "media-playlist-shuffle-symbolic";
-          }
-
-          styles [
-            "pill",
-            "suggested-action",
-          ]
-        }
-
-        ToggleButton add {
-          Adw.ButtonContent {
-            label: _("Library");
-            icon-name: "list-add-symbolic";
-          }
-
-          styles [
-            "pill",
-          ]
-        }
-
-        ToggleButton menu {
-          icon-name: "view-more-symbolic";
-
-          styles [
-            "flat",
-            "pill",
-            "small-pill",
-          ]
-        }
       }
 
       Stack description_stack {

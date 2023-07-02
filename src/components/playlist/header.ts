@@ -7,6 +7,15 @@ import GLib from "gi://GLib";
 import { load_thumbnails } from "../webimage.js";
 
 import { Thumbnail } from "../../muse.js";
+import { omit } from "lodash-es";
+
+interface ButtonProps extends Partial<Gtk.Button.ConstructorProperties> {
+  on_clicked?: () => void;
+  styles?: string[];
+}
+
+interface MenuButtonProps
+  extends Partial<Gtk.MenuButton.ConstructorProperties> {}
 
 export class MiniPlaylistHeader extends Gtk.Box {
   static {
@@ -33,6 +42,7 @@ export class MiniPlaylistHeader extends Gtk.Box {
         "submeta",
         "avatar",
         "subtitle_separator",
+        "buttons",
       ],
     }, this);
   }
@@ -50,6 +60,7 @@ export class MiniPlaylistHeader extends Gtk.Box {
   _submeta!: Gtk.Box;
   _avatar!: Adw.Avatar;
   _subtitle_separator!: Gtk.Label;
+  _buttons!: Gtk.Box;
 
   toggled = false;
 
@@ -104,6 +115,15 @@ export class MiniPlaylistHeader extends Gtk.Box {
       this._subtitle_separator.set_visible(false);
     }
   }
+
+  clear_buttons() {
+    let child = this._buttons.get_first_child();
+
+    while (child) {
+      this._buttons.remove(child);
+      child = this._buttons.get_first_child();
+    }
+  }
 }
 
 export class LargePlaylistHeader extends Gtk.Box {
@@ -131,6 +151,7 @@ export class LargePlaylistHeader extends Gtk.Box {
         "submeta",
         "avatar",
         "subtitle_separator",
+        "buttons",
       ],
     }, this);
   }
@@ -148,6 +169,7 @@ export class LargePlaylistHeader extends Gtk.Box {
   _submeta!: Gtk.Box;
   _avatar!: Adw.Avatar;
   _subtitle_separator!: Gtk.Label;
+  _buttons!: Gtk.Box;
 
   toggled = false;
 
@@ -198,6 +220,15 @@ export class LargePlaylistHeader extends Gtk.Box {
     } else {
       this._year.set_visible(false);
       this._subtitle_separator.set_visible(false);
+    }
+  }
+
+  clear_buttons() {
+    let child = this._buttons.get_first_child();
+
+    while (child) {
+      this._buttons.remove(child);
+      child = this._buttons.get_first_child();
     }
   }
 }
@@ -325,5 +356,58 @@ export class PlaylistHeader extends Gtk.Box {
   set_year(year: string | null) {
     this._large.set_year(year);
     this._mini.set_year(year);
+  }
+
+  private new_button(props: ButtonProps) {
+    const button = new Gtk.Button(omit(props, ["styles", "on_clicked"]));
+
+    if (props.icon_name && props.label) {
+      button.child = new Adw.ButtonContent({
+        icon_name: props.icon_name,
+        label: props.label,
+      });
+    }
+
+    if (props.on_clicked) {
+      button.connect("clicked", props.on_clicked);
+    }
+
+    if (props.styles) {
+      props.styles.forEach((style) => {
+        button.add_css_class(style);
+      });
+    }
+
+    button.add_css_class("pill");
+
+    return button;
+  }
+
+  private new_menu_button(props: MenuButtonProps) {
+    const button = new Gtk.MenuButton({
+      icon_name: "view-more-symbolic",
+      ...props,
+    });
+
+    button.add_css_class("flat");
+    button.add_css_class("pill");
+    button.add_css_class("small-pill");
+
+    return button;
+  }
+
+  clear_buttons() {
+    this._mini.clear_buttons();
+    this._large.clear_buttons();
+  }
+
+  add_button(props: ButtonProps) {
+    this._mini._buttons.append(this.new_button(props));
+    this._large._buttons.append(this.new_button(props));
+  }
+
+  add_menu_button(props: MenuButtonProps) {
+    this._mini._buttons.append(this.new_menu_button(props));
+    this._large._buttons.append(this.new_menu_button(props));
   }
 }

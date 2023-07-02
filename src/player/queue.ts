@@ -305,6 +305,7 @@ export class Queue extends GObject.Object {
 
           this.play_playlist(url.pathname, params.get("video") ?? undefined, {
             shuffle: params.has("shuffle"),
+            radio: params.has("radio"),
           });
         },
       },
@@ -520,6 +521,7 @@ export class Queue extends GObject.Object {
     const queue = await get_queue(video_id ?? null, playlist_id, {
       shuffle: options.shuffle ?? false,
       signal: options.signal,
+      radio: options.radio ?? false,
     });
 
     if (options.play) {
@@ -747,6 +749,7 @@ interface AddPlaylistOptions {
   next?: boolean;
   signal?: AbortSignal;
   play?: boolean;
+  radio?: boolean;
 }
 
 function _omit<Object extends Record<string, any>, Key extends keyof Object>(
