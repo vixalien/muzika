@@ -2,7 +2,7 @@ import GLib from "gi://GLib";
 import GObject from "gi://GObject";
 import Gtk from "gi://Gtk?version=4.0";
 
-export class NavbarButton extends Gtk.Box {
+export class NavbarButton extends Gtk.ListBoxRow {
   static {
     GObject.registerClass(
       {

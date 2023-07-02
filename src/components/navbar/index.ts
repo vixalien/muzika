@@ -55,7 +55,7 @@ export class NavbarView extends Gtk.Box {
     );
 
     this._section.items.connect("row-activated", (_, row) => {
-      const child = row.child as NavbarButton;
+      const child = row as NavbarButton;
 
       if (!(child instanceof NavbarButton)) return;
 
@@ -92,14 +92,11 @@ export class NavbarView extends Gtk.Box {
   update_buttons() {
     const logged_in = get_option("auth").has_token();
 
-    this.button_map.forEach((button) => {
+    for (const [_, button] of this.button_map) {
       if (button.requires_login) {
-        const parent = button.get_parent();
-        if (parent) {
-          parent.visible = logged_in;
-        }
+        button.visible = logged_in;
       }
-    });
+    }
   }
 
   clear_playlists() {
@@ -201,7 +198,7 @@ export class NavbarView extends Gtk.Box {
     let row = this._section.items.get_first_child() as Gtk.ListBoxRow | null;
 
     while (row) {
-      if (row.child === button) {
+      if (row === button) {
         this._section.items.select_row(row);
         return;
       }

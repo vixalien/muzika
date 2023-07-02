@@ -200,14 +200,15 @@ export class Window extends Adw.ApplicationWindow {
     const account = await get_current_user();
 
     const menu = Gio.Menu.new();
-    const account_item = Gio.MenuItem.new(
+
+    menu.append(
       account.name,
       `navigator.visit("muzika:user:${account.channel_id}")`,
     );
-    const logout_item = Gio.MenuItem.new(_("Logout"), "win.logout");
-
-    menu.append_item(account_item);
-    menu.append_item(logout_item);
+    menu.append(
+      _("Logout"),
+      "win.logout",
+    );
 
     this._account.menu_model = menu;
   }

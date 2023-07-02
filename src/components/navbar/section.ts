@@ -44,7 +44,7 @@ export class NavbarSection extends Gtk.Box {
     super();
 
     this.items.set_header_func((row: Gtk.ListBoxRow) => {
-      const button = row.child as NavbarButton;
+      const button = row as NavbarButton;
 
       if (!(button instanceof NavbarButton)) return;
 
@@ -64,16 +64,7 @@ export class NavbarSection extends Gtk.Box {
   ): void {
     if (child instanceof Gtk.Widget) {
       if (this.items) {
-        const row = Gtk.ListBoxRow.new();
-        row.child = child;
-
-        // transfer sensitive property
-        if (!child.sensitive) {
-          row.sensitive = false;
-          child.sensitive = true;
-        }
-
-        this.items.append(row);
+        this.items.append(child);
         return;
       }
     }

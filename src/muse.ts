@@ -31,7 +31,7 @@ import { FetchClient, RequestInit } from "libmuse/request.js";
 import { setup } from "libmuse";
 import { GResponse } from "./polyfills/fetch.js";
 import { hash } from "./util/hash.js";
-import { store } from "./util/giofilestore.js";
+import { store } from "./util/secret-store.js";
 
 const decoder = new TextDecoder();
 
@@ -120,7 +120,6 @@ class CustomFetch extends FetchClient {
 }
 
 setup({
-  /// @ts-expect-error
   store: store,
   /// @ts-expect-error
   client: new CustomFetch(),

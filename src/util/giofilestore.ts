@@ -1,12 +1,11 @@
 import Gio from "gi://Gio";
 import GLib from "gi://GLib";
 
-/// @ts-expect-error
-import { Store } from "libmuse/store.js";
+import { Store } from "libmuse";
 
 const decoder = new TextDecoder();
 
-export class GioFileStore extends (Store as any) {
+export class GioFileStore extends Store {
   map: Map<string, unknown> = new Map();
 
   private path = Gio.file_new_for_path(
