@@ -22,63 +22,63 @@ template $MuzikaWindow : Adw.ApplicationWindow {
   Adw.ToolbarView toolbar_view {
     bottom-bar-style: raised;
     content: 
-    Adw.NavigationSplitView split_view {
-      min-sidebar-width: 250;
-      max-sidebar-width: 350;
-      show-content: true;
-      sidebar: 
-      Adw.NavigationPage {
-        Adw.ToolbarView {
-          hexpand: false;
+    Adw.ToastOverlay toast_overlay {
+      Adw.NavigationSplitView split_view {
+        min-sidebar-width: 250;
+        max-sidebar-width: 350;
+        show-content: true;
+        sidebar: 
+        Adw.NavigationPage {
+          Adw.ToolbarView {
+            hexpand: false;
 
-          [top]
-          Adw.HeaderBar nav_header_bar {
-            [start]
-            MenuButton account {
-              icon-name: "avatar-default-symbolic";
+            [top]
+            Adw.HeaderBar nav_header_bar {
+              [start]
+              MenuButton account {
+                icon-name: "avatar-default-symbolic";
+              }
+              title-widget: 
+              Label {
+                label: "Muzika";
+
+                styles [
+                  "heading",
+                ]
+              }
+
+              ;
+
+              [end]
+              MenuButton {
+                icon-name: "open-menu-symbolic";
+                menu-model: primary_menu;
+              }
             }
-            title-widget: 
-            Label {
-              label: "Muzika";
-
-              styles [
-                "heading",
-              ]
+            content: 
+            ScrolledWindow navbar_window {
+              vexpand: true;
             }
 
             ;
-
-            [end]
-            MenuButton {
-              icon-name: "open-menu-symbolic";
-              menu-model: primary_menu;
-            }
           }
-          content: 
-          ScrolledWindow navbar_window {
-            vexpand: true;
-          }
-
-          ;
         }
-      }
 
-      ;
-      content: 
-      Adw.NavigationPage {
-        Adw.BreakpointBin {
-          width-request: 300;
-          height-request: 200;
+        ;
+        content: 
+        Adw.NavigationPage {
+          Adw.BreakpointBin {
+            width-request: 300;
+            height-request: 200;
 
-          Adw.Breakpoint {
-            condition ("max-width: 800sp")
+            Adw.Breakpoint {
+              condition ("max-width: 800sp")
 
-            setters {
-              overlay_split_view.collapsed: true;
+              setters {
+                overlay_split_view.collapsed: true;
+              }
             }
-          }
 
-          Adw.ToastOverlay toast_overlay {
             Adw.OverlaySplitView overlay_split_view {
               sidebar-position: end;
               sidebar-width-fraction: 0.4;
@@ -96,9 +96,9 @@ template $MuzikaWindow : Adw.ApplicationWindow {
             }
           }
         }
-      }
 
-      ;
+        ;
+      }
     }
 
     ;
