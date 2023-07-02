@@ -100,7 +100,7 @@ export class Window extends Adw.ApplicationWindow {
     });
 
     this.navigator.navigate(
-      "playlist:PLCwfwQhurMOsNTcOUOs0ORFn79l5h4ikp",
+      "home",
     );
 
     const application = this.application as Application;
