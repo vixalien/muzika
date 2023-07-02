@@ -29,7 +29,9 @@ template $ArtistPage : Adw.Bin {
             spacing: 18;
             orientation: vertical;
 
-            $ArtistHeader header {}
+            $ArtistHeader header {
+              show-large-header: true;
+            }
 
             Box top_songs {
               spacing: 12;
@@ -63,6 +65,7 @@ template $ArtistPage : Adw.Bin {
               }
 
               $PlaylistItemView playlist_item_view {
+                show-column: true;
               }
             }
 

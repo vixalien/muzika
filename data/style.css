@@ -53,17 +53,13 @@ label.link:hover {
   padding: 10px;
 }
 
-menubutton.small-pill > button {
+menubutton.small-pill>button {
   padding: 10px;
 }
 
 /* playlist item */
 .playlist-item .image {
   border-radius: 3px;
-}
-
-.playlist-item:not(:hover):not(:selected):nth-child(2n+1) {
-  background-color: shade(@card_bg_color, .93);
 }
 
 button.link.inline {
@@ -218,9 +214,28 @@ label.flat-links:hover {
   border-radius: 9px;
 }
 
+.insights-clamp {
+  background-color: alpha(@window_fg_color, .03);
+}
+
+.insights-clamp > .insights-box>*:first-child {
+  margin-top: 12px;
+}
+
+.insights-clamp > .insights-box>*:last-child {
+  margin-bottom: 12px;
+}
+
+.playlist-item:not(:hover):not(:selected):nth-child(2n+1),
 .playlist-column-view listview>row:not(:hover):not(:selected):nth-child(2n+1),
 .playlist-list-view>row:not(:hover):not(:selected):nth-child(2n+1) {
-  background-color: shade(@card_bg_color, .93);
+  background-color: alpha(@window_fg_color, .05);
+}
+
+.playlist-item:not(:hover):not(:selected):nth-child(2n+1),
+.playlist-column-view listview>row:hover:not(:selected),
+.playlist-list-view>row:hover:not(:selected) {
+  background-color: alpha(@window_fg_color, .15);
 }
 
 .dynamic-image {

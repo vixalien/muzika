@@ -26,59 +26,74 @@ template $PlaylistPage : Adw.Bin {
         hexpand: true;
         hscrollbar-policy: never;
 
-        Adw.Clamp {
-          margin-top: 24;
-          margin-bottom: 24;
-          tightening-threshold: 1200;
-          maximum-size: 1400;
+        Box {
+          orientation: vertical;
 
-          Box {
-            spacing: 24;
-            margin-bottom: 24;
-            orientation: vertical;
-
-            $PlaylistHeader header {}
+          Adw.Clamp {
+            margin-top: 24;
+            tightening-threshold: 1200;
+            maximum-size: 1400;
 
             Box {
+              spacing: 24;
               orientation: vertical;
 
-              $PlaylistItemView playlist_item_view {
+              $PlaylistHeader header {
+                show-large-header: true;
               }
 
-              $Paginator paginator {}
+              Box {
+                orientation: vertical;
 
-              Box more {
-                margin-top: 12;
-                margin-start: 12;
-                margin-end: 12;
+                $PlaylistItemView playlist_item_view {
+                  show-column: true;
+                }
 
-                Box data {
-                  styles [
-                    "dim-label",
-                  ]
+                $Paginator paginator {}
 
-                  spacing: 6;
+                Box more {
+                  margin-top: 12;
+                  margin-start: 12;
+                  margin-end: 12;
+                  margin-bottom: 24;
 
-                  Label trackCount {
-                  }
+                  Box data {
+                    styles [
+                      "dim-label",
+                    ]
 
-                  Label separator {
-                    label: "·";
-                  }
+                    spacing: 6;
 
-                  Label duration {
+                    Label trackCount {
+                    }
+
+                    Label separator {
+                      label: "·";
+                    }
+
+                    Label duration {
+                    }
                   }
                 }
               }
             }
+          }
+
+          Adw.Clamp {
+            tightening-threshold: 1200;
+            maximum-size: 1400;
+
+            styles ["insights-clamp"]
 
             Box insights {
               orientation: vertical;
+              spacing: 12;
+
+              styles ["insights-box"]
               
               Box suggestions {
-                spacing: 6;
+                spacing: 12;
                 orientation: vertical;
-                margin-top: 24;
 
                 Box titlesandbuttons {
                   spacing: 6;
@@ -121,6 +136,7 @@ template $PlaylistPage : Adw.Bin {
 
                 $PlaylistItemView suggestions_item_view {
                   show-add: true;
+                  show-column: true;
                 }
               }
             }

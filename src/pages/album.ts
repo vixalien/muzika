@@ -27,11 +27,9 @@ export class AlbumPage extends Adw.Bin
       Template: "resource:///com/vixalien/muzika/ui/pages/album.ui",
       InternalChildren: [
         "breakpoint",
-        "inner_box",
         "trackCount",
         "duration",
-        "content",
-        "scrolled",
+        "insights",
         "playlist_item_view",
         "header",
       ],
@@ -43,7 +41,7 @@ export class AlbumPage extends Adw.Bin
   private _breakpoint!: Adw.Breakpoint;
   private _trackCount!: Gtk.Label;
   private _duration!: Gtk.Label;
-  private _content!: Gtk.Box;
+  private _insights!: Gtk.Box;
   private _playlist_item_view!: PlaylistItemView;
   private _header!: AlbumHeader;
 
@@ -78,16 +76,14 @@ export class AlbumPage extends Adw.Bin
   }
 
   show_other_versions(related: ParsedAlbum[]) {
-    const carousel = new Carousel({
-      margin_top: 24,
-    });
+    const carousel = new Carousel();
 
     carousel.show_content({
       title: _("Other versions"),
       contents: related,
     });
 
-    this._content.append(carousel);
+    this._insights.append(carousel);
   }
 
   present(album: AlbumResult) {

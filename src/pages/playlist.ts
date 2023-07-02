@@ -203,9 +203,7 @@ export class PlaylistPage extends Adw.Bin
   }
 
   show_related(related: ParsedPlaylist[]) {
-    const carousel = new Carousel({
-      margin_top: 24,
-    });
+    const carousel = new Carousel();
 
     carousel.show_content({
       title: _("Related playlists"),
