@@ -11,6 +11,7 @@ data/ui/components/player/mini.blp
 data/ui/components/player/queue.blp
 data/ui/components/player/queueitem.blp
 data/ui/components/player/related.blp
+data/ui/components/playlist/edit.blp
 data/ui/components/playlist/largeheader.blp
 data/ui/components/playlist/miniheader.blp
 data/ui/components/search/section.blp

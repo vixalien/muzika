@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: com.vixalien.muzika\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-07-02 14:57+0200\n"
+"POT-Creation-Date: 2023-07-02 17:46+0200\n"
 "PO-Revision-Date: 2023-06-23 00:36+0300\n"
 "Last-Translator: Sabri Ünal <libreajans@gmail.com>\n"
 "Language-Team: Turkish <takim@gnome.org.tr>\n"
@@ -108,7 +108,7 @@ msgstr "Keşfet"
 msgid "Library"
 msgstr "Kitaplık"
 
-#: data/ui/components/navbar/index.blp:38 src/pages/album.ts:185
+#: data/ui/components/navbar/index.blp:38 src/pages/album.ts:181
 #: src/pages/search.ts:376
 msgid "Artists"
 msgstr "Sanatçılar"
@@ -152,7 +152,7 @@ msgid "Previous"
 msgstr "Önceki"
 
 #: data/ui/components/player/full.blp:100
-#: data/ui/components/search/topresult.blp:118 src/pages/album.ts:137
+#: data/ui/components/search/topresult.blp:118 src/pages/album.ts:133
 msgid "Play"
 msgstr "Oynat"
 
@@ -169,19 +169,19 @@ msgstr "Sonraki"
 msgid "Toggle Repeat State"
 msgstr "Yineleme Durumunu Değiştir"
 
-#: data/ui/components/player/full.blp:168
+#: data/ui/components/player/full.blp:176
 msgid "Adjust Volume"
 msgstr "Sesi Ayarla"
 
-#: data/ui/components/player/full.blp:172
+#: data/ui/components/player/full.blp:180
 msgid "Show Queue"
 msgstr "Kuyruğu Göster"
 
-#: data/ui/components/player/full.blp:178
+#: data/ui/components/player/full.blp:186
 msgid "Show Lyrics"
 msgstr "Şarkı Sözlerini Göster"
 
-#: data/ui/components/player/full.blp:184
+#: data/ui/components/player/full.blp:192
 msgid "Show Related songs"
 msgstr "İlgili Şarkıları Göster"
 
@@ -194,7 +194,7 @@ msgid "If the song has lyrics, they'll appear here when they become available"
 msgstr "Şarkının sözleri varsa, kullanılabilir olduklarında burada görünürler"
 
 #: data/ui/components/player/mini.blp:66 data/ui/components/player/mini.blp:70
-#: src/pages/album.ts:162 src/pages/playlist.ts:349
+#: src/pages/album.ts:158 src/pages/playlist.ts:347
 msgid "Play Next"
 msgstr "Sonrakini Çal"
 
@@ -223,18 +223,46 @@ msgstr "İlişkili müzik yok"
 msgid "We couldn't find any music related to this track."
 msgstr "Bu parçayla ilişkili müzik bulunamadı."
 
+#: data/ui/components/playlist/edit.blp:6
+#: data/ui/components/playlist/edit.blp:11 src/pages/playlist.ts:327
+#, fuzzy
+msgid "Edit Playlist"
+msgstr "Çalma Listesi"
+
+#: data/ui/components/playlist/edit.blp:14
+#, fuzzy
+msgid "General"
+msgstr "Genel"
+
+#: data/ui/components/playlist/edit.blp:17
+msgid "Title"
+msgstr "Başlık"
+
+#: data/ui/components/playlist/edit.blp:21
+#, fuzzy
+msgid "Description"
+msgstr "Abonelikler"
+
+#: data/ui/components/playlist/edit.blp:25
+msgid "Privacy"
+msgstr ""
+
+#: data/ui/components/playlist/edit.blp:33
+msgid "Save"
+msgstr ""
+
 #: data/ui/components/playlist/largeheader.blp:110
 #: data/ui/components/playlist/miniheader.blp:118
 msgid "Read more"
 msgstr "Daha fazla oku"
 
-#: data/ui/components/search/section.blp:23 data/ui/pages/artist.blp:57
+#: data/ui/components/search/section.blp:23 data/ui/pages/artist.blp:59
 msgid "More"
 msgstr "Daha Fazlası"
 
 #: data/ui/components/search/topresult.blp:130
-#: src/components/search/topresultcard.ts:189 src/pages/album.ts:147
-#: src/pages/artist.ts:129 src/pages/playlist.ts:319
+#: src/components/search/topresultcard.ts:189 src/pages/album.ts:143
+#: src/pages/artist.ts:129 src/pages/playlist.ts:317
 msgid "Shuffle"
 msgstr "Karıştır"
 
@@ -257,7 +285,7 @@ msgctxt "shortcut window"
 msgid "Quit"
 msgstr "Çık"
 
-#: data/ui/pages/artist.blp:44
+#: data/ui/pages/artist.blp:46
 msgid "Top Songs"
 msgstr "Gözde Şarkılar"
 
@@ -297,12 +325,12 @@ msgstr "Kodu giriniz"
 msgid "Copy authentication code"
 msgstr "Kimlik doğrulama kodunu kopyala"
 
-#: data/ui/pages/playlist.blp:96
+#: data/ui/pages/playlist.blp:111
 #, fuzzy
 msgid "Suggestions"
 msgstr "Abonelikler"
 
-#: data/ui/pages/playlist.blp:111
+#: data/ui/pages/playlist.blp:126
 msgid "Refresh"
 msgstr ""
 
@@ -331,7 +359,7 @@ msgid "_About Muzika"
 msgstr "Muzika _Hakkında"
 
 #: src/components/carousel/card.ts:310 src/components/library/mixedcard.ts:133
-#: src/pages/album.ts:158 src/pages/playlist.ts:345
+#: src/pages/album.ts:154 src/pages/playlist.ts:343
 msgid "Start Radio"
 msgstr "Radyo Başlat"
 
@@ -403,8 +431,8 @@ msgstr ""
 msgid "Play next"
 msgstr "Sonrakini Çal"
 
-#: src/components/playlist/bar.ts:232 src/pages/album.ts:166
-#: src/pages/playlist.ts:353
+#: src/components/playlist/bar.ts:232 src/pages/album.ts:162
+#: src/pages/playlist.ts:351
 #, fuzzy
 msgid "Add to queue"
 msgstr "\"%s\" kuyruğa eklendi"
@@ -495,15 +523,15 @@ msgstr "Kitaplık Abonelikleri"
 msgid "Library Songs"
 msgstr "Kitaplık Şarkıları"
 
-#: src/pages/album.ts:86
+#: src/pages/album.ts:82
 msgid "Other versions"
 msgstr "Diğer sürümler"
 
-#: src/pages/album.ts:104
+#: src/pages/album.ts:100
 msgid "Unknown year"
 msgstr "Yıl bilinmiyor"
 
-#: src/pages/album.ts:172
+#: src/pages/album.ts:168
 msgid "Go to artist"
 msgstr ""
 
@@ -571,16 +599,11 @@ msgstr "Panoya kopyalandı"
 msgid "Failed to add suggestion"
 msgstr "Depo yüklenemedi, sıfırlanıyor"
 
-#: src/pages/playlist.ts:211
+#: src/pages/playlist.ts:209
 msgid "Related playlists"
 msgstr "İlgili çalma listeleri"
 
-#: src/pages/playlist.ts:329
-#, fuzzy
-msgid "Edit Playlist"
-msgstr "Çalma Listesi"
-
-#: src/pages/playlist.ts:337
+#: src/pages/playlist.ts:335
 #, fuzzy
 msgid "Add to Library"
 msgstr "Kitaplık"
@@ -664,9 +687,6 @@ msgstr "Giriş yapılırken bir hata oluştu!"
 
 #~ msgid "caching data"
 #~ msgstr "veri önbellekleniyor"
-
-#~ msgid "Title"
-#~ msgstr "Başlık"
 
 #~ msgid "s"
 #~ msgstr "s"

@@ -2,11 +2,16 @@ using Gtk 4.0;
 using Adw 1;
 
 template $EditPlaylistDialog : Adw.PreferencesWindow {
+  search-enabled: false;
+  title: _("Edit Playlist");
+  default-width: 360;
+  default-height: 440;
+
   Adw.PreferencesPage {
-    title: "Edit Playlist";
+    title: _("Edit Playlist");
 
     Adw.PreferencesGroup {
-      title: "General";
+      title: _("General");
 
       Adw.EntryRow title {
         title: _("Title");
@@ -25,7 +30,7 @@ template $EditPlaylistDialog : Adw.PreferencesWindow {
     Adw.PreferencesGroup {
       Button save {
         halign: center;
-        label: "Save";
+        label: _("Save");
         clicked => $save_cb();
 
         styles [
