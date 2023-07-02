@@ -22,10 +22,25 @@ export class PlaylistListItem extends Gtk.Box {
         "chart_rank",
         "rank",
         "change",
+        "add",
       ],
       Children: [
         "dynamic_image",
       ],
+      Properties: {
+        "show-add": GObject.param_spec_boolean(
+          "show-add",
+          "Show Add",
+          "Show Add button",
+          true,
+          GObject.ParamFlags.READWRITE,
+        ),
+      },
+      Signals: {
+        "add": {
+          param_types: [GObject.TYPE_INT],
+        },
+      },
     }, this);
   }
 
@@ -39,8 +54,10 @@ export class PlaylistListItem extends Gtk.Box {
   private _chart_rank!: Gtk.Box;
   private _rank!: Gtk.Label;
   private _change!: Gtk.Image;
+  private _add!: Gtk.Button;
 
   playlistId?: string;
+  position = 0;
 
   constructor() {
     super({});
@@ -101,5 +118,19 @@ export class PlaylistListItem extends Gtk.Box {
     }
 
     this.dynamic_image.setup_video(item.videoId, playlistId);
+  }
+
+  // property: show-add
+
+  get show_add(): boolean {
+    return this._add.visible;
+  }
+
+  set show_add(value: boolean) {
+    this._add.visible = value;
+  }
+
+  private add_cb() {
+    this.emit("add", this.position);
   }
 }

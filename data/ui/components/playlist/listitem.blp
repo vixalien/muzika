@@ -52,6 +52,7 @@ template $PlaylistListItem : Box {
         orientation: vertical;
         valign: center;
         spacing: 3;
+        hexpand: true;
 
         Label title {
           hexpand: true;
@@ -93,6 +94,14 @@ template $PlaylistListItem : Box {
             ]
           }
         }
+      }
+
+      Button add {
+        icon-name: "list-add-symbolic";
+        visible: false;
+        clicked => $add_cb();
+
+        styles ["flat"]
       }
     }
   }

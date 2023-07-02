@@ -210,6 +210,8 @@ export class PlaylistBar extends Adw.Bin {
             setVideoId: item.item.setVideoId!,
           };
         }),
+      }).catch((err) => {
+        console.error(err);
       });
     });
 

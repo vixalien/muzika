@@ -11,12 +11,6 @@ template $PlaylistPage : Adw.Bin {
       ToggleButton select {
         icon-name: "selection-mode-symbolic";
       }
-
-      [end]
-      Button edit {
-        icon-name: "document-edit-symbolic";
-        clicked => $edit_cb();
-      }
     }
   
     content: Adw.BreakpointBin {
@@ -38,42 +32,95 @@ template $PlaylistPage : Adw.Bin {
           tightening-threshold: 1200;
           maximum-size: 1400;
 
-          Box inner_box {
+          Box {
             spacing: 24;
+            margin-bottom: 24;
             orientation: vertical;
 
             $PlaylistHeader header {}
 
-            Box content {
+            Box {
               orientation: vertical;
-
 
               $PlaylistItemView playlist_item_view {
               }
 
               $Paginator paginator {}
+
+              Box more {
+                margin-top: 12;
+                margin-start: 12;
+                margin-end: 12;
+
+                Box data {
+                  styles [
+                    "dim-label",
+                  ]
+
+                  spacing: 6;
+
+                  Label trackCount {
+                  }
+
+                  Label separator {
+                    label: "·";
+                  }
+
+                  Label duration {
+                  }
+                }
+              }
             }
 
-            Box more {
-              margin-bottom: 24;
-              margin-start: 12;
-              margin-end: 12;
-
-              Box data {
-                styles [
-                  "dim-label",
-                ]
-
+            Box insights {
+              orientation: vertical;
+              
+              Box suggestions {
                 spacing: 6;
+                orientation: vertical;
+                margin-top: 24;
 
-                Label trackCount {
+                Box titlesandbuttons {
+                  spacing: 6;
+                  margin-start: 12;
+                  margin-end: 12;
+                  height-request: 42;
+
+                  Box titles {
+                    valign: center;
+                    orientation: vertical;
+
+                    Label title {
+                      halign: start;
+                      ellipsize: end;
+                      label: _("Suggestions");
+
+                      styles [
+                        "title-2",
+                      ]
+                    }
+                  }
+
+                  Box buttons {
+                    halign: end;
+                    hexpand: true;
+                    valign: center;
+                    spacing: 6;
+
+                    Button refresh_button {
+                      label: _("Refresh");
+                      overflow: hidden;
+                      clicked => $refresh_suggestions_cb();
+
+                      styles [
+                        "flat",
+                      ]
+                    }
+                  }
                 }
 
-                Label separator {
-                  label: "·";
-                }
-
-                Label duration {
+                $PlaylistItemView suggestions_item_view {
+                  show-add: true;
                 }
               }
             }

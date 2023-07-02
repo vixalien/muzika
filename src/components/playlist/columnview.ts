@@ -392,6 +392,60 @@ class DurationColumn extends Gtk.ColumnViewColumn {
   }
 }
 
+interface AddColumnButton extends Gtk.Button {
+  listener?: number;
+}
+
+class AddColumn extends Gtk.ColumnViewColumn {
+  static {
+    GObject.registerClass({
+      GTypeName: "AddColumn",
+      Signals: {
+        "add": { param_types: [GObject.TYPE_INT] },
+      },
+    }, this);
+  }
+
+  constructor() {
+    super({
+      visible: false,
+    });
+
+    const factory = Gtk.SignalListItemFactory.new();
+    factory.connect("setup", this.setup_cb.bind(this));
+    factory.connect("bind", this.bind_cb.bind(this));
+    factory.connect("unbind", this.unbind_cb.bind(this));
+
+    this.factory = factory;
+  }
+
+  setup_cb(_factory: Gtk.SignalListItemFactory, list_item: Gtk.ListItem) {
+    const button = new Gtk.Button({
+      icon_name: "list-add-symbolic",
+    });
+
+    button.add_css_class("flat");
+
+    list_item.set_child(button);
+  }
+
+  bind_cb(_factory: Gtk.SignalListItemFactory, list_item: Gtk.ListItem) {
+    const button = list_item.child as AddColumnButton;
+
+    button.listener = button.connect("clicked", () => {
+      this.emit("add", list_item.position);
+    });
+  }
+
+  unbind_cb(_factory: Gtk.SignalListItemFactory, list_item: Gtk.ListItem) {
+    const button = list_item.child as AddColumnButton;
+
+    if (button.listener) {
+      button.disconnect(button.listener);
+    }
+  }
+}
+
 export class PlaylistColumnView extends Gtk.ColumnView {
   static {
     GObject.registerClass({
@@ -418,6 +472,18 @@ export class PlaylistColumnView extends Gtk.ColumnView {
           false,
           GObject.ParamFlags.READWRITE,
         ),
+        show_add: GObject.param_spec_boolean(
+          "show-add",
+          "Show Add",
+          "Show the add to playlist button",
+          false,
+          GObject.ParamFlags.READWRITE,
+        ),
+      },
+      Signals: {
+        "add": {
+          param_types: [GObject.TYPE_INT],
+        },
       },
     }, this);
   }
@@ -428,6 +494,19 @@ export class PlaylistColumnView extends Gtk.ColumnView {
   private _artist_column = new ArtistColumn();
   private _album_column = new AlbumColumn();
   private _duration_column = new DurationColumn();
+  private _add_column = new AddColumn();
+
+  // property: show-add
+
+  get show_add() {
+    return this._add_column.visible;
+  }
+
+  set show_add(value: boolean) {
+    this._add_column.visible = value;
+  }
+
+  // property: selection-mode
 
   get selection_mode() {
     return this._image_column.selection_mode;
@@ -437,6 +516,8 @@ export class PlaylistColumnView extends Gtk.ColumnView {
     this._image_column.selection_mode = value;
   }
 
+  // property: show-rank
+
   get show_rank() {
     return this._rank_column.visible;
   }
@@ -444,6 +525,8 @@ export class PlaylistColumnView extends Gtk.ColumnView {
   set show_rank(value: boolean) {
     this._rank_column.visible = value;
   }
+
+  // property: playlistId
 
   private _playlistId?: string;
 
@@ -455,6 +538,8 @@ export class PlaylistColumnView extends Gtk.ColumnView {
     this._playlistId = value;
     this._image_column.playlistId = value;
   }
+
+  // property: album
 
   private _album = false;
 
@@ -507,6 +592,11 @@ export class PlaylistColumnView extends Gtk.ColumnView {
     this.append_column(this._artist_column);
     this.append_column(this._album_column);
     this.append_column(this._duration_column);
+    this.append_column(this._add_column);
+
+    this._add_column.connect("add", (_, position: number) => {
+      this.emit("add", position);
+    });
 
     this.connect("activate", (_, position) => {
       const container = this.model.get_item(position) as ObjectContainer<

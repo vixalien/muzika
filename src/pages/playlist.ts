@@ -5,8 +5,10 @@ import Adw from "gi://Adw";
 import GLib from "gi://GLib";
 
 import {
+  edit_playlist,
   get_more_playlist_tracks,
   get_playlist,
+  get_playlist_suggestions,
   ParsedPlaylist,
   Playlist,
   PlaylistItem,
@@ -24,6 +26,7 @@ import {
   EditedValues,
   EditPlaylistDialog,
 } from "src/components/playlist/edit.js";
+import { Window } from "src/window.js";
 
 interface PlaylistState {
   playlist: Playlist;
@@ -42,11 +45,9 @@ export class PlaylistPage extends Adw.Bin
       Template: "resource:///com/vixalien/muzika/ui/pages/playlist.ui",
       InternalChildren: [
         "breakpoint",
-        "inner_box",
         "trackCount",
         "separator",
         "duration",
-        "content",
         "scrolled",
         "data",
         "playlist_item_view",
@@ -54,7 +55,9 @@ export class PlaylistPage extends Adw.Bin
         "header",
         "select",
         "bar",
-        "edit",
+        "suggestions",
+        "suggestions_item_view",
+        "insights",
       ],
     }, this);
   }
@@ -62,10 +65,8 @@ export class PlaylistPage extends Adw.Bin
   playlist?: Playlist;
 
   private _breakpoint!: Adw.Breakpoint;
-  private _inner_box!: Gtk.Box;
   private _trackCount!: Gtk.Label;
   private _duration!: Gtk.Label;
-  private _content!: Gtk.Box;
   private _separator!: Gtk.Label;
   private _scrolled!: Gtk.ScrolledWindow;
   private _data!: Gtk.Box;
@@ -74,9 +75,15 @@ export class PlaylistPage extends Adw.Bin
   private _header!: PlaylistHeader;
   private _select!: Gtk.ToggleButton;
   private _bar!: PlaylistBar;
-  private _edit!: Gtk.Button;
+  private _suggestions!: Gtk.Box;
+  private _suggestions_item_view!: PlaylistItemView;
+  private _insights!: Gtk.Box;
 
   model = new Gio.ListStore<ObjectContainer<PlaylistItem>>({
+    item_type: ObjectContainer.$gtype,
+  });
+
+  suggestions_model = new Gio.ListStore<ObjectContainer<PlaylistItem>>({
     item_type: ObjectContainer.$gtype,
   });
 
@@ -92,17 +99,23 @@ export class PlaylistPage extends Adw.Bin
     this._playlist_item_view.model = this.model;
     this._bar.model = this._playlist_item_view.multi_selection_model!;
 
+    this._suggestions_item_view.model = this.suggestions_model;
+
+    this._suggestions_item_view.connect("add", this.add_cb.bind(this));
+
     this._paginator.connect("activate", () => {
       this.load_more();
     });
 
     this._breakpoint.connect("apply", () => {
       this._playlist_item_view.show_column = true;
+      this._suggestions_item_view.show_column = true;
       this._header.show_large_header = true;
     });
 
     this._breakpoint.connect("unapply", () => {
       this._playlist_item_view.show_column = false;
+      this._suggestions_item_view.show_column = false;
       this._header.show_large_header = false;
     });
 
@@ -112,6 +125,45 @@ export class PlaylistPage extends Adw.Bin
       this._bar.update_selection();
       this._playlist_item_view.update();
     });
+  }
+
+  private add_cb(
+    _playlist_item_view: PlaylistItemView,
+    container: ObjectContainer<PlaylistItem>,
+  ) {
+    if (!this.playlist) return;
+
+    this.model.append(container);
+    this.playlist.tracks.push(container.object);
+
+    // tempolary set videoId to null
+    container.object.setVideoId = null;
+
+    edit_playlist(this.playlist.id, {
+      add_videos: [container.object.videoId],
+    })
+      .then((result) => {
+        // update setVideoId
+
+        const added = result.added[0];
+
+        if (result.added[0]) {
+          container.object.videoId = added.videoId;
+          container.object.setVideoId = added.setVideoId;
+        }
+      })
+      .catch((error) => {
+        this.model.remove(this.model.get_n_items() - 1);
+        this.playlist?.tracks.pop();
+
+        console.error(error);
+
+        (this.get_root() as Window).add_toast(_("Failed to add suggestion"));
+      });
+
+    if (this._suggestions_item_view.model!.get_n_items() <= 0) {
+      this.refresh_suggestions_cb();
+    }
   }
 
   private edit_cb() {
@@ -160,7 +212,7 @@ export class PlaylistPage extends Adw.Bin
       contents: related,
     });
 
-    this._content.append(carousel);
+    this._insights.append(carousel);
   }
 
   present(playlist: Playlist) {
@@ -173,7 +225,7 @@ export class PlaylistPage extends Adw.Bin
     this._playlist_item_view.show_rank = playlist.tracks[0].rank != null;
 
     this._bar.playlistId = this.playlist.id;
-    this._edit.visible = this.playlist.editable;
+    this._suggestions.visible = this.playlist.editable;
 
     this._header.load_thumbnails(playlist.thumbnails);
     this._header.set_description(playlist.description);
@@ -220,6 +272,42 @@ export class PlaylistPage extends Adw.Bin
     this._paginator.can_paginate = this.playlist.continuation != null;
 
     this.append_tracks(playlist.tracks);
+
+    this.suggestions_model.splice(
+      0,
+      this.suggestions_model.n_items,
+      playlist.suggestions.map((suggestion: PlaylistItem) =>
+        new ObjectContainer(suggestion)
+      ),
+    );
+  }
+
+  private refresh_suggestions_cb() {
+    if (!this.playlist) return;
+
+    if (this.playlist.suggestions_continuation) {
+      get_playlist_suggestions(
+        this.playlist.id,
+        this.playlist.suggestions_continuation,
+        {},
+      )
+        .then((result) => {
+          this.playlist!.suggestions = result.suggestions;
+          this.playlist!.suggestions_continuation = result.continuation;
+
+          this.suggestions_model.remove_all();
+          this.suggestions_model.splice(
+            0,
+            this.suggestions_model.n_items,
+            result.suggestions.map((suggestion) =>
+              new ObjectContainer(suggestion)
+            ),
+          );
+        });
+    } else {
+      this.suggestions_model.remove_all();
+      this.playlist.suggestions = [];
+    }
   }
 
   update_header_buttons() {
@@ -312,6 +400,7 @@ export class PlaylistPage extends Adw.Bin
   static async load(context: EndpointContext) {
     const data = await get_playlist(context.match.params.playlistId, {
       related: true,
+      suggestions_limit: 6,
       signal: context.signal,
     });
 
