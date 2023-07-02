@@ -61,12 +61,12 @@ export class ArtistPage extends Adw.Bin
 
     this._playlist_item_view.model = this.model;
 
-    this._breakpoint.connect("apply", () => {
+    this._breakpoint.connect("unapply", () => {
       this._playlist_item_view.show_column = true;
       this._header.show_large_header = true;
     });
 
-    this._breakpoint.connect("unapply", () => {
+    this._breakpoint.connect("apply", () => {
       this._playlist_item_view.show_column = false;
       this._header.show_large_header = false;
     });
