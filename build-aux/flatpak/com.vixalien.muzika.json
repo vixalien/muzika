@@ -21,7 +21,8 @@
     "--socket=pulseaudio",
     "--socket=fallback-x11",
     "--env=GJS_DISABLE_JIT=1",
-    "--own-name=org.mpris.MediaPlayer2.Muzika"
+    "--own-name=org.mpris.MediaPlayer2.Muzika",
+    "--talk-name=org.freedesktop.secrets"
   ],
   "cleanup": [
     "/include",
