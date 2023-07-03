@@ -1,0 +1,27 @@
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+name: CI
+jobs:
+  flatpak:
+    name: "Flatpak Nightly"
+    runs-on: ubuntu-latest
+    container:
+      image: bilelmoussaoui/flatpak-github-actions:gnome-nightly
+      options: --privileged
+    steps:
+      - uses: actions/checkout@v3
+      - name: Prepare Runtime
+        run: |
+          flatpak --system install -y --noninteractive flathub org.freedesktop.Sdk.Extension.node18/x86_64/22.08
+      - uses: flatpak/flatpak-github-actions/flatpak-builder@v4
+        with:
+          bundle: com.vixalien.muzika.nightly.flatpak
+          repository-name: gnome-nightly
+          repository-url: https://nightly.gnome.org/gnome-nightly.flatpakrepo
+          manifest-path: build-aux/flatpak/com.vixalien.muzika.Devel.json
+          cache-key: flatpak-builder-${{ github.sha }}-nightly
