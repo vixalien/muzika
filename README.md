@@ -17,13 +17,23 @@ Muzika is an elegant music streaming app.
 
 ## Installation
 
+### Using the latest CI build
+
+You can download a Flatpak bundle from the latest CI build.
+
+Visit [the CI build page](https://github.com/vixalien/muzika/actions/workflows/build.yml?query=branch%3Amain), select the latest build and download the `com.vixalien.muzika.flatpak` artifact.
+
+Install it with:
+
+```bash
+flatpak install com.vixalien.muzika.flatpak
+```
+
 ### From source
 
 Dependencies:
 
-- GTK
-- Meson and Ninja
-- Node.js and yarn
+- GNOME Builder
 
 1. Clone the repository
 
