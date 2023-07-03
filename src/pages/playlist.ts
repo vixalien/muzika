@@ -57,6 +57,7 @@ export class PlaylistPage extends Adw.Bin
         "bar",
         "suggestions",
         "suggestions_item_view",
+        "insights_clamp",
         "insights",
       ],
     }, this);
@@ -77,6 +78,7 @@ export class PlaylistPage extends Adw.Bin
   private _bar!: PlaylistBar;
   private _suggestions!: Gtk.Box;
   private _suggestions_item_view!: PlaylistItemView;
+  private _insights_clamp!: Adw.Clamp;
   private _insights!: Gtk.Box;
 
   model = new Gio.ListStore<ObjectContainer<PlaylistItem>>({
@@ -278,6 +280,10 @@ export class PlaylistPage extends Adw.Bin
         new ObjectContainer(suggestion)
       ),
     );
+
+    if (playlist.suggestions.length > 0 || playlist.related.length > 0) {
+      this._insights_clamp.visible = true;
+    } 
   }
 
   private refresh_suggestions_cb() {

@@ -29,6 +29,7 @@ export class AlbumPage extends Adw.Bin
         "breakpoint",
         "trackCount",
         "duration",
+        "insights_clamp",
         "insights",
         "playlist_item_view",
         "header",
@@ -41,6 +42,7 @@ export class AlbumPage extends Adw.Bin
   private _breakpoint!: Adw.Breakpoint;
   private _trackCount!: Gtk.Label;
   private _duration!: Gtk.Label;
+  private _insights_clamp!: Adw.Clamp;
   private _insights!: Gtk.Box;
   private _playlist_item_view!: PlaylistItemView;
   private _header!: AlbumHeader;
@@ -118,6 +120,7 @@ export class AlbumPage extends Adw.Bin
     }
 
     if (album.other_versions && album.other_versions.length > 0) {
+      this._insights_clamp.visible = true;
       this.show_other_versions(album.other_versions);
     }
 

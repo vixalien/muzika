@@ -79,9 +79,11 @@ template $PlaylistPage : Adw.Bin {
             }
           }
 
-          Adw.Clamp {
+          Adw.Clamp insights_clamp {
             tightening-threshold: 1200;
             maximum-size: 1400;
+            vexpand: true;
+            visible: false;
 
             styles ["insights-clamp"]
 
