@@ -14,7 +14,7 @@ jobs:
       options: --privileged
     steps:
     - uses: actions/checkout@v3
-    - uses: flatpak/flatpak-github-actions/flatpak-builder@v6.1
+    - uses: flatpak/flatpak-github-actions/flatpak-builder@v4
       with:
         bundle: com.vixalien.muzika.nightly.flatpak
         manifest-path: build-aux/flatpak/com.vixalien.muzika.json
