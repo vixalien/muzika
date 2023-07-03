@@ -94,7 +94,7 @@ export class CarouselCard extends Gtk.Box {
     this.content = undefined;
     this.set_align(Gtk.Align.FILL);
     this._dynamic_image.clear();
-    this._playlist_image.clear()
+    this._playlist_image.clear();
   }
 
   // utils
@@ -318,6 +318,7 @@ export class CarouselCard extends Gtk.Box {
 
     this.set_title(album.title);
     this.set_subtitle(album.artists ?? [], [album.year]);
+    this.show_explicit(album.isExplicit);
 
     this.setup_image(CarouselImageType.PLAYLIST_IMAGE, album.thumbnails);
     this.setup_playlist(album.audioPlaylistId);
