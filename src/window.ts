@@ -30,7 +30,7 @@ import GLib from "gi://GLib";
 import Gio from "gi://Gio";
 
 import { Navigator } from "./navigation.js";
-import { Application } from "./application.js";
+import { Application, Settings } from "./application.js";
 import {
   PlayerSidebar,
   PlayerSidebarView,
@@ -92,6 +92,14 @@ export class Window extends Adw.ApplicationWindow {
 
   constructor(params?: Partial<Adw.ApplicationWindow.ConstructorProperties>) {
     super(params);
+
+    const window_size = Settings.get_value("last-window-size");
+
+    const width = window_size.get_child_value(0).get_int32();
+    const height = window_size.get_child_value(1).get_int32();
+
+    if (width > 0) this.default_width = width;
+    if (height > 0) this.default_height = height;
 
     this.navigator = new Navigator(this._navigation_view);
 
@@ -266,5 +274,16 @@ export class Window extends Adw.ApplicationWindow {
       .finally(() => {
         page.destroy();
       });
+  }
+
+  vfunc_close_request() {
+    const window_size = GLib.Variant.new("(ii)", [
+      this.get_width(),
+      this.get_height(),
+    ]);
+
+    Settings.set_value("last-window-size", window_size);
+
+    return super.vfunc_close_request();
   }
 }

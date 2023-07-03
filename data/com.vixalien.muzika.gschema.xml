@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<?xml-model href="https://gitlab.gnome.org/GNOME/glib/-/raw/HEAD/gio/gschema.dtd" type="application/xml-dtd"?>
 <schemalist gettext-domain="muzika">
 	<schema id="com.vixalien.muzika" path="/com/vixalien/muzika/">
 		<key name="prefer-list" type="b">
@@ -11,6 +12,11 @@
 			<default>0.5</default>
 			<summary>Volume</summary>
 			<description>The volume of the player</description>
+		</key>
+		<key name="last-window-size" type="(ii)">
+			<default>(-1,-1)</default>
+			<summary>Last width &amp; height of window</summary>
+			<description>The saved last size of the window (to be restored)</description>
 		</key>
 	</schema>
 </schemalist>
