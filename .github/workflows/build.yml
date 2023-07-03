@@ -18,4 +18,5 @@ jobs:
       with:
         bundle: muzika.flatpak
         manifest-path: build-aux/flatpak/com.vixalien.muzika.json
+        cache-key: flatpak-builder-${{ github.sha }}
         
