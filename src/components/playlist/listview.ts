@@ -19,6 +19,9 @@ export class PlaylistListView extends Gtk.ListView {
         "add": {
           param_types: [GObject.TYPE_INT],
         },
+        "is-playing": {
+          param_types: [GObject.TYPE_UINT64],
+        },
       },
     }, this);
   }
@@ -93,6 +96,13 @@ export class PlaylistListView extends Gtk.ListView {
       item,
       item.connect("add", (_, position) => {
         this.emit("add", position);
+      }),
+    );
+
+    item.signals.add(
+      item,
+      item.connect("is-playing", (_, id) => {
+        this.emit("is-playing", id);
       }),
     );
   }

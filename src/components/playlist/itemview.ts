@@ -194,6 +194,14 @@ export class PlaylistItemView extends Gtk.Stack {
       this.add_cb(index);
     });
 
+    this._list_view.connect("is-playing", (_, index) => {
+      this.select_track(index);
+    });
+
+    this._column_view.connect("is-playing", (_, index) => {
+      this.select_track(index);
+    });
+
     this.add_named(this._list_view, "list");
     this.add_named(this._column_view, "column");
 
@@ -217,6 +225,21 @@ export class PlaylistItemView extends Gtk.Stack {
     (this.model as Gio.ListStore).remove(index);
 
     this.emit("add", item);
+  }
+
+  select_track(index: number) {
+    const container = this.model?.get_item(index);
+
+    if (!container || !this.multi_selection_model) return;
+
+    if (
+      this.selection_mode ||
+      this.multi_selection_model.get_selection().get_size() > 1
+    ) {
+      return;
+    }
+
+    this.multi_selection_model.select_item(index, true);
   }
 }
 

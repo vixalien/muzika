@@ -110,6 +110,7 @@ export class DynamicImage extends Gtk.Overlay {
         "selection-mode-toggled": {
           param_types: [GObject.TYPE_BOOLEAN],
         },
+        "is-playing": {},
       },
     }, this);
   }
@@ -442,6 +443,8 @@ export class DynamicImage extends Gtk.Overlay {
     if (
       player.current_meta?.object.track.videoId === this.videoId
     ) {
+      this.emit("is-playing");
+
       if (player.playing) {
         this.state = DynamicImageState.PLAYING;
         this.emit("play");
@@ -455,8 +458,10 @@ export class DynamicImage extends Gtk.Overlay {
       player.connect(`start-loading::${videoId}`, () => {
         this.state = DynamicImageState.LOADING;
         this.emit("play");
+        this.emit("is-playing");
       }),
       player.connect(`stop-loading::${videoId}`, () => {
+        this.emit("is-playing");
         if (
           player.current_meta?.object.track.videoId === this.videoId &&
           player.playing

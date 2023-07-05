@@ -26,6 +26,9 @@ export class PlaylistItemCard extends Gtk.ListBoxRow {
       Children: [
         "dynamic_image",
       ],
+      Signals: {
+        "is-playing": {},
+      },
     }, this);
   }
 
@@ -54,6 +57,10 @@ export class PlaylistItemCard extends Gtk.ListBoxRow {
 
         return true;
       }
+    });
+
+    this.dynamic_image.connect("is-playing", (_) => {
+      this.emit("is-playing");
     });
   }
 

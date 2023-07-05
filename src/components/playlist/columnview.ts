@@ -16,6 +16,9 @@ class ImageColumn extends Gtk.ColumnViewColumn {
         "selection-mode-toggled": {
           param_types: [GObject.TYPE_UINT64, GObject.TYPE_BOOLEAN],
         },
+        "is-playing": {
+          param_types: [GObject.TYPE_UINT64],
+        },
       },
     }, this);
   }
@@ -55,6 +58,10 @@ class ImageColumn extends Gtk.ColumnViewColumn {
 
     dynamic_image.connect("selection-mode-toggled", (_dynamic_image, value) => {
       this.emit("selection-mode-toggled", list_item.position, value);
+    });
+
+    dynamic_image.connect("is-playing", () => {
+      this.emit("is-playing", list_item.position);
     });
 
     if (this.album) {
@@ -484,6 +491,9 @@ export class PlaylistColumnView extends Gtk.ColumnView {
         "add": {
           param_types: [GObject.TYPE_INT],
         },
+        "is-playing": {
+          param_types: [GObject.TYPE_INT],
+        },
       },
     }, this);
   }
@@ -571,6 +581,10 @@ export class PlaylistColumnView extends Gtk.ColumnView {
         }
       },
     );
+
+    this._image_column.connect("is-playing", (_, position: number) => {
+      this.emit("is-playing", position);
+    });
 
     if (options.album != null) {
       this.album = options.album;

@@ -40,6 +40,9 @@ export class PlaylistListItem extends Gtk.Box {
         "add": {
           param_types: [GObject.TYPE_INT],
         },
+        "is-playing": {
+          param_types: [GObject.TYPE_UINT64],
+        },
       },
     }, this);
   }
@@ -116,6 +119,10 @@ export class PlaylistListItem extends Gtk.Box {
     ) {
       this.dynamic_image.load_thumbnails(item.thumbnails);
     }
+
+    this.dynamic_image.connect("is-playing", () => {
+      this.emit("is-playing", this.position);
+    });
 
     this.dynamic_image.setup_video(item.videoId, playlistId);
   }
