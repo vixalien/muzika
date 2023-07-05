@@ -18,6 +18,14 @@ jobs:
       fail-fast: false
     steps:
       - uses: actions/checkout@v3
+      - name: Install Docker
+        run: |
+          dnf -y install docker
+      - name: Setup QEMU
+        id: qemu
+        uses: docker/setup-qemu-action@v1
+        with:
+          platforms: arm64
       - name: Prepare Runtime
         run: |
           flatpak --system remote-add --if-not-exists flathub-beta https://flathub.org/beta-repo/flathub-beta.flatpakrepo

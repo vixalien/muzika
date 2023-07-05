@@ -18,6 +18,14 @@ jobs:
       fail-fast: false
     steps:
       - uses: actions/checkout@v3
+      - name: Install Docker
+        run: |
+          dnf -y install docker
+      - name: Setup QEMU
+        id: qemu
+        uses: docker/setup-qemu-action@v1
+        with:
+          platforms: arm64
       - uses: flatpak/flatpak-github-actions/flatpak-builder@v4
         with:
           bundle: com.vixalien.muzika.flatpak
