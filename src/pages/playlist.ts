@@ -59,6 +59,7 @@ export class PlaylistPage extends Adw.Bin
         "suggestions_item_view",
         "insights_clamp",
         "insights",
+        "menu",
       ],
     }, this);
   }
@@ -80,6 +81,7 @@ export class PlaylistPage extends Adw.Bin
   private _suggestions_item_view!: PlaylistItemView;
   private _insights_clamp!: Adw.Clamp;
   private _insights!: Gtk.Box;
+  private _menu!: Gtk.PopoverMenu;
 
   model = new Gio.ListStore<ObjectContainer<PlaylistItem>>({
     item_type: ObjectContainer.$gtype,
@@ -283,7 +285,7 @@ export class PlaylistPage extends Adw.Bin
 
     if (playlist.suggestions.length > 0 || playlist.related.length > 0) {
       this._insights_clamp.visible = true;
-    } 
+    }
   }
 
   private refresh_suggestions_cb() {
@@ -358,9 +360,7 @@ export class PlaylistPage extends Adw.Bin
       `queue.add-playlist("${this.playlist.id}")`,
     );
 
-    this._header.add_menu_button({
-      menu_model: menu,
-    });
+    this._menu.set_menu_model(menu);
   }
 
   no_more = false;

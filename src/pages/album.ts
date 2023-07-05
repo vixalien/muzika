@@ -33,6 +33,7 @@ export class AlbumPage extends Adw.Bin
         "insights",
         "playlist_item_view",
         "header",
+        "menu",
       ],
     }, this);
   }
@@ -46,6 +47,7 @@ export class AlbumPage extends Adw.Bin
   private _insights!: Gtk.Box;
   private _playlist_item_view!: PlaylistItemView;
   private _header!: AlbumHeader;
+  private _menu!: Gtk.MenuButton;
 
   model = new Gio.ListStore<ObjectContainer<PlaylistItem>>({
     item_type: ObjectContainer.$gtype,
@@ -184,9 +186,7 @@ export class AlbumPage extends Adw.Bin
       menu.append_section(_("Artists"), section);
     }
 
-    this._header.add_menu_button({
-      menu_model: menu,
-    });
+    this._menu.menu_model = menu;
   }
 
   no_more = false;

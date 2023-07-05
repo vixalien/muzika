@@ -7,9 +7,14 @@ template $PlaylistPage : Adw.Bin {
     
     [top]
     Adw.HeaderBar {
-      [end]
+      [start]
       ToggleButton select {
         icon-name: "selection-mode-symbolic";
+      }
+
+      [end]
+      MenuButton menu {
+        icon-name: "view-more-symbolic";
       }
     }
   
