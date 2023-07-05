@@ -8,7 +8,6 @@ on:
 name: Flatpak Nightly
 jobs:
   flatpak:
-    name: "Flatpak Nightly"
     runs-on: ubuntu-latest
     container:
       image: bilelmoussaoui/flatpak-github-actions:gnome-nightly

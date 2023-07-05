@@ -8,7 +8,6 @@ on:
 name: Flatpak
 jobs:
   flatpak:
-    name: "Flatpak"
     runs-on: ubuntu-latest
     container:
       image: bilelmoussaoui/flatpak-github-actions:gnome-44
