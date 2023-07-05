@@ -19,9 +19,11 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Install Docker
+        if: matrix.arch == 'aarch64'
         run: |
           dnf -y install docker
       - name: Setup QEMU
+        if: matrix.arch == 'aarch64'
         id: qemu
         uses: docker/setup-qemu-action@v1
         with:
