@@ -324,7 +324,7 @@ export class FullPlayerView extends Gtk.ActionBar {
 
     if (track.album) {
       this._title.set_markup(
-        `<a href="muzika:album:${track.album.id}">${
+        `<a href="muzika:album:${track.album.id}?track=${track.videoId}">${
           escape_label(track.title)
         }</a>`,
       );

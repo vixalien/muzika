@@ -14,13 +14,19 @@ import { ObjectContainer } from "src/util/objectcontainer.js";
 
 interface AlbumState {
   album: AlbumResult;
+  track?: string;
 }
 
 AlbumHeader;
 PlaylistItemView;
 
+interface AlbumProps {
+  album: AlbumResult;
+  track?: string;
+}
+
 export class AlbumPage extends Adw.Bin
-  implements MuzikaComponent<AlbumResult, AlbumState> {
+  implements MuzikaComponent<AlbumProps, AlbumState> {
   static {
     GObject.registerClass({
       GTypeName: "AlbumPage",
@@ -48,6 +54,8 @@ export class AlbumPage extends Adw.Bin
   private _playlist_item_view!: PlaylistItemView;
   private _header!: AlbumHeader;
   private _menu!: Gtk.MenuButton;
+
+  track: string | null = null;
 
   model = new Gio.ListStore<ObjectContainer<PlaylistItem>>({
     item_type: ObjectContainer.$gtype,
@@ -77,6 +85,15 @@ export class AlbumPage extends Adw.Bin
       0,
       tracks.map((track) => new ObjectContainer(track)),
     );
+
+    if (this.track) {
+      for (let i = 0; i < tracks.length; i++) {
+        if (tracks[i].videoId == this.track) {
+          this._playlist_item_view.select_track(i + n);
+          break;
+        }
+      }
+    }
   }
 
   show_other_versions(related: ParsedAlbum[]) {
@@ -90,9 +107,10 @@ export class AlbumPage extends Adw.Bin
     this._insights.append(carousel);
   }
 
-  present(album: AlbumResult) {
+  present({ album, track }: AlbumProps) {
     this.model.remove_all();
 
+    this.track = track ?? null;
     this.album = album;
     this._playlist_item_view.playlistId = album.audioPlaylistId ?? undefined;
 
@@ -198,17 +216,18 @@ export class AlbumPage extends Adw.Bin
 
     context.set_title(album.title);
 
-    return album;
+    return { album, track: context.url.searchParams.get("track") };
   }
 
   get_state(): AlbumState {
     return {
       album: this.album!,
+      track: this.track ?? undefined,
     };
   }
 
   restore_state(state: AlbumState) {
-    this.present(state.album);
+    this.present({ album: state.album, track: state.track });
   }
 }
 
