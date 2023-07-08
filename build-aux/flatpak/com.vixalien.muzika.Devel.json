@@ -4,13 +4,17 @@
   "runtime-version": "master",
   "sdk": "org.gnome.Sdk",
   "sdk-extensions": [
-    "org.freedesktop.Sdk.Extension.node18"
+    "org.freedesktop.Sdk.Extension.node18",
+    "org.freedesktop.Sdk.Extension.rust-stable"
   ],
   "tags": [
     "nightly"
   ],
   "build-options": {
-    "append-path": "/usr/lib/sdk/node18/bin"
+    "env": {
+      "CARGO_HOME": "/run/build/cargo-c/cargo"
+    },
+    "append-path": "/usr/lib/sdk/node18/bin:/usr/lib/sdk/rust-stable/bin"
   },
   "command": "com.vixalien.muzika",
   "finish-args": [
@@ -21,7 +25,8 @@
     "--socket=pulseaudio",
     "--socket=fallback-x11",
     "--env=GJS_DISABLE_JIT=1",
-    "--own-name=org.mpris.MediaPlayer2.Muzika"
+    "--own-name=org.mpris.MediaPlayer2.Muzika",
+    "--talk-name=org.freedesktop.secrets"
   ],
   "cleanup": [
     "/include",
@@ -36,6 +41,40 @@
     "/yarn-mirror"
   ],
   "modules": [
+    {
+      "name": "cargo-c",
+      "buildsystem": "simple",
+      "build-commands": [
+        "cargo install cargo-c --root /app"
+      ],
+      "build-options": {
+        "build-args": [
+          "--share=network"
+        ]
+      },
+      "cleanup": [
+        "*"
+      ]
+    },
+    {
+      "name": "gst-plugins-rs",
+      "buildsystem": "simple",
+      "sources": [
+        {
+          "type": "git",
+          "url": "https://gitlab.freedesktop.org/gstreamer/gst-plugins-rs",
+          "branch": "0.10"
+        }
+      ],
+      "build-options": {
+        "build-args": [
+          "--share=network"
+        ]
+      },
+      "build-commands": [
+        "cargo cinstall -p gst-plugin-gtk4 --prefix=/app"
+      ]
+    },
     {
       "name": "blueprint-compiler",
       "buildsystem": "meson",
