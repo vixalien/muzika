@@ -41,6 +41,7 @@ import { AddActionEntries } from "./util/action.js";
 import { NavbarView } from "./components/navbar/index.js";
 import { get_current_user, get_option } from "libmuse";
 import { PlayerView } from "./components/player/view.js";
+import { MuzikaPlayer } from "./player/muzika.js";
 
 // make sure to first register PlayerSidebar
 PlayerSidebar;
@@ -287,3 +288,15 @@ export class Window extends Adw.ApplicationWindow {
     return super.vfunc_close_request();
   }
 }
+
+const player = new MuzikaPlayer();
+
+player.set_uri(
+  "https://download.blender.org/peach/bigbuckbunny_movies/big_buck_bunny_480p_stereo.ogg",
+);
+
+player.play();
+
+player.connect("notify", (_, pspec) => {
+  console.log("prop changed", pspec.name, "to", (_ as any)[pspec.name]);
+});
