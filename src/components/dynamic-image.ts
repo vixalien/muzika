@@ -388,6 +388,7 @@ export class DynamicImage extends Gtk.Overlay {
 
   videoId: string | null = null;
   playlistId: string | null = null;
+  mode_playlist = false;
 
   setup_video(videoId: string, playlistId: string | null = null) {
     this.videoId = videoId;
@@ -395,56 +396,9 @@ export class DynamicImage extends Gtk.Overlay {
 
     this.reset_listeners();
 
-    const player = this.get_player();
-
-    // if the video is already playing, we need to update the state
-    if (
-      player.now_playing?.object.track.videoId === this.videoId
-    ) {
-      this.emit("is-playing");
-
-      if (player.playing) {
-        this.state = DynamicImageState.PLAYING;
-        this.emit("play");
-      } else {
-        this.state = DynamicImageState.PAUSED;
-        this.emit("pause");
-      }
+    if (this.get_mapped()) {
+      this.setup_listeners();
     }
-
-    this.listeners.add(player, [
-      player.connect(`start-loading::${videoId}`, () => {
-        console.log("start-loading", this.videoId);
-        this.state = DynamicImageState.LOADING;
-        this.emit("play");
-        this.emit("is-playing");
-      }),
-      player.connect(`stop-loading::${videoId}`, () => {
-        console.log("stop-loading", this.videoId);
-        this.emit("is-playing");
-        if (
-          player.now_playing?.object.track.videoId === this.videoId &&
-          player.playing
-        ) {
-          this.state = DynamicImageState.PLAYING;
-        } else {
-          this.state = DynamicImageState.PAUSED;
-        }
-      }),
-      player.connect(`start-playback::${videoId}`, () => {
-        console.log("start-playback", this.videoId);
-        this.state = DynamicImageState.PLAYING;
-      }),
-      player.connect(`pause-playback::${videoId}`, () => {
-        console.log("pause-playback", this.videoId);
-        this.state = DynamicImageState.PAUSED;
-      }),
-      player.connect(`stop-playback::${videoId}`, () => {
-        console.log("stop-playback", this.videoId);
-        this.state = DynamicImageState.DEFAULT;
-        console.log("this state", this.state);
-      }),
-    ]);
   }
 
   private play_cb() {
@@ -481,49 +435,109 @@ export class DynamicImage extends Gtk.Overlay {
 
   setup_playlist(playlistId: string) {
     this.playlistId = playlistId;
+    this.mode_playlist = true;
 
+    this.reset_listeners();
+
+    if (this.get_mapped()) {
+      this.setup_listeners();
+    }
+  }
+
+  setup_listeners() {
     this.reset_listeners();
 
     const player = this.get_player();
 
-    // if the playlist is already playing, we need to update the state
-    if (
-      player.now_playing?.object.track.playlist === this.playlistId
-    ) {
-      if (player.playing) {
-        this.state = DynamicImageState.PLAYING;
-        this.emit("play");
-      } else {
-        this.state = DynamicImageState.PAUSED;
-        this.emit("pause");
-      }
-    }
+    if (this.mode_playlist === true) {
+      // this dynamic image is for a playlist
 
-    this.listeners.add(player, [
-      player.connect(`start-loading::playlist::${playlistId}`, () => {
-        this.state = DynamicImageState.LOADING;
-        this.emit("play");
-      }),
-      player.connect(`stop-loading::playlist::${playlistId}`, () => {
-        if (
-          player.now_playing?.object.track.playlist === this.playlistId &&
-          player.playing
-        ) {
+      // if the playlist is already playing, we need to update the state
+      if (
+        player.now_playing?.object.track.playlist === this.playlistId
+      ) {
+        if (player.playing) {
           this.state = DynamicImageState.PLAYING;
+          this.emit("play");
         } else {
           this.state = DynamicImageState.PAUSED;
+          this.emit("pause");
         }
-      }),
-      player.connect(`start-playback::playlist::${playlistId}`, () => {
-        this.state = DynamicImageState.PLAYING;
-      }),
-      player.connect(`pause-playback::playlist::${playlistId}`, () => {
-        this.state = DynamicImageState.PAUSED;
-      }),
-      player.connect(`stop-playback::playlist::${playlistId}`, () => {
-        this.state = DynamicImageState.DEFAULT;
-      }),
-    ]);
+      }
+
+      this.listeners.add(player, [
+        player.connect(`start-loading::playlist::${this.playlistId}`, () => {
+          this.state = DynamicImageState.LOADING;
+          this.emit("play");
+        }),
+        player.connect(`stop-loading::playlist::${this.playlistId}`, () => {
+          if (
+            player.now_playing?.object.track.playlist === this.playlistId &&
+            player.playing
+          ) {
+            this.state = DynamicImageState.PLAYING;
+          } else {
+            this.state = DynamicImageState.PAUSED;
+          }
+        }),
+        player.connect(`start-playback::playlist::${this.playlistId}`, () => {
+          this.state = DynamicImageState.PLAYING;
+        }),
+        player.connect(`pause-playback::playlist::${this.playlistId}`, () => {
+          this.state = DynamicImageState.PAUSED;
+        }),
+        player.connect(`stop-playback::playlist::${this.playlistId}`, () => {
+          this.state = DynamicImageState.DEFAULT;
+        }),
+      ]);
+    } else {
+      // this dynamic image is for a track
+
+      // if the video is already playing, we need to update the state
+      if (
+        player.now_playing?.object.track.videoId === this.videoId
+      ) {
+        this.emit("is-playing");
+
+        console.log("is playing", player.playing, this.videoId);
+
+        if (player.playing) {
+          this.state = DynamicImageState.PLAYING;
+          this.emit("play");
+        } else {
+          this.state = DynamicImageState.PAUSED;
+          this.emit("pause");
+        }
+      }
+
+      this.listeners.add(player, [
+        player.connect(`start-loading::${this.videoId}`, () => {
+          this.state = DynamicImageState.LOADING;
+          this.emit("play");
+          this.emit("is-playing");
+        }),
+        player.connect(`stop-loading::${this.videoId}`, () => {
+          this.emit("is-playing");
+          if (
+            player.now_playing?.object.track.videoId === this.videoId &&
+            player.playing
+          ) {
+            this.state = DynamicImageState.PLAYING;
+          } else {
+            this.state = DynamicImageState.PAUSED;
+          }
+        }),
+        player.connect(`start-playback::${this.videoId}`, () => {
+          this.state = DynamicImageState.PLAYING;
+        }),
+        player.connect(`pause-playback::${this.videoId}`, () => {
+          this.state = DynamicImageState.PAUSED;
+        }),
+        player.connect(`stop-playback::${this.videoId}`, () => {
+          this.state = DynamicImageState.DEFAULT;
+        }),
+      ]);
+    }
   }
 
   clear() {
@@ -531,14 +545,14 @@ export class DynamicImage extends Gtk.Overlay {
     this.remove_controller(this.controller);
   }
 
-  vfunc_hide() {
-    console.log("hidden");
+  vfunc_map(): void {
+    this.setup_listeners();
+    super.vfunc_map();
   }
 
-  vfunc_unroot(): void {
-    console.log("unmap", this.listeners.listeners.size);
-    this.clear();
-    super.vfunc_unroot();
+  vfunc_unmap(): void {
+    this.reset_listeners();
+    super.vfunc_unmap();
   }
 
   load_thumbnails(
