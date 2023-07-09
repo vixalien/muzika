@@ -2,13 +2,13 @@ import Gtk from "gi://Gtk?version=4.0";
 import GObject from "gi://GObject";
 import GLib from "gi://GLib";
 
-import { Player } from "../../player/index.js";
 import { load_thumbnails } from "../webimage.js";
 import { PlayerProgressBar } from "./progress.js";
 import { QueueTrack } from "libmuse/types/parsers/queue.js";
+import { MuzikaPlayer } from "src/player/muzika.js";
 
 export interface MiniPlayerViewOptions {
-  player: Player;
+  player: MuzikaPlayer;
 }
 
 export class MiniPlayerView extends Gtk.Overlay {
@@ -32,7 +32,7 @@ export class MiniPlayerView extends Gtk.Overlay {
   private _play_button!: Gtk.Button;
   private _next_button!: Gtk.Button;
 
-  player: Player;
+  player: MuzikaPlayer;
 
   progress_bar: PlayerProgressBar;
 
@@ -48,7 +48,6 @@ export class MiniPlayerView extends Gtk.Overlay {
   }
 
   song_changed() {
-    this.progress_bar.reset();
     this.progress_bar.value = 0;
 
     const song = this.player.queue.current?.object;
@@ -66,8 +65,8 @@ export class MiniPlayerView extends Gtk.Overlay {
       this.song_changed.bind(this),
     );
 
-    this.player.connect("seeked", (_, position) => {
-      this.progress_bar.update_position(position);
+    this.player.connect("notify::seeking", (_) => {
+      this.progress_bar.update_position(this.player.get_timestamp());
     });
 
     this.player.connect("notify::buffering", () => {
@@ -81,16 +80,15 @@ export class MiniPlayerView extends Gtk.Overlay {
     this.player.connect("notify::duration", () => {
       this.progress_bar.set_duration(this.player.duration);
     });
+
+    this.player.connect("notify::timestamp", () => {
+      this.progress_bar.update_position(this.player.timestamp);
+    });
   }
 
   update_play_button() {
-    this.progress_bar.buffering = this.player.buffering && this.player.playing;
-
-    if (this.player.playing && !this.player.buffering) {
-      this.progress_bar.play(this.player.get_position() ?? 0);
-    } else {
-      this.progress_bar.pause();
-    }
+    this.progress_bar.buffering = this.player.is_buffering &&
+      this.player.playing;
 
     if (this.player.playing) {
       this._play_button.icon_name = "media-playback-pause-symbolic";

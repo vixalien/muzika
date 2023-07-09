@@ -33,13 +33,6 @@ export class PlayerScale extends Gtk.Scale {
           GObject.ParamFlags.READWRITE,
           false,
         ),
-        animation: GObject.ParamSpec.object(
-          "animation",
-          "Animation",
-          "The animation object",
-          GObject.ParamFlags.READWRITE,
-          Adw.TimedAnimation,
-        ),
       },
       Signals: {
         "user-changed-value": {
@@ -48,8 +41,6 @@ export class PlayerScale extends Gtk.Scale {
       },
     }, this);
   }
-
-  animation: Adw.TimedAnimation | null = null;
 
   constructor() {
     super({
@@ -67,42 +58,13 @@ export class PlayerScale extends Gtk.Scale {
     });
 
     this.connect("change-value", (_, _scroll, value: number) => {
-      if (this.animation) {
-        this.animation.pause();
-      }
-
       this.user_changed_value();
     });
   }
 
   private user_changed_value() {
-    this.setup_animation(this.duration, this.value);
     this.emit("user-changed-value", this.value);
     this.notify("value");
-  }
-
-  reset() {
-    if (this.animation) {
-      this.animation.reset();
-      this.animation = null;
-    }
-
-    // this.adjustment.value = 0;
-  }
-
-  private setup_animation(duration: number, position: number) {
-    this.reset();
-
-    const target = Adw.PropertyAnimationTarget.new(this, "value");
-
-    this.animation = new Adw.TimedAnimation({
-      duration: (duration - position) / Gst.MSECOND,
-      target,
-      widget: this,
-      value_from: position,
-      value_to: duration,
-      easing: Adw.Easing.LINEAR,
-    });
   }
 
   get value() {
@@ -121,8 +83,6 @@ export class PlayerScale extends Gtk.Scale {
     if (value === this.duration) return;
 
     this.adjustment.upper = value;
-
-    this.setup_animation(value, 0);
   }
 
   private _buffering: boolean = false;
@@ -140,39 +100,8 @@ export class PlayerScale extends Gtk.Scale {
       this.remove_css_class("buffering");
     }
   }
-
-  play(position?: number) {
-    if (!this.animation) return;
-
-    if (position) {
-      this.setup_animation(this.duration, position);
-    }
-
-    if (this.animation.state === Adw.AnimationState.PLAYING) {
-      return;
-    }
-
-    this.animation.play();
-  }
-
-  pause() {
-    if (!this.animation || this.animation.state != Adw.AnimationState.PLAYING) {
-      return;
-    }
-
-    this.animation.pause();
-  }
-
   update_position(position: number) {
-    const playing = this.animation?.state === Adw.AnimationState.PLAYING;
-
-    this.setup_animation(this.duration, position);
-
-    if (playing) {
-      this.animation?.play();
-    } else {
-      this.value = position;
-      this.notify("value");
-    }
+    this.value = position;
+    this.notify("value");
   }
 }

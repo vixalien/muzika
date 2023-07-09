@@ -7,6 +7,7 @@ import { ObjectContainer } from "src/util/objectcontainer";
 import type { QueueTrack } from "libmuse/types/parsers/queue";
 import { QueueItem } from "./queueitem";
 import { Player } from "src/player";
+import { MuzikaPlayer } from "src/player/muzika";
 
 export class QueueView extends Gtk.Stack {
   static {
@@ -37,7 +38,7 @@ export class QueueView extends Gtk.Stack {
   _params!: Gtk.Box;
   _params_box!: Gtk.Box;
 
-  player: Player;
+  player: MuzikaPlayer;
 
   params_map = new Map<string, Gtk.Widget>();
 
@@ -168,5 +169,5 @@ export class QueueView extends Gtk.Stack {
 }
 
 export interface QueueViewOptions {
-  player: Player;
+  player: MuzikaPlayer;
 }

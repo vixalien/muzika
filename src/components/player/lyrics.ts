@@ -5,6 +5,7 @@ import Adw from "gi://Adw";
 import { Player } from "src/player";
 import { get_lyrics } from "src/muse";
 import { escape_label } from "src/util/text";
+import { MuzikaPlayer } from "src/player/muzika";
 
 export class LyricsView extends Gtk.Stack {
   static {
@@ -28,7 +29,7 @@ export class LyricsView extends Gtk.Stack {
   private _view!: Gtk.TextView;
   private _buffer!: Gtk.TextBuffer;
 
-  player: Player;
+  player: MuzikaPlayer;
 
   constructor({ player }: LyricsViewOptions) {
     super({
@@ -97,5 +98,5 @@ export class LyricsView extends Gtk.Stack {
 }
 
 export interface LyricsViewOptions {
-  player: Player;
+  player: MuzikaPlayer;
 }

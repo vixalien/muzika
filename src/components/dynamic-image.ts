@@ -288,14 +288,6 @@ export class DynamicImage extends Gtk.Overlay {
 
     this.add_controller(this.controller);
 
-    // pause button
-    this.root_listeners.add(
-      this._pause,
-      this._pause.connect("clicked", () => {
-        this.emit("pause");
-      }),
-    );
-
     this.root_listeners.add(
       this._check_button,
       this._check_button.connect("toggled", () => {
@@ -385,8 +377,6 @@ export class DynamicImage extends Gtk.Overlay {
   private listeners = new SignalListeners();
   private root_listeners = new SignalListeners();
 
-  private setup_button = false;
-
   reset_listeners() {
     this.listeners.clear();
   }
@@ -407,41 +397,9 @@ export class DynamicImage extends Gtk.Overlay {
 
     const player = this.get_player();
 
-    if (!this.setup_button) {
-      this.listeners.add(
-        this._play,
-        this._play.connect("clicked", () => {
-          this.emit("play");
-
-          if (player.current_meta?.object.track.videoId === this.videoId) {
-            player.play();
-          } else if (this.videoId) {
-            if (this.playlistId) {
-              this.state = DynamicImageState.LOADING;
-              player.queue.play_playlist(this.playlistId, this.videoId);
-            } else {
-              this.state = DynamicImageState.LOADING;
-              player.queue.play_song(this.videoId);
-            }
-          }
-        }),
-      );
-
-      this.listeners.add(
-        this._pause,
-        this._pause.connect("clicked", () => {
-          if (player.current_meta?.object.track.videoId === this.videoId) {
-            player.pause();
-          }
-        }),
-      );
-
-      this.setup_button = true;
-    }
-
     // if the video is already playing, we need to update the state
     if (
-      player.current_meta?.object.track.videoId === this.videoId
+      player.now_playing?.object.track.videoId === this.videoId
     ) {
       this.emit("is-playing");
 
@@ -456,14 +414,16 @@ export class DynamicImage extends Gtk.Overlay {
 
     this.listeners.add(player, [
       player.connect(`start-loading::${videoId}`, () => {
+        console.log("start-loading", this.videoId);
         this.state = DynamicImageState.LOADING;
         this.emit("play");
         this.emit("is-playing");
       }),
       player.connect(`stop-loading::${videoId}`, () => {
+        console.log("stop-loading", this.videoId);
         this.emit("is-playing");
         if (
-          player.current_meta?.object.track.videoId === this.videoId &&
+          player.now_playing?.object.track.videoId === this.videoId &&
           player.playing
         ) {
           this.state = DynamicImageState.PLAYING;
@@ -472,15 +432,51 @@ export class DynamicImage extends Gtk.Overlay {
         }
       }),
       player.connect(`start-playback::${videoId}`, () => {
+        console.log("start-playback", this.videoId);
         this.state = DynamicImageState.PLAYING;
       }),
       player.connect(`pause-playback::${videoId}`, () => {
+        console.log("pause-playback", this.videoId);
         this.state = DynamicImageState.PAUSED;
       }),
       player.connect(`stop-playback::${videoId}`, () => {
+        console.log("stop-playback", this.videoId);
         this.state = DynamicImageState.DEFAULT;
+        console.log("this state", this.state);
       }),
     ]);
+  }
+
+  private play_cb() {
+    const player = this.get_player();
+
+    this.emit("play");
+
+    if (player.now_playing?.object.track.videoId === this.videoId) {
+      player.play();
+    } else if (this.videoId) {
+      if (this.playlistId) {
+        this.state = DynamicImageState.LOADING;
+        player.queue.play_playlist(this.playlistId, this.videoId);
+      } else {
+        this.state = DynamicImageState.LOADING;
+        player.queue.play_song(this.videoId);
+      }
+    }
+  }
+
+  private pause_cb() {
+    const player = this.get_player();
+
+    this.emit("pause");
+
+    if (this.playlistId && !this.videoId) {
+      if (player.now_playing?.object.track.playlist === this.playlistId) {
+        player.pause();
+      }
+    } else if (player.now_playing?.object.track.videoId === this.videoId) {
+      player.pause();
+    }
   }
 
   setup_playlist(playlistId: string) {
@@ -490,36 +486,9 @@ export class DynamicImage extends Gtk.Overlay {
 
     const player = this.get_player();
 
-    if (!this.setup_button) {
-      this.listeners.add(
-        this._play,
-        this._play.connect("clicked", () => {
-          this.emit("play");
-
-          if (player.current_meta?.object.track.playlist === this.playlistId) {
-            player.play();
-          } else if (this.playlistId) {
-            this.state = DynamicImageState.LOADING;
-            player.queue.play_playlist(this.playlistId);
-          }
-        }),
-      );
-
-      this.listeners.add(
-        this._pause,
-        this._pause.connect("clicked", () => {
-          if (player.current_meta?.object.track.playlist === this.playlistId) {
-            player.pause();
-          }
-        }),
-      );
-
-      this.setup_button = true;
-    }
-
     // if the playlist is already playing, we need to update the state
     if (
-      player.current_meta?.object.track.playlist === this.playlistId
+      player.now_playing?.object.track.playlist === this.playlistId
     ) {
       if (player.playing) {
         this.state = DynamicImageState.PLAYING;
@@ -537,7 +506,7 @@ export class DynamicImage extends Gtk.Overlay {
       }),
       player.connect(`stop-loading::playlist::${playlistId}`, () => {
         if (
-          player.current_meta?.object.track.playlist === this.playlistId &&
+          player.now_playing?.object.track.playlist === this.playlistId &&
           player.playing
         ) {
           this.state = DynamicImageState.PLAYING;
@@ -562,9 +531,14 @@ export class DynamicImage extends Gtk.Overlay {
     this.remove_controller(this.controller);
   }
 
-  vfunc_dispose(): void {
+  vfunc_hide() {
+    console.log("hidden");
+  }
+
+  vfunc_unroot(): void {
+    console.log("unmap", this.listeners.listeners.size);
     this.clear();
-    super.vfunc_dispose();
+    super.vfunc_unroot();
   }
 
   load_thumbnails(

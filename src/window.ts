@@ -89,7 +89,8 @@ export class Window extends Adw.ApplicationWindow {
   sidebar: PlayerSidebar;
   toast_overlay!: Adw.ToastOverlay;
 
-  mpris: MPRIS;
+  // TODO: re-add MPRIS
+  // mpris: MPRIS;
 
   constructor(params?: Partial<Adw.ApplicationWindow.ConstructorProperties>) {
     super(params);
@@ -114,7 +115,7 @@ export class Window extends Adw.ApplicationWindow {
 
     const application = this.application as Application;
 
-    this.mpris = new MPRIS(application);
+    // this.mpris = new MPRIS(application);
 
     this.insert_action_group("navigator", this.navigator.get_action_group());
     this.insert_action_group("player", application.player.get_action_group());
@@ -288,15 +289,3 @@ export class Window extends Adw.ApplicationWindow {
     return super.vfunc_close_request();
   }
 }
-
-const player = new MuzikaPlayer();
-
-player.set_uri(
-  "https://download.blender.org/peach/bigbuckbunny_movies/big_buck_bunny_480p_stereo.ogg",
-);
-
-player.play();
-
-player.connect("notify", (_, pspec) => {
-  console.log("prop changed", pspec.name, "to", (_ as any)[pspec.name]);
-});

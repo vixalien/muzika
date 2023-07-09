@@ -6,8 +6,8 @@ import Gtk from "gi://Gtk?version=4.0";
 
 import { Window } from "./window.js";
 import { cache } from "./polyfills/fetch.js";
-import { Player } from "./player/index.js";
 import { AddActionEntries } from "./util/action.js";
+import { MuzikaPlayer } from "./player/muzika.js";
 
 export const Settings = new Gio.Settings({ schema: pkg.name });
 
@@ -32,7 +32,7 @@ export class Application extends Adw.Application {
   }
 
   argv: string[] = [];
-  player: Player;
+  player: MuzikaPlayer;
 
   set_argv(argv: string[]) {
     this.argv = argv;
@@ -84,7 +84,16 @@ export class Application extends Adw.Application {
       },
     );
 
-    this.player = new Player({ app: this });
+    this.player = new MuzikaPlayer({ app: this });
+
+    // this.player.connect("notify", (_, pspec) => {
+    //   console.log(
+    //     "player::" +
+    //       pspec.name,
+    //     "->",
+    //     this.player[pspec.name as keyof MuzikaPlayer],
+    //   );
+    // });
   }
 
   private get_debug_info() {

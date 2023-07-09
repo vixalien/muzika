@@ -15,6 +15,11 @@ import { Application } from "src/application.js";
 import { Window } from "src/window.js";
 import { list_model_to_array } from "src/util/list.js";
 import { ngettext } from "gettext";
+import {
+  get_track_queue,
+  get_track_settings,
+  get_tracklist,
+} from "./helpers.js";
 
 const vprintf = imports.format.vprintf;
 
@@ -164,11 +169,14 @@ export class Queue extends GObject.Object {
   }
 
   change_position(position: number) {
-    this._position = position;
-    this.notify("position");
-    this.notify("current");
-    this.notify("can-play-next");
-    this.notify("can-play-previous");
+    if (position != this._position) {
+      this._position = position;
+
+      this.notify("position");
+      this.notify("current");
+      this.notify("can-play-next");
+      this.notify("can-play-previous");
+    }
   }
 
   private increment_position(n: number) {
@@ -197,7 +205,7 @@ export class Queue extends GObject.Object {
     if (this.current?.object.videoId) {
       this.settings_abort_controller = new AbortController();
 
-      this.get_track_settings(
+      get_track_settings(
         this.current?.object.videoId,
         this.settings_abort_controller.signal,
       )
@@ -334,12 +342,12 @@ export class Queue extends GObject.Object {
 
               win.add_toast(
                 params.has("next")
-                  ? vprintf(_("Playing \"%s\" next"), [normalized_title])
+                  ? vprintf(_('Playing "%s" next'), [normalized_title])
                   // Translators: %s is a playlist name
-                  : vprintf(_("Added \"%s\" to queue"), [normalized_title]),
+                  : vprintf(_('Added "%s" to queue'), [normalized_title]),
               );
             }
-          })
+          });
         },
       },
       {
@@ -387,19 +395,31 @@ export class Queue extends GObject.Object {
                 params.has("next")
                   ? ngettext(
                     // Translators: %s is a song's name
-                    vprintf(_("Playing \"%s\" next"), [normalized_title]),
+                    vprintf(_('Playing "%s" next'), [normalized_title]),
                     vprintf(_("Playing %d songs next"), [tracks.length]),
                     tracks.length,
                   )
                   : ngettext(
                     // Translators: %s is a song's name
-                    vprintf(_("Added \"%s\" to queue"), [normalized_title]),
+                    vprintf(_('Added "%s" to queue'), [normalized_title]),
                     vprintf(_("Added %d songs to queue"), [tracks.length]),
                     tracks.length,
                   ),
               );
             }
           });
+        },
+      },
+      {
+        name: "previous",
+        activate: () => {
+          this.previous();
+        },
+      },
+      {
+        name: "next",
+        activate: () => {
+          this.next();
         },
       },
     ]);
@@ -418,69 +438,11 @@ export class Queue extends GObject.Object {
     this.notify("can-play-previous");
   }
 
+  // TODO:
+  // this.track_options_settings.set(video_id, _omit(queue, ["tracks"]));
   /**
    * This functions gets and caches the track
    */
-  private async get_track_queue(
-    video_id: string,
-    options: QueueOptions = {},
-  ) {
-    const queue = await get_queue(video_id, null, options);
-
-    this.track_options_settings.set(video_id, _omit(queue, ["tracks"]));
-
-    for (const track of queue.tracks) {
-      this.tracklist_map.set(
-        track.videoId,
-        track,
-      );
-    }
-
-    return queue;
-  }
-
-  // queue track is a distinct track in the queue
-
-  private tracklist_map = new Map<string, QueueTrack>();
-
-  async get_tracklist(video_ids: string[]) {
-    if (video_ids.every((id) => this.tracklist_map.has(id))) {
-      return video_ids.map((id) => this.tracklist_map.get(id)!);
-    }
-
-    const tracks = await get_queue_ids(video_ids);
-
-    for (const track of tracks) {
-      this.tracklist_map.set(
-        track.videoId,
-        track,
-      );
-    }
-
-    return tracks;
-  }
-
-  // track options is the specific option for a queue track
-  // it includes stuff like the lyrics, related info etc
-
-  private track_options_settings = new Map<string, QueueSettings>();
-
-  async get_track_settings(video_id: string, signal?: AbortSignal) {
-    if (!this.track_options_settings.has(video_id)) {
-      const queue = await get_queue(video_id, null, { signal });
-
-      this.track_options_settings.set(video_id, _omit(queue, ["tracks"]));
-
-      for (const track of queue.tracks) {
-        this.tracklist_map.set(
-          track.videoId,
-          track,
-        );
-      }
-    }
-
-    return this.track_options_settings.get(video_id)!;
-  }
 
   async change_active_chip(chip: string | null) {
     const found_chip = this.settings?.chips.find((c) => c.playlistId == chip);
@@ -556,14 +518,14 @@ export class Queue extends GObject.Object {
 
     if (song_ids.length === 1 && options.radio) {
       // fast path to get the track options and tracklist at the same time
-      const queue = await this.get_track_queue(song_ids[0], { radio: true });
+      const queue = await get_track_queue(song_ids[0], { radio: true });
 
       tracks = queue.tracks;
       first_track_options = _omit(queue, ["tracks"]);
     } else {
       [tracks, first_track_options] = await Promise.all([
-        this.get_tracklist(song_ids).then((tracks) => tracks ?? []),
-        options.play ? this.get_track_settings(song_ids[0]) : undefined,
+        get_tracklist(song_ids).then((tracks) => tracks ?? []),
+        options.play ? get_track_settings(song_ids[0]) : undefined,
       ]);
     }
 
