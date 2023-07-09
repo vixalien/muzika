@@ -462,8 +462,6 @@ export class MuzikaMediaStream extends Gtk.MediaStream {
   // handlers
 
   private buffering_cb(_play: GstPlay.Play, percent: number): void {
-    console.log("buffering", percent);
-
     if (percent < 100) {
       if (!this.is_buffering && this.playing) {
         this.pause();
@@ -739,7 +737,6 @@ export class MuzikaPlayer extends MuzikaMediaStream {
 
     // notify that the current track has stopped playing
     if (current) {
-      console.log("stopping playback", current);
       this.emit(`stop-playback::${current}`);
       if (playlist && playlist !== track.playlist) {
         this.emit(`stop-playback::playlist::${playlist}`);
