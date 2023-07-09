@@ -2,13 +2,12 @@ import Gtk from "gi://Gtk?version=4.0";
 import GObject from "gi://GObject";
 import Adw from "gi://Adw";
 
-import { Player } from "src/player";
-
 import { MiniPlayerView } from "./mini.js";
 import { FullPlayerView } from "./full.js";
+import { MuzikaPlayer } from "src/player/muzika.js";
 
 export interface PlayerViewOptions {
-  player: Player;
+  player: MuzikaPlayer;
 }
 
 export class PlayerView extends Gtk.Revealer {
@@ -18,7 +17,7 @@ export class PlayerView extends Gtk.Revealer {
     }, this);
   }
 
-  player: Player;
+  player: MuzikaPlayer;
 
   squeezer: Adw.Squeezer;
   mini: MiniPlayerView;
@@ -48,18 +47,16 @@ export class PlayerView extends Gtk.Revealer {
       this.song_changed.bind(this),
     );
 
+    this.reveal_child = true;
+
     // resume player animation when the child changes
-    this.squeezer.connect("notify::visible-child", () => {
-      const position = options.player.get_normalised_position();
+    // this.squeezer.connect("notify::visible-child", () => {
+    //   const position = options.player.get_timestamp();
 
-      this.mini.progress_bar.update_position(position);
-      this.full.scale.update_position(position);
+    //   this.mini.progress_bar.update_position(position);
+    //   this.full.scale.update_position(position);
 
-      if (options.player.playing) {
-        this.mini.progress_bar.play();
-        this.full.scale.play();
-      }
-    });
+    // });
   }
 
   song_changed() {

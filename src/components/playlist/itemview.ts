@@ -228,6 +228,11 @@ export class PlaylistItemView extends Gtk.Stack {
   }
 
   select_track(index: number) {
+    if (index < 0) {
+      this.multi_selection_model?.unselect_all();
+      return;
+    }
+
     const container = this.model?.get_item(index);
 
     if (!container || !this.multi_selection_model) return;

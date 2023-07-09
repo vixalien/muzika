@@ -1,6 +1,5 @@
 import Gtk from "gi://Gtk?version=4.0";
 import GObject from "gi://GObject";
-import Gst from "gi://Gst";
 import Adw from "gi://Adw";
 
 export class PlayerProgressBar extends Gtk.ProgressBar {
@@ -45,8 +44,6 @@ export class PlayerProgressBar extends Gtk.ProgressBar {
     }, this);
   }
 
-  animation: Adw.TimedAnimation | null = null;
-
   constructor() {
     super({
       hexpand: true,
@@ -54,28 +51,6 @@ export class PlayerProgressBar extends Gtk.ProgressBar {
     });
 
     this.add_css_class("osd");
-  }
-
-  reset() {
-    if (this.animation) {
-      this.animation.reset();
-      this.animation = null;
-    }
-  }
-
-  private setup_animation(duration: number, position: number) {
-    this.reset();
-
-    const target = Adw.PropertyAnimationTarget.new(this, "fraction");
-
-    this.animation = new Adw.TimedAnimation({
-      duration: (duration - position) / Gst.MSECOND,
-      target,
-      widget: this,
-      value_from: position / duration,
-      value_to: 1,
-      easing: Adw.Easing.LINEAR,
-    });
   }
 
   get value() {
@@ -96,8 +71,6 @@ export class PlayerProgressBar extends Gtk.ProgressBar {
     if (value === this._duration) return;
 
     this._duration = value;
-
-    this.setup_animation(value, 0);
   }
 
   private _buffering: boolean = false;
@@ -116,38 +89,8 @@ export class PlayerProgressBar extends Gtk.ProgressBar {
     }
   }
 
-  play(position?: number) {
-    if (!this.animation) return;
-
-    if (position) {
-      this.setup_animation(this.duration, position);
-    }
-
-    if (this.animation.state === Adw.AnimationState.PLAYING) {
-      return;
-    }
-
-    this.animation.play();
-  }
-
-  pause() {
-    if (!this.animation || this.animation.state != Adw.AnimationState.PLAYING) {
-      return;
-    }
-
-    this.animation.pause();
-  }
-
   update_position(position: number) {
-    const playing = this.animation?.state === Adw.AnimationState.PLAYING;
-
-    this.setup_animation(this.duration, position);
-
-    if (playing) {
-      this.animation?.play();
-    } else {
-      this.value = position;
-      this.notify("value");
-    }
+    this.value = position;
+    this.notify("value");
   }
 }

@@ -2,19 +2,20 @@ import Gtk from "gi://Gtk?version=4.0";
 import GObject from "gi://GObject";
 import Adw from "gi://Adw";
 
-import { Player } from "src/player";
-import { get_song_related } from "libmuse";
+import { get_song_related } from "src/muse";
 import { Carousel } from "../carousel";
+import { MuzikaPlayer } from "src/player/muzika";
 
 export interface RelatedViewOptions {
-  player: Player;
+  player: MuzikaPlayer;
 }
 
 export class RelatedView extends Gtk.Stack {
   static {
     GObject.registerClass({
       GTypeName: "RelatedView",
-      Template: "resource:///com/vixalien/muzika/ui/components/player/related.ui",
+      Template:
+        "resource:///com/vixalien/muzika/ui/components/player/related.ui",
       InternalChildren: [
         "no_related",
         "loading",
@@ -29,7 +30,7 @@ export class RelatedView extends Gtk.Stack {
   _related_window!: Gtk.ScrolledWindow;
   _box!: Gtk.Box;
 
-  player: Player;
+  player: MuzikaPlayer;
 
   constructor({ player }: RelatedViewOptions) {
     super({

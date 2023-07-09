@@ -8,6 +8,7 @@ import { Application } from "./application";
 import { Player } from "./player";
 import { RepeatMode } from "./player/queue";
 import type { LikeStatus } from "libmuse/types/parsers/songs";
+import { MuzikaPlayer } from "./player/muzika";
 
 // bus_get
 Gio._promisify(Gio, "bus_get", "bus_get_finish");
@@ -237,7 +238,7 @@ export class DBusInterface {
 }
 
 export class MPRIS extends DBusInterface {
-  player: Player;
+  player: MuzikaPlayer;
 
   MEDIA_PLAYER2_IFACE = "org.mpris.MediaPlayer2";
   MEDIA_PLAYER2_PLAYER_IFACE = "org.mpris.MediaPlayer2.Player";
@@ -299,8 +300,12 @@ export class MPRIS extends DBusInterface {
     //   this._on_player_playlist_changed.bind(this),
     // );
     this.player.connect(
-      "seeked",
-      this._on_seek_finished.bind(this),
+      "notify::seeking",
+      () => {
+        if (this.player.seeking == false) {
+          this._on_seek_finished(this as any, this.player.timestamp);
+        }
+      },
     );
   }
 
@@ -496,12 +501,12 @@ export class MPRIS extends DBusInterface {
 
   /** Skips to the next track in the tracklist */
   _next() {
-    this.player.next();
+    this.queue.next();
   }
 
   /** Skips to the previous track in the tracklist */
   _previous() {
-    this.player.previous();
+    this.queue.previous();
   }
 
   /** Pauses playback */
@@ -545,11 +550,11 @@ export class MPRIS extends DBusInterface {
     const duration_second = (this.player.get_duration() ?? 0) / Gst.SECOND;
 
     if (new_position_second < 0) {
-      this.player.previous();
+      this.queue.previous();
     } else if (new_position_second <= duration_second) {
       this.player.raw_seek(new_position_second * Gst.SECOND);
     } else {
-      this.player.next();
+      this.queue.next();
     }
   }
 

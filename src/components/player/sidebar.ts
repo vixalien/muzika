@@ -6,6 +6,7 @@ import { LyricsView } from "./lyrics";
 import { QueueView } from "./queue";
 import { Player } from "src/player";
 import { RelatedView } from "./related";
+import { MuzikaPlayer } from "src/player/muzika";
 
 export class PlayerSidebar extends Adw.Bin {
   static {
@@ -107,5 +108,5 @@ export enum PlayerSidebarView {
 }
 
 export interface PlayerSidebarOptions {
-  player: Player;
+  player: MuzikaPlayer;
 }

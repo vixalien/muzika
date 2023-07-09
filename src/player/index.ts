@@ -24,6 +24,7 @@ import { ObjectContainer } from "../util/objectcontainer.js";
 import { AddActionEntries } from "src/util/action.js";
 import { store } from "src/util/giofilestore.js";
 import { list_model_to_array } from "src/util/list.js";
+import { get_track_settings, get_tracklist } from "./helpers.js";
 
 const preferred_quality: AudioFormat["audio_quality"] = "medium";
 const preferred_format: AudioFormat["audio_codec"] = "opus";
@@ -458,16 +459,6 @@ export class Player extends GObject.Object {
     this.playbin.set_state(Gst.State.NULL);
   }
 
-  song_cache = new Map<string, Song>();
-
-  async get_song(videoId: string) {
-    if (!this.song_cache.has(videoId)) {
-      this.song_cache.set(videoId, await get_song(videoId));
-    }
-
-    return this.song_cache.get(videoId)!;
-  }
-
   private seek_to: number | null = null;
 
   async change_current_track(
@@ -496,8 +487,8 @@ export class Player extends GObject.Object {
     }
 
     const [song, settings] = await Promise.all([
-      this.get_song(track.videoId),
-      this.queue.get_track_settings(track.videoId),
+      get_song(track.videoId),
+      get_track_settings(track.videoId),
     ]);
 
     const format = this.negotiate_best_format(song);
@@ -718,11 +709,11 @@ export class Player extends GObject.Object {
     }
 
     await Promise.all([
-      this.queue.get_tracklist(state.tracks)
+      get_tracklist(state.tracks)
         .then((tracks) => {
           this.queue.add(tracks_to_meta(tracks), state.position ?? undefined);
         }),
-      this.queue.get_tracklist(state.original)
+      get_tracklist(state.original)
         .then((tracks) =>
           tracks.forEach((track) =>
             this.queue._original.append(

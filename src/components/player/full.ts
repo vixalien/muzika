@@ -3,7 +3,6 @@ import GObject from "gi://GObject";
 import GLib from "gi://GLib";
 import Gst from "gi://Gst";
 
-import { Player } from "../../player/index.js";
 import { RepeatMode } from "../../player/queue.js";
 import { load_thumbnails } from "../webimage.js";
 import { Settings } from "src/application.js";
@@ -11,9 +10,10 @@ import { PlayerScale } from "./scale.js";
 import { PlayerSidebarView } from "./sidebar.js";
 import { QueueTrack } from "libmuse/types/parsers/queue.js";
 import { escape_label, pretty_subtitles } from "src/util/text.js";
+import { MuzikaPlayer } from "src/player/muzika.js";
 
 export interface FullPlayerViewOptions {
-  player: Player;
+  player: MuzikaPlayer;
 }
 
 export class FullPlayerView extends Gtk.ActionBar {
@@ -64,7 +64,7 @@ export class FullPlayerView extends Gtk.ActionBar {
   _related_button!: Gtk.ToggleButton;
   _scale_and_timer!: Gtk.Box;
 
-  player: Player;
+  player: MuzikaPlayer;
 
   scale: PlayerScale;
 
@@ -76,7 +76,7 @@ export class FullPlayerView extends Gtk.ActionBar {
     this.scale = new PlayerScale();
     this.scale.insert_after(this._scale_and_timer, this._progress_label);
     this.scale.connect("notify::value", () => {
-      this._progress_label.label = nano_to_string(this.scale.value);
+      this._progress_label.label = micro_to_string(this.scale.value);
     });
 
     this.setup_player();
@@ -153,7 +153,6 @@ export class FullPlayerView extends Gtk.ActionBar {
   }
 
   song_changed() {
-    this.scale.reset();
     this.scale.value = 0;
     this._progress_label.label = seconds_to_string(0);
 
@@ -185,15 +184,15 @@ export class FullPlayerView extends Gtk.ActionBar {
     );
 
     this.player.connect(
-      "notify::current-meta",
+      "notify::now-playing",
       this.song_meta_changed.bind(this),
     );
 
-    this.player.connect("seeked", (_, position) => {
-      this.scale.update_position(position);
+    this.player.connect("notify::seeking", (_) => {
+      this.scale.update_position(this.player.get_timestamp());
     });
 
-    this.player.connect("notify::buffering", () => {
+    this.player.connect("notify::is-buffering", () => {
       this.update_play_button();
     });
 
@@ -203,7 +202,7 @@ export class FullPlayerView extends Gtk.ActionBar {
 
     this.player.connect("notify::duration", () => {
       this.scale.set_duration(this.player.duration);
-      this._duration_label.label = nano_to_string(this.player.duration);
+      this._duration_label.label = micro_to_string(this.player.duration);
     });
 
     this.scale.connect("user-changed-value", (_, value) => {
@@ -226,6 +225,11 @@ export class FullPlayerView extends Gtk.ActionBar {
     });
 
     this.setup_volume_button();
+
+    this.player.connect("notify::timestamp", () => {
+      this.scale.update_position(this.player.timestamp);
+      this._progress_label.label = micro_to_string(this.player.timestamp);
+    });
   }
 
   setup_volume_button() {
@@ -240,6 +244,14 @@ export class FullPlayerView extends Gtk.ActionBar {
 
     this._volume_button.connect("value-changed", () => {
       Settings.set_double("volume", this._volume_button.adjustment.value);
+    });
+
+    Settings.connect("changed::volume", () => {
+      const volume = Settings.get_double("volume");
+
+      if (volume !== this._volume_button.adjustment.value) {
+        this._volume_button.adjustment.value = volume;
+      }
     });
 
     this._volume_button.connect(
@@ -283,13 +295,7 @@ export class FullPlayerView extends Gtk.ActionBar {
   }
 
   update_play_button() {
-    this.scale.buffering = this.player.buffering && this.player.playing;
-
-    if (this.player.playing && !this.player.buffering) {
-      this.scale.play(this.player.get_position() ?? 0);
-    } else {
-      this.scale.pause();
-    }
+    this.scale.buffering = this.player.is_buffering && this.player.playing;
 
     if (this.player.playing) {
       this._play_image.icon_name = "media-playback-pause-symbolic";
@@ -367,10 +373,10 @@ function seconds_to_string(seconds: number) {
   return string;
 }
 
-function nano_to_seconds(nano: number) {
-  return nano / Gst.SECOND;
+function micro_to_seconds(micro: number) {
+  return micro / 1000000;
 }
 
-function nano_to_string(nano: number) {
-  return seconds_to_string(nano_to_seconds(nano));
+function micro_to_string(micro: number) {
+  return seconds_to_string(micro_to_seconds(micro));
 }

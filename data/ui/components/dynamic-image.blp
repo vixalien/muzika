@@ -23,6 +23,7 @@ template $DynamicImage : Overlay {
     }
 
     Button play {
+      clicked => $play_cb();
       cursor:       $GdkCursor {
         name: "pointer";
       }
@@ -53,6 +54,7 @@ template $DynamicImage : Overlay {
     }
 
     Button pause {
+      clicked => $pause_cb();
       cursor:       $GdkCursor {
         name: "pointer";
       }
