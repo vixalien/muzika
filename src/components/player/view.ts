@@ -47,8 +47,6 @@ export class PlayerView extends Gtk.Revealer {
       this.song_changed.bind(this),
     );
 
-    this.reveal_child = true;
-
     // resume player animation when the child changes
     // this.squeezer.connect("notify::visible-child", () => {
     //   const position = options.player.get_timestamp();
