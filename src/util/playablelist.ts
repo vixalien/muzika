@@ -166,14 +166,8 @@ export class PlayableList<T extends Object = PlaylistItem>
 
   private array = new Array<PlayableContainer<T>>();
 
-  private get_video_id: GetMeta<T> | null = null;
-
-  constructor(props: PlayableListProps<T> = {}) {
-    super();
-
-    if (props.get_meta) {
-      this.get_video_id = props.get_meta;
-    }
+  constructor(props: PlayableListProps = {}) {
+    super(props);
   }
 
   get_item_type(): GObject.GType<unknown> {
@@ -304,13 +298,6 @@ export class PlayableList<T extends Object = PlaylistItem>
   }
 }
 
-type GetMeta<T extends Object> = (item: T) => {
-  video_id: string | null;
-  playlist_id: string | null;
-  is_playlist: boolean;
-} | null;
-
-export interface PlayableListProps<T extends Object> {
+export interface PlayableListProps {
   item_type?: GObject.GType;
-  get_meta?: GetMeta<T>;
 }
