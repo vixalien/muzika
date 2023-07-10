@@ -8,9 +8,9 @@ import Adw from "gi://Adw";
 
 import { FlatSong, MixedContent, MixedItem } from "../../muse.js";
 import { FlatSongCard } from "./flatsongcard.js";
-import { ObjectContainer } from "src/util/objectcontainer.js";
 import { CarouselCard } from "./card.js";
 import { MixedCardItem } from "../library/mixedcard.js";
+import { PlayableContainer, PlayableList } from "src/util/playablelist.js";
 
 export type RequiredMixedItem = NonNullable<MixedItem>;
 
@@ -21,9 +21,7 @@ class CarouselListView extends Gtk.ListView {
     }, this);
   }
 
-  items = new Gio.ListStore<ObjectContainer<MixedCardItem>>({
-    item_type: GObject.TYPE_OBJECT,
-  });
+  items = new PlayableList<MixedCardItem>();
 
   constructor() {
     super({
@@ -52,10 +50,14 @@ class CarouselListView extends Gtk.ListView {
 
   bind_cb(_factory: Gtk.ListItemFactory, list_item: Gtk.ListItem) {
     const card = list_item.child as CarouselCard;
-    const container = list_item.item as ObjectContainer<MixedCardItem>;
+    const container = list_item.item as PlayableContainer<MixedCardItem>;
 
     if (container.object) {
       card.show_item(container.object);
+
+      container.connect("notify::state", () => {
+        card.set_state(container.state);
+      });
     }
   }
 
@@ -67,6 +69,16 @@ class CarouselListView extends Gtk.ListView {
   teardown_cb(_factory: Gtk.ListItemFactory, list_item: Gtk.ListItem) {
     list_item.child = null as any;
   }
+
+  vfunc_map(): void {
+    this.items.setup_listeners();
+    super.vfunc_map();
+  }
+
+  vfunc_unmap(): void {
+    this.items.clear_listeners();
+    super.vfunc_unmap();
+  }
 }
 
 class CarouselGridView extends Gtk.GridView {
@@ -76,9 +88,7 @@ class CarouselGridView extends Gtk.GridView {
     }, this);
   }
 
-  items = new Gio.ListStore<ObjectContainer<FlatSong>>({
-    item_type: GObject.TYPE_OBJECT,
-  });
+  items = new PlayableList<FlatSong>();
 
   constructor() {
     super({
@@ -108,15 +118,29 @@ class CarouselGridView extends Gtk.GridView {
 
   bind_cb(_factory: Gtk.ListItemFactory, list_item: Gtk.ListItem) {
     const card = list_item.child as FlatSongCard;
-    const container = list_item.item as ObjectContainer<FlatSong>;
+    const container = list_item.item as PlayableContainer<FlatSong>;
 
     if (container.object) {
       card.set_song(container.object);
+
+      container.connect("notify::state", () => {
+        card.set_state(container.state);
+      });
     }
   }
 
   teardown_cb(_factory: Gtk.ListItemFactory, list_item: Gtk.ListItem) {
     list_item.child = null as any;
+  }
+
+  vfunc_map(): void {
+    this.items.setup_listeners();
+    super.vfunc_map();
+  }
+
+  vfunc_unmap(): void {
+    this.items.clear_listeners();
+    super.vfunc_unmap();
   }
 }
 
@@ -228,16 +252,18 @@ export class Carousel<
     const listview = new CarouselListView();
 
     listview.connect("activate", (_, position) => {
-      const item = listview.items.get_item(position);
+      const container = listview.items.get_item(position);
 
-      this.activate_cb(item);
+      this.activate_cb(container?.object ?? null);
     });
 
-    for (const content of contents) {
-      if (!content) continue;
-
-      listview.items.append(new ObjectContainer(content));
-    }
+    listview.items.splice(
+      0,
+      0,
+      contents
+        .filter((content) => content != null)
+        .map((content) => PlayableContainer.new_from_mixed_card_item(content!)),
+    );
 
     this._scrolled.child = listview;
   }
@@ -246,29 +272,36 @@ export class Carousel<
     const gridview = new CarouselGridView();
 
     gridview.connect("activate", (_, position) => {
-      const item = gridview.items.get_item(position);
+      const container = gridview.items.get_item(position);
 
-      this.activate_cb(item);
+      this.activate_cb(container?.object ?? null);
     });
 
-    for (const content of contents) {
-      if (!content) continue;
+    gridview.items.splice(
+      0,
+      0,
+      contents
+        .filter((content) => {
+          if (content == null) return false;
 
-      if (content.type != "flat-song") {
-        console.warn(
-          `CarouselGridView only supports flat-song items, got: ${content.type}`,
-        );
-      }
+          if (content!.type != "flat-song") {
+            console.warn(
+              `CarouselGridView only supports flat-song items, got: ${
+                content!.type
+              }`,
+            );
+            return false;
+          }
 
-      gridview.items.append(new ObjectContainer(content as FlatSong));
-    }
+          return true;
+        })
+        .map((content) => PlayableContainer.new_from_mixed_card_item(content!)),
+    );
 
     this._scrolled.child = gridview;
   }
 
-  activate_cb(object: ObjectContainer<MixedCardItem> | null) {
-    const item = object?.object;
-
+  activate_cb(item: MixedCardItem | null) {
     if (!item) return;
 
     let uri: string | null = null;

@@ -27,6 +27,7 @@ import {
   EditPlaylistDialog,
 } from "src/components/playlist/edit.js";
 import { Window } from "src/window.js";
+import { PlayableContainer, PlayableList } from "src/util/playablelist.js";
 
 interface PlaylistState {
   playlist: Playlist;
@@ -83,13 +84,9 @@ export class PlaylistPage extends Adw.Bin
   private _insights!: Gtk.Box;
   private _menu!: Gtk.PopoverMenu;
 
-  model = new Gio.ListStore<ObjectContainer<PlaylistItem>>({
-    item_type: ObjectContainer.$gtype,
-  });
+  model = new PlayableList();
 
-  suggestions_model = new Gio.ListStore<ObjectContainer<PlaylistItem>>({
-    item_type: ObjectContainer.$gtype,
-  });
+  suggestions_model = new PlayableList();
 
   constructor() {
     super();
@@ -133,7 +130,7 @@ export class PlaylistPage extends Adw.Bin
 
   private add_cb(
     _playlist_item_view: PlaylistItemView,
-    container: ObjectContainer<PlaylistItem>,
+    container: PlayableContainer,
   ) {
     if (!this.playlist) return;
 
@@ -202,7 +199,7 @@ export class PlaylistPage extends Adw.Bin
     this.model.splice(
       n > 0 ? n - 1 : 0,
       0,
-      tracks.map((track) => new ObjectContainer(track)),
+      tracks.map((track) => PlayableContainer.new_from_playlist_item(track)),
     );
   }
 
@@ -278,8 +275,8 @@ export class PlaylistPage extends Adw.Bin
     this.suggestions_model.splice(
       0,
       this.suggestions_model.n_items,
-      playlist.suggestions.map((suggestion: PlaylistItem) =>
-        new ObjectContainer(suggestion)
+      playlist.suggestions.map((suggestion) =>
+        PlayableContainer.new(suggestion)
       ),
     );
 
@@ -306,7 +303,7 @@ export class PlaylistPage extends Adw.Bin
             0,
             this.suggestions_model.n_items,
             result.suggestions.map((suggestion) =>
-              new ObjectContainer(suggestion)
+              PlayableContainer.new(suggestion)
             ),
           );
         });
@@ -418,7 +415,7 @@ export class PlaylistPage extends Adw.Bin
       playlist: {
         ...this.playlist!,
         tracks: list_model_to_array(this.model)
-          .map((container) => container.object)
+          .map((container) => (container as PlayableContainer).object)
           .filter((item) => item != null) as PlaylistItem[],
       },
     };

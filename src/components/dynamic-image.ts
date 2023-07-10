@@ -1,7 +1,7 @@
 import Gtk from "gi://Gtk?version=4.0";
 import GObject from "gi://GObject";
 
-import { Application } from "src/application.js";
+import { get_player } from "src/application.js";
 import { Thumbnail } from "libmuse";
 import { load_thumbnails } from "./webimage";
 import { SignalListeners } from "src/util/signal-listener";
@@ -110,7 +110,6 @@ export class DynamicImage extends Gtk.Overlay {
         "selection-mode-toggled": {
           param_types: [GObject.TYPE_BOOLEAN],
         },
-        "is-playing": {},
       },
     }, this);
   }
@@ -370,19 +369,9 @@ export class DynamicImage extends Gtk.Overlay {
     }
   }
 
-  private get_player() {
-    return (Application.get_default() as Application)?.player;
-  }
-
-  private listeners = new SignalListeners();
   private root_listeners = new SignalListeners();
 
-  reset_listeners() {
-    this.listeners.clear();
-  }
-
-  reset_all_listeners() {
-    this.reset_listeners();
+  reset_root_listeners() {
     this.root_listeners.clear();
   }
 
@@ -393,16 +382,10 @@ export class DynamicImage extends Gtk.Overlay {
   setup_video(videoId: string, playlistId: string | null = null) {
     this.videoId = videoId;
     this.playlistId = playlistId;
-
-    this.reset_listeners();
-
-    if (this.get_mapped()) {
-      this.setup_listeners();
-    }
   }
 
   private play_cb() {
-    const player = this.get_player();
+    const player = get_player();
 
     this.emit("play");
 
@@ -420,7 +403,7 @@ export class DynamicImage extends Gtk.Overlay {
   }
 
   private pause_cb() {
-    const player = this.get_player();
+    const player = get_player();
 
     this.emit("pause");
 
@@ -436,123 +419,14 @@ export class DynamicImage extends Gtk.Overlay {
   setup_playlist(playlistId: string) {
     this.playlistId = playlistId;
     this.mode_playlist = true;
-
-    this.reset_listeners();
-
-    if (this.get_mapped()) {
-      this.setup_listeners();
-    }
-  }
-
-  setup_listeners() {
-    this.reset_listeners();
-
-    const player = this.get_player();
-
-    if (this.mode_playlist === true) {
-      // this dynamic image is for a playlist
-
-      // if the playlist is already playing, we need to update the state
-      if (
-        player.now_playing?.object.track.playlist === this.playlistId
-      ) {
-        if (player.playing) {
-          this.state = DynamicImageState.PLAYING;
-          this.emit("play");
-        } else {
-          this.state = DynamicImageState.PAUSED;
-          this.emit("pause");
-        }
-      }
-
-      this.listeners.add(player, [
-        player.connect(`start-loading::playlist::${this.playlistId}`, () => {
-          this.state = DynamicImageState.LOADING;
-          this.emit("play");
-        }),
-        player.connect(`stop-loading::playlist::${this.playlistId}`, () => {
-          if (
-            player.now_playing?.object.track.playlist === this.playlistId &&
-            player.playing
-          ) {
-            this.state = DynamicImageState.PLAYING;
-          } else {
-            this.state = DynamicImageState.PAUSED;
-          }
-        }),
-        player.connect(`start-playback::playlist::${this.playlistId}`, () => {
-          this.state = DynamicImageState.PLAYING;
-        }),
-        player.connect(`pause-playback::playlist::${this.playlistId}`, () => {
-          this.state = DynamicImageState.PAUSED;
-        }),
-        player.connect(`stop-playback::playlist::${this.playlistId}`, () => {
-          this.state = DynamicImageState.DEFAULT;
-        }),
-      ]);
-    } else {
-      // this dynamic image is for a track
-
-      // if the video is already playing, we need to update the state
-      if (
-        player.now_playing?.object.track.videoId === this.videoId
-      ) {
-        this.emit("is-playing");
-
-        console.log("is playing", player.playing, this.videoId);
-
-        if (player.playing) {
-          this.state = DynamicImageState.PLAYING;
-          this.emit("play");
-        } else {
-          this.state = DynamicImageState.PAUSED;
-          this.emit("pause");
-        }
-      }
-
-      this.listeners.add(player, [
-        player.connect(`start-loading::${this.videoId}`, () => {
-          this.state = DynamicImageState.LOADING;
-          this.emit("play");
-          this.emit("is-playing");
-        }),
-        player.connect(`stop-loading::${this.videoId}`, () => {
-          this.emit("is-playing");
-          if (
-            player.now_playing?.object.track.videoId === this.videoId &&
-            player.playing
-          ) {
-            this.state = DynamicImageState.PLAYING;
-          } else {
-            this.state = DynamicImageState.PAUSED;
-          }
-        }),
-        player.connect(`start-playback::${this.videoId}`, () => {
-          this.state = DynamicImageState.PLAYING;
-        }),
-        player.connect(`pause-playback::${this.videoId}`, () => {
-          this.state = DynamicImageState.PAUSED;
-        }),
-        player.connect(`stop-playback::${this.videoId}`, () => {
-          this.state = DynamicImageState.DEFAULT;
-        }),
-      ]);
-    }
   }
 
   clear() {
-    this.reset_all_listeners();
-    this.remove_controller(this.controller);
+    this.reset_root_listeners();
   }
 
-  vfunc_map(): void {
-    this.setup_listeners();
-    super.vfunc_map();
-  }
-
-  vfunc_unmap(): void {
-    this.reset_listeners();
-    super.vfunc_unmap();
+  vfunc_unroot(): void {
+    this.clear();
   }
 
   load_thumbnails(

@@ -30,18 +30,16 @@ import GLib from "gi://GLib";
 import Gio from "gi://Gio";
 
 import { Navigator } from "./navigation.js";
-import { Application, Settings } from "./application.js";
+import { get_player, Settings } from "./application.js";
 import {
   PlayerSidebar,
   PlayerSidebarView,
 } from "./components/player/sidebar.js";
-import { MPRIS } from "./mpris.js";
 import { LoginPage } from "./pages/login.js";
 import { AddActionEntries } from "./util/action.js";
 import { NavbarView } from "./components/navbar/index.js";
 import { get_current_user, get_option } from "libmuse";
 import { PlayerView } from "./components/player/view.js";
-import { MuzikaPlayer } from "./player/muzika.js";
 
 // make sure to first register PlayerSidebar
 PlayerSidebar;
@@ -89,9 +87,6 @@ export class Window extends Adw.ApplicationWindow {
   sidebar: PlayerSidebar;
   toast_overlay!: Adw.ToastOverlay;
 
-  // TODO: re-add MPRIS
-  // mpris: MPRIS;
-
   constructor(params?: Partial<Adw.ApplicationWindow.ConstructorProperties>) {
     super(params);
 
@@ -113,26 +108,24 @@ export class Window extends Adw.ApplicationWindow {
       "playlist:LM",
     );
 
-    const application = this.application as Application;
-
-    // this.mpris = new MPRIS(application);
+    const player = get_player();
 
     this.insert_action_group("navigator", this.navigator.get_action_group());
-    this.insert_action_group("player", application.player.get_action_group());
+    this.insert_action_group("player", player.get_action_group());
     this.insert_action_group(
       "queue",
-      application.player.queue.get_action_group(),
+      player.queue.get_action_group(),
     );
 
     this.player_view = new PlayerView({
-      player: application.player,
+      player: player,
     });
 
     // TODO: fix this
     this._toolbar_view.add_bottom_bar(this.player_view);
 
     this.sidebar = new PlayerSidebar({
-      player: application.player,
+      player: player,
     });
 
     this.player_view.full.connect("sidebar-button-clicked", (_, view) => {

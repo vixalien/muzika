@@ -4,20 +4,14 @@ import GLib from "gi://GLib";
 import Gio from "gi://Gio";
 import Adw from "gi://Adw";
 
-import {
-  Artist,
-  Category,
-  get_artist,
-  MixedItem,
-  PlaylistItem,
-} from "../muse.js";
+import { Artist, Category, get_artist, MixedItem } from "../muse.js";
 
 import { ArtistHeader } from "../components/artistheader.js";
 import { Carousel } from "../components/carousel/index.js";
 import { EndpointContext, MuzikaComponent } from "src/navigation.js";
 import { PlaylistListView } from "src/components/playlist/listview.js";
-import { ObjectContainer } from "src/util/objectcontainer.js";
 import { PlaylistItemView } from "src/components/playlist/itemview.js";
+import { PlayableContainer, PlayableList } from "src/util/playablelist.js";
 
 interface ArtistState {
   artist: Artist;
@@ -52,9 +46,7 @@ export class ArtistPage extends Adw.Bin
   private _playlist_item_view!: PlaylistItemView;
   private _header!: ArtistHeader;
 
-  model = new Gio.ListStore<ObjectContainer<PlaylistItem>>({
-    item_type: ObjectContainer.$gtype,
-  });
+  model = new PlayableList();
 
   constructor() {
     super();
@@ -82,7 +74,9 @@ export class ArtistPage extends Adw.Bin
       this.model.splice(
         n > 0 ? n - 1 : 0,
         0,
-        songs.results.map((track) => new ObjectContainer(track)),
+        songs.results.map((track) =>
+          PlayableContainer.new_from_playlist_item(track)
+        ),
       );
     } else {
       this._top_songs.visible = false;
@@ -107,7 +101,7 @@ export class ArtistPage extends Adw.Bin
 
     this._header.set_title(artist.name);
     this._header.set_description(artist.description);
-    this.update_header_buttons()
+    this.update_header_buttons();
 
     this.show_top_songs(artist.songs);
 

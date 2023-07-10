@@ -2,8 +2,8 @@ import Gst from "gi://Gst";
 import GObject from "gi://GObject";
 import Gio from "gi://Gio";
 import GLib from "gi://GLib";
-
-import { debounce } from "lodash-es";
+import GstPlay from "gi://GstPlay";
+import Gtk from "gi://Gtk?version=4.0";
 
 import {
   Queue,
@@ -11,14 +11,8 @@ import {
   QueueSettings,
   RepeatMode,
   tracks_to_meta,
-} from "./queue.js";
-import {
-  add_history_item,
-  AudioFormat,
-  get_option,
-  get_song,
-  Song,
-} from "../muse.js";
+} from "./queue";
+import { AudioFormat, Format, get_song, Song } from "src/muse";
 import { Application, Settings } from "../application.js";
 import { ObjectContainer } from "../util/objectcontainer.js";
 import { AddActionEntries } from "src/util/action.js";
@@ -33,17 +27,163 @@ type MaybeAdaptiveFormat = AudioFormat & {
   adaptive: boolean;
 };
 
-export type TrackMetadata = {
-  song: Song;
-  format: MaybeAdaptiveFormat;
-  track: QueueMeta;
-  settings: QueueSettings;
+if (!Gst.is_initialized()) {
+  GLib.setenv("GST_PLAY_USE_PLAYBIN3", "1", false);
+
+  Gst.init(null);
+}
+
+type GTypeToType<Y extends GObject.GType> = Y extends GObject.GType<infer T> ? T
+  : never;
+
+type GTypeArrayToTypeArray<Y extends readonly GObject.GType[]> = {
+  [K in keyof Y]: GTypeToType<Y[K]>;
 };
 
-export class Player extends GObject.Object {
+class MuzikaPlaySignalAdapter extends GObject.Object {
+  private static events = {
+    "buffering": [GObject.TYPE_INT],
+    "duration-changed": [GObject.TYPE_INT],
+    "end-of-stream": [],
+    "error": [GLib.Error.$gtype, Gst.Structure.$gtype],
+    "media-info-updated": [GstPlay.PlayMediaInfo.$gtype],
+    "mute-changed": [GObject.TYPE_BOOLEAN],
+    "position-updated": [GObject.TYPE_DOUBLE],
+    "seek-done": [GObject.TYPE_DOUBLE],
+    "state-changed": [GstPlay.PlayState.$gtype],
+    "uri-loaded": [GObject.TYPE_STRING],
+    "video-dimensions-changed": [GObject.TYPE_INT, GObject.TYPE_INT],
+    "volume-changed": [GObject.TYPE_INT],
+    "warning": [GLib.Error.$gtype, Gst.Structure.$gtype],
+  } as const;
+
   static {
     GObject.registerClass({
-      GTypeName: "Player",
+      GTypeName: "MuzikaPlaySignalAdapter",
+      Signals: Object.fromEntries(
+        Object.entries(this.events)
+          .map(([name, types]) => [
+            name,
+            {
+              param_types: types,
+            },
+          ]),
+      ),
+    }, this);
+  }
+  private _play: GstPlay.Play;
+
+  get play(): GstPlay.Play {
+    return this._play;
+  }
+
+  constructor(play: GstPlay.Play) {
+    super();
+
+    this._play = play;
+
+    const bus = this._play.get_message_bus()!;
+    bus.add_signal_watch();
+
+    bus.connect("message", this.on_message.bind(this));
+  }
+
+  private on_message(_: GstPlay.Play, message: Gst.Message) {
+    if (!GstPlay.Play.is_play_message(message)) {
+      return;
+    }
+
+    const structure = message.get_structure()!;
+    const type = structure.get_enum(
+      "play-message-type",
+      GstPlay.PlayMessage.$gtype,
+    );
+
+    if (!type[0] || structure.get_name()! !== "gst-play-message-data") {
+      return;
+    }
+
+    switch (type[1] as GstPlay.PlayMessage) {
+      case GstPlay.PlayMessage.URI_LOADED:
+        this.emit_message("uri-loaded", [structure.get_string("uri")!]);
+        break;
+      case GstPlay.PlayMessage.POSITION_UPDATED:
+        this.emit_message("position-updated", [
+          GstPlay.play_message_parse_position_updated(message)!,
+        ]);
+        break;
+      case GstPlay.PlayMessage.DURATION_CHANGED:
+        this.emit_message("duration-changed", [
+          GstPlay.play_message_parse_duration_updated(message)!,
+        ]);
+        break;
+      case GstPlay.PlayMessage.STATE_CHANGED:
+        this.emit_message("state-changed", [
+          GstPlay.play_message_parse_state_changed(message)!,
+        ]);
+        break;
+      case GstPlay.PlayMessage.BUFFERING:
+        this.emit_message("buffering", [
+          GstPlay.play_message_parse_buffering_percent(message),
+        ]);
+        break;
+      case GstPlay.PlayMessage.END_OF_STREAM:
+        this.emit_message("end-of-stream", []);
+        break;
+      case GstPlay.PlayMessage.ERROR:
+        const error = GstPlay.play_message_parse_error(message);
+
+        this.emit_message("error", [error[0]!, error[1]!]);
+        break;
+      case GstPlay.PlayMessage.WARNING:
+        const warning = GstPlay.play_message_parse_warning(message);
+
+        this.emit_message("warning", [warning[0]!, warning[1]!]);
+        break;
+      case GstPlay.PlayMessage.VIDEO_DIMENSIONS_CHANGED:
+        this.emit_message(
+          "video-dimensions-changed",
+          GstPlay.play_message_parse_video_dimensions_changed(message),
+        );
+        break;
+      case GstPlay.PlayMessage.MEDIA_INFO_UPDATED:
+        this.emit_message("media-info-updated", [
+          GstPlay.play_message_parse_media_info_updated(message)!,
+        ]);
+        break;
+      case GstPlay.PlayMessage.VOLUME_CHANGED:
+        this.emit_message("volume-changed", [
+          GstPlay.play_message_parse_volume_changed(message),
+        ]);
+        break;
+      case GstPlay.PlayMessage.MUTE_CHANGED:
+        this.emit_message("mute-changed", [
+          GstPlay.play_message_parse_muted_changed(message)!,
+        ]);
+        break;
+      case GstPlay.PlayMessage.SEEK_DONE:
+        this.emit_message("seek-done", [
+          GstPlay.play_message_parse_position_updated(message)!,
+        ]);
+        break;
+    }
+  }
+
+  private emit_message<
+    Name extends keyof typeof MuzikaPlaySignalAdapter["events"],
+    Types extends typeof MuzikaPlaySignalAdapter["events"][Name],
+  >(
+    name: Name,
+    args: GTypeArrayToTypeArray<Types>,
+  ) {
+    this.emit(name as string, ...args as GTypeToType<Types[number]>[]);
+  }
+}
+
+export class MuzikaMediaStream extends Gtk.MediaStream {
+  static {
+    GObject.registerClass({
+      GTypeName: "MuzikaMediaStream",
       Properties: {
         queue: GObject.param_spec_object(
           "queue",
@@ -52,18 +192,355 @@ export class Player extends GObject.Object {
           Queue.$gtype,
           GObject.ParamFlags.READABLE,
         ),
-        current: GObject.param_spec_object(
-          "current-meta",
-          "Current Metadata",
-          "The metadata of the currently playing song",
-          ObjectContainer.$gtype,
+        buffering: GObject.param_spec_boolean(
+          "is-buffering",
+          "Is Buffering",
+          "Whether the player is buffering",
+          false,
           GObject.ParamFlags.READABLE,
         ),
-        is_live: GObject.param_spec_boolean(
-          "is-live",
-          "Is live",
-          "Whether the current song is live",
-          false,
+      },
+    }, this);
+  }
+
+  constructor() {
+    super();
+
+    this._play = new GstPlay.Play();
+
+    const bus = this._play.get_message_bus();
+    bus.add_signal_watch();
+
+    const adapter = new MuzikaPlaySignalAdapter(this._play);
+
+    adapter.connect("buffering", this.buffering_cb.bind(this));
+    adapter.connect("end-of-stream", this.eos_cb.bind(this));
+    adapter.connect("error", this.error_cb.bind(this));
+    adapter.connect("state-changed", this.state_changed_cb.bind(this));
+    adapter.connect("uri-loaded", this.uri_loaded_cb.bind(this));
+    adapter.connect("position-updated", this.position_updated_cb.bind(this));
+    adapter.connect("duration-changed", this.duration_changed_cb.bind(this));
+    adapter.connect(
+      "media-info-updated",
+      this.media_info_updated_cb.bind(this),
+    );
+    adapter.connect("volume-changed", this.volume_changed_cb.bind(this));
+    adapter.connect("mute-changed", this.mute_changed_cb.bind(this));
+    adapter.connect("seek-done", this.seek_done_cb.bind(this));
+
+    const sink = Gst.ElementFactory.make("fakesink", "sink")!;
+
+    if (!sink) {
+      throw new Error("Failed to create sink");
+    }
+
+    this._play.pipeline.set_property("video-sink", sink);
+  }
+
+  // UTILS
+
+  protected _play: GstPlay.Play;
+
+  protected initial_seek_to: number | null = null;
+
+  private do_initial_seek() {
+    if (this.initial_seek_to !== null) {
+      this.seek(this.initial_seek_to);
+      this.initial_seek_to = null;
+    }
+  }
+
+  // PROPERTIES
+
+  private _state = GstPlay.PlayState.STOPPED;
+
+  get state() {
+    return this._state;
+  }
+
+  // property: buffering
+
+  protected _is_buffering = false;
+
+  get is_buffering() {
+    return this._is_buffering;
+  }
+
+  // property: duration
+
+  get duration() {
+    if (!this._play.media_info) return 0;
+
+    return this._play.media_info.get_duration() / Gst.USECOND;
+  }
+
+  // property: ended
+
+  protected _ended = false;
+
+  get ended() {
+    return this._ended;
+  }
+
+  // property: error
+
+  private _error: GLib.Error | null = null;
+
+  get error() {
+    return this._error as GLib.Error;
+  }
+
+  // property: has-audio
+
+  get has_audio() {
+    if (!this._play.media_info) return false;
+
+    return this._play.media_info.get_number_of_audio_streams() > 0;
+  }
+
+  // property: has-video
+
+  get has_video() {
+    if (!this._play.media_info) return false;
+
+    return this._play.media_info.get_number_of_video_streams() > 0;
+  }
+
+  // property: loop
+
+  // TODO: add loop-mode
+
+  private _loop = false;
+
+  public get loop() {
+    return this._loop;
+  }
+  public set loop(value) {
+    this._loop = value;
+  }
+
+  // property: muted
+
+  get muted() {
+    return this._play.mute;
+  }
+
+  // property: playing
+
+  protected _playing = false;
+
+  public get playing() {
+    return this._playing;
+  }
+
+  public set playing(value) {
+    if (value) {
+      this._play.play();
+    } else {
+      this._play.pause();
+    }
+
+    this._playing = value;
+    this.notify("playing");
+  }
+
+  play() {
+    this.playing = true;
+  }
+
+  pause() {
+    this.playing = false;
+  }
+
+  // property: playing
+
+  // get prepared() {
+  //   const state = this.get_state();
+
+  //   if (!state) return false;
+
+  //   return state >= Gst.State.READY;
+  // }
+
+  // property: seekable
+
+  // property: volume
+
+  get volume() {
+    return this._play.volume;
+  }
+
+  set volume(value) {
+    this._play.volume = value;
+  }
+
+  // FUNCTIONS
+
+  // error functions
+
+  gerror(error: GLib.Error): void {
+    this._error = error;
+    this.notify("error");
+
+    console.error("error during playback", error.message, error.toString());
+
+    // TODO: cancel pending seeks
+    this._play.stop();
+
+    if (this.prepared) {
+      this.stream_unprepared();
+    }
+
+    this.playing = false;
+  }
+
+  // seek
+
+  vfunc_seek(timestamp: number): void {
+    this.update(timestamp);
+    this._play.seek(Math.trunc(timestamp * Gst.USECOND));
+  }
+
+  // handlers
+
+  private buffering_cb(_play: GstPlay.Play, percent: number): void {
+    if (percent < 100) {
+      if (!this.is_buffering && this.playing) {
+        this.pause();
+
+        this._is_buffering = true;
+        this.notify("is-buffering");
+      }
+    } else {
+      this._is_buffering = false;
+      this.notify("is-buffering");
+
+      if (this.playing) this.play();
+    }
+  }
+
+  private uri_loaded_cb(_play: GstPlay.Play): void {
+    if (this.prepared) {
+      this.stream_unprepared();
+    }
+
+    this._ended = false;
+    this.notify("ended");
+
+    if (this.playing) {
+      this._play.play();
+    } else {
+      this._play.pause();
+    }
+  }
+
+  private position_updated_cb(_play: GstPlay.Play, position: number): void {
+    this.update(position / Gst.USECOND);
+  }
+
+  private duration_changed_cb(_play: GstPlay.Play): void {
+    this.notify("duration");
+  }
+
+  private state_changed_cb(
+    _play: GstPlay.Play,
+    state: GstPlay.PlayState,
+  ): void {
+    this._state = state;
+
+    if (state == GstPlay.PlayState.BUFFERING) {
+      this._is_buffering = true;
+      this.notify("is-buffering");
+    } else if (this.is_buffering && state != GstPlay.PlayState.STOPPED) {
+      this._is_buffering = false;
+      this.notify("is-buffering");
+    }
+
+    if (state == GstPlay.PlayState.STOPPED) {
+      this.update(0);
+
+      if (this.prepared) {
+        this.stream_unprepared();
+      }
+    } else {
+      if (!this.is_prepared) {
+        this.stream_prepared(
+          this.has_audio,
+          this.has_video,
+          this.seekable,
+          this.duration,
+        );
+
+        this.do_initial_seek();
+
+        this._ended = false;
+        this.notify("ended");
+      }
+    }
+  }
+
+  private error_cb(_play: GstPlay.Play, error: GLib.Error): void {
+    this.gerror(error);
+  }
+
+  protected eos_cb(_play: GstPlay.Play): void {
+    this.stream_ended();
+
+    this._ended = true;
+    this.notify("ended");
+  }
+
+  private media_info_updated_cb(
+    _play: GstPlay.Play,
+    info: GstPlay.PlayMediaInfo,
+  ): void {
+    if (!this.prepared) {
+      this.stream_prepared(
+        info.get_number_of_audio_streams() > 0,
+        info.get_number_of_video_streams() > 0,
+        info.is_seekable(),
+        this._play.get_duration(),
+      );
+
+      this.do_initial_seek();
+    }
+  }
+
+  private volume_changed_cb(_play: GstPlay.Play): void {
+    this.notify("volume");
+  }
+
+  private mute_changed_cb(_play: GstPlay.Play): void {
+    this.notify("muted");
+  }
+
+  private seek_done_cb(_play: GstPlay.Play, timestamp: number): void {
+    this.seek_success();
+
+    this.update(timestamp / Gst.USECOND);
+  }
+
+  protected set_uri(uri: string): void {
+    this._play.uri = uri;
+  }
+
+  stop() {
+    this._play.stop();
+
+    this.notify("timestamp");
+  }
+}
+
+export class MuzikaPlayer extends MuzikaMediaStream {
+  static {
+    GObject.registerClass({
+      GTypeName: "MuzikaPlayer",
+      Properties: {
+        queue: GObject.param_spec_object(
+          "queue",
+          "Queue",
+          "The queue",
+          Queue.$gtype,
           GObject.ParamFlags.READABLE,
         ),
         buffering: GObject.param_spec_boolean(
@@ -73,177 +550,52 @@ export class Player extends GObject.Object {
           false,
           GObject.ParamFlags.READABLE,
         ),
-        playing: GObject.param_spec_boolean(
-          "playing",
-          "Playing",
-          "Whether the player is playing",
-          false,
+        now_playing: GObject.param_spec_object(
+          "now-playing",
+          "Now playing",
+          "The metadata of the currently playing song",
+          ObjectContainer.$gtype,
           GObject.ParamFlags.READABLE,
         ),
-        position: GObject.param_spec_uint64(
-          "position",
-          "Position",
-          "The current position",
-          0,
-          Number.MAX_SAFE_INTEGER,
-          0,
+        loading_track: GObject.param_spec_string(
+          "loading-track",
+          "Loading track",
+          "The videoId of track that is currently being loaded",
+          null,
           GObject.ParamFlags.READABLE,
         ),
-        duration: GObject.param_spec_uint64(
-          "duration",
-          "Duration",
-          "The duration of the current song",
-          0,
-          Number.MAX_SAFE_INTEGER,
-          0,
-          GObject.ParamFlags.READABLE,
-        ),
-      },
-      Signals: {
-        seeked: {
-          param_types: [GObject.TYPE_INT64],
-        },
-        start_loading: {
-          flags: GObject.SignalFlags.DETAILED,
-        },
-        stop_loading: {
-          flags: GObject.SignalFlags.DETAILED,
-        },
-        start_playback: {
-          flags: GObject.SignalFlags.DETAILED,
-        },
-        pause_playback: {
-          flags: GObject.SignalFlags.DETAILED,
-        },
-        stop_playback: {
-          flags: GObject.SignalFlags.DETAILED,
-        },
       },
     }, this);
   }
 
-  playbin: Gst.Element;
-  fakesink: Gst.Element;
-
-  private _is_live = false;
-
-  get is_live() {
-    return this._is_live;
-  }
-
-  private set is_live(value: boolean) {
-    this._is_live = value;
-    this.notify("is-live");
-  }
-
-  private _buffering = true;
-
-  get buffering() {
-    return this._buffering;
-  }
-
-  private set buffering(value: boolean) {
-    this._buffering = value;
-    this.notify("buffering");
-  }
-
-  private _playing = false;
-
-  get playing() {
-    return this._playing;
-  }
-
-  private set playing(value: boolean) {
-    this._playing = value;
-    this.notify("playing");
-
-    const id = this.current_meta?.object.track.videoId;
-    const playlist = this.current_meta?.object.track.playlist;
-
-    if (id) {
-      if (this.playing) {
-        this.emit(`start-playback::${id}`);
-        if (playlist) this.emit(`start-playback::playlist::${playlist}`);
-      } else {
-        this.emit(`pause-playback::${id}`);
-        if (playlist) this.emit(`pause-playback::playlist::${playlist}`);
-      }
-    }
-  }
-
+  private app: Application;
   private _queue: Queue;
 
-  get queue(): Queue {
+  get queue() {
     return this._queue;
   }
 
-  private _current_meta: ObjectContainer<TrackMetadata> | null = null;
-
-  get current_meta() {
-    return this._current_meta;
-  }
-
-  private _position = 0;
-
-  get position() {
-    return this._position;
-  }
-
-  private set position(value: number) {
-    this._position = value;
-    this.notify("position");
-  }
-
-  get_position() {
-    const [ret, pos] = this.playbin.query_position(Gst.Format.TIME);
-
-    if (ret) {
-      return pos;
-    } else {
-      return null;
-    }
-  }
-
-  private _last_position = 0;
-
-  /**
-   * Gets the current position of the player, or the last position seeked to
-   */
-  get_normalised_position() {
-    const position = this.get_position();
-
-    if (position) {
-      this._last_position = position;
-      return position;
-    } else {
-      return this._last_position;
-    }
-  }
-
-  private _duration = 0;
-
   get duration() {
-    return this._duration;
-  }
+    const super_duration = super.duration;
 
-  private set duration(value: number) {
-    this._duration = value;
-    this.notify("duration");
-  }
+    let duration;
 
-  get_duration() {
-    const [ret, dur] = this.playbin.query_duration(Gst.Format.TIME);
+    if (super_duration <= 0) {
+      const duration_seconds =
+        this.now_playing?.object.song.videoDetails.lengthSeconds;
 
-    if (ret) {
-      return dur;
+      if (duration_seconds) {
+        // to microsecond
+        duration = duration_seconds * 1000000;
+      } else {
+        duration = 0;
+      }
     } else {
-      return null;
+      duration = super_duration;
     }
+
+    return duration;
   }
-
-  async = false;
-
-  app: Application;
 
   constructor(options: { app: Application }) {
     super();
@@ -251,38 +603,228 @@ export class Player extends GObject.Object {
     this.app = options.app;
     this._queue = new Queue({ app: options.app });
 
-    if (!Gst.is_initialized()) {
-      Gst.init(null);
-    }
-
-    this.queue.connect("notify::current", () => {
-      this._last_position = 0;
-      this.change_current_track(this.queue.current?.object ?? null)
+    this._queue.connect("notify::current", () => {
+      this.load(this.queue.current?.object ?? null)
         .catch((e) => {
           console.log("caught error", e);
         });
     });
 
-    this.queue.connect("wants-to-play", () => {
-      this.playing = true;
+    this.queue.connect("prepare-next", (_, next: string) => {
+      this.stop();
+
+      this._playing = true;
+
+      // this._loading_track = next;
+      // this.emit("loading-track");
+
+      // this._play.pause();
+      // this._play.seek(0);
+
+      // this._is_buffering = true;
+      // this.notify("is-buffering");
     });
 
-    this.playbin = Gst.ElementFactory.make("playbin3", "player")!;
-    this.fakesink = Gst.ElementFactory.make("fakesink", "fakesink")!;
-
-    this.playbin.set_property("video-sink", this.fakesink);
-
-    const bus = this.playbin.get_bus()!;
-    bus.add_signal_watch();
-    bus.connect("message", this.on_message.bind(this));
+    // volume
 
     Settings.connect("changed::volume", () => {
-      this.playbin.set_property("volume", Settings.get_double("volume"));
+      const settings_volume = Settings.get_double("volume");
+      if (settings_volume !== this.volume) {
+        this.volume = settings_volume;
+      }
     });
 
-    this.playbin.set_property("volume", Settings.get_double("volume"));
+    this.volume = Settings.get_double("volume");
+
+    this.connect("notify::volume", () => {
+      const settings_volume = Settings.get_double("volume");
+      if (settings_volume !== this.volume) {
+        Settings.set_double("volume", this.volume);
+      }
+    });
+
+    // restore state
 
     this.load_state();
+  }
+
+  // property: current-meta
+
+  private _now_playing: ObjectContainer<TrackMetadata> | null = null;
+
+  get now_playing() {
+    return this._now_playing;
+  }
+
+  // whether the next play action should add to the history
+  private add_history = false;
+
+  play() {
+    super.play();
+
+    // TODO: add history
+    // const id = this.now_playing?.object.track.videoId;
+
+    // if (id) {
+    //   if (this.add_history && get_option("auth").has_token()) {
+    //     // add history entry, but don't wait for the promise to resolve
+    //     add_history_item(id);
+
+    //     this.add_history = false;
+    //   }
+    // }
+  }
+
+  private loading_controller: AbortController | null = null;
+
+  private _loading_track: string | null = null;
+
+  get loading_track() {
+    return this._loading_track ?? null;
+  }
+
+  async load(track: QueueMeta | null) {
+    // TODO: stop
+    if (!track) return;
+
+    const current = this.now_playing?.object.track.videoId;
+
+    // if the current track is already playing, just seek to it's start
+    if (current == track.videoId) {
+      this.seek(0);
+      return;
+    }
+
+    if (this._loading_track == track.videoId) {
+      return;
+    }
+
+    if (this.loading_controller != null) {
+      this.loading_controller.abort();
+      this.loading_controller = null;
+    }
+
+    this._loading_track = track.videoId;
+    this.notify("loading-track");
+
+    this.loading_controller = new AbortController();
+
+    this.stop();
+
+    this._is_buffering = true;
+    this.notify("is-buffering");
+
+    return Promise.all([
+      get_song(track.videoId, { signal: this.loading_controller!.signal }),
+      get_track_settings(track.videoId, this.loading_controller!.signal),
+    ])
+      .then(([song, settings]) => {
+        const format = negotiate_best_format(song);
+
+        this._now_playing = new ObjectContainer<TrackMetadata>({
+          song,
+          track,
+          format,
+          settings: {
+            ...settings,
+            playlistId: this.queue.settings?.playlistId ?? settings.playlistId,
+          },
+        });
+        this.notify("now-playing");
+
+        this._play.set_uri(format.url);
+
+        this._is_buffering = true;
+        this.notify("is-buffering");
+
+        this.add_history = true;
+      })
+      .catch((error) => {
+        if (error instanceof DOMException && error.name == "AbortError") return;
+
+        console.log(error);
+      });
+  }
+
+  protected eos_cb(_play: GstPlay.Play): void {
+    this.stream_ended();
+
+    this._ended = true;
+    this.notify("ended");
+
+    this.queue.repeat_or_next();
+  }
+
+  private get_state(): PlayerState | null {
+    if (!this.queue.current?.object) {
+      return null;
+    }
+
+    const get_tracks = (list: Gio.ListStore<ObjectContainer<QueueMeta>>) => {
+      return list_model_to_array(list)
+        .map((container) => container.object)
+        .filter(Boolean)
+        .map((track) => track?.videoId) as string[];
+    };
+
+    return {
+      shuffle: this.queue.shuffle,
+      repeat: this.queue.repeat,
+      position: this.queue.position,
+      tracks: get_tracks(this.queue.list),
+      original: get_tracks(this.queue._original),
+      seek: this.timestamp,
+      settings: this.queue.settings,
+    };
+  }
+
+  private async set_state(state?: PlayerState) {
+    if (!state) return;
+
+    if (state.tracks.length === 0) return;
+
+    if (state.settings) {
+      this.queue.set_settings(state.settings);
+    }
+
+    if (state.seek) {
+      this.initial_seek_to = state.seek;
+    }
+
+    await Promise.all([
+      get_tracklist(state.tracks)
+        .then((tracks) => {
+          this.queue.add(tracks_to_meta(tracks), state.position ?? undefined);
+        }),
+      get_tracklist(state.original)
+        .then((tracks) =>
+          tracks.forEach((track) =>
+            this.queue._original.append(
+              new ObjectContainer({ ...track, playlist: null }),
+            )
+          )
+        ),
+    ]);
+
+    this.queue._shuffle = state.shuffle;
+    this.queue.repeat = state.repeat;
+  }
+
+  private async load_state() {
+    const state = store.get("player-state") as PlayerState | undefined;
+
+    await this.set_state(state)
+      .catch((err) => console.error(err));
+  }
+
+  save_state() {
+    const state = this.get_state();
+
+    store.set("player-state", state);
+  }
+
+  play_pause() {
+    this.playing = !this.playing;
   }
 
   get_action_group() {
@@ -305,18 +847,6 @@ export class Player extends GObject.Object {
         name: "play-pause",
         activate: () => {
           this.play_pause();
-        },
-      },
-      {
-        name: "previous",
-        activate: () => {
-          this.previous();
-        },
-      },
-      {
-        name: "next",
-        activate: () => {
-          this.next();
         },
       },
       {
@@ -357,382 +887,6 @@ export class Player extends GObject.Object {
 
     return action_group;
   }
-
-  // whether the next play action should add to the history
-  add_history = false;
-
-  play() {
-    if (
-      this.playbin.get_state(0)[1] === Gst.State.PLAYING
-    ) return;
-
-    const ret = this.playbin.set_state(Gst.State.PLAYING);
-
-    if (ret === Gst.StateChangeReturn.FAILURE) {
-      this.pause();
-      throw new Error("Failed to play");
-    } else if (ret === Gst.StateChangeReturn.NO_PREROLL) {
-      this.is_live = true;
-    }
-
-    this.exec_after(ret, () => {
-      this.playing = true;
-
-      if (this.add_history) {
-        // add history entry, but don't wait for the promise to resolve
-        if (this.current_meta?.object.song && get_option("auth").has_token()) {
-          add_history_item(this.current_meta?.object.song);
-        }
-
-        this.add_history = false;
-      }
-    });
-  }
-
-  pause() {
-    this.playing = false;
-    if (
-      this.playbin.get_state(Number.MAX_SAFE_INTEGER)[1] === Gst.State.PLAYING
-    ) {
-      this.playbin.set_state(Gst.State.PAUSED);
-    }
-  }
-
-  play_pause() {
-    const state = this.playbin.get_state(Number.MAX_SAFE_INTEGER)[1];
-
-    if (state === Gst.State.PLAYING) {
-      this.pause();
-    } else {
-      this.play();
-    }
-  }
-
-  raw_seek(position: number) {
-    const cb = () => {
-      this.playbin.seek_simple(
-        Gst.Format.TIME,
-        Gst.SeekFlags.FLUSH,
-        position,
-      );
-
-      this.add_async_done_cb(() => {
-        this._last_position = position;
-        this.emit("seeked", position);
-      });
-    };
-
-    const state_change = this.playbin.get_state(0)[0];
-
-    if (state_change === Gst.StateChangeReturn.ASYNC) {
-      if (!this.async_done_cbs.includes(cb)) {
-        this.add_async_done_cb(cb);
-      }
-    } else if (state_change === Gst.StateChangeReturn.SUCCESS) {
-      cb();
-    }
-
-    return state_change;
-  }
-
-  seek = debounce(this.raw_seek.bind(this), 300, {
-    trailing: true,
-    leading: false,
-  });
-
-  async previous() {
-    this.playing = true;
-    this.queue.previous();
-  }
-
-  async next() {
-    this.playing = true;
-    this.queue.next();
-  }
-
-  async repeat_or_next() {
-    this.queue.repeat_or_next();
-  }
-
-  stop() {
-    this.playing = false;
-    this.playbin.set_state(Gst.State.NULL);
-  }
-
-  private seek_to: number | null = null;
-
-  async change_current_track(
-    track: QueueMeta | null,
-  ) {
-    this.playbin.set_state(Gst.State.NULL);
-
-    const current = this.current_meta?.object.track.videoId;
-    const playlist = this.current_meta?.object.track.playlist ?? null;
-
-    if (!track) {
-      return;
-    }
-    if (current) {
-      this.emit(`stop-playback::${current}`);
-      if (playlist && playlist !== track.playlist) {
-        this.emit(`stop-playback::playlist::${playlist}`);
-      }
-    }
-
-    this.buffering = true;
-
-    this.emit(`start-loading::${track.videoId}`);
-    if (playlist && playlist != track.playlist) {
-      this.emit(`start-loading::playlist::${track.playlist}`);
-    }
-
-    const [song, settings] = await Promise.all([
-      get_song(track.videoId),
-      get_track_settings(track.videoId),
-    ]);
-
-    const format = this.negotiate_best_format(song);
-
-    this._current_meta = new ObjectContainer<TrackMetadata>({
-      song,
-      track,
-      format,
-      settings: settings,
-    });
-    this.notify("current-meta");
-
-    this.emit(`stop-loading::${track.videoId}`);
-    this.emit(`stop-loading::playlist::${track.playlist}`);
-
-    this.playbin.set_state(Gst.State.NULL);
-    this.playbin.set_property("uri", format.url);
-    const paused_ret = this.playbin.set_state(Gst.State.PAUSED);
-
-    this.exec_after(
-      paused_ret,
-      () => {
-        this.duration = this.get_duration() ?? 0;
-
-        this.add_history = true;
-
-        if (this.seek_to) {
-          const ret = this.seek(this.seek_to);
-          this.seek_to = null;
-
-          if (ret) {
-            this.exec_after(ret, () => {
-              if (this.playing) this.play;
-            });
-          }
-        } else {
-          if (this.playing) this.play();
-        }
-      },
-    );
-  }
-
-  private exec_after(
-    statechange: Gst.StateChangeReturn,
-    cb: () => void,
-  ) {
-    if (statechange === Gst.StateChangeReturn.ASYNC) {
-      this.add_async_done_cb(cb);
-    } else if (statechange === Gst.StateChangeReturn.SUCCESS) {
-      cb();
-    }
-  }
-
-  private async_done_cbs: (() => void)[] = [];
-
-  private add_async_done_cb(cb: () => void) {
-    this.async_done_cbs.push(cb);
-  }
-
-  private fire_async_done_cbs() {
-    const cbs = this.async_done_cbs;
-    this.async_done_cbs = [];
-
-    for (const cb of cbs) {
-      cb();
-    }
-  }
-
-  private on_message(_bus: Gst.Bus, message: Gst.Message) {
-    const type = message.type;
-
-    const [position_available, position] = this.playbin.query_position(
-      Gst.Format.TIME,
-    );
-
-    if (position_available) {
-      this.position = position;
-    }
-
-    switch (type) {
-      case Gst.MessageType.EOS:
-        this.repeat_or_next();
-        break;
-      case Gst.MessageType.ERROR:
-        this.stop();
-        const [error, debug] = message.parse_error();
-        console.log("Error: ", error, debug);
-      case Gst.MessageType.CLOCK_LOST:
-        this.playbin.set_state(Gst.State.PAUSED);
-        this.playbin.set_state(Gst.State.PLAYING);
-        break;
-      case Gst.MessageType.BUFFERING:
-        const percent = message.parse_buffering();
-
-        if (this._is_live) return;
-
-        if (percent < 100) {
-          if (!this.buffering && this.playing) {
-            this.playbin.set_state(Gst.State.PAUSED);
-          }
-
-          this.buffering = true;
-        } else {
-          this.buffering = false;
-
-          if (this.playing) this.playbin.set_state(Gst.State.PLAYING);
-        }
-        break;
-      case Gst.MessageType.ASYNC_DONE:
-        this.fire_async_done_cbs();
-        break;
-    }
-  }
-
-  private get_format_points(format: MaybeAdaptiveFormat) {
-    let points = 0;
-
-    if (format.audio_quality === preferred_quality) {
-      points += 5;
-    }
-
-    if (format.audio_codec === preferred_format) {
-      points += 1;
-    }
-
-    if (format.adaptive) {
-      points += 1;
-    }
-
-    switch (format.audio_quality) {
-      case "tiny":
-        points += 1;
-        break;
-      case "low":
-        points += 2;
-        break;
-      case "medium":
-        points += 3;
-        break;
-      case "high":
-        points += 4;
-        break;
-    }
-
-    return points;
-  }
-
-  private negotiate_best_format(song: Song) {
-    const formats = this.get_audio_formats(song);
-
-    return formats.sort((a, b) => {
-      return this.get_format_points(b) - this.get_format_points(a);
-    })[0];
-  }
-
-  private get_audio_formats(song: Song) {
-    const formats = [
-      ...song.formats.map((format) => {
-        return {
-          ...format,
-          adaptive: false,
-        };
-      }),
-      ...song.adaptive_formats.map((format) => {
-        return {
-          ...format,
-          adaptive: true,
-        };
-      }),
-    ];
-
-    return formats
-      .filter((format) => {
-        return format.has_audio;
-      }) as MaybeAdaptiveFormat[];
-  }
-
-  private get_state(): PlayerState | null {
-    if (!this.queue.current?.object) {
-      return null;
-    }
-
-    const get_tracks = (list: Gio.ListStore<ObjectContainer<QueueMeta>>) => {
-      return list_model_to_array(list)
-        .map((container) => container.object)
-        .filter(Boolean)
-        .map((track) => track?.videoId) as string[];
-    };
-
-    return {
-      shuffle: this.queue.shuffle,
-      repeat: this.queue.repeat,
-      position: this.queue.position,
-      tracks: get_tracks(this.queue.list),
-      original: get_tracks(this.queue._original),
-      seek: this.get_position() ?? 0,
-      settings: this.queue.settings,
-    };
-  }
-
-  save_state() {
-    const state = this.get_state();
-
-    store.set("player-state", state);
-  }
-
-  private async set_state(state?: PlayerState) {
-    if (!state) return;
-
-    if (state.tracks.length === 0) return;
-
-    if (state.settings) {
-      this.queue.set_settings(state.settings);
-    }
-
-    if (state.seek) {
-      this.seek_to = state.seek;
-    }
-
-    await Promise.all([
-      get_tracklist(state.tracks)
-        .then((tracks) => {
-          this.queue.add(tracks_to_meta(tracks), state.position ?? undefined);
-        }),
-      get_tracklist(state.original)
-        .then((tracks) =>
-          tracks.forEach((track) =>
-            this.queue._original.append(
-              new ObjectContainer({ ...track, playlist: null }),
-            )
-          )
-        ),
-    ]);
-
-    this.queue._shuffle = state.shuffle;
-    this.queue.repeat = state.repeat;
-  }
-
-  private async load_state() {
-    const state = store.get("player-state") as PlayerState | undefined;
-
-    await this.set_state(state)
-      .catch((err) => console.error(err));
-  }
 }
 
 export interface PlayerState {
@@ -743,4 +897,74 @@ export interface PlayerState {
   original: string[];
   seek: number;
   settings?: QueueSettings;
+}
+
+export type TrackMetadata = {
+  song: Song;
+  format: Format;
+  track: QueueMeta;
+  settings: QueueSettings;
+};
+
+function get_audio_formats(song: Song) {
+  const formats = [
+    ...song.formats.map((format) => {
+      return {
+        ...format,
+        adaptive: false,
+      };
+    }),
+    ...song.adaptive_formats.map((format) => {
+      return {
+        ...format,
+        adaptive: true,
+      };
+    }),
+  ];
+
+  return formats
+    .filter((format) => {
+      return format.has_audio;
+    }) as MaybeAdaptiveFormat[];
+}
+
+function get_format_points(format: MaybeAdaptiveFormat) {
+  let points = 0;
+
+  if (format.audio_quality === preferred_quality) {
+    points += 5;
+  }
+
+  if (format.audio_codec === preferred_format) {
+    points += 1;
+  }
+
+  if (format.adaptive) {
+    points += 1;
+  }
+
+  switch (format.audio_quality) {
+    case "tiny":
+      points += 1;
+      break;
+    case "low":
+      points += 2;
+      break;
+    case "medium":
+      points += 3;
+      break;
+    case "high":
+      points += 4;
+      break;
+  }
+
+  return points;
+}
+
+function negotiate_best_format(song: Song) {
+  const formats = get_audio_formats(song);
+
+  return formats.sort((a, b) => {
+    return get_format_points(b) - get_format_points(a);
+  })[0];
 }

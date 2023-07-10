@@ -126,7 +126,9 @@ export class Queue extends GObject.Object {
         ),
       },
       Signals: {
-        "wants-to-play": {},
+        "prepare-next": {
+          param_types: [GObject.TYPE_STRING],
+        },
       },
     }, this);
   }
@@ -480,6 +482,10 @@ export class Queue extends GObject.Object {
     video_id?: string,
     options: AddPlaylistOptions = {},
   ) {
+    if (options.play) {
+      this.emit("prepare-next", video_id ?? "");
+    }
+
     const queue = await get_queue(video_id ?? null, playlist_id, {
       shuffle: options.shuffle ?? false,
       signal: options.signal,
@@ -506,7 +512,6 @@ export class Queue extends GObject.Object {
         ? queue.current?.index % queue.tracks.length
         : 0;
 
-      this.emit("wants-to-play");
       this.change_position(position);
     }
 
@@ -514,6 +519,10 @@ export class Queue extends GObject.Object {
   }
 
   async add_songs(song_ids: string[], options: AddSongOptions = {}) {
+    if (options.play) {
+      this.emit("prepare-next", song_ids[0]);
+    }
+
     let tracks: QueueTrack[], first_track_options: QueueSettings | undefined;
 
     if (song_ids.length === 1 && options.radio) {
@@ -544,7 +553,6 @@ export class Queue extends GObject.Object {
     }
 
     if (options.play) {
-      this.emit("wants-to-play");
       this.change_position(0);
     }
 

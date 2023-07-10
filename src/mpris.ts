@@ -1,14 +1,12 @@
 import Gio from "gi://Gio";
-import GObject from "gi://GObject";
 import GLib from "gi://GLib";
-import Gst from "gi://Gst";
 import Gtk from "gi://Gtk?version=4.0";
+import GstPlay from "gi://GstPlay";
 
 import { Application } from "./application";
-import { Player } from "./player";
 import { RepeatMode } from "./player/queue";
 import type { LikeStatus } from "libmuse/types/parsers/songs";
-import { MuzikaPlayer } from "./player/muzika";
+import { MuzikaPlayer } from "./player";
 
 // bus_get
 Gio._promisify(Gio, "bus_get", "bus_get_finish");
@@ -295,10 +293,6 @@ export class MPRIS extends DBusInterface {
       },
     );
 
-    // this.player.queue.list.connect(
-    //   "items-changed",
-    //   this._on_player_playlist_changed.bind(this),
-    // );
     this.player.connect(
       "notify::seeking",
       () => {
@@ -313,8 +307,7 @@ export class MPRIS extends DBusInterface {
     if (this.player.playing) {
       return "Playing";
     } else if (
-      this.player.playbin.get_state(Number.MAX_SAFE_INTEGER)[1] ===
-        Gst.State.PAUSED
+      this.player.state === GstPlay.PlayState.PAUSED
     ) {
       return "Paused";
     } else {
@@ -482,7 +475,7 @@ export class MPRIS extends DBusInterface {
   }
 
   private _on_seek_finished(_: Gtk.Widget, position: number) {
-    this._seeked(Math.trunc(position / 1e3));
+    this._seeked(Math.trunc(position));
   }
 
   // private _on_player_playlist_changed() {}
@@ -501,12 +494,12 @@ export class MPRIS extends DBusInterface {
 
   /** Skips to the next track in the tracklist */
   _next() {
-    this.queue.next();
+    this.player.queue.next();
   }
 
   /** Skips to the previous track in the tracklist */
   _previous() {
-    this.queue.previous();
+    this.player.queue.previous();
   }
 
   /** Pauses playback */
@@ -542,19 +535,14 @@ export class MPRIS extends DBusInterface {
   _seek(offset_variant: GLib.Variant) {
     const offset_msecond = offset_variant.get_int64();
 
-    const current_position_second = (this.player.get_position() ?? 0) /
-      Gst.SECOND;
-    const new_position_second = current_position_second +
-      (offset_msecond / 1e6);
+    const new_position = this.player.timestamp + offset_msecond;
 
-    const duration_second = (this.player.get_duration() ?? 0) / Gst.SECOND;
-
-    if (new_position_second < 0) {
-      this.queue.previous();
-    } else if (new_position_second <= duration_second) {
-      this.player.raw_seek(new_position_second * Gst.SECOND);
+    if (new_position < 0) {
+      this.player.queue.previous();
+    } else if (new_position <= this.player.get_duration()) {
+      this.player.seek(new_position);
     } else {
-      this.queue.next();
+      this.player.queue.next();
     }
   }
 
@@ -570,7 +558,7 @@ export class MPRIS extends DBusInterface {
       return;
     }
 
-    this.player.seek(position_msecond / 1e6 * Gst.MSECOND);
+    this.player.seek(position_msecond * 1000);
   }
 
   /**
@@ -630,9 +618,7 @@ export class MPRIS extends DBusInterface {
           SupportedMimeTypes: GLib.Variant.new_strv([]),
         };
       case this.MEDIA_PLAYER2_PLAYER_IFACE:
-        const position_msecond = Math.trunc(
-          (this.player.get_normalised_position()) / 1e3,
-        );
+        const position_msecond = Math.trunc(this.player.timestamp);
         const playback_status = this._get_playback_status();
         const is_shuffle = this.player.queue.shuffle;
         const can_play = this.player.queue.current != null;

@@ -2,10 +2,9 @@ import Gtk from "gi://Gtk?version=4.0";
 import GObject from "gi://GObject";
 
 import { PlaylistListItem } from "./listitem";
-import { ObjectContainer } from "src/util/objectcontainer";
-import { PlaylistItem } from "libmuse";
 import { DynamicImageVisibleChild } from "../dynamic-image";
 import { SignalListeners } from "src/util/signal-listener";
+import { PlayableContainer } from "src/util/playablelist";
 
 interface PlaylistListItemWithSignals extends PlaylistListItem {
   signals: SignalListeners;
@@ -18,9 +17,6 @@ export class PlaylistListView extends Gtk.ListView {
       Signals: {
         "add": {
           param_types: [GObject.TYPE_INT],
-        },
-        "is-playing": {
-          param_types: [GObject.TYPE_UINT64],
         },
       },
     }, this);
@@ -61,7 +57,7 @@ export class PlaylistListView extends Gtk.ListView {
 
   bind_cb(_factory: Gtk.SignalListItemFactory, list_item: Gtk.ListItem) {
     const item = list_item.child as PlaylistListItemWithSignals;
-    const container = list_item.item as ObjectContainer<PlaylistItem>;
+    const container = list_item.item as PlayableContainer;
 
     const playlist_item = container.object;
 
@@ -96,13 +92,6 @@ export class PlaylistListView extends Gtk.ListView {
       item,
       item.connect("add", (_, position) => {
         this.emit("add", position);
-      }),
-    );
-
-    item.signals.add(
-      item,
-      item.connect("is-playing", (_, id) => {
-        this.emit("is-playing", id);
       }),
     );
   }
