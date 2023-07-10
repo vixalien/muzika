@@ -4,9 +4,8 @@ import Adw from "gi://Adw";
 
 import { LyricsView } from "./lyrics";
 import { QueueView } from "./queue";
-import { Player } from "src/player";
 import { RelatedView } from "./related";
-import { MuzikaPlayer } from "src/player/muzika";
+import { MuzikaPlayer } from "src/player/index";
 
 export class PlayerSidebar extends Adw.Bin {
   static {
