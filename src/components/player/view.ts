@@ -4,7 +4,7 @@ import Adw from "gi://Adw";
 
 import { MiniPlayerView } from "./mini.js";
 import { FullPlayerView } from "./full.js";
-import { MuzikaPlayer } from "src/player/muzika.js";
+import { MuzikaPlayer } from "src/player";
 
 export interface PlayerViewOptions {
   player: MuzikaPlayer;

@@ -3,7 +3,6 @@ import GObject from "gi://GObject";
 import Adw from "gi://Adw";
 
 import {
-  MixedItem,
   ParsedAlbum,
   ParsedPlaylist,
   ParsedSong,

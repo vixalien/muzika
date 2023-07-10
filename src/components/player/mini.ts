@@ -1,11 +1,10 @@
 import Gtk from "gi://Gtk?version=4.0";
 import GObject from "gi://GObject";
-import GLib from "gi://GLib";
 
 import { load_thumbnails } from "../webimage.js";
 import { PlayerProgressBar } from "./progress.js";
 import { QueueTrack } from "libmuse/types/parsers/queue.js";
-import { MuzikaPlayer } from "src/player/muzika.js";
+import { MuzikaPlayer } from "src/player";
 
 export interface MiniPlayerViewOptions {
   player: MuzikaPlayer;

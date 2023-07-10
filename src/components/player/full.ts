@@ -10,7 +10,7 @@ import { PlayerScale } from "./scale.js";
 import { PlayerSidebarView } from "./sidebar.js";
 import { QueueTrack } from "libmuse/types/parsers/queue.js";
 import { escape_label, pretty_subtitles } from "src/util/text.js";
-import { MuzikaPlayer } from "src/player/muzika.js";
+import { MuzikaPlayer } from "src/player";
 
 export interface FullPlayerViewOptions {
   player: MuzikaPlayer;

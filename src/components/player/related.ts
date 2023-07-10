@@ -4,7 +4,7 @@ import Adw from "gi://Adw";
 
 import { get_song_related } from "src/muse";
 import { Carousel } from "../carousel";
-import { MuzikaPlayer } from "src/player/muzika";
+import { MuzikaPlayer } from "src/player";
 
 export interface RelatedViewOptions {
   player: MuzikaPlayer;
