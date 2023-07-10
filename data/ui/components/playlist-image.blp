@@ -26,25 +26,23 @@ template $PlaylistImage : Overlay {
     }
 
     Button play {
+      clicked => $play_cb();
+
+      styles [ "osd", "floating-button" ]
+
       Image play_image {
         icon-name: "media-playback-start-symbolic";
       }
-
-      styles [
-        "osd",
-        "floating-button",
-      ]
     }
 
     Button pause {
+      clicked => $pause_cb();
+
+      styles [ "osd", "floating-button" ]
+
       Image pause_image {
         icon-name: "media-playback-pause-symbolic";
       }
-
-      styles [
-        "osd",
-        "floating-button",
-      ]
     }
 
     Spinner loading {

@@ -3,8 +3,7 @@ import GObject from "gi://GObject";
 import GLib from "gi://GLib";
 
 import { FlatSong } from "../../muse.js";
-import { load_thumbnails } from "../webimage.js";
-import { DynamicImage } from "../dynamic-image.js";
+import { DynamicImage, DynamicImageState } from "../dynamic-image.js";
 
 // first register the DynamicImage class
 import "../dynamic-image.js";
@@ -27,10 +26,10 @@ export class FlatSongCard extends Gtk.Box {
 
   song?: FlatSong;
 
-  _title!: Gtk.Label;
-  _explicit!: Gtk.Image;
-  _subtitle!: Gtk.Label;
-  _dynamic_image!: DynamicImage;
+  private _title!: Gtk.Label;
+  private _explicit!: Gtk.Image;
+  private _subtitle!: Gtk.Label;
+  private _dynamic_image!: DynamicImage;
 
   constructor() {
     super();
@@ -63,8 +62,10 @@ export class FlatSongCard extends Gtk.Box {
 
     if (song.videoId) {
       this._dynamic_image.setup_video(song.videoId);
-    } else {
-      this._dynamic_image.reset_listeners();
     }
+  }
+
+  set_state(state: DynamicImageState) {
+    this._dynamic_image.state = state;
   }
 }

@@ -15,8 +15,12 @@ import {
 } from "../../muse.js";
 import { load_thumbnails } from "../webimage.js";
 import { ParsedLibraryArtist } from "libmuse/types/parsers/library.js";
-import { DynamicImage, DynamicImageVisibleChild } from "../dynamic-image.js";
-import { PlaylistImage } from "../playlist-image.js";
+import {
+  DynamicImage,
+  DynamicImageState,
+  DynamicImageVisibleChild,
+} from "../dynamic-image.js";
+import { PlaylistImage, PlaylistImageState } from "../playlist-image.js";
 import { pretty_subtitles } from "src/util/text.js";
 import { MixedCardItem } from "../library/mixedcard.js";
 
@@ -94,7 +98,6 @@ export class CarouselCard extends Gtk.Box {
     this.content = undefined;
     this.set_align(Gtk.Align.FILL);
     this._dynamic_image.clear();
-    this._playlist_image.clear();
   }
 
   // utils
@@ -208,8 +211,6 @@ export class CarouselCard extends Gtk.Box {
   private setup_video(videoId: string | null) {
     if (videoId) {
       this._dynamic_image.setup_video(videoId);
-    } else {
-      this._dynamic_image.reset_listeners();
     }
   }
 
@@ -218,16 +219,12 @@ export class CarouselCard extends Gtk.Box {
       case this._playlist_image: {
         if (playlistId) {
           this._playlist_image.setup_playlist(playlistId);
-        } else {
-          this._playlist_image.reset_listeners();
         }
         break;
       }
       case this._dynamic_image: {
         if (playlistId) {
           this._dynamic_image.setup_playlist(playlistId);
-        } else {
-          this._dynamic_image.reset_listeners();
         }
         break;
       }
@@ -353,5 +350,28 @@ export class CarouselCard extends Gtk.Box {
       default:
         console.warn(`Unknown content type: ${content.type}`);
     }
+  }
+
+  set_state(state: DynamicImageState) {
+    this._dynamic_image.state = state;
+
+    let playlist_image_state: PlaylistImageState;
+
+    switch (state) {
+      case DynamicImageState.DEFAULT:
+        playlist_image_state = PlaylistImageState.DEFAULT;
+        break;
+      case DynamicImageState.LOADING:
+        playlist_image_state = PlaylistImageState.LOADING;
+        break;
+      case DynamicImageState.PAUSED:
+        playlist_image_state = PlaylistImageState.PAUSED;
+        break;
+      case DynamicImageState.PLAYING:
+        playlist_image_state = PlaylistImageState.PLAYING;
+        break;
+    }
+
+    this._playlist_image.state = playlist_image_state;
   }
 }

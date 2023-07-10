@@ -7,6 +7,7 @@ import { ObjectContainer } from "src/util/objectcontainer";
 import { PlaylistItem } from "src/muse";
 import { DynamicImage, DynamicImageVisibleChild } from "../dynamic-image";
 import { escape_label, pretty_subtitles } from "src/util/text";
+import { PlayableContainer } from "src/util/playablelist";
 
 class ImageColumn extends Gtk.ColumnViewColumn {
   static {
@@ -15,9 +16,6 @@ class ImageColumn extends Gtk.ColumnViewColumn {
       Signals: {
         "selection-mode-toggled": {
           param_types: [GObject.TYPE_UINT64, GObject.TYPE_BOOLEAN],
-        },
-        "is-playing": {
-          param_types: [GObject.TYPE_UINT64],
         },
       },
     }, this);
@@ -52,7 +50,7 @@ class ImageColumn extends Gtk.ColumnViewColumn {
 
   bind_cb(_factory: Gtk.SignalListItemFactory, list_item: Gtk.ListItem) {
     const dynamic_image = list_item.child as DynamicImage;
-    const container = list_item.item as ObjectContainer<PlaylistItem>;
+    const container = list_item.item as PlayableContainer;
 
     const playlist_item = container.object;
 
@@ -60,8 +58,8 @@ class ImageColumn extends Gtk.ColumnViewColumn {
       this.emit("selection-mode-toggled", list_item.position, value);
     });
 
-    dynamic_image.connect("is-playing", () => {
-      this.emit("is-playing", list_item.position);
+    container.connect("notify::state", () => {
+      dynamic_image.state = container.state;
     });
 
     if (this.album) {
@@ -151,7 +149,7 @@ class ChartRankColumn extends Gtk.ColumnViewColumn {
 
   bind_cb(_factory: Gtk.SignalListItemFactory, list_item: Gtk.ListItem) {
     const box = list_item.child as ChartRankBox;
-    const container = list_item.item as ObjectContainer<PlaylistItem>;
+    const container = list_item.item as PlayableContainer;
 
     const playlist_item = container.object;
 
@@ -235,7 +233,7 @@ class TitleColumn extends Gtk.ColumnViewColumn {
 
   bind_cb(_factory: Gtk.SignalListItemFactory, list_item: Gtk.ListItem) {
     const title = list_item.child as TitleBox;
-    const container = list_item.item as ObjectContainer<PlaylistItem>;
+    const container = list_item.item as PlayableContainer;
 
     const playlist_item = container.object;
 
@@ -286,7 +284,7 @@ class ArtistColumn extends Gtk.ColumnViewColumn {
 
   bind_cb(_factory: Gtk.SignalListItemFactory, list_item: Gtk.ListItem) {
     const label = list_item.child as Gtk.Label;
-    const container = list_item.item as ObjectContainer<PlaylistItem>;
+    const container = list_item.item as PlayableContainer;
 
     const playlist_item = container.object;
 
@@ -339,7 +337,7 @@ class AlbumColumn extends Gtk.ColumnViewColumn {
 
   bind_cb(_factory: Gtk.SignalListItemFactory, list_item: Gtk.ListItem) {
     const label = list_item.child as Gtk.Label;
-    const container = list_item.item as ObjectContainer<PlaylistItem>;
+    const container = list_item.item as PlayableContainer;
 
     const playlist_item = container.object;
 
@@ -391,7 +389,7 @@ class DurationColumn extends Gtk.ColumnViewColumn {
 
   bind_cb(_factory: Gtk.SignalListItemFactory, list_item: Gtk.ListItem) {
     const label = list_item.child as Gtk.Label;
-    const container = list_item.item as ObjectContainer<PlaylistItem>;
+    const container = list_item.item as PlayableContainer;
 
     const playlist_item = container.object;
 
@@ -491,9 +489,6 @@ export class PlaylistColumnView extends Gtk.ColumnView {
         "add": {
           param_types: [GObject.TYPE_INT],
         },
-        "is-playing": {
-          param_types: [GObject.TYPE_INT],
-        },
       },
     }, this);
   }
@@ -581,10 +576,6 @@ export class PlaylistColumnView extends Gtk.ColumnView {
         }
       },
     );
-
-    this._image_column.connect("is-playing", (_, position: number) => {
-      this.emit("is-playing", position);
-    });
 
     if (options.album != null) {
       this.album = options.album;

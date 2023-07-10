@@ -10,7 +10,7 @@ import { Carousel } from "../components/carousel/index.js";
 import { AlbumHeader } from "../components/album/header.js";
 import { EndpointContext, MuzikaComponent } from "src/navigation.js";
 import { PlaylistItemView } from "src/components/playlist/itemview.js";
-import { ObjectContainer } from "src/util/objectcontainer.js";
+import { PlayableContainer, PlayableList } from "src/util/playablelist.js";
 
 interface AlbumState {
   album: AlbumResult;
@@ -57,9 +57,7 @@ export class AlbumPage extends Adw.Bin
 
   track: string | null = null;
 
-  model = new Gio.ListStore<ObjectContainer<PlaylistItem>>({
-    item_type: ObjectContainer.$gtype,
-  });
+  model = new PlayableList();
 
   constructor() {
     super();
@@ -83,7 +81,7 @@ export class AlbumPage extends Adw.Bin
     this.model.splice(
       n > 0 ? n - 1 : 0,
       0,
-      tracks.map((track) => new ObjectContainer(track)),
+      tracks.map((track) => PlayableContainer.new_from_playlist_item(track)),
     );
 
     if (this.track) {

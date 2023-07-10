@@ -2,8 +2,7 @@ import Gtk from "gi://Gtk?version=4.0";
 import GObject from "gi://GObject";
 import Adw from "gi://Adw";
 
-import { Application } from "src/application.js";
-import { SignalListeners } from "src/util/signal-listener";
+import { get_player } from "src/application.js";
 
 export enum PlaylistImageState {
   DEFAULT,
@@ -166,14 +165,6 @@ export class PlaylistImage extends Gtk.Overlay {
 
     this.add_controller(this.controller);
 
-    // pause button
-    this.listeners.add(
-      this._pause,
-      this._pause.connect("clicked", () => {
-        this.emit("pause");
-      }),
-    );
-
     if (props.icon_size) this.icon_size = props.icon_size;
     if (props.image_size) this.image_size = props.image_size;
     if (props.persistent_play_button != null) {
@@ -222,104 +213,32 @@ export class PlaylistImage extends Gtk.Overlay {
     this._stack.visible = visible;
   }
 
-  private get_player() {
-    return (Application.get_default() as Application)?.player;
-  }
-
-  private listeners = new SignalListeners();
-
-  private setup_button = false;
-
-  reset_listeners() {
-    this.listeners.clear();
-  }
-
   playlistId: string | null = null;
 
   setup_playlist(playlistId: string) {
     this.playlistId = playlistId;
-
-    this.reset_listeners();
-
-    const player = this.get_player();
-
-    if (!this.setup_button) {
-      this.listeners.add(
-        this._play,
-        this._play.connect("clicked", () => {
-          this.emit("play");
-
-          if (player.current_meta?.object.track.playlist === this.playlistId) {
-            player.play();
-          } else if (this.playlistId) {
-            this.state = PlaylistImageState.LOADING;
-            player.queue.play_playlist(this.playlistId);
-          }
-        }),
-      );
-
-      this.listeners.add(
-        this._pause,
-        this._pause.connect("clicked", () => {
-          if (player.current_meta?.object.track.playlist === this.playlistId) {
-            player.pause();
-          }
-        }),
-      );
-
-      this.setup_button = true;
-    }
-
-    // if the playlist is already playing, we need to update the state
-    if (
-      player.current_meta?.object.track.playlist === this.playlistId
-    ) {
-      if (player.playing) {
-        this.state = PlaylistImageState.PLAYING;
-        this.emit("play");
-      } else {
-        this.state = PlaylistImageState.PAUSED;
-        this.emit("pause");
-      }
-    }
-
-    this.listeners.add(
-      player,
-      [
-        player.connect(`start-loading::playlist::${playlistId}`, () => {
-          this.state = PlaylistImageState.LOADING;
-          this.emit("play");
-        }),
-        player.connect(`stop-loading::playlist::${playlistId}`, () => {
-          if (
-            player.current_meta?.object.track.playlist === this.playlistId &&
-            player.playing
-          ) {
-            this.state = PlaylistImageState.PLAYING;
-          } else {
-            this.state = PlaylistImageState.PAUSED;
-          }
-        }),
-        player.connect(`start-playback::playlist::${playlistId}`, () => {
-          this.state = PlaylistImageState.PLAYING;
-        }),
-        player.connect(`pause-playback::playlist::${playlistId}`, () => {
-          this.state = PlaylistImageState.PAUSED;
-        }),
-        player.connect(`stop-playback::playlist::${playlistId}`, () => {
-          this.state = PlaylistImageState.DEFAULT;
-        }),
-      ],
-    );
   }
 
-  clear() {
-    this.reset_listeners();
-    this.remove_controller(this.controller);
+  private play_cb() {
+    const player = get_player();
+
+    this.emit("play");
+
+    if (player.now_playing?.object.settings.playlistId === this.playlistId) {
+      player.play();
+    } else if (this.playlistId) {
+      this.state = PlaylistImageState.LOADING;
+      player.queue.play_playlist(this.playlistId);
+    }
   }
 
-  vfunc_dispose(): void {
-    this.clear();
-    super.vfunc_dispose();
+  private pause_cb() {
+    const player = get_player();
+
+    this.emit("pause");
+
+    if (player.now_playing?.object.settings.playlistId === this.playlistId) {
+      player.pause();
+    }
   }
 }
