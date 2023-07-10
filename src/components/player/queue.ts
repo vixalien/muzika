@@ -6,8 +6,7 @@ import GLib from "gi://GLib";
 import { ObjectContainer } from "src/util/objectcontainer";
 import type { QueueTrack } from "libmuse/types/parsers/queue";
 import { QueueItem } from "./queueitem";
-import { Player } from "src/player";
-import { MuzikaPlayer } from "src/player/muzika";
+import { MuzikaPlayer } from "src/player";
 
 export class QueueView extends Gtk.Stack {
   static {

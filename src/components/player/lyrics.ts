@@ -2,10 +2,9 @@ import Gtk from "gi://Gtk?version=4.0";
 import GObject from "gi://GObject";
 import Adw from "gi://Adw";
 
-import { Player } from "src/player";
 import { get_lyrics } from "src/muse";
 import { escape_label } from "src/util/text";
-import { MuzikaPlayer } from "src/player/muzika";
+import { MuzikaPlayer } from "src/player";
 
 export class LyricsView extends Gtk.Stack {
   static {

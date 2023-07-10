@@ -2,10 +2,11 @@ import Gtk from "gi://Gtk?version=4.0";
 import GObject from "gi://GObject";
 import Adw from "gi://Adw";
 
+import { MuzikaPlayer } from "src/player";
+
 import { LyricsView } from "./lyrics";
 import { QueueView } from "./queue";
 import { RelatedView } from "./related";
-import { MuzikaPlayer } from "src/player/index";
 
 export class PlayerSidebar extends Adw.Bin {
   static {
