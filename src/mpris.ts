@@ -296,7 +296,7 @@ export class MPRIS extends DBusInterface {
     this.player.connect(
       "notify::seeking",
       () => {
-        if (this.player.seeking == false) {
+        if (!this.player.seeking) {
           this._on_seek_finished(this as any, this.player.timestamp);
         }
       },
