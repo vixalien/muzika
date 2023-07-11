@@ -563,6 +563,7 @@ export class MuzikaPlayer extends MuzikaMediaStream {
   }
 
   get duration() {
+    // normalise duration when the media-info is not available
     if (super.duration <= 0) {
       const duration_seconds =
         this.now_playing?.object.song.videoDetails.lengthSeconds;
@@ -570,12 +571,12 @@ export class MuzikaPlayer extends MuzikaMediaStream {
       if (duration_seconds) {
         // to microsecond
         return duration_seconds * 1000000;
-      } else {
-        return 0;
       }
-    } else {
-      return super.duration;
+
+      return 0;
     }
+
+    return super.duration;
   }
 
   constructor(options: { app: Application }) {
