@@ -7,7 +7,6 @@ import {
   Filter,
   get_more_search_results,
   get_option,
-  get_playlist_suggestions,
   search,
   SearchOptions,
   SearchResults,
@@ -45,6 +44,7 @@ export class SearchPage extends Adw.Bin
         "stack",
         "no_results",
         "details",
+        "breakpoint",
       ],
     }, this);
   }
@@ -55,6 +55,7 @@ export class SearchPage extends Adw.Bin
   private _stack!: Gtk.Stack;
   private _no_results!: Gtk.Label;
   private _details!: Gtk.Box;
+  private _breakpoint!: Adw.Breakpoint;
 
   paginator: Paginator;
 
@@ -276,7 +277,7 @@ export class SearchPage extends Adw.Bin
     this.paginator.set_reveal_child(results.continuation != null);
 
     if (results.top_result) {
-      const top_result = new TopResultSection();
+      const top_result = new TopResultSection(this._breakpoint);
 
       top_result.show_top_result(results.top_result);
       this._sections.append(top_result);

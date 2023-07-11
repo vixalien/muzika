@@ -427,6 +427,7 @@ export class DynamicImage extends Gtk.Overlay {
 
   vfunc_unroot(): void {
     this.clear();
+    super.vfunc_unroot();
   }
 
   load_thumbnails(

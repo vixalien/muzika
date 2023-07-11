@@ -19,24 +19,18 @@ template $TopResultSection : Box {
     }
   }
 
-  FlowBox flowbox {
-    selection-mode: none;
-    max-children-per-line: 2;
-    column-spacing: 12;
-    row-spacing: 12;
+  Box box {
+    spacing: 12;
 
-    FlowBoxChild {
-      focusable: false;
+    ListBox content {
+      margin-start: 6;
+      margin-end: 6;
+      selection-mode: none;
+      hexpand: true;
 
-      ListBox content {
-        margin-start: 6;
-        margin-end: 6;
-        selection-mode: none;
-
-        styles [
-          "background",
-        ]
-      }
+      styles [
+        "background",
+      ]
     }
   }
 }

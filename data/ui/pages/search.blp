@@ -6,40 +6,49 @@ template $SearchPage : Adw.Bin {
     [top]
     Adw.HeaderBar {}
   
-    content: ScrolledWindow scrolled {
-      vexpand: true;
-      hscrollbar-policy: never;
+    content: Adw.BreakpointBin {
+      width-request: 200;
+      height-request: 200;
+      
+      Adw.Breakpoint breakpoint {
+        condition ("max-width: 800sp")
+      }
+      
+      ScrolledWindow scrolled {
+        vexpand: true;
+        hscrollbar-policy: never;
 
-      Adw.Clamp {
-        tightening-threshold: 800;
-        maximum-size: 1000;
+        Adw.Clamp {
+          tightening-threshold: 800;
+          maximum-size: 1000;
 
-        Box content {
-          orientation: vertical;
-
-          Box details {
-            spacing: 12;
+          Box content {
             orientation: vertical;
-          }
 
-          Separator {
-            margin-top: 12;
-
-            styles [
-              "spacer",
-            ]
-          }
-
-          Stack stack {
-            Box sections {
+            Box details {
+              spacing: 12;
               orientation: vertical;
             }
 
-            Adw.StatusPage no_results {
-              title: _("No Results");
-              vexpand: true;
-              icon-name: "system-search-symbolic";
-              description: _("Try a different search");
+            Separator {
+              margin-top: 12;
+
+              styles [
+                "spacer",
+              ]
+            }
+
+            Stack stack {
+              Box sections {
+                orientation: vertical;
+              }
+
+              Adw.StatusPage no_results {
+                title: _("No Results");
+                vexpand: true;
+                icon-name: "system-search-symbolic";
+                description: _("Try a different search");
+              }
             }
           }
         }

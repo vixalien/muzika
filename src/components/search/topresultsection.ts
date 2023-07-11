@@ -1,6 +1,7 @@
 import Gtk from "gi://Gtk?version=4.0";
 import GObject from "gi://GObject";
 import GLib from "gi://GLib";
+import Adw from "gi://Adw";
 
 import { SearchContent, TopResult } from "../../muse.js";
 import { InlineCard } from "./inlinecard.js";
@@ -13,50 +14,31 @@ export class TopResultSection extends Gtk.Box {
       GTypeName: "TopResultSection",
       Template:
         "resource:///com/vixalien/muzika/ui/components/search/topresultsection.ui",
-      InternalChildren: ["title", "flowbox", "content"],
+      InternalChildren: ["title", "box", "content"],
     }, this);
   }
 
-  _title!: Gtk.Label;
-  _flowbox!: Gtk.FlowBox;
-  _content!: Gtk.Box;
+  private _title!: Gtk.Label;
+  private _box!: Gtk.Box;
+  private _content!: Gtk.Box;
 
-  constructor() {
+  private top_card?: TopResultCard;
+  breakpoint: Adw.Breakpoint;
+
+  constructor(breakpoint: Adw.Breakpoint) {
     super();
 
-    this._flowbox.connect("child-activated", this.child_activated.bind(this));
-  }
+    this.breakpoint = breakpoint;
 
-  child_activated(_: this, child: TopResultCard) {
-    if (!(child instanceof TopResultCard) || !(child.result)) return;
+    this.breakpoint.connect("apply", () => {
+      this.breakpoint_applied = true;
+      this.update_breakpoint();
+    });
 
-    let uri: string | null = null;
-
-    switch (child.result.type) {
-      case "artist":
-        uri = `artist:${child.result.browseId}`;
-        break;
-      case "album":
-        uri = `album:${child.result.browseId}`;
-        break;
-      case "song":
-      case "video":
-        child.dynamic_image.state = DynamicImageState.LOADING;
-        this.activate_action(
-          "queue.play-song",
-          GLib.Variant.new_string(
-            child.result.videoId,
-          ),
-        );
-        break;
-    }
-
-    if (uri) {
-      this.activate_action(
-        "navigator.visit",
-        GLib.Variant.new_string("muzika:" + uri),
-      );
-    }
+    this.breakpoint.connect("unapply", () => {
+      this.breakpoint_applied = false;
+      this.update_breakpoint();
+    });
   }
 
   add_more_content(content: SearchContent) {
@@ -112,14 +94,16 @@ export class TopResultSection extends Gtk.Box {
 
       this._content.connect("row-activated", this.row_activated.bind(this));
     } else {
-      const second_flowbox = this._flowbox.get_child_at_index(1);
-      if (second_flowbox) {
-        second_flowbox.visible = false;
+      const more_list = this._box.get_last_child() as Gtk.ListBox;
+      if (more_list) {
+        more_list.visible = false;
       }
-      this._flowbox.max_children_per_line = 1;
     }
 
-    this._flowbox.prepend(card);
+    this.top_card = card;
+    this.update_breakpoint();
+
+    this._box.prepend(card);
   }
 
   row_activated(_: this, row: InlineCard) {
@@ -163,6 +147,20 @@ export class TopResultSection extends Gtk.Box {
         "navigator.visit",
         GLib.Variant.new_string("muzika:" + uri),
       );
+    }
+  }
+
+  private breakpoint_applied = false;
+
+  private update_breakpoint() {
+    if (!this.top_card) return;
+
+    if (this.breakpoint_applied) {
+      this._box.orientation = Gtk.Orientation.VERTICAL;
+      this.top_card.small_layout();
+    } else {
+      this._box.orientation = Gtk.Orientation.HORIZONTAL;
+      this.top_card.large_layout();
     }
   }
 }

@@ -11,12 +11,12 @@ import {
 } from "../../muse.js";
 import { load_thumbnails } from "../webimage.js";
 import { TopResultVideo } from "libmuse/types/parsers/search.js";
-import { DynamicImage } from "../dynamic-image.js";
+import { DynamicImage, DynamicImageState } from "../dynamic-image.js";
 import { pretty_subtitles } from "src/util/text.js";
 
 DynamicImage;
 
-export class TopResultCard extends Gtk.FlowBoxChild {
+export class TopResultCard extends Adw.Bin {
   static {
     GObject.registerClass({
       GTypeName: "TopResult",
@@ -35,7 +35,6 @@ export class TopResultCard extends Gtk.FlowBoxChild {
         "actions",
         "meta",
         "grid",
-        "breakpoint",
       ],
       Children: [
         "dynamic_image",
@@ -55,7 +54,6 @@ export class TopResultCard extends Gtk.FlowBoxChild {
   private _actions!: Gtk.Box;
   private _meta!: Gtk.Box;
   private _grid!: Gtk.Grid;
-  private _breakpoint!: Adw.Breakpoint;
 
   image_size = 100;
   dynamic_image!: DynamicImage;
@@ -76,13 +74,44 @@ export class TopResultCard extends Gtk.FlowBoxChild {
       }
     });
 
-    this._breakpoint.connect("apply", () => {
-      this.small_layout();
+    const controller = Gtk.GestureClick.new();
+    controller.connect("pressed", () => {
+      this.activate_cb();
     });
 
-    this._breakpoint.connect("unapply", () => {
-      this.large_layout();
-    });
+    this.add_controller(controller);
+  }
+
+  private activate_cb() {
+    if (!this.result) return;
+
+    let uri: string | null = null;
+
+    switch (this.result.type) {
+      case "artist":
+        uri = `artist:${this.result.browseId}`;
+        break;
+      case "album":
+        uri = `album:${this.result.browseId}`;
+        break;
+      case "song":
+      case "video":
+        this.dynamic_image.state = DynamicImageState.LOADING;
+        this.activate_action(
+          "queue.play-song",
+          GLib.Variant.new_string(
+            this.result.videoId,
+          ),
+        );
+        break;
+    }
+
+    if (uri) {
+      this.activate_action(
+        "navigator.visit",
+        GLib.Variant.new_string("muzika:" + uri),
+      );
+    }
   }
 
   private unparent_stack_children() {
@@ -91,22 +120,34 @@ export class TopResultCard extends Gtk.FlowBoxChild {
     }
   }
 
-  private small_layout() {
-    this.unparent_stack_children();
+  small_layout() {
+    this.dynamic_image.image_size = 48;
+    this.dynamic_image.icon_size = 16;
+    this._avatar.size = 48;
+    this._primary.hexpand = true;
+    this._secondary.hexpand = true;
 
     this._primary.add_css_class("compact");
     this._secondary.add_css_class("compact");
+
+    this.unparent_stack_children();
 
     this._grid.attach(this._image_stack, 0, 0, 1, 1);
     this._grid.attach(this._meta, 1, 0, 1, 1);
     this._grid.attach(this._actions, 0, 2, 2, 1);
   }
 
-  private large_layout() {
-    this.unparent_stack_children();
+  large_layout() {
+    this.dynamic_image.image_size = 100;
+    this.dynamic_image.icon_size = 32;
+    this._avatar.size = 100;
+    this._primary.hexpand = false;
+    this._secondary.hexpand = false;
 
     this._primary.remove_css_class("compact");
     this._secondary.remove_css_class("compact");
+
+    this.unparent_stack_children();
 
     this._grid.attach(this._image_stack, 0, 0, 1, 2);
     this._grid.attach(this._meta, 1, 0, 1, 1);
