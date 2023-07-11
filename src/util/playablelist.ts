@@ -256,25 +256,28 @@ export class PlayableList<T extends Object = PlaylistItem>
 
   private listeners = new SignalListeners();
 
-  private is_now_playing(item: PlayableContainer<T>) {
-    const player = get_player();
-
-    if (item.is_playlist) {
-      return player.now_playing?.object.settings.playlistId == item.playlist_id;
-    } else {
-      return player.now_playing?.object.track.videoId == item.video_id;
-    }
-  }
-
   private reload_state() {
     const player = get_player();
 
     this.array.forEach((item) => {
-      item.state = this.is_now_playing(item)
-        ? player.playing ? DynamicImageState.PLAYING : DynamicImageState.PAUSED
-        : player.loading_track == item.video_id
-        ? DynamicImageState.LOADING
-        : DynamicImageState.DEFAULT;
+      if (item.is_playlist) {
+        item.state =
+          player.now_playing?.object.settings.playlistId == item.playlist_id
+            ? player.playing
+              ? DynamicImageState.PLAYING
+              : DynamicImageState.PAUSED
+            : item.video_id && player.loading_track == item.video_id
+            ? DynamicImageState.LOADING
+            : DynamicImageState.DEFAULT;
+      } else {
+        item.state = player.now_playing?.object.track.videoId == item.video_id
+          ? player.playing
+            ? DynamicImageState.PLAYING
+            : DynamicImageState.PAUSED
+          : player.loading_track == item.video_id
+          ? DynamicImageState.LOADING
+          : DynamicImageState.DEFAULT;
+      }
     });
   }
 
