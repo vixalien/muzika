@@ -40,6 +40,7 @@
     <file preprocess="xml-stripblanks">ui/components/search/topresultsection.ui</file>
     <!-- pages -->
     <file preprocess="xml-stripblanks">ui/pages/album.ui</file>
+    <file preprocess="xml-stripblanks">ui/pages/artist-albums.ui</file>
     <file preprocess="xml-stripblanks">ui/pages/artist.ui</file>
     <file preprocess="xml-stripblanks">ui/pages/authentication-error.ui</file>
     <file preprocess="xml-stripblanks">ui/pages/error.ui</file>

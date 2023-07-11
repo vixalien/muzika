@@ -14,7 +14,75 @@ import { PlayableContainer, PlayableList } from "src/util/playablelist.js";
 
 export type RequiredMixedItem = NonNullable<MixedItem>;
 
-class CarouselListView extends Gtk.ListView {
+export class CarouselGridView extends Gtk.GridView {
+  static {
+    GObject.registerClass({
+      GTypeName: "CarouselGridView",
+    }, this);
+  }
+
+  items = new PlayableList<MixedCardItem>();
+
+  constructor(props?: Gtk.GridView.ConstructorProperties) {
+    super({
+      single_click_activate: true,
+      margin_bottom: 18,
+      orientation: Gtk.Orientation.HORIZONTAL,
+      ...props,
+    });
+
+    this.add_css_class("transparent");
+    this.add_css_class("carousel-grid-view");
+
+    const factory = Gtk.SignalListItemFactory.new();
+    factory.connect("bind", this.bind_cb.bind(this));
+    factory.connect("setup", this.setup_cb.bind(this));
+    factory.connect("unbind", this.unbind_cb.bind(this));
+    factory.connect("teardown", this.teardown_cb.bind(this));
+
+    this.factory = factory;
+    this.model = Gtk.NoSelection.new(this.items);
+  }
+
+  setup_cb(_factory: Gtk.ListItemFactory, list_item: Gtk.ListItem) {
+    const card = new CarouselCard();
+    list_item.set_child(card);
+  }
+
+  bind_cb(_factory: Gtk.ListItemFactory, list_item: Gtk.ListItem) {
+    const card = list_item.child as CarouselCard;
+    const container = list_item.item as PlayableContainer<MixedCardItem>;
+
+    if (container.object) {
+      card.show_item(container.object);
+
+      container.connect("notify::state", () => {
+        card.set_state(container.state);
+      });
+    }
+  }
+
+  unbind_cb(_factory: Gtk.ListItemFactory, list_item: Gtk.ListItem) {
+    const card = list_item.child as CarouselCard;
+    card.clear();
+  }
+
+  teardown_cb(_factory: Gtk.ListItemFactory, list_item: Gtk.ListItem) {
+    list_item.child = null as any;
+  }
+
+  vfunc_map(): void {
+    this.items.setup_listeners();
+    super.vfunc_map();
+  }
+
+  vfunc_unmap(): void {
+    this.items.clear_listeners();
+    super.vfunc_unmap();
+  }
+}
+
+export class CarouselListView extends Gtk.ListView {
   static {
     GObject.registerClass({
       GTypeName: "CarouselListView",
@@ -81,10 +149,10 @@ class CarouselListView extends Gtk.ListView {
   }
 }
 
-class CarouselGridView extends Gtk.GridView {
+export class CarouselFlatSongView extends Gtk.GridView {
   static {
     GObject.registerClass({
-      GTypeName: "CarouselGridView",
+      GTypeName: "CarouselFlatSongView",
     }, this);
   }
 
@@ -281,15 +349,15 @@ export class Carousel<
   }
 
   show_gridview(contents: MixedItem[]) {
-    const gridview = new CarouselGridView();
+    const flatsongview = new CarouselFlatSongView();
 
-    gridview.connect("activate", (_, position) => {
-      const container = gridview.items.get_item(position);
+    flatsongview.connect("activate", (_, position) => {
+      const container = flatsongview.items.get_item(position);
 
       this.activate_cb(container?.object ?? null);
     });
 
-    gridview.items.splice(
+    flatsongview.items.splice(
       0,
       0,
       contents
@@ -298,7 +366,7 @@ export class Carousel<
 
           if (content!.type != "flat-song") {
             console.warn(
-              `CarouselGridView only supports flat-song items, got: ${
+              `CarouselFlatSongView only supports flat-song items, got: ${
                 content!.type
               }`,
             );
@@ -310,7 +378,7 @@ export class Carousel<
         .map((content) => PlayableContainer.new_from_mixed_card_item(content!)),
     );
 
-    this._scrolled.child = gridview;
+    this._scrolled.child = flatsongview;
   }
 
   activate_cb(item: MixedCardItem | null) {

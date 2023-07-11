@@ -12,6 +12,7 @@ import { LibraryArtistsPage } from "./pages/library/artists.js";
 import { LibrarySubscriptionsPage } from "./pages/library/subscriptions.js";
 import { LibrarySongsPage } from "./pages/library/songs.js";
 import { HistoryPage } from "./pages/library/history.js";
+import { ArtistAlbumsPage } from "./pages/artist-albums.js";
 
 export const endpoints: Endpoint<MuzikaComponent<unknown, unknown>>[] = [
   {
@@ -85,5 +86,11 @@ export const endpoints: Endpoint<MuzikaComponent<unknown, unknown>>[] = [
     title: _("History"),
     component: () => new HistoryPage(),
     load: HistoryPage.load,
+  },
+  {
+    uri: "artist-albums/:channelId/:params",
+    title: _("Artist Albums"),
+    component: () => new ArtistAlbumsPage(),
+    load: ArtistAlbumsPage.load,
   },
 ];
