@@ -105,8 +105,8 @@ export class ArtistPage extends Adw.Bin
 
     this.show_top_songs(artist.songs);
 
-    this.add_carousel(_("Albums"), artist.albums);
-    this.add_carousel(_("Singles"), artist.singles);
+    this.add_carousel(_("Albums"), artist.albums, true);
+    this.add_carousel(_("Singles"), artist.singles, true);
     this.add_carousel(_("Videos"), artist.videos);
     this.add_carousel(_("From your library"), artist.library);
     this.add_carousel(_("Featured on"), artist.featured);
@@ -138,10 +138,20 @@ export class ArtistPage extends Adw.Bin
     });
   }
 
-  add_carousel(title: string, data: Category<MixedItem>) {
+  add_carousel(
+    title: string,
+    data: Category<MixedItem>,
+    show_more_button = false,
+  ) {
     if (!data || data.results.length === 0) return;
 
     const carousel = new Carousel();
+
+    carousel.setup_more_button(
+      (show_more_button && data.browseId != null && data.params != null)
+        ? `navigator.visit("muzika:artist-albums:${data.browseId}:${data.params}")`
+        : null,
+    );
 
     carousel.show_content({
       title,

@@ -162,21 +162,23 @@ export class Carousel<
         "left_button",
         "right_button",
         "carousel_stack",
+        "more_button",
       ],
     }, this);
   }
 
   content?: Content;
 
-  _scrolled!: Gtk.ScrolledWindow;
-  _title!: Gtk.Label;
-  _subtitle!: Gtk.Label;
-  _text!: Gtk.Box;
-  _text_view!: Gtk.TextView;
-  _left_button!: Gtk.Button;
-  _right_button!: Gtk.Button;
-  _carousel_stack!: Gtk.Stack;
-  _buttons!: Gtk.Box;
+  private _scrolled!: Gtk.ScrolledWindow;
+  private _title!: Gtk.Label;
+  private _subtitle!: Gtk.Label;
+  private _text!: Gtk.Box;
+  private _text_view!: Gtk.TextView;
+  private _left_button!: Gtk.Button;
+  private _right_button!: Gtk.Button;
+  private _carousel_stack!: Gtk.Stack;
+  private _buttons!: Gtk.Box;
+  private _more_button!: Gtk.Button;
 
   grid = false;
 
@@ -199,6 +201,16 @@ export class Carousel<
       "clicked",
       () => this.begin_scroll_animation(Gtk.DirectionType.RIGHT),
     );
+  }
+
+  setup_more_button(more: string | null) {
+    if (more == null) {
+      this._more_button.visible = false;
+      return;
+    }
+
+    this._more_button.set_detailed_action_name(more);
+    this._more_button.visible = true;
   }
 
   begin_scroll_animation(

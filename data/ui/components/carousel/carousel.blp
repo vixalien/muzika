@@ -39,6 +39,16 @@ template $Carousel : Box {
       valign: center;
       spacing: 6;
 
+      Button more_button {
+        visible: false;
+        label: _("More");
+
+        styles [
+          "rounded",
+          "flat",
+        ]
+      }
+
       Button left_button {
         icon-name: "go-previous-symbolic";
         overflow: hidden;

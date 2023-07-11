@@ -46,7 +46,7 @@ label.link:hover {
 }
 
 .rounded {
-  border-radius: 50%;
+  border-radius: 9999px;
 }
 
 .small-pill:not(menubutton) {
