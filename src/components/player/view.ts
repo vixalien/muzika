@@ -49,7 +49,7 @@ export class PlayerView extends Gtk.Revealer {
 
     // resume player animation when the child changes
     // this.squeezer.connect("notify::visible-child", () => {
-    //   const position = options.player.get_timestamp();
+    //   const position = options.player.timestamp;
 
     //   this.mini.progress_bar.update_position(position);
     //   this.full.scale.update_position(position);
