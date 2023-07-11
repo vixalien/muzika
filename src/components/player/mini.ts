@@ -64,10 +64,6 @@ export class MiniPlayerView extends Gtk.Overlay {
       this.song_changed.bind(this),
     );
 
-    this.player.connect("notify::seeking", (_) => {
-      this.progress_bar.update_position(this.player.timestamp);
-    });
-
     this.player.connect("notify::buffering", () => {
       this.update_play_button();
     });
