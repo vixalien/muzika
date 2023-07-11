@@ -563,25 +563,19 @@ export class MuzikaPlayer extends MuzikaMediaStream {
   }
 
   get duration() {
-    const super_duration = super.duration;
-
-    let duration;
-
-    if (super_duration <= 0) {
+    if (super.duration <= 0) {
       const duration_seconds =
         this.now_playing?.object.song.videoDetails.lengthSeconds;
 
       if (duration_seconds) {
         // to microsecond
-        duration = duration_seconds * 1000000;
+        return duration_seconds * 1000000;
       } else {
-        duration = 0;
+        return 0;
       }
     } else {
-      duration = super_duration;
+      return super.duration;
     }
-
-    return duration;
   }
 
   constructor(options: { app: Application }) {
