@@ -65,7 +65,7 @@ export class MiniPlayerView extends Gtk.Overlay {
     );
 
     this.player.connect("notify::seeking", (_) => {
-      this.progress_bar.update_position(this.player.get_timestamp());
+      this.progress_bar.update_position(this.player.timestamp);
     });
 
     this.player.connect("notify::buffering", () => {

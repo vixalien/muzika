@@ -1,7 +1,6 @@
 import Gtk from "gi://Gtk?version=4.0";
 import GObject from "gi://GObject";
 import GLib from "gi://GLib";
-import Gst from "gi://Gst";
 
 import { RepeatMode } from "../../player/queue.js";
 import { load_thumbnails } from "../webimage.js";
@@ -189,7 +188,7 @@ export class FullPlayerView extends Gtk.ActionBar {
     );
 
     this.player.connect("notify::seeking", (_) => {
-      this.scale.update_position(this.player.get_timestamp());
+      this.scale.update_position(this.player.timestamp);
     });
 
     this.player.connect("notify::is-buffering", () => {
