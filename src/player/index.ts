@@ -306,19 +306,6 @@ export class MuzikaMediaStream extends Gtk.MediaStream {
     return this._play.media_info.get_number_of_video_streams() > 0;
   }
 
-  // property: loop
-
-  // TODO: add loop-mode
-
-  private _loop = false;
-
-  public get loop() {
-    return this._loop;
-  }
-  public set loop(value) {
-    this._loop = value;
-  }
-
   // property: muted
 
   get muted() {
