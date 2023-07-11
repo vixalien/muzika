@@ -392,11 +392,11 @@ export class DynamicImage extends Gtk.Overlay {
     if (player.now_playing?.object.track.videoId === this.videoId) {
       player.play();
     } else if (this.videoId) {
+      this.state = DynamicImageState.LOADING;
+
       if (this.playlistId) {
-        this.state = DynamicImageState.LOADING;
         player.queue.play_playlist(this.playlistId, this.videoId);
       } else {
-        this.state = DynamicImageState.LOADING;
         player.queue.play_song(this.videoId);
       }
     }
