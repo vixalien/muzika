@@ -715,9 +715,6 @@ export class MuzikaPlayer extends MuzikaMediaStream {
 
         this._play.set_uri(format.url);
 
-        this._is_buffering = true;
-        this.notify("is-buffering");
-
         this.add_history = true;
       })
       .catch((error) => {
