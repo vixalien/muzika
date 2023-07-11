@@ -661,7 +661,7 @@ export class MuzikaPlayer extends MuzikaMediaStream {
   private _loading_track: string | null = null;
 
   get loading_track() {
-    return this._loading_track ?? null;
+    return this._loading_track;
   }
 
   async load(track: QueueMeta | null) {
