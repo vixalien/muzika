@@ -187,10 +187,6 @@ export class FullPlayerView extends Gtk.ActionBar {
       this.song_meta_changed.bind(this),
     );
 
-    this.player.connect("notify::seeking", (_) => {
-      this.scale.update_position(this.player.timestamp);
-    });
-
     this.player.connect("notify::is-buffering", () => {
       this.update_play_button();
     });
