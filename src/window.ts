@@ -105,7 +105,7 @@ export class Window extends Adw.ApplicationWindow {
     });
 
     this.navigator.navigate(
-      "playlist:LM",
+      "home",
     );
 
     const player = get_player();
