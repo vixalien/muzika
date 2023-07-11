@@ -156,9 +156,9 @@ function objectToSchema(obj: any) {
         body += (noindent ? "" : "  ") + value.toString();
       }
       continue;
-    } else {
-      attributes[key] = value;
     }
+
+    attributes[key] = value;
   }
 
   const attributes_string = Object.entries(attributes)
