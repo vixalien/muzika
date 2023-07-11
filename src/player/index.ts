@@ -316,11 +316,11 @@ export class MuzikaMediaStream extends Gtk.MediaStream {
 
   protected _playing = false;
 
-  public get playing() {
+  get playing() {
     return this._playing;
   }
 
-  public set playing(value) {
+  set playing(value) {
     if (value) {
       this._play.play();
     } else {
