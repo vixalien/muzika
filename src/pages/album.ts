@@ -121,13 +121,7 @@ export class AlbumPage extends Adw.Bin
     this.update_header_buttons();
 
     if (album.artists && album.artists.length > 0) {
-      album.artists.forEach((artist) => {
-        this._header.add_author({
-          name: artist.name,
-          id: artist.id,
-          artist: true,
-        });
-      });
+      this._header.set_subtitle(album.artists);
     }
 
     this._trackCount.set_label(

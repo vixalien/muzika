@@ -176,8 +176,14 @@ label.flat-links.hover link {
   color: @accent_color;
 }
 
-label.flat-links:hover {
+label.flat-links:hover,
+label.bold-link:hover {
   color: inherit;
+  text-decoration: none;
+}
+
+label.bold-link link {
+  color: @accent_color;
   text-decoration: none;
 }
 

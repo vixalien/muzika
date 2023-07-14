@@ -51,9 +51,18 @@ template $MiniPlaylistHeader : Box {
           ]
         }
 
-        Box author_box {
-          spacing: 6;
-          halign: center;
+        Label subtitle {
+          use-markup: true;
+          hexpand: true;
+          max-width-chars: 1;
+          xalign: 0.5;
+          justify: center;
+          wrap: true;
+
+          styles [
+            "title-3",
+            "bold-link"
+          ]
         }
       }
 

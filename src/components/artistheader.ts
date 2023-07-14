@@ -14,9 +14,6 @@ export class ArtistHeader extends PlaylistHeader {
   constructor() {
     super();
 
-    this._large._author_box.visible = false;
-    this._mini._author_box.visible = false;
-
     this._large._submeta.visible = false;
     this._mini._submeta.visible = false;
 

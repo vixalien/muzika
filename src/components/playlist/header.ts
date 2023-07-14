@@ -6,8 +6,9 @@ import GLib from "gi://GLib";
 
 import { load_thumbnails } from "../webimage.js";
 
-import { Thumbnail } from "../../muse.js";
+import { ArtistRun, Thumbnail } from "../../muse.js";
 import { omit } from "lodash-es";
+import { pretty_subtitles } from "src/util/text.js";
 
 interface ButtonProps extends Partial<Gtk.Button.ConstructorProperties> {
   on_clicked?: () => void;
@@ -38,17 +39,16 @@ export class MiniPlaylistHeader extends Gtk.Box {
         "description",
         "description_long",
         "description_stack",
-        "author_box",
         "submeta",
         "avatar",
         "subtitle_separator",
         "buttons",
+        "subtitle",
       ],
     }, this);
   }
 
   _image!: Gtk.Image;
-  _author_box!: Gtk.Box;
   _title!: Gtk.Label;
   _explicit!: Gtk.Image;
   _year!: Gtk.Label;
@@ -61,6 +61,7 @@ export class MiniPlaylistHeader extends Gtk.Box {
   _avatar!: Adw.Avatar;
   _subtitle_separator!: Gtk.Label;
   _buttons!: Gtk.Box;
+  _subtitle!: Gtk.Label;
 
   toggled = false;
 
@@ -71,6 +72,29 @@ export class MiniPlaylistHeader extends Gtk.Box {
       this.toggle_more(!this.toggled);
 
       this.emit("more-toggled", this.toggled);
+    });
+
+    const hover = new Gtk.EventControllerMotion();
+
+    hover.connect("enter", () => {
+      this._subtitle.add_css_class("hover");
+    });
+
+    hover.connect("leave", () => {
+      this._subtitle.remove_css_class("hover");
+    });
+
+    this._subtitle.add_controller(hover);
+
+    this._subtitle.connect("activate-link", (_, uri) => {
+      if (uri && uri.startsWith("muzika:")) {
+        this.activate_action(
+          "navigator.visit",
+          GLib.Variant.new_string(uri),
+        );
+
+        return true;
+      }
     });
   }
 
@@ -147,17 +171,16 @@ export class LargePlaylistHeader extends Gtk.Box {
         "description",
         "description_long",
         "description_stack",
-        "author_box",
         "submeta",
         "avatar",
         "subtitle_separator",
         "buttons",
+        "subtitle",
       ],
     }, this);
   }
 
   _image!: Gtk.Image;
-  _author_box!: Gtk.Box;
   _title!: Gtk.Label;
   _explicit!: Gtk.Image;
   _year!: Gtk.Label;
@@ -170,6 +193,7 @@ export class LargePlaylistHeader extends Gtk.Box {
   _avatar!: Adw.Avatar;
   _subtitle_separator!: Gtk.Label;
   _buttons!: Gtk.Box;
+  _subtitle!: Gtk.Label;
 
   toggled = false;
 
@@ -180,6 +204,29 @@ export class LargePlaylistHeader extends Gtk.Box {
       this.toggle_more(!this.toggled);
 
       this.emit("more-toggled", this.toggled);
+    });
+
+    const hover = new Gtk.EventControllerMotion();
+
+    hover.connect("enter", () => {
+      this._subtitle.add_css_class("hover");
+    });
+
+    hover.connect("leave", () => {
+      this._subtitle.remove_css_class("hover");
+    });
+
+    this._subtitle.add_controller(hover);
+
+    this._subtitle.connect("activate-link", (_, uri) => {
+      if (uri && uri.startsWith("muzika:")) {
+        this.activate_action(
+          "navigator.visit",
+          GLib.Variant.new_string(uri),
+        );
+
+        return true;
+      }
     });
   }
 
@@ -307,45 +354,33 @@ export class PlaylistHeader extends Gtk.Box {
     this._mini._genre.set_label(genre);
   }
 
-  add_author(author: { name: string; id: string | null; artist?: boolean }) {
-    const getElements = () => {
-      const link_arr = author.id ? [] : ["inactive"];
+  set_subtitle(
+    subtitle: string | (null | string | ArtistRun)[],
+    nodes: (string | null)[] = [],
+  ) {
+    const subtitle_authors = [];
+    const subtitle_nodes = nodes.filter(Boolean) as string[];
 
-      return {
-        label: new Gtk.Button({
-          label: author.name,
-          css_classes: ["title-3", "inline", "bold", "link", ...link_arr],
-          ...(author.id
-            ? {
-              action_name: "navigator.visit",
-              action_target: GLib.Variant.new(
-                "s",
-                `muzika:${author.artist ? "artist" : "user"}:${author.id}`,
-              ),
-            }
-            : {}),
-          cursor: Gdk.Cursor.new_from_name("pointer", null),
-        }),
-        separator: new Gtk.Label({
-          label: "·",
-          xalign: 0,
-          css_classes: ["title-3"],
-        }),
-      };
-    };
+    if (typeof subtitle === "string") {
+      subtitle_authors.push(subtitle);
+    } else {
+      for (const node of subtitle) {
+        if (!node) continue;
 
-    const largeElements = getElements();
-
-    const miniElements = getElements();
-
-    if (this._large._author_box.get_first_child()) {
-      this._large._author_box.append(largeElements.separator);
-      this._mini._author_box.append(miniElements.separator);
+        subtitle_authors.push(node);
+      }
     }
 
-    this._large._author_box.append(largeElements.label);
+    const subtitles = pretty_subtitles(
+      subtitle_authors,
+      subtitle_nodes,
+    );
 
-    this._mini._author_box.append(miniElements.label);
+    this._large._subtitle.label = subtitles.markup;
+    this._large._subtitle.tooltip_text = subtitles.plain;
+
+    this._mini._subtitle.label = subtitles.markup;
+    this._mini._subtitle.tooltip_text = subtitles.plain;
   }
 
   set_explicit(explicit: boolean) {

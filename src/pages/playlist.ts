@@ -234,14 +234,7 @@ export class PlaylistPage extends Adw.Bin
     this._header.set_year(playlist.year);
 
     if (playlist.authors && playlist.authors.length >= 1) {
-      playlist.authors.forEach((author) => {
-        this._header.add_author({
-          ...author,
-          // can only be an artist when we are viewing the playlist of
-          // all songs by an artist
-          artist: playlist.id.startsWith("OLAK5uy_"),
-        });
-      });
+      this._header.set_subtitle(playlist.authors);
     }
 
     this.update_header_buttons();
