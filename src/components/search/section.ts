@@ -2,13 +2,7 @@ import Gtk from "gi://Gtk?version=4.0";
 import GObject from "gi://GObject";
 import GLib from "gi://GLib";
 
-import {
-  filters,
-  search,
-  SearchContent,
-  SearchOptions,
-  SearchResults,
-} from "../../muse.js";
+import { filters, search, SearchContent, SearchResults } from "../../muse.js";
 import { InlineCard } from "./inlinecard.js";
 import { search_args_to_url } from "../../pages/search.js";
 import { DynamicImageState } from "../dynamic-image.js";
@@ -61,6 +55,9 @@ export class SearchSection extends Gtk.Box {
       case "artist":
         uri = `artist:${row.content.browseId}`;
         break;
+      case "profile":
+        uri = `channel:${row.content.browseId}`;
+        break;
       case "album":
         uri = `album:${row.content.browseId}`;
         break;
@@ -108,6 +105,9 @@ export class SearchSection extends Gtk.Box {
         break;
       case "artist":
         card.set_artist(content);
+        break;
+      case "profile":
+        card.set_profile(content);
         break;
       case "playlist":
         card.set_playlist(content);

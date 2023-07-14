@@ -1,0 +1,83 @@
+using Gtk 4.0;
+using Adw 1;
+
+template $ChannelPage : Adw.Bin {
+  Adw.ToolbarView {
+    [top]
+    Adw.HeaderBar {}
+  
+    content: Adw.BreakpointBin {
+      width-request: 200;
+      height-request: 200;
+      
+      Adw.Breakpoint breakpoint {
+        condition ("max-width: 700sp")
+      }
+
+      ScrolledWindow {
+        vexpand: true;
+        hexpand: true;
+        hscrollbar-policy: never;
+
+        Adw.Clamp {
+          margin-top: 12;
+          margin-bottom: 12;
+          tightening-threshold: 1200;
+          maximum-size: 1400;
+
+          Box inner_box {
+            spacing: 18;
+            orientation: vertical;
+
+            $ArtistHeader header {
+              show-large-header: true;
+            }
+
+            Box songs_on_repeat {
+              spacing: 12;
+              orientation: vertical;
+              height-request: 42;
+
+              Box {
+                margin-start: 12;
+                margin-end: 12;
+
+                Box {
+                  valign: center;
+                  orientation: vertical;
+
+                  Label subtitle {
+                    halign: start;
+                    ellipsize: end;
+                    label: _("Last 7 days");
+
+                    styles [
+                      "dim-label",
+                    ]
+                  }
+
+                  Label {
+                    label: _("Songs on Repeat");
+                    halign: start;
+                    xalign: 0;
+
+                    styles [
+                      "title-2",
+                    ]
+                  }
+                }
+              }
+
+              $PlaylistItemView playlist_item_view {
+                show-column: true;
+              }
+            }
+
+            Box content {
+            }
+          }
+        }
+      }
+    };
+  }
+}

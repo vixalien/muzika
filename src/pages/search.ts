@@ -385,6 +385,8 @@ function filter_to_string(filter: Filter) {
       return _("Community Playlists");
     case "featured_playlists":
       return _("Featured Playlists");
+    case "profiles":
+      return _("Profiles");
     default:
       return filter;
   }

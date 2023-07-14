@@ -17,6 +17,7 @@ import {
 import { load_thumbnails } from "../webimage.js";
 import { DynamicImage } from "../dynamic-image.js";
 import { pretty_subtitles } from "src/util/text.js";
+import { SearchProfile } from "libmuse/types/parsers/search.js";
 
 DynamicImage;
 
@@ -142,6 +143,19 @@ export class InlineCard extends Gtk.ListBoxRow {
 
     this.show_type = false;
     this.set_subtitle(_("Artist"), [artist.subscribers]);
+
+    load_thumbnails(this._avatar, artist.thumbnails, this.image_size);
+  }
+
+  set_profile(artist: SearchProfile) {
+    this.content = artist;
+
+    this.show_avatar(true);
+
+    this._title.label = artist.name;
+
+    this.show_type = false;
+    this.set_subtitle(_("Artist"), [artist.username]);
 
     load_thumbnails(this._avatar, artist.thumbnails, this.image_size);
   }
