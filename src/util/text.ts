@@ -49,7 +49,9 @@ export function pretty_subtitles(
     if (is_artist_run(node)) {
       if (node.id) {
         author_markup.push(
-          `<a href="muzika:artist:${node.id}">${escape_label(node.name)}</a>`,
+          `<a href="muzika:${
+            node.type === "artist" ? "artist" : "channel"
+          }:${node.id}">${escape_label(node.name)}</a>`,
         );
       } else {
         author_markup.push(escape_label(node.name));

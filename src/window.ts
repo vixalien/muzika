@@ -212,7 +212,7 @@ export class Window extends Adw.ApplicationWindow {
 
     menu.append(
       account.name,
-      `navigator.visit("muzika:user:${account.channel_id}")`,
+      `navigator.visit("muzika:channel:${account.channel_id}")`,
     );
     menu.append(
       _("Logout"),
