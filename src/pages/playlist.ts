@@ -247,7 +247,7 @@ export class PlaylistPage extends Adw.Bin
     this.update_header_buttons();
 
     if (playlist.trackCount) {
-      this._trackCount.set_label(playlist.trackCount.toString() + " songs");
+      this._trackCount.set_label(playlist.trackCount.toString());
     } else {
       this._trackCount.set_visible(false);
       this._separator.set_visible(false);

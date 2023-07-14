@@ -225,7 +225,7 @@ export class TopResultCard extends Adw.Bin {
 
     this._title.label = artist.name;
 
-    this.set_subtitle(_("Artist"), [], `${artist.subscribers} subscribers`);
+    this.set_subtitle(_("Artist"), [], artist.subscribers);
 
     this._primary_content.label = _("Shuffle");
     this._primary_content.icon_name = "media-playlist-shuffle-symbolic";

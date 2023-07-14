@@ -131,7 +131,7 @@ export class AlbumPage extends Adw.Bin
     }
 
     this._trackCount.set_label(
-      (album.trackCount ?? album.tracks.length).toString() + " songs",
+      (album.trackCount ?? album.tracks.length).toString(),
     );
     if (album.duration_seconds) {
       this._duration.set_label(secondsToDuration(album.duration_seconds));
