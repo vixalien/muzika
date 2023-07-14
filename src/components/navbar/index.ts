@@ -27,6 +27,7 @@ export class NavbarView extends Gtk.Box {
           activated: {
             param_types: [GObject.TYPE_STRING],
           },
+          searched: {},
         },
       },
       this,
@@ -149,6 +150,8 @@ export class NavbarView extends Gtk.Box {
       "navigator.visit",
       GLib.Variant.new_string(`muzika:search:${encodeURIComponent(query)}`),
     );
+
+    this.emit("searched");
   }
 
   setup_buttons() {
