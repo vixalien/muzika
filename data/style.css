@@ -62,32 +62,6 @@ menubutton.small-pill>button {
   border-radius: 3px;
 }
 
-button.link.inline {
-  padding: 6px 0;
-}
-
-button.link.inline label {
-  text-decoration: none;
-}
-
-button.link.inline.bold {
-  font-weight: 700;
-}
-
-button.link.inactive {
-  color: inherit;
-}
-
-button.link.inline.flat {
-  padding: 0;
-  color: @window_fg_color;
-}
-
-button.link.inline.flat:hover {
-  color: @accent_color;
-  opacity: 1;
-}
-
 .no-padding {
   padding: 0;
 }
