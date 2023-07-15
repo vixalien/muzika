@@ -1,4 +1,3 @@
-import Gtk from "gi://Gtk?version=4.0";
 import GObject from "gi://GObject";
 import Adw from "gi://Adw";
 
@@ -10,7 +9,7 @@ export interface PlayerViewOptions {
   player: MuzikaPlayer;
 }
 
-export class PlayerView extends Gtk.Revealer {
+export class PlayerView extends Adw.Bin {
   static {
     GObject.registerClass({
       GTypeName: "PlayerView",
@@ -41,23 +40,5 @@ export class PlayerView extends Gtk.Revealer {
     this.squeezer.add(this.mini);
 
     this.set_child(this.squeezer);
-
-    options.player.queue.connect(
-      "notify::current",
-      this.song_changed.bind(this),
-    );
-
-    // resume player animation when the child changes
-    // this.squeezer.connect("notify::visible-child", () => {
-    //   const position = options.player.timestamp;
-
-    //   this.mini.progress_bar.update_position(position);
-    //   this.full.scale.update_position(position);
-
-    // });
-  }
-
-  song_changed() {
-    this.reveal_child = this.player.queue.current?.object != null;
   }
 }

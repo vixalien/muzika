@@ -110,6 +110,14 @@ export class Window extends Adw.ApplicationWindow {
 
     const player = get_player();
 
+    player.queue.connect(
+      "notify::current",
+      () => {
+        this._toolbar_view.reveal_bottom_bars =
+          player.queue.current?.object != null;
+      },
+    );
+
     this.insert_action_group("navigator", this.navigator.get_action_group());
     this.insert_action_group("player", player.get_action_group());
     this.insert_action_group(
