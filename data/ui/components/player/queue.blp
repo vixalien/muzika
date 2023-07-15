@@ -33,32 +33,17 @@ template $QueueView : Stack {
             ]
           }
 
-          Stack playlist_stack {
-            Label playlist_name {
-              label: _("Playlist Name");
-              xalign: 0;
-              ellipsize: end;
-            }
+          Label playlist_label {
+            use-markup: true;
+            hexpand: true;
+            max-width-chars: 1;
+            ellipsize: end;
+            xalign: 0;
+            wrap: true;
 
-            Button playlist_button {
-              cursor:               $GdkCursor {
-                name: "pointer";
-              }
-
-              ;
-
-              styles [
-                "inline",
-                "link",
-                "flat",
-              ]
-
-              Label playlist_button_name {
-                label: _("Playlist Name");
-                xalign: 0;
-                ellipsize: end;
-              }
-            }
+            styles [
+              "flat-links",
+            ]
           }
         }
       }

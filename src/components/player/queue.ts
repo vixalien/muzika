@@ -17,25 +17,19 @@ export class QueueView extends Gtk.Stack {
         "no_queue",
         "list_view",
         "queue_window",
-        "playlist_stack",
-        "playlist_name",
-        "playlist_button",
-        "playlist_button_name",
+        "playlist_label",
         "params",
         "params_box",
       ],
     }, this);
   }
 
-  _list_view!: Gtk.ListView;
-  _queue_window!: Gtk.ScrolledWindow;
-  _no_queue!: Adw.StatusPage;
-  _playlist_stack!: Gtk.Stack;
-  _playlist_name!: Gtk.Label;
-  _playlist_button!: Gtk.Button;
-  _playlist_button_name!: Gtk.Label;
-  _params!: Gtk.Box;
-  _params_box!: Gtk.Box;
+  private _list_view!: Gtk.ListView;
+  private _queue_window!: Gtk.ScrolledWindow;
+  private _no_queue!: Adw.StatusPage;
+  private _playlist_label!: Gtk.Label;
+  private _params!: Gtk.Box;
+  private _params_box!: Gtk.Box;
 
   player: MuzikaPlayer;
 
@@ -82,6 +76,29 @@ export class QueueView extends Gtk.Stack {
 
     this.update_visible_child();
     this.update_settings();
+
+    const hover = new Gtk.EventControllerMotion();
+
+    hover.connect("enter", () => {
+      this._playlist_label.add_css_class("hover");
+    });
+
+    hover.connect("leave", () => {
+      this._playlist_label.remove_css_class("hover");
+    });
+
+    this._playlist_label.add_controller(hover);
+
+    this._playlist_label.connect("activate-link", (_, uri) => {
+      if (uri && uri.startsWith("muzika:")) {
+        this.activate_action(
+          "navigator.visit",
+          GLib.Variant.new_string(uri),
+        );
+
+        return true;
+      }
+    });
   }
 
   update_visible_child() {
@@ -93,20 +110,17 @@ export class QueueView extends Gtk.Stack {
   update_settings() {
     const settings = this.player.queue.settings;
 
-    if (settings?.playlistId) {
-      this._playlist_stack.set_visible_child(this._playlist_button);
-
-      this._playlist_button.action_name = "navigator.visit";
-      this._playlist_button.action_target = GLib.Variant.new_string(
-        `muzika:playlist:${settings.playlistId}`,
-      );
-
-      this._playlist_button_name.label = settings?.playlist ?? _("Queue");
+    // radio playlists can't be visited
+    if (settings?.playlistId && !settings.playlistId.startsWith("RDA")) {
+      this._playlist_label.label =
+        `<a href="muzika:playlist:${settings.playlistId}">${
+          settings.playlist ?? _("Queue")
+        }</a>`;
     } else {
-      this._playlist_stack.set_visible_child(this._playlist_name);
-
-      this._playlist_name.label = settings?.playlist ?? _("Queue");
+      this._playlist_label.label = settings?.playlist ?? _("Queue");
     }
+
+    this._playlist_label.tooltip_text = settings?.playlist ?? _("Queue");
 
     this.params_map.clear();
 
