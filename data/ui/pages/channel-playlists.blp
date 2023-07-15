@@ -1,0 +1,23 @@
+using Gtk 4.0;
+using Adw 1;
+
+template $ChannelPlaylistsPage : Adw.Bin {
+  Adw.ToolbarView {
+    [top]
+    Adw.HeaderBar {}
+  
+    content: ScrolledWindow {
+      hexpand: true;
+      hscrollbar-policy: never;
+
+      Adw.ClampScrollable {
+        tightening-threshold: 1200;
+        maximum-size: 1400;
+ 
+        $CarouselGridView view {
+          orientation: vertical;
+        }
+      }
+    };
+  }
+}

@@ -14,6 +14,7 @@ import { LibrarySongsPage } from "./pages/library/songs.js";
 import { HistoryPage } from "./pages/library/history.js";
 import { ArtistAlbumsPage } from "./pages/artist-albums.js";
 import { ChannelPage } from "./pages/channel.js";
+import { ChannelPlaylistsPage } from "./pages/channel-playlists.js";
 
 export const endpoints: Endpoint<MuzikaComponent<unknown, unknown>>[] = [
   {
@@ -99,5 +100,11 @@ export const endpoints: Endpoint<MuzikaComponent<unknown, unknown>>[] = [
     title: _("Channel"),
     component: () => new ChannelPage(),
     load: ChannelPage.load,
+  },
+  {
+    uri: "channel-playlists/:channelId/:params",
+    title: _("Channel Playlists"),
+    component: () => new ChannelPlaylistsPage(),
+    load: ChannelPlaylistsPage.load,
   },
 ];
