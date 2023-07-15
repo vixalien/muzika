@@ -127,8 +127,13 @@ export class AlbumPage extends Adw.Bin
     this._trackCount.set_label(
       (album.trackCount ?? album.tracks.length).toString(),
     );
-    if (album.duration_seconds) {
+
+    if (album.duration) {
+      this._duration.set_label(album.duration);
+    } else if (album.duration_seconds) {
       this._duration.set_label(secondsToDuration(album.duration_seconds));
+    } else {
+      this._duration.set_visible(false);
     }
 
     if (album.other_versions && album.other_versions.length > 0) {
