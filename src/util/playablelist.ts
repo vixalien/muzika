@@ -262,7 +262,9 @@ export class PlayableList<T extends Object = PlaylistItem>
     this.array.forEach((item) => {
       if (item.is_playlist) {
         item.state =
-          player.now_playing?.object.settings.playlistId == item.playlist_id
+          (item.playlist_id &&
+              player.now_playing?.object.settings.playlistId ==
+                item.playlist_id)
             ? player.playing
               ? DynamicImageState.PLAYING
               : DynamicImageState.PAUSED
@@ -270,13 +272,15 @@ export class PlayableList<T extends Object = PlaylistItem>
             ? DynamicImageState.LOADING
             : DynamicImageState.DEFAULT;
       } else {
-        item.state = player.now_playing?.object.track.videoId == item.video_id
-          ? player.playing
-            ? DynamicImageState.PLAYING
-            : DynamicImageState.PAUSED
-          : player.loading_track == item.video_id
-          ? DynamicImageState.LOADING
-          : DynamicImageState.DEFAULT;
+        item.state =
+          (item.video_id &&
+              player.now_playing?.object.track.videoId == item.video_id)
+            ? player.playing
+              ? DynamicImageState.PLAYING
+              : DynamicImageState.PAUSED
+            : player.loading_track == item.video_id
+            ? DynamicImageState.LOADING
+            : DynamicImageState.DEFAULT;
       }
     });
   }

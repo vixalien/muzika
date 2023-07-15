@@ -269,7 +269,7 @@ export class PlaylistPage extends Adw.Bin
       0,
       this.suggestions_model.n_items,
       playlist.suggestions.map((suggestion) =>
-        PlayableContainer.new(suggestion)
+        PlayableContainer.new_from_playlist_item(suggestion)
       ),
     );
 
