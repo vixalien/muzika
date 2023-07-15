@@ -4,6 +4,7 @@ import Adw from "gi://Adw";
 
 import { fetch } from "../polyfills/fetch.js";
 import { Thumbnail } from "libmuse";
+import { AdaptivePicture } from "./adaptive-picture.js";
 
 export function get_thumbnail_with_size(
   thumbnail: Thumbnail,
@@ -107,7 +108,7 @@ export function get_best_thumbnail(
 }
 
 export function load_thumbnails(
-  image: Gtk.Image | Gtk.Picture | Adw.Avatar,
+  image: Gtk.Image | Gtk.Picture | Adw.Avatar | AdaptivePicture,
   thumbnails: Thumbnail[],
   options: number | LoadOptions,
 ) {
@@ -171,7 +172,7 @@ export function fetch_image(
 }
 
 export async function load_image(
-  image: Gtk.Image | Gtk.Picture | Adw.Avatar,
+  image: Gtk.Image | Gtk.Picture | Adw.Avatar | AdaptivePicture,
   href: string,
   options: LoadOptions,
 ) {
@@ -184,6 +185,8 @@ export async function load_image(
       image.set_from_paintable(texture);
     } else if (image instanceof Adw.Avatar) {
       image.set_custom_image(texture);
+    } else if (image instanceof AdaptivePicture) {
+      image.paintable = texture;
     }
   }
 }

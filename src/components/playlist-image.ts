@@ -3,6 +3,9 @@ import GObject from "gi://GObject";
 import Adw from "gi://Adw";
 
 import { get_player } from "src/application.js";
+import { Thumbnail } from "libmuse";
+import { load_thumbnails } from "./webimage";
+import { AdaptivePicture } from "./adaptive-picture";
 
 export enum PlaylistImageState {
   DEFAULT,
@@ -32,7 +35,7 @@ export class PlaylistImage extends Gtk.Overlay {
         "pause_image",
         "blank",
       ],
-      Children: ["image"],
+      Children: ["picture"],
       Properties: {
         "icon-size": GObject.ParamSpec.int(
           "icon-size",
@@ -84,7 +87,7 @@ export class PlaylistImage extends Gtk.Overlay {
   private _pause_image!: Gtk.Image;
   private _blank!: Adw.Bin;
 
-  image!: Gtk.Image;
+  picture!: AdaptivePicture;
 
   private _state: PlaylistImageState = PlaylistImageState.DEFAULT;
 
@@ -119,11 +122,11 @@ export class PlaylistImage extends Gtk.Overlay {
   }
 
   get image_size() {
-    return this.image.pixel_size;
+    return this.picture.min_width;
   }
 
   set image_size(size: number) {
-    this.image.pixel_size = size;
+    this.picture.min_width = this.picture.min_height = size;
 
     ["br-6", "br-9"].map((br_class) => {
       this.remove_css_class(br_class);
@@ -240,5 +243,16 @@ export class PlaylistImage extends Gtk.Overlay {
     if (player.now_playing?.object.settings.playlistId === this.playlistId) {
       player.pause();
     }
+  }
+
+  load_thumbnails(
+    thumbnails: Thumbnail[],
+    options: Parameters<typeof load_thumbnails>[2] = this.image_size,
+  ) {
+    return load_thumbnails(
+      this.picture,
+      thumbnails,
+      options,
+    );
   }
 }

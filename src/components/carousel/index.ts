@@ -26,7 +26,6 @@ export class CarouselGridView extends Gtk.GridView {
   constructor(props?: Gtk.GridView.ConstructorProperties) {
     super({
       single_click_activate: true,
-      margin_bottom: 18,
       orientation: Gtk.Orientation.HORIZONTAL,
       ...props,
     });
@@ -52,6 +51,8 @@ export class CarouselGridView extends Gtk.GridView {
   bind_cb(_factory: Gtk.ListItemFactory, list_item: Gtk.ListItem) {
     const card = list_item.child as CarouselCard;
     const container = list_item.item as PlayableContainer<MixedCardItem>;
+
+    card.fill_space = true;
 
     if (container.object) {
       card.show_item(container.object);

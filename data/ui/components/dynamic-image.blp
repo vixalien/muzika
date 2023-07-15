@@ -76,11 +76,7 @@ template $DynamicImage : Overlay {
   Stack image_stack {
     transition-type: crossfade;
 
-    Image image {
-      icon-name: "image-missing-symbolic";
-    }
-
-    Picture picture {
+    $AdaptivePicture picture {
       content-fit: cover;
     }
 

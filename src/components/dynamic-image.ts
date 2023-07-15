@@ -5,6 +5,7 @@ import { get_player } from "src/application.js";
 import { Thumbnail } from "libmuse";
 import { load_thumbnails } from "./webimage";
 import { SignalListeners } from "src/util/signal-listener";
+import { AdaptivePicture } from "./adaptive-picture";
 
 export enum DynamicImageState {
   DEFAULT,
@@ -37,7 +38,7 @@ export class DynamicImage extends Gtk.Overlay {
         "number",
         "check_button",
       ],
-      Children: ["image", "picture"],
+      Children: ["picture"],
       Properties: {
         "icon-size": GObject.ParamSpec.int(
           "icon-size",
@@ -45,7 +46,7 @@ export class DynamicImage extends Gtk.Overlay {
           "The size of the icons inside the image",
           GObject.ParamFlags.READWRITE,
           0,
-          1000,
+          1000000,
           0,
         ),
         "image-size": GObject.ParamSpec.int(
@@ -54,7 +55,7 @@ export class DynamicImage extends Gtk.Overlay {
           "The size of the image",
           GObject.ParamFlags.READWRITE,
           0,
-          1000,
+          1000000,
           0,
         ),
         "state": GObject.ParamSpec.int(
@@ -125,8 +126,7 @@ export class DynamicImage extends Gtk.Overlay {
   private _number!: Gtk.Label;
   private _check_button!: Gtk.CheckButton;
 
-  image!: Gtk.Image;
-  picture!: Gtk.Picture;
+  picture!: AdaptivePicture;
 
   private _state: DynamicImageState = DynamicImageState.DEFAULT;
 
@@ -166,17 +166,19 @@ export class DynamicImage extends Gtk.Overlay {
 
   set image_size(size: number) {
     if (this.visible_child === DynamicImageVisibleChild.PICTURE) {
+      const width = Math.ceil(size * (16 / 9));
+      this._image_stack.width_request = width;
       this._image_stack.height_request = size;
-      this._image_stack.width_request = size * (16 / 9);
+      this.picture.min_width = width;
+      this.picture.min_height = size;
     } else {
       this._image_stack.width_request = this._image_stack.height_request = size;
+      this.picture.min_width = this.picture.min_height = size;
     }
 
     ["br-6", "br-9"].map((br_class) => {
       this.remove_css_class(br_class);
     });
-
-    this.image.pixel_size = size;
 
     if (size <= 48) {
       this.add_css_class("br-6");
@@ -221,29 +223,32 @@ export class DynamicImage extends Gtk.Overlay {
   private _visible_child = DynamicImageVisibleChild.IMAGE;
 
   get visible_child() {
+    if (!this.loaded) {
+      return this._visible_child;
+    }
+
     switch (this._image_stack.visible_child) {
       case this.picture:
-        return DynamicImageVisibleChild.PICTURE;
+        return this._visible_child;
       case this._number:
         return DynamicImageVisibleChild.NUMBER;
-      case this.image:
-        return DynamicImageVisibleChild.IMAGE;
       default:
         return this._visible_child;
     }
   }
 
   set visible_child(child: DynamicImageVisibleChild) {
-    switch (child) {
-      case DynamicImageVisibleChild.IMAGE:
-        this._image_stack.visible_child = this.image;
-        break;
-      case DynamicImageVisibleChild.PICTURE:
-        this._image_stack.visible_child = this.picture;
-        break;
-      case DynamicImageVisibleChild.NUMBER:
-        this._image_stack.visible_child = this._number;
-        break;
+    if (child === DynamicImageVisibleChild.NUMBER) {
+      this._image_stack.visible_child = this._number;
+    } else if (this.loaded) {
+      switch (child) {
+        case DynamicImageVisibleChild.IMAGE:
+          this._image_stack.visible_child = this.picture;
+          break;
+        case DynamicImageVisibleChild.PICTURE:
+          this._image_stack.visible_child = this.picture;
+          break;
+      }
     }
 
     if (child === DynamicImageVisibleChild.NUMBER) {
@@ -430,6 +435,8 @@ export class DynamicImage extends Gtk.Overlay {
     super.vfunc_unroot();
   }
 
+  private loaded = false;
+
   load_thumbnails(
     thumbnails: Thumbnail[],
     options: Parameters<typeof load_thumbnails>[2] = this.image_size,
@@ -439,12 +446,14 @@ export class DynamicImage extends Gtk.Overlay {
     }
 
     return load_thumbnails(
-      this.visible_child === DynamicImageVisibleChild.IMAGE
-        ? this.image
-        : this.picture,
+      this.picture,
       thumbnails,
       options,
-    );
+    )
+      .then(() => {
+        this.loaded = true;
+        this.visible_child = this._visible_child;
+      });
   }
 }
 

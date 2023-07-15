@@ -2,6 +2,7 @@ import Gtk from "gi://Gtk?version=4.0";
 import GObject from "gi://GObject";
 import Adw from "gi://Adw";
 import GLib from "gi://GLib";
+import Gio from "gi://Gio";
 
 import {
   ArtistRun,
@@ -100,6 +101,15 @@ export class CarouselCard extends Gtk.Box {
     this._dynamic_image.clear();
   }
 
+  get fill_space() {
+    return this._dynamic_image.picture.fill_space;
+  }
+
+  set fill_space(fill_space: boolean) {
+    this._dynamic_image.picture.fill_space = fill_space;
+    this._playlist_image.picture.fill_space = fill_space;
+  }
+
   // utils
 
   private show_image(image_type: CarouselImageType) {
@@ -132,20 +142,10 @@ export class CarouselCard extends Gtk.Box {
         image = this._avatar;
         break;
       case this._dynamic_image:
-        switch (this._dynamic_image.visible_child) {
-          case DynamicImageVisibleChild.IMAGE:
-            image = this._dynamic_image.image;
-            break;
-          case DynamicImageVisibleChild.PICTURE:
-            image = this._dynamic_image.picture;
-            break;
-          default:
-            image = null;
-            break;
-        }
+        this._dynamic_image.load_thumbnails(thumbnails, options);
         break;
       case this._playlist_image:
-        image = this._playlist_image.image;
+        this._playlist_image.load_thumbnails(thumbnails, options);
         break;
       default:
         null;
