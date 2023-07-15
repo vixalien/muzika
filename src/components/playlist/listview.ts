@@ -82,6 +82,13 @@ export class PlaylistListView extends Gtk.ListView {
 
     item.signals.add(
       container,
+      container.connect("notify::state", () => {
+        item.dynamic_image.state = container.state;
+      }),
+    );
+
+    item.signals.add(
+      container,
       container.connect("notify", () => {
         item.dynamic_image.selection_mode = this.selection_mode;
         item.show_add = this.show_add;
