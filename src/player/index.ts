@@ -12,7 +12,14 @@ import {
   RepeatMode,
   tracks_to_meta,
 } from "./queue";
-import { AudioFormat, Format, get_song, Song } from "src/muse";
+import {
+  add_history_item,
+  AudioFormat,
+  Format,
+  get_option,
+  get_song,
+  Song,
+} from "src/muse";
 import { Application, Settings } from "../application.js";
 import { ObjectContainer } from "../util/objectcontainer.js";
 import { AddActionEntries } from "src/util/action.js";
@@ -645,16 +652,19 @@ export class MuzikaPlayer extends MuzikaMediaStream {
     super.play();
 
     // TODO: add history
-    // const id = this.now_playing?.object.track.videoId;
+    const song = this.now_playing?.object.song;
 
-    // if (id) {
-    //   if (this.add_history && get_option("auth").has_token()) {
-    //     // add history entry, but don't wait for the promise to resolve
-    //     add_history_item(id);
+    if (song) {
+      if (this.add_history && get_option("auth").has_token()) {
+        // add history entry, but don't wait for the promise to resolve
+        add_history_item(song)
+          .catch((err) => {
+            console.log("Couldn't add history item", err);
+          });
 
-    //     this.add_history = false;
-    //   }
-    // }
+        this.add_history = false;
+      }
+    }
   }
 
   private loading_controller: AbortController | null = null;
