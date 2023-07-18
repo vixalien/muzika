@@ -1,0 +1,672 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the muzika package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: muzika\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2023-07-02 17:46+0200\n"
+"PO-Revision-Date: 2023-07-17 21:06-0300\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: pt_BR\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 3.3.2\n"
+
+#: data/com.vixalien.muzika.desktop.in:3
+#: data/com.vixalien.muzika.appdata.xml.in.in:6
+msgid "Muzika"
+msgstr "Muzika"
+
+#: data/com.vixalien.muzika.appdata.xml.in.in:7
+msgid "Elegant music streaming application"
+msgstr "Elegante aplicativo de streaming de música"
+
+#: data/com.vixalien.muzika.appdata.xml.in.in:9
+msgid ""
+"Play music from millions of songs available on the internet for free. Search "
+"for songs, albums, artists, and more. Discover new music from playlists and "
+"get a personalized &amp; curated experience."
+msgstr ""
+"Ouça música a partir de milhões de canções disponíveis gratuitamente online. "
+"Busque por canções, álbuns, artistas e mais. Descubra novas músicas em "
+"playlists e consiga uma experiência com curadoria &amp; personalização."
+
+#: data/com.vixalien.muzika.appdata.xml.in.in:14
+msgid "Current features:"
+msgstr "Recursos atuais:"
+
+#: data/com.vixalien.muzika.appdata.xml.in.in:16
+msgid "play any music from YouTube Music"
+msgstr "ouça qualquer música do YouTube Music"
+
+#: data/com.vixalien.muzika.appdata.xml.in.in:17
+msgid ""
+"allows sign in through OAuth with Google to play your playlists and more "
+"from your library or uploads"
+msgstr ""
+"permite login via OAuth com Google para tocar playlists e muito mais a "
+"partir de sua biblioteca ou uploads"
+
+#: data/com.vixalien.muzika.appdata.xml.in.in:18
+msgid ""
+"search for songs, albums, artists, radios, community &amp; featured "
+"playlists and more"
+msgstr ""
+"pesquise músicas, álbuns, artistas, rádios, comunidade &amp; playlists em "
+"destaque e muito mais"
+
+#: data/com.vixalien.muzika.appdata.xml.in.in:19
+msgid "access personalised music radios &amp; mixes"
+msgstr "acesse rádios &amp; mixagens de música personalizadas"
+
+#: data/com.vixalien.muzika.appdata.xml.in.in:31
+msgid "Angelo Verlain"
+msgstr "Angelo Verlain"
+
+#: data/com.vixalien.muzika.gschema.xml:6
+msgid "Whether lists are preferred to grids"
+msgstr "Caso você prefira listas em vez da matriz"
+
+#: data/com.vixalien.muzika.gschema.xml:7
+msgid ""
+"If this option is enabled, the library view will show a list instead of the "
+"default grid."
+msgstr ""
+"Se essa opção for ativada, a vista da biblioteca vai mostrar uma lista em "
+"vez da matriz padrão."
+
+#: data/com.vixalien.muzika.gschema.xml:12
+msgid "Volume"
+msgstr "Volume"
+
+#: data/com.vixalien.muzika.gschema.xml:13
+msgid "The volume of the player"
+msgstr "O volume do tocador"
+
+#: data/ui/components/navbar/index.blp:7
+msgid "Search…"
+msgstr "Buscar…"
+
+#: data/ui/components/navbar/index.blp:17 src/endpoints.ts:19
+msgid "Home"
+msgstr "Início"
+
+#: data/ui/components/navbar/index.blp:23
+msgid "Explore"
+msgstr "Explorar"
+
+#: data/ui/components/navbar/index.blp:30
+#: data/ui/components/navbar/index.blp:32 src/endpoints.ts:49
+#: src/pages/search.ts:87
+msgid "Library"
+msgstr "Biblioteca"
+
+#: data/ui/components/navbar/index.blp:38 src/pages/album.ts:181
+#: src/pages/search.ts:376
+msgid "Artists"
+msgstr "Artistas"
+
+#: data/ui/components/navbar/index.blp:45
+msgid "Subscriptions"
+msgstr "Inscrições"
+
+#: data/ui/components/navbar/index.blp:52 src/pages/artist.ts:114
+#: src/pages/search.ts:374
+msgid "Albums"
+msgstr "Álbuns"
+
+#: data/ui/components/navbar/index.blp:59 src/pages/search.ts:380
+msgid "Songs"
+msgstr "Canções"
+
+#: data/ui/components/navbar/index.blp:66 src/endpoints.ts:85
+msgid "History"
+msgstr "Histórico"
+
+#: data/ui/components/navbar/index.blp:72 src/pages/artist.ts:119
+#: src/pages/search.ts:378
+msgid "Playlists"
+msgstr "Playlists"
+
+#: data/ui/components/navbar/index.blp:74
+msgid "All Playlists"
+msgstr "Todas as Playlists"
+
+#: data/ui/components/paginator.blp:22
+msgid "Load More"
+msgstr "Carregar mais"
+
+#: data/ui/components/player/full.blp:77
+msgid "Toggle Shuffle"
+msgstr "Modo aleatório"
+
+#: data/ui/components/player/full.blp:90
+msgid "Previous"
+msgstr "Anterior"
+
+#: data/ui/components/player/full.blp:100
+#: data/ui/components/search/topresult.blp:118 src/pages/album.ts:133
+msgid "Play"
+msgstr "Tocar"
+
+#: data/ui/components/player/full.blp:110 data/ui/components/player/mini.blp:56
+#: data/ui/components/player/mini.blp:60
+msgid "Toggle Play/Pause"
+msgstr "Dar play/pausa"
+
+#: data/ui/components/player/full.blp:116
+msgid "Next"
+msgstr "Próximo"
+
+#: data/ui/components/player/full.blp:127
+msgid "Toggle Repeat State"
+msgstr "Repetir"
+
+#: data/ui/components/player/full.blp:176
+msgid "Adjust Volume"
+msgstr "Ajustar volume"
+
+#: data/ui/components/player/full.blp:180
+msgid "Show Queue"
+msgstr "Mostrar fila"
+
+#: data/ui/components/player/full.blp:186
+msgid "Show Lyrics"
+msgstr "Mostrar letra"
+
+#: data/ui/components/player/full.blp:192
+msgid "Show Related songs"
+msgstr "Mostrar músicas relacionadas"
+
+#: data/ui/components/player/lyrics.blp:7
+msgid "Lyrics are not available"
+msgstr "Letras não estão disponíveis"
+
+#: data/ui/components/player/lyrics.blp:8
+msgid "If the song has lyrics, they'll appear here when they become available"
+msgstr "Se a canção tem letras, elas aparecerão quando disponíveis aqui"
+
+#: data/ui/components/player/mini.blp:66 data/ui/components/player/mini.blp:70
+#: src/pages/album.ts:158 src/pages/playlist.ts:347
+msgid "Play Next"
+msgstr "Tocar próximo"
+
+#: data/ui/components/player/queue.blp:7
+msgid "The Queue is empty"
+msgstr "A fila está vazia"
+
+#: data/ui/components/player/queue.blp:8
+msgid "Play some tracks to see the queue"
+msgstr "Tocar músicas para ver a fila"
+
+#: data/ui/components/player/queue.blp:27
+msgid "Playing From"
+msgstr "Tocando a partir de"
+
+#: data/ui/components/player/queue.blp:38
+#: data/ui/components/player/queue.blp:57
+msgid "Playlist Name"
+msgstr "Nome da playlist"
+
+#: data/ui/components/player/related.blp:7
+msgid "No related music"
+msgstr "Sem músicas relacionadas"
+
+#: data/ui/components/player/related.blp:8
+msgid "We couldn't find any music related to this track."
+msgstr "Não conseguimos encontrar músicas relacionadas a esta."
+
+#: data/ui/components/playlist/edit.blp:6
+#: data/ui/components/playlist/edit.blp:11 src/pages/playlist.ts:327
+msgid "Edit Playlist"
+msgstr "Editar playlist"
+
+#: data/ui/components/playlist/edit.blp:14
+msgid "General"
+msgstr "Geral"
+
+#: data/ui/components/playlist/edit.blp:17
+msgid "Title"
+msgstr "Título"
+
+#: data/ui/components/playlist/edit.blp:21
+msgid "Description"
+msgstr "Descrição"
+
+#: data/ui/components/playlist/edit.blp:25
+msgid "Privacy"
+msgstr "Privacidade"
+
+#: data/ui/components/playlist/edit.blp:33
+msgid "Save"
+msgstr "Salvar"
+
+#: data/ui/components/playlist/largeheader.blp:110
+#: data/ui/components/playlist/miniheader.blp:118
+msgid "Read more"
+msgstr "Ler mais"
+
+#: data/ui/components/search/section.blp:23 data/ui/pages/artist.blp:59
+msgid "More"
+msgstr "Mais"
+
+#: data/ui/components/search/topresult.blp:130
+#: src/components/search/topresultcard.ts:189 src/pages/album.ts:143
+#: src/pages/artist.ts:129 src/pages/playlist.ts:317
+msgid "Shuffle"
+msgstr "Aleatório"
+
+#: data/ui/components/search/topresultsection.blp:14
+msgid "Top Result"
+msgstr "Principal resultado"
+
+#: data/ui/gtk/help-overlay.blp:11
+msgctxt "shortcut window"
+msgid "General"
+msgstr "Geral"
+
+#: data/ui/gtk/help-overlay.blp:14
+msgctxt "shortcut window"
+msgid "Show Shortcuts"
+msgstr "Mostar atalhos"
+
+#: data/ui/gtk/help-overlay.blp:19
+msgctxt "shortcut window"
+msgid "Quit"
+msgstr "Sair"
+
+#: data/ui/pages/artist.blp:46
+msgid "Top Songs"
+msgstr "Top músicas"
+
+#: data/ui/pages/authentication-error.blp:8
+msgid "Authentication is required"
+msgstr "Autenticação necessária"
+
+#: data/ui/pages/authentication-error.blp:20
+msgid "Log in"
+msgstr "Faça login"
+
+#: data/ui/pages/authentication-error.blp:30
+msgid "Go to Home"
+msgstr "Ir ao Início"
+
+#: data/ui/pages/authentication-error.blp:39 data/ui/pages/error.blp:16
+msgid "Error Details"
+msgstr "Detalhes do erro"
+
+#: data/ui/pages/error.blp:8
+msgid "An error occurred"
+msgstr "Um erro ocorreu"
+
+#: data/ui/pages/login.blp:14
+msgid "Login"
+msgstr "Login"
+
+#: data/ui/pages/login.blp:59
+msgid "Scan with phone or go to"
+msgstr "Escaneie com o celular ou vá para"
+
+#: data/ui/pages/login.blp:74
+msgid "Enter the code"
+msgstr "Digite o código"
+
+#: data/ui/pages/login.blp:92
+msgid "Copy authentication code"
+msgstr "Copiar código de autenticação"
+
+#: data/ui/pages/playlist.blp:111
+msgid "Suggestions"
+msgstr "Sugestões"
+
+#: data/ui/pages/playlist.blp:126
+msgid "Refresh"
+msgstr "Recarregar"
+
+#: data/ui/pages/search.blp:39
+msgid "No Results"
+msgstr "Sem resultados"
+
+#: data/ui/pages/search.blp:42
+msgid "Try a different search"
+msgstr "Tente uma busca diferente"
+
+#: data/ui/window.blp:111
+msgid "Log In"
+msgstr "Login"
+
+#: data/ui/window.blp:116
+msgid "_Preferences"
+msgstr "_Preferências"
+
+#: data/ui/window.blp:121
+msgid "_Keyboard Shortcuts"
+msgstr "_Atalhos do teclado"
+
+#: data/ui/window.blp:126
+msgid "_About Muzika"
+msgstr "_Sobre o Muzika"
+
+#: src/components/carousel/card.ts:310 src/components/library/mixedcard.ts:133
+#: src/pages/album.ts:154 src/pages/playlist.ts:343
+msgid "Start Radio"
+msgstr "Iniciar Rádio"
+
+#: src/components/library/mixedcard.ts:95
+#: src/components/playlist/columnview.ts:212
+#: src/components/search/inlinecard.ts:103
+msgid "Song"
+msgstr "Canção"
+
+#: src/components/library/mixedcard.ts:108
+#: src/components/search/inlinecard.ts:110
+msgid "Video"
+msgstr "Vídeo"
+
+#: src/components/library/mixedcard.ts:119
+#: src/components/playlist/columnview.ts:300 src/endpoints.ts:31
+msgid "Album"
+msgstr "Álbum"
+
+#: src/components/library/mixedcard.ts:143
+#: src/components/search/inlinecard.ts:130 src/endpoints.ts:25
+msgid "Playlist"
+msgstr "Playlist"
+
+#: src/components/nav/page.ts:138
+msgid "Authentication Required"
+msgstr "Autenticação necessária"
+
+#: src/components/nav/page.ts:141
+msgid "Error"
+msgstr "Erro"
+
+#: src/components/player/full.ts:272
+msgid "Repeat All Songs"
+msgstr "Repetir todas as canções"
+
+#: src/components/player/full.ts:276
+msgid "Repeat the Current Song"
+msgstr "Repetir a canção atual"
+
+#: src/components/player/full.ts:280
+msgid "Enable Repeat"
+msgstr "Ativar repetição"
+
+#: src/components/player/queue.ts:104 src/components/player/queue.ts:108
+msgid "Queue"
+msgstr "Fila"
+
+#: src/components/playlist/bar.ts:158
+msgid "Please wait until the current operation is finished"
+msgstr "Aguarde até a operação atual terminar"
+
+#: src/components/playlist/bar.ts:191
+#, c-format
+msgid "%d song removed from playlist"
+msgstr "%d removido da playlist"
+
+#: src/components/playlist/bar.ts:192
+#, c-format
+msgid "%d songs removed from playlist"
+msgstr "%d removidos da playlist"
+
+#: src/components/playlist/bar.ts:195
+msgid "Undo"
+msgstr "Desfazer"
+
+#: src/components/playlist/bar.ts:231
+msgid "Play next"
+msgstr "Tocar próximo"
+
+#: src/components/playlist/bar.ts:232 src/pages/album.ts:162
+#: src/pages/playlist.ts:351
+msgid "Add to queue"
+msgstr "Adicionar à fila"
+
+#: src/components/playlist/bar.ts:245
+msgid "No song selected"
+msgstr "Nenhuma canção selecionada"
+
+#: src/components/playlist/bar.ts:246
+#, c-format
+msgid "%d song selected"
+msgstr "%d canção selecionada"
+
+#: src/components/playlist/bar.ts:247
+#, c-format
+msgid "%d songs selected"
+msgstr "%d canções selecionadas"
+
+#: src/components/playlist/columnview.ts:247
+#: src/components/search/inlinecard.ts:144
+#: src/components/search/topresultcard.ts:187 src/endpoints.ts:37
+msgid "Artist"
+msgstr "Artista"
+
+#: src/components/playlist/columnview.ts:365
+msgid "Time"
+msgstr "Tempo"
+
+#: src/components/playlist/edit.ts:67
+msgid "Public"
+msgstr "Público"
+
+#: src/components/playlist/edit.ts:68
+msgid "Anyone can search for and view"
+msgstr "Qualquer pessoa pode pesquisar e ver"
+
+#: src/components/playlist/edit.ts:75
+msgid "Unlisted"
+msgstr "Não listado"
+
+#: src/components/playlist/edit.ts:76
+msgid "Anyone with the link can view"
+msgstr "Qualquer um com o link pode ver"
+
+#: src/components/playlist/edit.ts:83
+msgid "Private"
+msgstr "Privado"
+
+#: src/components/playlist/edit.ts:84
+msgid "Only you can view"
+msgstr "Só você pode ver"
+
+#: src/components/playlist/edit.ts:205
+msgid "Playlist saved"
+msgstr "Playlist salva"
+
+#: src/components/search/inlinecard.ts:155
+#: src/components/search/topresultcard.ts:200 src/pages/artist.ts:138
+msgid "Radio"
+msgstr "Rádio"
+
+#: src/components/search/topresultcard.ts:149
+msgid "Add"
+msgstr "Adicionar"
+
+#: src/endpoints.ts:43
+msgid "Search Results"
+msgstr "Buscar resultados"
+
+#: src/endpoints.ts:55
+msgid "Library Playlists"
+msgstr "Playlists da biblioteca"
+
+#: src/endpoints.ts:61
+msgid "Library Albums"
+msgstr "Álbuns da biblioteca"
+
+#: src/endpoints.ts:67
+msgid "Library Artists"
+msgstr "Artistas da biblioteca"
+
+#: src/endpoints.ts:73
+msgid "Library Subscriptions"
+msgstr "Inscrições da biblioteca"
+
+#: src/endpoints.ts:79
+msgid "Library Songs"
+msgstr "Canções da biblioteca"
+
+#: src/pages/album.ts:82
+msgid "Other versions"
+msgstr "Outras versões"
+
+#: src/pages/album.ts:100
+msgid "Unknown year"
+msgstr "Ano desconehcido"
+
+#: src/pages/album.ts:168
+msgid "Go to artist"
+msgstr "Ir a página do artista"
+
+#: src/pages/artist.ts:115
+msgid "Singles"
+msgstr "Singles"
+
+#: src/pages/artist.ts:116 src/pages/search.ts:382
+msgid "Videos"
+msgstr "Vídeos"
+
+#: src/pages/artist.ts:117
+msgid "From your library"
+msgstr "Da sua biblioteca"
+
+#: src/pages/artist.ts:118
+msgid "Featured on"
+msgstr "Aparece em"
+
+#: src/pages/artist.ts:120
+msgid "Fans might also like"
+msgstr "Fãs também podem gostar"
+
+#: src/pages/authentication-error.ts:71
+msgid ""
+"Your authentication details have expired. Please log in again or go to home."
+msgstr ""
+"Seus detalhes de autenticação expiraram. Faça login novamente ou volte ao "
+"Início."
+
+#: src/pages/authentication-error.ts:75
+msgid "The page you were trying to access requires you to log in."
+msgstr "A página que você estava tentando acessar requer que você faça login."
+
+#: src/pages/error.ts:68
+msgid "Unknown error"
+msgstr "Erro desconhecido"
+
+#: src/pages/library/base.ts:14
+msgid "Recent activity"
+msgstr "Atividade recente"
+
+#: src/pages/library/base.ts:15 src/pages/library/base.ts:20
+msgid "Recently added"
+msgstr "Recentemente adicionado"
+
+#: src/pages/library/base.ts:16
+msgid "Recently played"
+msgstr "Recentemente tocado"
+
+#: src/pages/library/base.ts:21
+msgid "A to Z"
+msgstr "A a Z"
+
+#: src/pages/library/base.ts:22
+msgid "Z to A"
+msgstr "Z a A"
+
+#: src/pages/login.ts:73
+msgid "Copied to clipboard"
+msgstr "Copiado da área de transferência"
+
+#: src/pages/playlist.ts:161
+msgid "Failed to add suggestion"
+msgstr "Falha em adicionar sugestão"
+
+#: src/pages/playlist.ts:209
+msgid "Related playlists"
+msgstr "Playlists relacionadas"
+
+#: src/pages/playlist.ts:335
+msgid "Add to Library"
+msgstr "Adicionar à biblioteca"
+
+#: src/pages/search.ts:86
+msgid "Catalog"
+msgstr "Catálogo"
+
+#: src/pages/search.ts:88
+msgid "Uploads"
+msgstr "Uploads"
+
+#: src/pages/search.ts:197
+#, c-format
+msgid "Did you mean: %s"
+msgstr "Você quis dizer: %s"
+
+#: src/pages/search.ts:236
+#, c-format
+msgid "Showing results for: %s"
+msgstr "Mostrando resultados para: %s"
+
+#: src/pages/search.ts:237
+#, c-format
+msgid "Search instead for: %s"
+msgstr "Busque em vez disso por: %s"
+
+#: src/pages/search.ts:384
+msgid "Community Playlists"
+msgstr "Playlists da comunidade"
+
+#: src/pages/search.ts:386
+msgid "Featured Playlists"
+msgstr "Playlists em destaque"
+
+#. Translators: %s is a song's name
+#: src/player/queue.ts:337 src/player/queue.ts:390
+#, c-format
+msgid "Playing \"%s\" next"
+msgstr "Tocando \"%s\" em seguida"
+
+#. Translators: %s is a playlist name
+#. Translators: %s is a song's name
+#: src/player/queue.ts:339 src/player/queue.ts:396
+#, c-format
+msgid "Added \"%s\" to queue"
+msgstr "\"%s\" adicionado a fila"
+
+#: src/player/queue.ts:391
+#, c-format
+msgid "Playing %d songs next"
+msgstr "Tocando %d canções em seguida"
+
+#: src/player/queue.ts:397
+#, c-format
+msgid "Added %d songs to queue"
+msgstr "%d canções adicionadas à fila"
+
+#: src/window.ts:207 src/window.ts:216 src/window.ts:218
+msgid "Logout"
+msgstr "Sair da conta"
+
+#: src/window.ts:216
+msgid "Are you sure?"
+msgstr "Você tem certeza?"
+
+#: src/window.ts:217
+msgid "Cancel"
+msgstr "Cancelar"
+
+#: src/window.ts:253
+msgid "Successfully logged in!"
+msgstr "Login feito com sucesso!"
+
+#: src/window.ts:261
+msgid "An error happened while logging in"
+msgstr "Um erro aconteceu ao logar"
