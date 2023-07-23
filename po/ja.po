@@ -91,7 +91,7 @@ msgstr "プレイヤーの音量"
 
 #: data/ui/components/navbar/index.blp:7
 msgid "Search…"
-msgstr "検索..."
+msgstr "検索…"
 
 #: data/ui/components/navbar/index.blp:17 src/endpoints.ts:19
 msgid "Home"
@@ -607,7 +607,7 @@ msgstr "アップロード"
 #: src/pages/search.ts:197
 #, c-format
 msgid "Did you mean: %s"
-msgstr "もしかして？: %s"
+msgstr "もしかして: %s"
 
 #: src/pages/search.ts:236
 #, c-format
