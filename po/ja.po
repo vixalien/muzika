@@ -1,0 +1,671 @@
+# muzika Japanese translation
+# Copyright (C) 2023 com.vixalien.muzika's copyright holder
+# This file is distributed under the same license as the muzika package.
+# maboroshin <pc.genkaku.in>, 2023.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2023-07-02 17:46+0200\n"
+"PO-Revision-Date: 2023-07-24 00:59+0900\n"
+"Last-Translator: maboroshin <pc.genkaku.in>\n"
+"Language-Team: \n"
+"Language: ja\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 2.2.3\n"
+"X-Poedit-Basepath: .\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#: data/com.vixalien.muzika.desktop.in:3
+#: data/com.vixalien.muzika.appdata.xml.in.in:6
+msgid "Muzika"
+msgstr ""
+
+#: data/com.vixalien.muzika.appdata.xml.in.in:7
+msgid "Elegant music streaming application"
+msgstr "洗練された音楽ストリーミング用アプリ"
+
+#: data/com.vixalien.muzika.appdata.xml.in.in:9
+msgid ""
+"Play music from millions of songs available on the internet for free. Search "
+"for songs, albums, artists, and more. Discover new music from playlists and "
+"get a personalized &amp; curated experience."
+msgstr ""
+"無料でネット上の何百万の曲から再生します。曲、アルバム、アーティストなどを検"
+"索。再生リストから新たな音楽を楽しみ、あなた向けにまとめられた音楽を体験して"
+"みよう。"
+
+#: data/com.vixalien.muzika.appdata.xml.in.in:14
+msgid "Current features:"
+msgstr "現在の機能:"
+
+#: data/com.vixalien.muzika.appdata.xml.in.in:16
+msgid "play any music from YouTube Music"
+msgstr "YouTube Music の音楽を再生"
+
+#: data/com.vixalien.muzika.appdata.xml.in.in:17
+msgid ""
+"allows sign in through OAuth with Google to play your playlists and more "
+"from your library or uploads"
+msgstr ""
+"Google の OAuth を通してログインし、あなたの再生リストやライブラリやアップ"
+"ロードしたファイルを再生できます"
+
+#: data/com.vixalien.muzika.appdata.xml.in.in:18
+msgid ""
+"search for songs, albums, artists, radios, community &amp; featured "
+"playlists and more"
+msgstr ""
+"曲、アルバム、アーティスト、ラジオ、コミュニティ、注目の再生リストを検索"
+
+#: data/com.vixalien.muzika.appdata.xml.in.in:19
+msgid "access personalised music radios &amp; mixes"
+msgstr "あなた向けの音楽ラジオやミックスを体験"
+
+#: data/com.vixalien.muzika.appdata.xml.in.in:31
+msgid "Angelo Verlain"
+msgstr ""
+
+#: data/com.vixalien.muzika.gschema.xml:6
+msgid "Whether lists are preferred to grids"
+msgstr "グリッドより一覧を優先"
+
+#: data/com.vixalien.muzika.gschema.xml:7
+msgid ""
+"If this option is enabled, the library view will show a list instead of the "
+"default grid."
+msgstr ""
+"有効化すると、ライブラリーの表示は、標準のグリッド表示の代わりに一覧で表示さ"
+"れます。"
+
+#: data/com.vixalien.muzika.gschema.xml:12
+msgid "Volume"
+msgstr "音量"
+
+#: data/com.vixalien.muzika.gschema.xml:13
+msgid "The volume of the player"
+msgstr "プレイヤーの音量"
+
+#: data/ui/components/navbar/index.blp:7
+msgid "Search…"
+msgstr "検索..."
+
+#: data/ui/components/navbar/index.blp:17 src/endpoints.ts:19
+msgid "Home"
+msgstr "ホーム"
+
+#: data/ui/components/navbar/index.blp:23
+msgid "Explore"
+msgstr "探索"
+
+#: data/ui/components/navbar/index.blp:30
+#: data/ui/components/navbar/index.blp:32 src/endpoints.ts:49
+#: src/pages/search.ts:87
+msgid "Library"
+msgstr "ライブラリ"
+
+#: data/ui/components/navbar/index.blp:38 src/pages/album.ts:181
+#: src/pages/search.ts:376
+msgid "Artists"
+msgstr "アーティスト"
+
+#: data/ui/components/navbar/index.blp:45
+msgid "Subscriptions"
+msgstr "チャンネル購読"
+
+#: data/ui/components/navbar/index.blp:52 src/pages/artist.ts:114
+#: src/pages/search.ts:374
+msgid "Albums"
+msgstr "アルバム"
+
+#: data/ui/components/navbar/index.blp:59 src/pages/search.ts:380
+msgid "Songs"
+msgstr "曲"
+
+#: data/ui/components/navbar/index.blp:66 src/endpoints.ts:85
+msgid "History"
+msgstr "履歴"
+
+#: data/ui/components/navbar/index.blp:72 src/pages/artist.ts:119
+#: src/pages/search.ts:378
+msgid "Playlists"
+msgstr "再生リスト"
+
+#: data/ui/components/navbar/index.blp:74
+msgid "All Playlists"
+msgstr "すべての再生リスト"
+
+#: data/ui/components/paginator.blp:22
+msgid "Load More"
+msgstr "もっと"
+
+#: data/ui/components/player/full.blp:77
+msgid "Toggle Shuffle"
+msgstr "シャッフルを切替"
+
+#: data/ui/components/player/full.blp:90
+msgid "Previous"
+msgstr "前"
+
+#: data/ui/components/player/full.blp:100
+#: data/ui/components/search/topresult.blp:118 src/pages/album.ts:133
+msgid "Play"
+msgstr "再生"
+
+#: data/ui/components/player/full.blp:110 data/ui/components/player/mini.blp:56
+#: data/ui/components/player/mini.blp:60
+msgid "Toggle Play/Pause"
+msgstr "再生/停止を切替"
+
+#: data/ui/components/player/full.blp:116
+msgid "Next"
+msgstr "次"
+
+#: data/ui/components/player/full.blp:127
+msgid "Toggle Repeat State"
+msgstr "リピートを切替"
+
+#: data/ui/components/player/full.blp:176
+msgid "Adjust Volume"
+msgstr "音量を調整"
+
+#: data/ui/components/player/full.blp:180
+msgid "Show Queue"
+msgstr "再生キューを表示"
+
+#: data/ui/components/player/full.blp:186
+msgid "Show Lyrics"
+msgstr "歌詞を表示"
+
+#: data/ui/components/player/full.blp:192
+msgid "Show Related songs"
+msgstr "関連する曲を表示"
+
+#: data/ui/components/player/lyrics.blp:7
+msgid "Lyrics are not available"
+msgstr "歌詞は利用できません"
+
+#: data/ui/components/player/lyrics.blp:8
+msgid "If the song has lyrics, they'll appear here when they become available"
+msgstr "歌詞のある曲は、歌詞が利用可能になればここに表示されます"
+
+#: data/ui/components/player/mini.blp:66 data/ui/components/player/mini.blp:70
+#: src/pages/album.ts:158 src/pages/playlist.ts:347
+msgid "Play Next"
+msgstr "次に再生"
+
+#: data/ui/components/player/queue.blp:7
+msgid "The Queue is empty"
+msgstr "再生キューに登録なし"
+
+#: data/ui/components/player/queue.blp:8
+msgid "Play some tracks to see the queue"
+msgstr "キューは何か曲を再生すると作成されます"
+
+#: data/ui/components/player/queue.blp:27
+msgid "Playing From"
+msgstr "再生中"
+
+#: data/ui/components/player/queue.blp:38
+#: data/ui/components/player/queue.blp:57
+msgid "Playlist Name"
+msgstr "再生リスト名"
+
+#: data/ui/components/player/related.blp:7
+msgid "No related music"
+msgstr "関連する音楽なし"
+
+#: data/ui/components/player/related.blp:8
+msgid "We couldn't find any music related to this track."
+msgstr "この曲に関連する音楽を発見できませんでした。"
+
+#: data/ui/components/playlist/edit.blp:6
+#: data/ui/components/playlist/edit.blp:11 src/pages/playlist.ts:327
+msgid "Edit Playlist"
+msgstr "再生リストの編集"
+
+#: data/ui/components/playlist/edit.blp:14
+msgid "General"
+msgstr "一般"
+
+#: data/ui/components/playlist/edit.blp:17
+msgid "Title"
+msgstr "タイトル"
+
+#: data/ui/components/playlist/edit.blp:21
+msgid "Description"
+msgstr "説明"
+
+#: data/ui/components/playlist/edit.blp:25
+msgid "Privacy"
+msgstr "公開状態"
+
+#: data/ui/components/playlist/edit.blp:33
+msgid "Save"
+msgstr "保存"
+
+#: data/ui/components/playlist/largeheader.blp:110
+#: data/ui/components/playlist/miniheader.blp:118
+msgid "Read more"
+msgstr "もっと読む"
+
+#: data/ui/components/search/section.blp:23 data/ui/pages/artist.blp:59
+msgid "More"
+msgstr "もっと"
+
+#: data/ui/components/search/topresult.blp:130
+#: src/components/search/topresultcard.ts:189 src/pages/album.ts:143
+#: src/pages/artist.ts:129 src/pages/playlist.ts:317
+msgid "Shuffle"
+msgstr "シャッフル"
+
+#: data/ui/components/search/topresultsection.blp:14
+msgid "Top Result"
+msgstr "検索上位"
+
+#: data/ui/gtk/help-overlay.blp:11
+msgctxt "shortcut window"
+msgid "General"
+msgstr "一般"
+
+#: data/ui/gtk/help-overlay.blp:14
+msgctxt "shortcut window"
+msgid "Show Shortcuts"
+msgstr "ショートカットを表示"
+
+#: data/ui/gtk/help-overlay.blp:19
+msgctxt "shortcut window"
+msgid "Quit"
+msgstr "終了"
+
+#: data/ui/pages/artist.blp:46
+msgid "Top Songs"
+msgstr "上位の曲"
+
+#: data/ui/pages/authentication-error.blp:8
+msgid "Authentication is required"
+msgstr "認証が必要"
+
+#: data/ui/pages/authentication-error.blp:20
+msgid "Log in"
+msgstr "ログイン"
+
+#: data/ui/pages/authentication-error.blp:30
+msgid "Go to Home"
+msgstr "ホームへ移動"
+
+#: data/ui/pages/authentication-error.blp:39 data/ui/pages/error.blp:16
+msgid "Error Details"
+msgstr "エラー詳細"
+
+#: data/ui/pages/error.blp:8
+msgid "An error occurred"
+msgstr "エラーが発生しました"
+
+#: data/ui/pages/login.blp:14
+msgid "Login"
+msgstr "ログイン"
+
+#: data/ui/pages/login.blp:59
+msgid "Scan with phone or go to"
+msgstr "スマホでスキャンするかアクセス"
+
+#: data/ui/pages/login.blp:74
+msgid "Enter the code"
+msgstr "コードを入力"
+
+#: data/ui/pages/login.blp:92
+msgid "Copy authentication code"
+msgstr "認証コードをコピー"
+
+#: data/ui/pages/playlist.blp:111
+msgid "Suggestions"
+msgstr "提案"
+
+#: data/ui/pages/playlist.blp:126
+msgid "Refresh"
+msgstr "更新"
+
+#: data/ui/pages/search.blp:39
+msgid "No Results"
+msgstr "検索結果なし"
+
+#: data/ui/pages/search.blp:42
+msgid "Try a different search"
+msgstr "違う検索語句を試そう"
+
+#: data/ui/window.blp:111
+msgid "Log In"
+msgstr "ログイン"
+
+#: data/ui/window.blp:116
+msgid "_Preferences"
+msgstr "設定(_P)"
+
+#: data/ui/window.blp:121
+msgid "_Keyboard Shortcuts"
+msgstr "キーボードショートカット(K)"
+
+#: data/ui/window.blp:126
+msgid "_About Muzika"
+msgstr "Muzika について(_A)"
+
+#: src/components/carousel/card.ts:310 src/components/library/mixedcard.ts:133
+#: src/pages/album.ts:154 src/pages/playlist.ts:343
+msgid "Start Radio"
+msgstr "ラジオ開始"
+
+#: src/components/library/mixedcard.ts:95
+#: src/components/playlist/columnview.ts:212
+#: src/components/search/inlinecard.ts:103
+msgid "Song"
+msgstr "曲"
+
+#: src/components/library/mixedcard.ts:108
+#: src/components/search/inlinecard.ts:110
+msgid "Video"
+msgstr "動画"
+
+#: src/components/library/mixedcard.ts:119
+#: src/components/playlist/columnview.ts:300 src/endpoints.ts:31
+msgid "Album"
+msgstr "アルバム"
+
+#: src/components/library/mixedcard.ts:143
+#: src/components/search/inlinecard.ts:130 src/endpoints.ts:25
+msgid "Playlist"
+msgstr "再生リスト"
+
+#: src/components/nav/page.ts:138
+msgid "Authentication Required"
+msgstr "認証が必要"
+
+#: src/components/nav/page.ts:141
+msgid "Error"
+msgstr "エラー"
+
+#: src/components/player/full.ts:272
+msgid "Repeat All Songs"
+msgstr "すべての曲をリピート"
+
+#: src/components/player/full.ts:276
+msgid "Repeat the Current Song"
+msgstr "現在の曲をリピート"
+
+#: src/components/player/full.ts:280
+msgid "Enable Repeat"
+msgstr "リピートする"
+
+#: src/components/player/queue.ts:104 src/components/player/queue.ts:108
+msgid "Queue"
+msgstr "キュー"
+
+#: src/components/playlist/bar.ts:158
+msgid "Please wait until the current operation is finished"
+msgstr "現在の操作が完了するまでお待ちください"
+
+#: src/components/playlist/bar.ts:191
+#, c-format
+msgid "%d song removed from playlist"
+msgstr "再生リストから%d曲を除去しました"
+
+#: src/components/playlist/bar.ts:192
+#, c-format
+msgid "%d songs removed from playlist"
+msgstr "再生リストから%d曲を除去しました"
+
+#: src/components/playlist/bar.ts:195
+msgid "Undo"
+msgstr "取り消す"
+
+#: src/components/playlist/bar.ts:231
+msgid "Play next"
+msgstr "次に再生"
+
+#: src/components/playlist/bar.ts:232 src/pages/album.ts:162
+#: src/pages/playlist.ts:351
+msgid "Add to queue"
+msgstr "再生キューに追加"
+
+#: src/components/playlist/bar.ts:245
+msgid "No song selected"
+msgstr "曲の選択なし"
+
+#: src/components/playlist/bar.ts:246
+#, c-format
+msgid "%d song selected"
+msgstr "%d曲を選択"
+
+#: src/components/playlist/bar.ts:247
+#, c-format
+msgid "%d songs selected"
+msgstr "%d曲を選択"
+
+#: src/components/playlist/columnview.ts:247
+#: src/components/search/inlinecard.ts:144
+#: src/components/search/topresultcard.ts:187 src/endpoints.ts:37
+msgid "Artist"
+msgstr "アーティスト"
+
+#: src/components/playlist/columnview.ts:365
+msgid "Time"
+msgstr "時間"
+
+#: src/components/playlist/edit.ts:67
+msgid "Public"
+msgstr "公開"
+
+#: src/components/playlist/edit.ts:68
+msgid "Anyone can search for and view"
+msgstr "誰でも検索し閲覧できます"
+
+#: src/components/playlist/edit.ts:75
+msgid "Unlisted"
+msgstr "限定公開"
+
+#: src/components/playlist/edit.ts:76
+msgid "Anyone with the link can view"
+msgstr "リンクを知る人は閲覧可能"
+
+#: src/components/playlist/edit.ts:83
+msgid "Private"
+msgstr "非公開"
+
+#: src/components/playlist/edit.ts:84
+msgid "Only you can view"
+msgstr "あなただけが閲覧可能"
+
+#: src/components/playlist/edit.ts:205
+msgid "Playlist saved"
+msgstr "再生リストを保存しました"
+
+#: src/components/search/inlinecard.ts:155
+#: src/components/search/topresultcard.ts:200 src/pages/artist.ts:138
+msgid "Radio"
+msgstr "ラジオ"
+
+#: src/components/search/topresultcard.ts:149
+msgid "Add"
+msgstr "追加"
+
+#: src/endpoints.ts:43
+msgid "Search Results"
+msgstr "検索結果"
+
+#: src/endpoints.ts:55
+msgid "Library Playlists"
+msgstr "ライブラリ 再生リスト"
+
+#: src/endpoints.ts:61
+msgid "Library Albums"
+msgstr "ライブラリ アルバム"
+
+#: src/endpoints.ts:67
+msgid "Library Artists"
+msgstr "ライブラリ アーティスト"
+
+#: src/endpoints.ts:73
+msgid "Library Subscriptions"
+msgstr "ライブラリ チャンネル"
+
+#: src/endpoints.ts:79
+msgid "Library Songs"
+msgstr "ライブラリ 曲"
+
+#: src/pages/album.ts:82
+msgid "Other versions"
+msgstr "別のバージョン"
+
+#: src/pages/album.ts:100
+msgid "Unknown year"
+msgstr "公開年不明"
+
+#: src/pages/album.ts:168
+msgid "Go to artist"
+msgstr "アーティストに移動"
+
+#: src/pages/artist.ts:115
+msgid "Singles"
+msgstr "シングル"
+
+#: src/pages/artist.ts:116 src/pages/search.ts:382
+msgid "Videos"
+msgstr "動画"
+
+#: src/pages/artist.ts:117
+msgid "From your library"
+msgstr "自分のライブラリから"
+
+#: src/pages/artist.ts:118
+msgid "Featured on"
+msgstr "おすすめ"
+
+#: src/pages/artist.ts:120
+msgid "Fans might also like"
+msgstr "ファンの間で人気"
+
+#: src/pages/authentication-error.ts:71
+msgid ""
+"Your authentication details have expired. Please log in again or go to home."
+msgstr "認証情報が期限切れです。再びログインするか、ホームに移動してください。"
+
+#: src/pages/authentication-error.ts:75
+msgid "The page you were trying to access requires you to log in."
+msgstr "アクセスしようとしたページはログインが必要です。"
+
+#: src/pages/error.ts:68
+msgid "Unknown error"
+msgstr "不明のエラー"
+
+#: src/pages/library/base.ts:14
+msgid "Recent activity"
+msgstr "最近の操作"
+
+#: src/pages/library/base.ts:15 src/pages/library/base.ts:20
+msgid "Recently added"
+msgstr "最近追加した"
+
+#: src/pages/library/base.ts:16
+msgid "Recently played"
+msgstr "最近再生した"
+
+#: src/pages/library/base.ts:21
+msgid "A to Z"
+msgstr "A - Z"
+
+#: src/pages/library/base.ts:22
+msgid "Z to A"
+msgstr "Z - A"
+
+#: src/pages/login.ts:73
+msgid "Copied to clipboard"
+msgstr "クリップボードにコピー"
+
+#: src/pages/playlist.ts:161
+msgid "Failed to add suggestion"
+msgstr "提案の追加に失敗"
+
+#: src/pages/playlist.ts:209
+msgid "Related playlists"
+msgstr "関連する再生リスト"
+
+#: src/pages/playlist.ts:335
+msgid "Add to Library"
+msgstr "ライブラリに追加"
+
+#: src/pages/search.ts:86
+msgid "Catalog"
+msgstr "カタログ"
+
+#: src/pages/search.ts:88
+msgid "Uploads"
+msgstr "アップロード"
+
+#: src/pages/search.ts:197
+#, c-format
+msgid "Did you mean: %s"
+msgstr "もしかして？: %s"
+
+#: src/pages/search.ts:236
+#, c-format
+msgid "Showing results for: %s"
+msgstr "次の語句の検索結果: %s"
+
+#: src/pages/search.ts:237
+#, c-format
+msgid "Search instead for: %s"
+msgstr "元の語句: %s"
+
+#: src/pages/search.ts:384
+msgid "Community Playlists"
+msgstr "コミュニティの再生リスト"
+
+#: src/pages/search.ts:386
+msgid "Featured Playlists"
+msgstr "おすすめの再生リスト"
+
+#. Translators: %s is a song's name
+#: src/player/queue.ts:337 src/player/queue.ts:390
+#, c-format
+msgid "Playing \"%s\" next"
+msgstr "次に「%s」を再生"
+
+#. Translators: %s is a playlist name
+#. Translators: %s is a song's name
+#: src/player/queue.ts:339 src/player/queue.ts:396
+#, c-format
+msgid "Added \"%s\" to queue"
+msgstr "キューに「%s」を追加しました"
+
+#: src/player/queue.ts:391
+#, c-format
+msgid "Playing %d songs next"
+msgstr "次に%d曲を再生"
+
+#: src/player/queue.ts:397
+#, c-format
+msgid "Added %d songs to queue"
+msgstr "キューに%d曲を追加しました"
+
+#: src/window.ts:207 src/window.ts:216 src/window.ts:218
+msgid "Logout"
+msgstr "ログアウト"
+
+#: src/window.ts:216
+msgid "Are you sure?"
+msgstr "続行しますか？"
+
+#: src/window.ts:217
+msgid "Cancel"
+msgstr "キャンセル"
+
+#: src/window.ts:253
+msgid "Successfully logged in!"
+msgstr "ログインに成功！"
+
+#: src/window.ts:261
+msgid "An error happened while logging in"
+msgstr "ログイン時にエラーが発生"
