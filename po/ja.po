@@ -347,7 +347,7 @@ msgstr "設定(_P)"
 
 #: data/ui/window.blp:121
 msgid "_Keyboard Shortcuts"
-msgstr "キーボードショートカット(K)"
+msgstr "キーボードショートカット(_K)"
 
 #: data/ui/window.blp:126
 msgid "_About Muzika"
