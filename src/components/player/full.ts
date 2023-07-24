@@ -1,6 +1,7 @@
 import Gtk from "gi://Gtk?version=4.0";
 import GObject from "gi://GObject";
 import GLib from "gi://GLib";
+import GstAudio from "gi://GstAudio";
 
 import { RepeatMode } from "../../player/queue.js";
 import { load_thumbnails } from "../webimage.js";
@@ -227,6 +228,23 @@ export class FullPlayerView extends Gtk.ActionBar {
     });
   }
 
+  get_volume_slider_value() {
+    return GstAudio.stream_volume_convert_volume(
+      GstAudio.StreamVolumeFormat.CUBIC,
+      GstAudio.StreamVolumeFormat.LINEAR,
+      this._volume_button.adjustment.value,
+    );
+  }
+
+  set_volume_slider_value(value: number) {
+    this._volume_button.adjustment.value = GstAudio
+      .stream_volume_convert_volume(
+        GstAudio.StreamVolumeFormat.LINEAR,
+        GstAudio.StreamVolumeFormat.CUBIC,
+        value,
+      );
+  }
+
   setup_volume_button() {
     this._volume_button.adjustment = Gtk.Adjustment.new(
       Settings.get_double("volume"),
@@ -238,14 +256,14 @@ export class FullPlayerView extends Gtk.ActionBar {
     );
 
     this._volume_button.connect("value-changed", () => {
-      Settings.set_double("volume", this._volume_button.adjustment.value);
+      Settings.set_double("volume", this.get_volume_slider_value());
     });
 
     Settings.connect("changed::volume", () => {
       const volume = Settings.get_double("volume");
 
-      if (volume !== this._volume_button.adjustment.value) {
-        this._volume_button.adjustment.value = volume;
+      if (volume !== this.get_volume_slider_value()) {
+        this.set_volume_slider_value(volume);
       }
     });
 
@@ -259,7 +277,7 @@ export class FullPlayerView extends Gtk.ActionBar {
         tooltip: Gtk.Tooltip,
       ) => {
         tooltip.set_text(
-          `${Math.round(this._volume_button.adjustment.value * 100)}%`,
+          `${Math.round(this.get_volume_slider_value() * 100)}%`,
         );
         return true;
       },
