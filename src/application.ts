@@ -9,6 +9,7 @@ import { cache } from "./polyfills/fetch.js";
 import { AddActionEntries } from "./util/action.js";
 import { MuzikaPlayer } from "./player/index.js";
 import { MPRIS } from "./mpris.js";
+import { get_option } from "src/muse";
 
 export const Settings = new Gio.Settings({ schema: pkg.name });
 
@@ -58,7 +59,7 @@ export class Application extends Adw.Application {
         application_name: "Muzika",
         application_icon: "com.vixalien.muzika",
         developer_name: "Angelo Verlain",
-        version: "0.1.0",
+        version: pkg.version,
         developers: [
           "Angelo Verlain <hey@vixalien.com>",
           "Christopher Davis <christopherdavis@gnome.org>",
@@ -97,6 +98,7 @@ export class Application extends Adw.Application {
         argv: this.argv,
         version: pkg.version,
         uri: this.window?.navigator.current_uri,
+        logged_in: get_option("auth").has_token(),
       },
       null,
       2,
