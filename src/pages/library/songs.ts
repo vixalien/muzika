@@ -5,19 +5,11 @@ import Gtk from "gi://Gtk?version=4.0";
 
 import { get_library_songs, LibrarySongs } from "../../muse.js";
 
-import {
-  alphabetical_orders,
-  LoadedLibrary,
-  order_id_to_name,
-} from "./base.js";
+import { alphabetical_orders, order_id_to_name } from "./base.js";
 import { Paginator } from "src/components/paginator.js";
 import { PlaylistItemCard } from "src/components/playlist/item.js";
-import type { Order, PaginationOptions } from "libmuse/types/mixins/utils.js";
+import type { Order } from "libmuse/types/mixins/utils.js";
 import { EndpointContext, MuzikaComponent } from "src/navigation.js";
-
-interface LibraryOptions extends PaginationOptions {
-  order?: Order;
-}
 
 // make sure paginator is registered before LibrarySongsPage
 Paginator;

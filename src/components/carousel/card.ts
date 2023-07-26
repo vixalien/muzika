@@ -23,7 +23,6 @@ import {
 import { PlaylistImage, PlaylistImageState } from "../playlist-image.js";
 import { pretty_subtitles } from "src/util/text.js";
 import { MixedCardItem } from "../library/mixedcard.js";
-import { TopSong, TrendingSong } from "libmuse/types/parsers/browsing.js";
 
 enum CarouselImageType {
   AVATAR,
@@ -321,26 +320,6 @@ export class CarouselCard extends Gtk.Box {
     this.setup_playlist(album.audioPlaylistId);
   }
 
-  show_top_song(song: TopSong) {
-    this.content = song;
-
-    this.set_title(song.title);
-    this.set_subtitle(song.artists ?? []);
-
-    this.setup_image(CarouselImageType.DYNAMIC_IMAGE, song.thumbnails);
-    this.setup_video(song.videoId);
-  }
-
-  show_trending_song(song: TrendingSong) {
-    this.content = song;
-
-    this.set_title(song.title);
-    this.set_subtitle(song.artists ?? [], [song.views]);
-
-    this.setup_image(CarouselImageType.DYNAMIC_IMAGE, song.thumbnails);
-    this.setup_video(song.videoId);
-  }
-
   show_item(content: MixedCardItem) {
     switch (content.type) {
       case "song":
@@ -366,12 +345,6 @@ export class CarouselCard extends Gtk.Box {
         break;
       case "watch-playlist":
         this.show_watch_playlist(content);
-        break;
-      case "trending-song":
-        this.show_trending_song(content);
-        break;
-      case "top-song":
-        this.show_top_song(content);
         break;
       default:
         console.warn(`Unknown content type: ${content.type}`);

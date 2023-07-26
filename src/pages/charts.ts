@@ -1,11 +1,11 @@
 import Gtk from "gi://Gtk?version=4.0";
 import GObject from "gi://GObject";
 import Adw from "gi://Adw";
+import GLib from "gi://GLib";
 
-import { get_explore } from "../muse.js";
+import { Charts, get_charts } from "../muse.js";
 import type {
   Category,
-  ExploreContents,
   ParsedMoodOrGenre,
 } from "libmuse/types/parsers/browsing.js";
 
@@ -16,42 +16,73 @@ import { MixedCardItem } from "src/components/library/mixedcard.js";
 
 Loading;
 
-export interface ExplorePageState {
-  contents: ExploreContents;
+export interface ChartsPageState {
+  contents: Charts;
 }
 
-export class ExplorePage extends Adw.Bin
-  implements MuzikaComponent<ExploreContents, ExplorePageState> {
+export class ChartsPage extends Adw.Bin
+  implements MuzikaComponent<Charts, ChartsPageState> {
   static {
     GObject.registerClass({
-      GTypeName: "ExplorePage",
-      Template: "resource:///com/vixalien/muzika/ui/pages/explore.ui",
-      InternalChildren: ["scrolled", "box"],
+      GTypeName: "ChartsPage",
+      Template: "resource:///com/vixalien/muzika/ui/pages/charts.ui",
+      InternalChildren: ["scrolled", "box", "drop_down"],
     }, this);
   }
 
   private _scrolled!: Gtk.ScrolledWindow;
   private _box!: Gtk.Box;
+  private _drop_down!: Gtk.DropDown;
 
-  contents?: ExploreContents;
+  contents?: Charts;
 
   constructor() {
     super();
+
+    this._drop_down.connect("notify::selected", () => {
+      if (!this.contents || this._drop_down.selected < 0) return;
+
+      const country = this.contents.countries[this._drop_down.selected];
+
+      if (!country || country.selected) return;
+
+      this.activate_action(
+        `navigator.visit`,
+        GLib.Variant.new_string(
+          `muzika:charts?country=${country.code}&replace=true`,
+        ),
+      );
+    });
   }
 
   static load(ctx: EndpointContext) {
-    return get_explore({
+    return get_charts(ctx.url.searchParams.get("country") ?? undefined, {
       signal: ctx.signal,
     });
   }
 
-  present(explore: ExploreContents): void {
-    this.add_carousel(_("Top albums"), explore.albums, true);
-    this.add_carousel(_("Top songs"), explore.songs, true);
-    this.add_mood_carousel(_("Moods and genres"), explore.moods);
-    this.add_carousel(_("Trending"), explore.trending, true);
+  present(charts: Charts): void {
+    this.contents = charts;
 
-    this.contents = explore;
+    this._drop_down.model = Gtk.StringList.new(
+      charts.countries.map((country) => country.title),
+    );
+
+    this._drop_down.selected = charts.countries.findIndex(
+      (country) => country.selected,
+    );
+
+    this.add_carousel(_("Top songs"), charts.results.songs, true);
+    this.add_carousel(
+      _("Top music videos"),
+      charts.results.videos,
+      true,
+      false,
+    );
+    // TODO: Top artists
+    // this.add_carousel(_("Top artists"), charts.results.artists, true);
+    this.add_carousel(_("Genres"), charts.results.genres, false, false);
+    this.add_carousel(_("Trending"), charts.results.trending, true);
   }
 
   get_state() {
@@ -60,7 +91,7 @@ export class ExplorePage extends Adw.Bin
     };
   }
 
-  restore_state(state: ExplorePageState) {
+  restore_state(state: ChartsPageState) {
     this.present(state.contents);
   }
 
@@ -80,6 +111,7 @@ export class ExplorePage extends Adw.Bin
     title: string,
     data: Category<MixedCardItem>,
     show_more_button = false,
+    list = true,
   ) {
     if (!data || data.results.length === 0) return;
 
@@ -95,7 +127,7 @@ export class ExplorePage extends Adw.Bin
 
     carousel.show_content({
       title,
-      display: "list",
+      display: list ? "list" : undefined,
       contents: data.results,
     });
 

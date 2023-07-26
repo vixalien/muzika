@@ -1,0 +1,33 @@
+using Gtk 4.0;
+using Adw 1;
+
+template $ChartsPage : Adw.Bin {
+  Adw.ToolbarView {
+    [top]
+    Adw.HeaderBar {}
+  
+    content: ScrolledWindow scrolled {
+      vexpand: true;
+      hexpand: true;
+
+      Adw.Clamp {
+        margin-top: 12;
+        margin-bottom: 12;
+        tightening-threshold: 1200;
+        maximum-size: 1400;
+
+        Box box {
+          orientation: vertical;
+          spacing: 12;
+
+          DropDown drop_down {
+            enable-search: true;
+            margin-start: 12;
+            margin-end: 12;
+            halign: start;
+          }
+        }
+      }
+    };
+  }
+}

@@ -8,10 +8,14 @@ import { DynamicImage, DynamicImageState } from "../dynamic-image.js";
 // first register the DynamicImage class
 import "../dynamic-image.js";
 import { pretty_subtitles } from "src/util/text.js";
-import type { TopSong, TrendingSong } from "libmuse/types/parsers/browsing.js";
 import { load_thumbnails } from "../webimage.js";
+import {
+  ParsedSong,
+  ParsedVideo,
+  Ranked,
+} from "libmuse/types/parsers/browsing.js";
 
-export type InlineSong = FlatSong | TopSong | TrendingSong;
+export type InlineSong = FlatSong | Ranked<ParsedSong> | Ranked<ParsedVideo>;
 
 export class FlatSongCard extends Gtk.Box {
   static {
@@ -117,19 +121,19 @@ export class FlatSongCard extends Gtk.Box {
     this.setup_video(song.videoId);
   }
 
-  show_top_song(song: TopSong) {
+  show_song(song: Ranked<ParsedSong>) {
     this.song = song;
 
     this.song = song;
 
     this.set_title(song.title);
-    this.set_subtitle(song.artists ?? []);
+    this.set_subtitle(song.artists ?? [], [song.views]);
 
     this.load_thumbnails(song.thumbnails);
     this.setup_video(song.videoId);
   }
 
-  show_trending_song(song: TrendingSong) {
+  show_video(song: Ranked<ParsedVideo>) {
     this.song = song;
 
     this.set_title(song.title);
@@ -144,11 +148,12 @@ export class FlatSongCard extends Gtk.Box {
       case "flat-song":
         this.show_flat_song(content);
         break;
-      case "top-song":
-        this.show_top_song(content);
+      case "inline-video":
+      case "song":
+        this.show_song(content);
         break;
-      case "trending-song":
-        this.show_trending_song(content);
+      case "video":
+        this.show_video(content);
         break;
       default:
         console.warn(`Unknown content type: ${(content as any).type}`);

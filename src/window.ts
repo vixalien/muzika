@@ -104,9 +104,7 @@ export class Window extends Adw.ApplicationWindow {
       this.navigator.back();
     });
 
-    this.navigator.navigate(
-      "home",
-    );
+    this.navigator.navigate("home");
 
     const player = get_player();
 

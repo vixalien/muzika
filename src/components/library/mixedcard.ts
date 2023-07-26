@@ -13,9 +13,8 @@ import {
 import { load_thumbnails } from "../webimage.js";
 import { RequiredMixedItem } from "../carousel/index.js";
 import type { ParsedLibraryArtist } from "libmuse/types/parsers/library.js";
-import type { TopSong, TrendingSong } from "libmuse/types/parsers/browsing.js";
 
-export type MixedCardItem = RequiredMixedItem | ParsedLibraryArtist | TopSong | TrendingSong;
+export type MixedCardItem = RequiredMixedItem | ParsedLibraryArtist;
 
 export class MixedCard extends Gtk.ListBoxRow {
   static {
