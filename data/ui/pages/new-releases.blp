@@ -1,7 +1,7 @@
 using Gtk 4.0;
 using Adw 1;
 
-template $ChartsPage : Adw.Bin {
+template $NewReleasesPage : Adw.Bin {
   Adw.ToolbarView {
     [top]
     Adw.HeaderBar {}
@@ -19,13 +19,6 @@ template $ChartsPage : Adw.Bin {
         Box box {
           orientation: vertical;
           spacing: 12;
-
-          DropDown drop_down {
-            enable-search: true;
-            margin-start: 12;
-            margin-end: 12;
-            halign: start;
-          }
         }
       }
     };
