@@ -19,6 +19,51 @@ template $ExplorePage : Adw.Bin {
         Box box {
           orientation: vertical;
           spacing: 12;
+
+          FlowBox {
+            column-spacing: 12;
+            row-spacing: 12;
+            homogeneous: true;
+            margin-start: 12;
+            margin-end: 12;
+            max-children-per-line: 3;
+
+            Button {
+              action-name: "navigator.visit";
+              action-target: "\"muzika:new-releases\"";
+
+              styles ["pill"]
+
+              Adw.ButtonContent {
+                icon-name: "moon-filled-symbolic";
+                label: _("New releases");
+              }
+            }
+
+            Button {
+              action-name: "navigator.visit";
+              action-target: "\"muzika:charts\"";
+
+              styles ["pill"]
+
+              Adw.ButtonContent {
+                icon-name: "profit-symbolic";
+                label: _("Charts");
+              }
+            }
+
+            Button {
+              action-name: "navigator.visit";
+              action-target: "\"muzika:moods-and-genres\"";
+
+              styles ["pill"]
+
+              Adw.ButtonContent {
+                icon-name: "sentiment-satisfied-symbolic";
+                label: _("Moods and genres");
+              }
+            }
+          }
         }
       }
     };

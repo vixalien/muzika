@@ -64,6 +64,7 @@
     <file preprocess="xml-stripblanks" alias="library-artists-symbolic.svg">icons/library-artists-symbolic.svg</file>
     <file preprocess="xml-stripblanks" alias="library-music-symbolic.svg">icons/library-music-symbolic.svg</file>
     <file preprocess="xml-stripblanks" alias="library-symbolic.svg">icons/library-symbolic.svg</file>
+    <file preprocess="xml-stripblanks" alias="moon-filled-symbolic.svg">icons/moon-filled-symbolic.svg</file>
     <file preprocess="xml-stripblanks" alias="music-artist-symbolic.svg">icons/music-artist-symbolic.svg</file>
     <file preprocess="xml-stripblanks" alias="music-note-single-symbolic.svg">icons/music-note-single-symbolic.svg</file>
     <file preprocess="xml-stripblanks" alias="navigate-symbolic.svg">icons/navigate-symbolic.svg</file>
@@ -71,7 +72,9 @@
     <file preprocess="xml-stripblanks" alias="play-white.svg">icons/play-white.svg</file>
     <file preprocess="xml-stripblanks" alias="playlist-symbolic.svg">icons/playlist-symbolic.svg</file>
     <file preprocess="xml-stripblanks" alias="playlist2-symbolic.svg">icons/playlist2-symbolic.svg</file>
+    <file preprocess="xml-stripblanks" alias="profit-symbolic.svg">icons/profit-symbolic.svg</file>
     <file preprocess="xml-stripblanks" alias="progress-symbolic.svg">icons/progress-symbolic.svg</file>
+    <file preprocess="xml-stripblanks" alias="sentiment-satisfied-symbolic.svg">icons/sentiment-satisfied-symbolic.svg</file>
     <file preprocess="xml-stripblanks" alias="sonar-symbolic.svg">icons/sonar-symbolic.svg</file>
     <file preprocess="xml-stripblanks" alias="sound-wave-symbolic.svg">icons/sound-wave-symbolic.svg</file>
     <file preprocess="xml-stripblanks" alias="subtitles-symbolic.svg">icons/subtitles-symbolic.svg</file>
