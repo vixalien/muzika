@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-07-26 17:43+0200\n"
+"POT-Creation-Date: 2023-07-26 18:15+0200\n"
 "PO-Revision-Date: 2023-07-24 00:59+0900\n"
 "Last-Translator: maboroshin <pc.genkaku.in>\n"
 "Language-Team: \n"
@@ -326,7 +326,7 @@ msgstr ""
 msgid "Charts"
 msgstr ""
 
-#: data/ui/pages/explore.blp:64 src/endpoints.ts:129 src/pages/explore.ts:51
+#: data/ui/pages/explore.blp:64 src/endpoints.ts:129 src/pages/explore.ts:52
 msgid "Moods and genres"
 msgstr ""
 
@@ -609,7 +609,7 @@ msgstr ""
 msgid "Playlists on repeat"
 msgstr "再生リスト"
 
-#: src/pages/charts.ts:75 src/pages/explore.ts:50
+#: src/pages/charts.ts:75 src/pages/explore.ts:51
 #, fuzzy
 msgid "Top songs"
 msgstr "上位の曲"
@@ -624,7 +624,7 @@ msgstr ""
 msgid "Genres"
 msgstr ""
 
-#: src/pages/charts.ts:85 src/pages/explore.ts:52
+#: src/pages/charts.ts:85 src/pages/explore.ts:53
 msgid "Trending"
 msgstr ""
 
@@ -641,10 +641,10 @@ msgstr "アクセスしようとしたページはログインが必要です。
 msgid "Unknown error"
 msgstr "不明のエラー"
 
-#: src/pages/explore.ts:49
-#, fuzzy
-msgid "Top albums"
-msgstr "アルバム"
+#. TODO: New albums & singles more
+#: src/pages/explore.ts:50
+msgid "New albums & singles"
+msgstr ""
 
 #: src/pages/library/base.ts:14
 msgid "Recent activity"
@@ -746,6 +746,10 @@ msgstr "ログインに成功！"
 #: src/window.ts:277
 msgid "An error happened while logging in"
 msgstr "ログイン時にエラーが発生"
+
+#, fuzzy
+#~ msgid "Top albums"
+#~ msgstr "アルバム"
 
 #~ msgid "Playlist Name"
 #~ msgstr "再生リスト名"

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: muzika\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-07-26 17:43+0200\n"
+"POT-Creation-Date: 2023-07-26 18:15+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -316,7 +316,7 @@ msgstr ""
 msgid "Charts"
 msgstr ""
 
-#: data/ui/pages/explore.blp:64 src/endpoints.ts:129 src/pages/explore.ts:51
+#: data/ui/pages/explore.blp:64 src/endpoints.ts:129 src/pages/explore.ts:52
 msgid "Moods and genres"
 msgstr ""
 
@@ -596,7 +596,7 @@ msgstr ""
 msgid "Playlists on repeat"
 msgstr ""
 
-#: src/pages/charts.ts:75 src/pages/explore.ts:50
+#: src/pages/charts.ts:75 src/pages/explore.ts:51
 msgid "Top songs"
 msgstr ""
 
@@ -610,7 +610,7 @@ msgstr ""
 msgid "Genres"
 msgstr ""
 
-#: src/pages/charts.ts:85 src/pages/explore.ts:52
+#: src/pages/charts.ts:85 src/pages/explore.ts:53
 msgid "Trending"
 msgstr ""
 
@@ -627,8 +627,9 @@ msgstr ""
 msgid "Unknown error"
 msgstr ""
 
-#: src/pages/explore.ts:49
-msgid "Top albums"
+#. TODO: New albums & singles more
+#: src/pages/explore.ts:50
+msgid "New albums & singles"
 msgstr ""
 
 #: src/pages/library/base.ts:14

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: muzika\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-07-26 17:43+0200\n"
+"POT-Creation-Date: 2023-07-26 18:15+0200\n"
 "PO-Revision-Date: 2023-07-17 21:06-0300\n"
 "Last-Translator: \n"
 "Language-Team: \n"
@@ -325,7 +325,7 @@ msgstr ""
 msgid "Charts"
 msgstr ""
 
-#: data/ui/pages/explore.blp:64 src/endpoints.ts:129 src/pages/explore.ts:51
+#: data/ui/pages/explore.blp:64 src/endpoints.ts:129 src/pages/explore.ts:52
 msgid "Moods and genres"
 msgstr ""
 
@@ -608,7 +608,7 @@ msgstr ""
 msgid "Playlists on repeat"
 msgstr "Playlists"
 
-#: src/pages/charts.ts:75 src/pages/explore.ts:50
+#: src/pages/charts.ts:75 src/pages/explore.ts:51
 #, fuzzy
 msgid "Top songs"
 msgstr "Top músicas"
@@ -623,7 +623,7 @@ msgstr ""
 msgid "Genres"
 msgstr ""
 
-#: src/pages/charts.ts:85 src/pages/explore.ts:52
+#: src/pages/charts.ts:85 src/pages/explore.ts:53
 msgid "Trending"
 msgstr ""
 
@@ -642,10 +642,10 @@ msgstr "A página que você estava tentando acessar requer que você faça login
 msgid "Unknown error"
 msgstr "Erro desconhecido"
 
-#: src/pages/explore.ts:49
-#, fuzzy
-msgid "Top albums"
-msgstr "Álbuns"
+#. TODO: New albums & singles more
+#: src/pages/explore.ts:50
+msgid "New albums & singles"
+msgstr ""
 
 #: src/pages/library/base.ts:14
 msgid "Recent activity"
@@ -747,6 +747,10 @@ msgstr "Login feito com sucesso!"
 #: src/window.ts:277
 msgid "An error happened while logging in"
 msgstr "Um erro aconteceu ao logar"
+
+#, fuzzy
+#~ msgid "Top albums"
+#~ msgstr "Álbuns"
 
 #~ msgid "Playlist Name"
 #~ msgstr "Nome da playlist"

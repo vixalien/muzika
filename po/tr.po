@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: com.vixalien.muzika\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-07-26 17:43+0200\n"
+"POT-Creation-Date: 2023-07-26 18:15+0200\n"
 "PO-Revision-Date: 2023-06-23 00:36+0300\n"
 "Last-Translator: Sabri Ünal <libreajans@gmail.com>\n"
 "Language-Team: Turkish <takim@gnome.org.tr>\n"
@@ -330,7 +330,7 @@ msgstr ""
 msgid "Charts"
 msgstr ""
 
-#: data/ui/pages/explore.blp:64 src/endpoints.ts:129 src/pages/explore.ts:51
+#: data/ui/pages/explore.blp:64 src/endpoints.ts:129 src/pages/explore.ts:52
 msgid "Moods and genres"
 msgstr ""
 
@@ -617,7 +617,7 @@ msgstr ""
 msgid "Playlists on repeat"
 msgstr "Çalma Listeleri"
 
-#: src/pages/charts.ts:75 src/pages/explore.ts:50
+#: src/pages/charts.ts:75 src/pages/explore.ts:51
 #, fuzzy
 msgid "Top songs"
 msgstr "Gözde Şarkılar"
@@ -632,7 +632,7 @@ msgstr ""
 msgid "Genres"
 msgstr ""
 
-#: src/pages/charts.ts:85 src/pages/explore.ts:52
+#: src/pages/charts.ts:85 src/pages/explore.ts:53
 msgid "Trending"
 msgstr ""
 
@@ -651,10 +651,10 @@ msgstr "Erişmeye çalıştığınız sayfa giriş yapmanızı gerektiriyor."
 msgid "Unknown error"
 msgstr "Bilinmeyen hata"
 
-#: src/pages/explore.ts:49
-#, fuzzy
-msgid "Top albums"
-msgstr "Albümler"
+#. TODO: New albums & singles more
+#: src/pages/explore.ts:50
+msgid "New albums & singles"
+msgstr ""
 
 #: src/pages/library/base.ts:14
 msgid "Recent activity"
@@ -758,6 +758,10 @@ msgstr "Başarıyla oturum açıldı!"
 #: src/window.ts:277
 msgid "An error happened while logging in"
 msgstr "Giriş yapılırken bir hata oluştu!"
+
+#, fuzzy
+#~ msgid "Top albums"
+#~ msgstr "Albümler"
 
 #~ msgid "Playlist Name"
 #~ msgstr "Çalma Listesi Adı"

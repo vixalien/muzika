@@ -46,7 +46,8 @@ export class ExplorePage extends Adw.Bin
   }
 
   present(explore: ExploreContents): void {
-    this.add_carousel(_("Top albums"), explore.albums, true);
+    // TODO: New albums & singles more
+    this.add_carousel(_("New albums & singles"), explore.albums, false, false);
     this.add_carousel(_("Top songs"), explore.songs, true);
     this.add_mood_carousel(_("Moods and genres"), explore.moods);
     this.add_carousel(_("Trending"), explore.trending, true);
@@ -80,6 +81,7 @@ export class ExplorePage extends Adw.Bin
     title: string,
     data: Category<MixedCardItem>,
     show_more_button = false,
+    list = true,
   ) {
     if (!data || data.results.length === 0) return;
 
@@ -95,7 +97,7 @@ export class ExplorePage extends Adw.Bin
 
     carousel.show_content({
       title,
-      display: "list",
+      display: list ? "list" : undefined,
       contents: data.results,
     });
 
