@@ -102,22 +102,12 @@ export class ExplorePage extends Adw.Bin
     this._box.append(carousel);
   }
 
-  add_mood_carousel(
-    title: string,
-    data: Category<ParsedMoodOrGenre>,
-    show_more_button = false,
-  ) {
+  add_mood_carousel(title: string, data: Category<ParsedMoodOrGenre>) {
     if (!data || data.results.length === 0) return;
 
     const carousel = new Carousel();
 
-    carousel.setup_more_button(
-      (show_more_button && data.browseId != null)
-        ? data.params != null
-          ? `navigator.visit("muzika:artist-albums:${data.browseId}:${data.params}")`
-          : `navigator.visit("muzika:playlist:${data.browseId}")`
-        : null,
-    );
+    carousel.setup_more_button(`navigator.visit("muzika:moods-and-genres")`);
 
     carousel.show_content({
       title,

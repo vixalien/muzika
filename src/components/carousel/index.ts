@@ -181,8 +181,14 @@ export class Carousel<
     moodview.connect("activate", (_, position) => {
       const container = moodview.items.get_item(position);
 
-      // TODO: activate mood
-      // this.activate_cb(container?.object ?? null);
+      const params = container?.object.params;
+
+      if (!params) return;
+
+      this.activate_action(
+        "navigator.visit",
+        GLib.Variant.new_string("muzika:mood-playlists:" + params),
+      );
     });
 
     moodview.items.splice(
