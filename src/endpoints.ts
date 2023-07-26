@@ -18,6 +18,7 @@ import { ChannelPlaylistsPage } from "./pages/channel-playlists.js";
 import { ExplorePage } from "./pages/explore.js";
 import { ChartsPage } from "./pages/charts.js";
 import { MoodsPage } from "./pages/moods.js";
+import { MoodPlaylistsPage } from "./pages/mood-playlists.js";
 
 export const endpoints: Endpoint<MuzikaComponent<unknown, unknown>>[] = [
   {
@@ -127,5 +128,11 @@ export const endpoints: Endpoint<MuzikaComponent<unknown, unknown>>[] = [
     title: _("Moods and genres"),
     component: () => new MoodsPage(),
     load: MoodsPage.load,
+  },
+  {
+    uri: "mood-playlists/:params",
+    title: _("Mood"),
+    component: () => new MoodPlaylistsPage(),
+    load: MoodPlaylistsPage.load,
   },
 ];
