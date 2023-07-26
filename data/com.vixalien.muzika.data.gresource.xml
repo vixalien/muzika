@@ -8,6 +8,7 @@
     <file preprocess="xml-stripblanks">ui/components/carousel/card.ui</file>
     <file preprocess="xml-stripblanks">ui/components/carousel/carousel.ui</file>
     <file preprocess="xml-stripblanks">ui/components/carousel/flatsong.ui</file>
+    <file preprocess="xml-stripblanks">ui/components/carousel/moodbox.ui</file>
     <file preprocess="xml-stripblanks">ui/components/dynamic-image.ui</file>
     <file preprocess="xml-stripblanks">ui/components/library/history.ui</file>
     <file preprocess="xml-stripblanks">ui/components/library/mixedcard.ui</file>
@@ -46,6 +47,7 @@
     <file preprocess="xml-stripblanks">ui/pages/channel.ui</file>
     <file preprocess="xml-stripblanks">ui/pages/channel-playlists.ui</file>
     <file preprocess="xml-stripblanks">ui/pages/error.ui</file>
+    <file preprocess="xml-stripblanks">ui/pages/explore.ui</file>
     <file preprocess="xml-stripblanks">ui/pages/home.ui</file>
     <file preprocess="xml-stripblanks">ui/pages/login.ui</file>
     <file preprocess="xml-stripblanks">ui/pages/playlist.ui</file>

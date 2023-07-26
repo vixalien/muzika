@@ -5,7 +5,7 @@ import GLib from "gi://GLib";
 import { ArtistAlbums, get_artist_albums } from "src/muse.js";
 
 import { EndpointContext, MuzikaComponent } from "src/navigation.js";
-import { CarouselGridView } from "src/components/carousel";
+import { CarouselGridView } from "src/components/carousel/view/grid";
 import { PlayableContainer } from "src/util/playablelist";
 import { MixedCardItem } from "src/components/library/mixedcard";
 

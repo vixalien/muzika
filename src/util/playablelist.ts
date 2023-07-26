@@ -108,6 +108,8 @@ export class PlayableContainer<T extends Object = PlaylistItem>
       case "song":
       case "inline-video":
       case "flat-song":
+      case "top-song":
+      case "trending-song":
         props = { object: item, video_id: item.videoId ?? undefined };
         break;
       case "watch-playlist":
@@ -261,26 +263,24 @@ export class PlayableList<T extends Object = PlaylistItem>
 
     this.array.forEach((item) => {
       if (item.is_playlist) {
-        item.state =
-          (item.playlist_id &&
-              player.now_playing?.object.settings.playlistId ==
-                item.playlist_id)
-            ? player.playing
-              ? DynamicImageState.PLAYING
-              : DynamicImageState.PAUSED
-            : item.video_id && player.loading_track == item.video_id
-            ? DynamicImageState.LOADING
-            : DynamicImageState.DEFAULT;
+        item.state = (item.playlist_id &&
+            player.now_playing?.object.settings.playlistId ==
+              item.playlist_id)
+          ? player.playing
+            ? DynamicImageState.PLAYING
+            : DynamicImageState.PAUSED
+          : item.video_id && player.loading_track == item.video_id
+          ? DynamicImageState.LOADING
+          : DynamicImageState.DEFAULT;
       } else {
-        item.state =
-          (item.video_id &&
-              player.now_playing?.object.track.videoId == item.video_id)
-            ? player.playing
-              ? DynamicImageState.PLAYING
-              : DynamicImageState.PAUSED
-            : player.loading_track == item.video_id
-            ? DynamicImageState.LOADING
-            : DynamicImageState.DEFAULT;
+        item.state = (item.video_id &&
+            player.now_playing?.object.track.videoId == item.video_id)
+          ? player.playing
+            ? DynamicImageState.PLAYING
+            : DynamicImageState.PAUSED
+          : player.loading_track == item.video_id
+          ? DynamicImageState.LOADING
+          : DynamicImageState.DEFAULT;
       }
     });
   }

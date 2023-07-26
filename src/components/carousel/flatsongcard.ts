@@ -2,12 +2,16 @@ import Gtk from "gi://Gtk?version=4.0";
 import GObject from "gi://GObject";
 import GLib from "gi://GLib";
 
-import { FlatSong } from "../../muse.js";
+import { ArtistRun, FlatSong, Thumbnail } from "../../muse.js";
 import { DynamicImage, DynamicImageState } from "../dynamic-image.js";
 
 // first register the DynamicImage class
 import "../dynamic-image.js";
 import { pretty_subtitles } from "src/util/text.js";
+import type { TopSong, TrendingSong } from "libmuse/types/parsers/browsing.js";
+import { load_thumbnails } from "../webimage.js";
+
+export type InlineSong = FlatSong | TopSong | TrendingSong;
 
 export class FlatSongCard extends Gtk.Box {
   static {
@@ -24,7 +28,7 @@ export class FlatSongCard extends Gtk.Box {
     }, this);
   }
 
-  song?: FlatSong;
+  song?: InlineSong;
 
   private _title!: Gtk.Label;
   private _explicit!: Gtk.Image;
@@ -46,22 +50,108 @@ export class FlatSongCard extends Gtk.Box {
     });
   }
 
-  set_song(song: FlatSong) {
-    this.song = song;
+  // utils
 
-    this._title.tooltip_text = this._title.label = song.title;
+  private load_thumbnails(
+    thumbnails: Thumbnail[],
+    options: Parameters<typeof load_thumbnails>[2] = 60,
+  ) {
+    this._dynamic_image.load_thumbnails(thumbnails, options);
+  }
 
-    const subtitles = pretty_subtitles(song.artists ?? []);
+  private set_title(title: string) {
+    this._title.tooltip_text = this._title.label = title;
+  }
+
+  private subtitle_authors: (string | ArtistRun)[] = [];
+  private subtitle_nodes: string[] = [];
+
+  private update_subtitle() {
+    const subtitles = pretty_subtitles(
+      this.subtitle_authors,
+      this.subtitle_nodes,
+    );
 
     this._subtitle.label = subtitles.markup;
     this._subtitle.tooltip_text = subtitles.plain;
+  }
 
-    this._explicit.set_visible(song.isExplicit);
+  private set_subtitle(
+    subtitle: string | (null | string | ArtistRun)[],
+    nodes: (string | null)[] = [],
+  ) {
+    this.subtitle_authors = [];
+    this.subtitle_nodes = nodes.filter(Boolean) as string[];
 
-    this._dynamic_image.load_thumbnails(song.thumbnails);
+    if (typeof subtitle === "string") {
+      this.subtitle_authors.push(subtitle);
+    } else {
+      for (const node of subtitle) {
+        if (!node) continue;
 
-    if (song.videoId) {
-      this._dynamic_image.setup_video(song.videoId);
+        this.subtitle_authors.push(node);
+      }
+    }
+
+    this.update_subtitle();
+  }
+
+  private setup_video(videoId: string | null) {
+    if (videoId) {
+      this._dynamic_image.setup_video(videoId);
+    }
+  }
+
+  private show_explicit(explicit: boolean) {
+    this._explicit.visible = explicit;
+  }
+
+  show_flat_song(song: FlatSong) {
+    this.song = song;
+
+    this.set_title(song.title);
+    this.set_subtitle(song.artists ?? [], [song.views]);
+    this.show_explicit(song.isExplicit);
+
+    this.load_thumbnails(song.thumbnails);
+    this.setup_video(song.videoId);
+  }
+
+  show_top_song(song: TopSong) {
+    this.song = song;
+
+    this.song = song;
+
+    this.set_title(song.title);
+    this.set_subtitle(song.artists ?? []);
+
+    this.load_thumbnails(song.thumbnails);
+    this.setup_video(song.videoId);
+  }
+
+  show_trending_song(song: TrendingSong) {
+    this.song = song;
+
+    this.set_title(song.title);
+    this.set_subtitle(song.artists ?? [], [song.views]);
+
+    this.load_thumbnails(song.thumbnails);
+    this.setup_video(song.videoId);
+  }
+
+  show_item(content: InlineSong) {
+    switch (content.type) {
+      case "flat-song":
+        this.show_flat_song(content);
+        break;
+      case "top-song":
+        this.show_top_song(content);
+        break;
+      case "trending-song":
+        this.show_trending_song(content);
+        break;
+      default:
+        console.warn(`Unknown content type: ${(content as any).type}`);
     }
   }
 

@@ -12,9 +12,10 @@ import {
 } from "../../muse.js";
 import { load_thumbnails } from "../webimage.js";
 import { RequiredMixedItem } from "../carousel/index.js";
-import { ParsedLibraryArtist } from "libmuse/types/parsers/library.js";
+import type { ParsedLibraryArtist } from "libmuse/types/parsers/library.js";
+import type { TopSong, TrendingSong } from "libmuse/types/parsers/browsing.js";
 
-export type MixedCardItem = RequiredMixedItem | ParsedLibraryArtist;
+export type MixedCardItem = RequiredMixedItem | ParsedLibraryArtist | TopSong | TrendingSong;
 
 export class MixedCard extends Gtk.ListBoxRow {
   static {

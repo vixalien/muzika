@@ -169,10 +169,14 @@ label.bold-link link {
   padding-right: 6px;
 }
 
-.carousel-list-view>row,
-.carousel-grid-view>child {
+.carousel-list-view>row {
   border-radius: 12px;
   padding: 6px;
+}
+
+.carousel-grid-view>child {
+  border-radius: 12px;
+  padding: 3px;
 }
 
 .floating-button {
@@ -222,4 +226,20 @@ label.bold-link link {
 
 .dynamic-image {
   transition: background-color .2s, box-shadow .2s;
+}
+
+.carousel-mood-view {
+  border-spacing: 6px;
+  padding-left: 6px;
+  padding-right: 6px;
+}
+
+.carousel-mood-view>child {
+  padding: 0;
+  border-radius: 6px;
+}
+
+.mood-box {
+  border-radius: 4px;
+  padding: 12px 24px;
 }
