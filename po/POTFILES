@@ -1,6 +1,7 @@
 data/com.vixalien.muzika.desktop.in
 data/com.vixalien.muzika.appdata.xml.in.in
 data/com.vixalien.muzika.gschema.xml
+data/ui/components/carousel/carousel.blp
 data/ui/components/library/mixedcard.blp
 data/ui/components/navbar/button.blp
 data/ui/components/navbar/index.blp
@@ -21,7 +22,9 @@ data/ui/gtk/help-overlay.blp
 data/ui/pages/album.blp
 data/ui/pages/artist.blp
 data/ui/pages/authentication-error.blp
+data/ui/pages/channel.blp
 data/ui/pages/error.blp
+data/ui/pages/explore.blp
 data/ui/pages/login.blp
 data/ui/pages/playlist.blp
 data/ui/pages/search.blp
@@ -40,8 +43,11 @@ src/endpoints.ts
 src/muse.ts
 src/pages/album.ts
 src/pages/artist.ts
+src/pages/channel.ts
+src/pages/charts.ts
 src/pages/authentication-error.ts
 src/pages/error.ts
+src/pages/explore.ts
 src/pages/library/base.ts
 src/pages/login.ts
 src/pages/playlist.ts
