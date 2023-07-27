@@ -206,17 +206,22 @@ export class DynamicImage extends Gtk.Overlay {
     this._check_button.active = selected;
   }
 
+  private _selection_mode = false;
+
   get selection_mode() {
-    return this._image_stack.visible_child === this._check_button;
+    return this._selection_mode;
   }
 
   set selection_mode(selection_mode: boolean) {
+    this._selection_mode = selection_mode;
+
     if (selection_mode) {
       this._image_stack.visible_child = this._check_button;
       this.remove_css_class("card");
     } else {
       this.visible_child = this._visible_child;
     }
+
     this.update_stack();
   }
 
@@ -238,6 +243,12 @@ export class DynamicImage extends Gtk.Overlay {
   }
 
   set visible_child(child: DynamicImageVisibleChild) {
+    this._visible_child = child;
+
+    if (this.selection_mode) {
+      return;
+    }
+
     if (child === DynamicImageVisibleChild.NUMBER) {
       this._image_stack.visible_child = this._number;
     } else if (this.loaded) {
@@ -258,8 +269,6 @@ export class DynamicImage extends Gtk.Overlay {
       this._play_image.icon_name = "play-white";
       this.add_css_class("card");
     }
-
-    this._visible_child = child;
 
     // recalculate the image size (for picture)
     this.image_size = this.image_size;
@@ -363,9 +372,11 @@ export class DynamicImage extends Gtk.Overlay {
       this.visible_child === DynamicImageVisibleChild.NUMBER
     ) {
       this._image_stack.opacity = osd ? 0 : 1;
+
       this._stack.remove_css_class("osd");
     } else {
       this._image_stack.opacity = 1;
+
       if (osd) {
         this._stack.add_css_class("osd");
       } else {
