@@ -155,25 +155,23 @@ export class NavbarView extends Gtk.Box {
   }
 
   setup_buttons() {
-    let row = this._section.items.get_first_child() as Gtk.ListBoxRow;
+    let row = this._section.items.get_first_child() as NavbarButton;
 
     while (row) {
-      const child = row.child as NavbarButton;
+      if (row instanceof NavbarButton) {
+        if (!row.link) return;
 
-      if (child instanceof NavbarButton) {
-        if (!child.link) return;
-
-        const url = new URL("muzika:" + child.link);
+        const url = new URL("muzika:" + row.link);
 
         const path = url.pathname.replace(/(?<!\\):/g, "/");
 
         this.button_map.set(
           match(path),
-          child,
+          row,
         );
       }
 
-      row = row.get_next_sibling() as Gtk.ListBoxRow;
+      row = row.get_next_sibling() as NavbarButton;
     }
   }
 
