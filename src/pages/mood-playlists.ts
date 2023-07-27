@@ -69,8 +69,6 @@ export class MoodPlaylistsPage extends Adw.Bin
       child = child.get_next_sibling();
       this._box.remove(current);
     }
-
-    return;
   }
 
   private add_carousel(

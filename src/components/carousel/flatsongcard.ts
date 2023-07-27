@@ -124,8 +124,6 @@ export class FlatSongCard extends Gtk.Box {
   show_song(song: Ranked<ParsedSong>) {
     this.song = song;
 
-    this.song = song;
-
     this.set_title(song.title);
     this.set_subtitle(song.artists ?? [], [song.views]);
 
