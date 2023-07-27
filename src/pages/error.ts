@@ -45,7 +45,7 @@ export class ErrorPage extends Gtk.Box {
   }
 
   set_message(message: string) {
-    this._status.set_description(message);
+    this._status.set_title(message);
   }
 
   set_more(show: boolean, label?: string) {
@@ -63,7 +63,7 @@ export class ErrorPage extends Gtk.Box {
   set_error(error: any) {
     if (error instanceof Error) {
       this.set_message(error.message);
-      this.set_more(true, error_to_string(error));
+      this.set_more(!!error, error_to_string(error));
     } else {
       this.set_message(error ? _(`Error: ${error}`) : _("Unknown error"));
       this.set_more(false);

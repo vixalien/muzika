@@ -61,7 +61,7 @@ export class AuthenticationErrorPage extends Gtk.Box {
 
   set_error(error: any) {
     if (error instanceof Error) {
-      this.set_more(true, error_to_string(error));
+      this.set_more(!!error, error_to_string(error));
     } else {
       this.set_more(false);
     }
