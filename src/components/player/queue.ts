@@ -7,6 +7,7 @@ import { ObjectContainer } from "src/util/objectcontainer";
 import type { QueueTrack } from "libmuse/types/parsers/queue";
 import { QueueItem } from "./queueitem";
 import { MuzikaPlayer } from "src/player";
+import { escape_label } from "src/util/text";
 
 export class QueueView extends Gtk.Stack {
   static {
@@ -109,15 +110,14 @@ export class QueueView extends Gtk.Stack {
 
   update_settings() {
     const settings = this.player.queue.settings;
+    const playlist_name = escape_label(settings?.playlist ?? _("Queue"));
 
     // radio playlists can't be visited
     if (settings?.playlistId && !settings.playlistId.startsWith("RDA")) {
       this._playlist_label.label =
-        `<a href="muzika:playlist:${settings.playlistId}">${
-          settings.playlist ?? _("Queue")
-        }</a>`;
+        `<a href="muzika:playlist:${settings.playlistId}">${playlist_name}</a>`;
     } else {
-      this._playlist_label.label = settings?.playlist ?? _("Queue");
+      this._playlist_label.label = playlist_name;
     }
 
     this._playlist_label.tooltip_text = settings?.playlist ?? _("Queue");
