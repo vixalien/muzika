@@ -4,12 +4,16 @@
   "runtime-version": "44",
   "sdk": "org.gnome.Sdk",
   "sdk-extensions": [
-    "org.freedesktop.Sdk.Extension.node18"
+    "org.freedesktop.Sdk.Extension.node18",
+    "org.freedesktop.Sdk.Extension.rust-stable"
   ],
   "tags": [
     "nightly"
   ],
   "build-options": {
+    "env": {
+      "CARGO_HOME": "/run/build/cargo-c/cargo"
+    },
     "append-path": "/usr/lib/sdk/node18/bin"
   },
   "command": "com.vixalien.muzika",
@@ -37,6 +41,43 @@
     "/yarn-mirror"
   ],
   "modules": [
+    {
+      "name": "cargo-c",
+      "buildsystem": "simple",
+      "build-commands": [
+        "cargo install cargo-c --root /app"
+      ],
+      "build-options": {
+        "build-args": [
+          "--share=network"
+        ]
+      },
+      "cleanup": [
+        "*"
+      ]
+    },
+    {
+      "name": "gst-plugins-rs",
+      "buildsystem": "simple",
+      "sources": [
+        {
+          "type": "git",
+          "url": "https://gitlab.freedesktop.org/gstreamer/gst-plugins-rs",
+          "branch": "0.10"
+        }
+      ],
+      "build-options": {
+        "build-args": [
+          "--share=network"
+        ],
+        "env": {
+          "CARGO_NET_GIT_FETCH_WITH_CLI": "true"
+        }
+      },
+      "build-commands": [
+        "cargo cinstall -p gst-plugin-gtk4 --prefix=/app"
+      ]
+    },
     {
       "name": "libadwaita",
       "buildsystem": "meson",
