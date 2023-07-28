@@ -19,6 +19,7 @@ import {
   get_option,
   get_song,
   Song,
+  VideoFormat,
 } from "src/muse";
 import { Application, Settings } from "../application.js";
 import { ObjectContainer } from "../util/objectcontainer.js";
@@ -26,6 +27,7 @@ import { AddActionEntries } from "src/util/action.js";
 import { store } from "src/util/giofilestore.js";
 import { list_model_to_array } from "src/util/list.js";
 import { get_track_settings, get_tracklist } from "./helpers.js";
+import { convert_formats_to_dash } from "./mpd";
 
 const preferred_quality: AudioFormat["audio_quality"] = "medium";
 const preferred_format: AudioFormat["audio_codec"] = "opus";
@@ -215,9 +217,6 @@ export class MuzikaMediaStream extends Gtk.MediaStream {
 
     this._play = new GstPlay.Play();
 
-    const bus = this._play.get_message_bus();
-    bus.add_signal_watch();
-
     const adapter = new MuzikaPlaySignalAdapter(this._play);
 
     adapter.connect("buffering", this.buffering_cb.bind(this));
@@ -385,7 +384,7 @@ export class MuzikaMediaStream extends Gtk.MediaStream {
       this.stream_unprepared();
     }
 
-    this.playing = false;
+    this._playing = false;
   }
 
   // seek
@@ -724,7 +723,24 @@ export class MuzikaPlayer extends MuzikaMediaStream {
         });
         this.notify("now-playing");
 
-        this._play.set_uri(format.url);
+        const streams = [...song.formats, ...song.adaptive_formats]
+          .filter((e) => {
+            if (format_has_audio(e)) {
+              return e.audio_quality == "medium";
+            }
+
+            if (format_has_video(e)) {
+              return e.video_quality == "hd1080";
+            }
+
+            return false;
+          });
+
+        const uri = `data:application/dash+xml;base64,${
+          btoa(convert_formats_to_dash(streams))
+        }`;
+
+        this._play.set_uri(uri);
 
         this.add_history = true;
       })
@@ -956,4 +972,12 @@ function negotiate_best_format(song: Song) {
   return formats.sort((a, b) => {
     return get_format_points(b) - get_format_points(a);
   })[0];
+}
+
+function format_has_audio(format: Format): format is AudioFormat {
+  return format.has_audio;
+}
+
+function format_has_video(format: Format): format is VideoFormat {
+  return format.has_video;
 }
