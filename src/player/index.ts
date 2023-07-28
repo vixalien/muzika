@@ -634,6 +634,14 @@ export class MuzikaPlayer extends MuzikaMediaStream {
     // restore state
 
     this.load_state();
+
+    Settings.connect("changed::audio-quality", () => {
+      this.update_uri();
+    });
+
+    Settings.connect("changed::video-quality", () => {
+      this.update_uri();
+    });
   }
 
   // property: current-meta
@@ -674,6 +682,14 @@ export class MuzikaPlayer extends MuzikaMediaStream {
     return this._loading_track;
   }
 
+  private update_uri() {
+    const song = this.now_playing?.object.song;
+
+    if (!song || this._play.get_media_info()) return;
+
+    this.set_uri(get_song_uri(song));
+  }
+
   async load(track: QueueMeta | null) {
     // TODO: stop
     if (!track) return;
@@ -710,12 +726,9 @@ export class MuzikaPlayer extends MuzikaMediaStream {
       get_track_settings(track.videoId, this.loading_controller!.signal),
     ])
       .then(([song, settings]) => {
-        const format = negotiate_best_format(song);
-
         this._now_playing = new ObjectContainer<TrackMetadata>({
           song,
           track,
-          format,
           settings: {
             ...settings,
             playlistId: this.queue.settings?.playlistId ?? settings.playlistId,
@@ -723,22 +736,7 @@ export class MuzikaPlayer extends MuzikaMediaStream {
         });
         this.notify("now-playing");
 
-        const streams = [...song.formats, ...song.adaptive_formats]
-          .filter((e) => {
-            if (format_has_audio(e)) {
-              return e.audio_quality == "medium";
-            }
-
-            if (format_has_video(e)) {
-              return e.video_quality == "hd1080";
-            }
-
-            return false;
-          });
-
-        const uri = `data:application/dash+xml;base64,${
-          btoa(convert_formats_to_dash(streams))
-        }`;
+        const uri = get_song_uri(song);
 
         this._play.set_uri(uri);
 
@@ -906,73 +904,9 @@ export interface PlayerState {
 
 export type TrackMetadata = {
   song: Song;
-  format: Format;
   track: QueueMeta;
   settings: QueueSettings;
 };
-
-function get_audio_formats(song: Song) {
-  const formats = [
-    ...song.formats.map((format) => {
-      return {
-        ...format,
-        adaptive: false,
-      };
-    }),
-    ...song.adaptive_formats.map((format) => {
-      return {
-        ...format,
-        adaptive: true,
-      };
-    }),
-  ];
-
-  return formats
-    .filter((format) => {
-      return format.has_audio;
-    }) as MaybeAdaptiveFormat[];
-}
-
-function get_format_points(format: MaybeAdaptiveFormat) {
-  let points = 0;
-
-  if (format.audio_quality === preferred_quality) {
-    points += 5;
-  }
-
-  if (format.audio_codec === preferred_format) {
-    points += 1;
-  }
-
-  if (format.adaptive) {
-    points += 1;
-  }
-
-  switch (format.audio_quality) {
-    case "tiny":
-      points += 1;
-      break;
-    case "low":
-      points += 2;
-      break;
-    case "medium":
-      points += 3;
-      break;
-    case "high":
-      points += 4;
-      break;
-  }
-
-  return points;
-}
-
-function negotiate_best_format(song: Song) {
-  const formats = get_audio_formats(song);
-
-  return formats.sort((a, b) => {
-    return get_format_points(b) - get_format_points(a);
-  })[0];
-}
 
 function format_has_audio(format: Format): format is AudioFormat {
   return format.has_audio;
@@ -980,4 +914,43 @@ function format_has_audio(format: Format): format is AudioFormat {
 
 function format_has_video(format: Format): format is VideoFormat {
   return format.has_video;
+}
+
+function get_song_uri(song: Song) {
+  const streams = [...song.formats, ...song.adaptive_formats]
+    .filter((e) => {
+      if (format_has_audio(e)) {
+        return e.audio_quality ==
+          AudioQuality[Settings.get_enum("audio-quality")];
+      }
+
+      if (format_has_video(e)) {
+        return e.video_quality ==
+          VideoQuality[Settings.get_enum("video-quality")];
+      }
+
+      return false;
+    });
+
+  return `data:application/dash+xml;base64,${
+    btoa(convert_formats_to_dash(streams))
+  }`;
+}
+
+enum VideoQuality {
+  tiny = 0,
+  small = 1,
+  medium = 2,
+  large = 3,
+  hd720 = 4,
+  hd1080 = 5,
+  hd2160 = 7,
+  highres = 8,
+}
+
+enum AudioQuality {
+  tiny = 0,
+  low = 1,
+  medium = 2,
+  high = 3,
 }
