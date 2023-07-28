@@ -29,7 +29,7 @@ export function convert_formats_to_dash(media: Format[]) {
           const representation: Record<string, any> = {
             "@name": "Representation",
             "id": `video-${format.itag}`,
-            "bandwidth": format.average_bitrate ?? format.bitrate,
+            "bandwidth": format.average_bitrate || format.bitrate,
             "#children": [
               {
                 "@name": "BaseURL",
@@ -77,7 +77,7 @@ export function convert_formats_to_dash(media: Format[]) {
           const definition = {
             "@name": "AdaptationSet",
             "mimeType": escape_attribute(format.mime_type.split(";")[0]),
-            "codecs": escape_attribute(format.codecs),
+            "codecs": escape_attribute(format.codecs.split(",")[0]),
             "segmentAlignment": "true",
             "bitstreamSwitching": "true",
             "#children": [representation],
