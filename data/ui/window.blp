@@ -19,11 +19,12 @@ template $MuzikaWindow : Adw.ApplicationWindow {
     }
   }
 
+  Stack main_stack {
+    transition-type: slide_up_down;
   Adw.ToolbarView toolbar_view {
     reveal-bottom-bars: false;
     bottom-bar-style: raised;
-    content: Overlay {
-    Adw.ToastOverlay toast_overlay {
+    content: Adw.ToastOverlay toast_overlay {
       Adw.NavigationSplitView split_view {
         min-sidebar-width: 250;
         max-sidebar-width: 350;
@@ -102,22 +103,11 @@ template $MuzikaWindow : Adw.ApplicationWindow {
 
         ;
       }
-    }
-
-
-
-    [overlay]
-    Adw.Bin {
-      Picture picture {
-        styles ["black-bg"]
-      }
-    }
-  
-
-    }
-
-    ;
+    };
   }
+
+  $VideoPlayerView video_player_view {}
+}
 }
 
 menu primary_menu {

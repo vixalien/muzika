@@ -1,0 +1,40 @@
+using Gtk 4.0;
+using Adw 1;
+
+template $VideoPlayerView : Adw.Bin {
+  Overlay {
+    Picture picture {
+      styles ["black-bg"]
+    }
+
+    [overlay]
+    Adw.ToolbarView toolbar_view {
+      [top]
+      Adw.Bin {
+        styles ["osd"]
+
+        Adw.HeaderBar {
+          [start]
+          Button collapse {
+            icon-name: "go-down-symbolic";
+            action-name: "win.show-video";
+            action-target: "false";
+          }
+
+          [start]
+          Button fullscreen {
+            icon-name: "view-fullscreen-symbolic";
+
+            clicked => $on_fullscreen_clicked();
+          }
+
+          title-widget: Adw.WindowTitle window_title {
+          };
+        }
+      }
+
+      [bottom]
+      $MiniVideoPlayer {}
+    }
+  }
+}

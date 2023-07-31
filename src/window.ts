@@ -40,6 +40,8 @@ import { AddActionEntries } from "./util/action.js";
 import { NavbarView } from "./components/navbar/index.js";
 import { get_current_user, get_option } from "libmuse";
 import { PlayerView } from "./components/player/view.js";
+import "./components/player/video/view.js";
+import { VideoPlayerView } from "./components/player/video/view.js";
 
 // make sure to first register PlayerSidebar
 PlayerSidebar;
@@ -57,7 +59,8 @@ export class Window extends Adw.ApplicationWindow {
           "navbar_window",
           "split_view",
           "account",
-          "picture",
+          "main_stack",
+          "video_player_view",
         ],
         Children: [
           "toast_overlay",
@@ -82,7 +85,8 @@ export class Window extends Adw.ApplicationWindow {
   private _navbar_window!: Gtk.ScrolledWindow;
   private _split_view!: Adw.NavigationSplitView;
   private _account!: Gtk.MenuButton;
-  private _picture!: Gtk.Picture;
+  private _main_stack!: Gtk.Stack;
+  private _video_player_view!: VideoPlayerView;
 
   navigator: Navigator;
   player_view: PlayerView;
@@ -109,12 +113,6 @@ export class Window extends Adw.ApplicationWindow {
     this.navigator.navigate("home");
 
     const player = get_player();
-
-    player.connect("notify::paintable", () => {
-      this._picture.set_paintable(player.paintable);
-    });
-
-    this._picture.set_paintable(player.paintable);
 
     player.queue.connect(
       "notify::current",
@@ -187,6 +185,21 @@ export class Window extends Adw.ApplicationWindow {
           if (!parameter) return;
 
           this.add_toast(parameter.get_string()[0]);
+        },
+      },
+      {
+        name: "show-video",
+        parameter_type: "b",
+        activate: (_, parameter) => {
+          if (!parameter) return;
+
+          this.show_video(parameter.get_boolean());
+        },
+      },
+      {
+        name: "fullscreen-video",
+        activate: (_) => {
+          this.fullscreen_video();
         },
       },
     ]);
@@ -300,5 +313,23 @@ export class Window extends Adw.ApplicationWindow {
     Settings.set_value("last-window-size", window_size);
 
     return super.vfunc_close_request();
+  }
+
+  private show_video(show: boolean) {
+    if (!show && this.is_fullscreen()) {
+      this.unfullscreen();
+    }
+
+    this._main_stack.visible_child = show
+      ? this._video_player_view
+      : this._toolbar_view;
+  }
+
+  private fullscreen_video() {
+    if (this._main_stack.visible_child != this._video_player_view) {
+      return;
+    }
+
+    this.fullscreen();
   }
 }
