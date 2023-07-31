@@ -4,13 +4,13 @@ import GLib from "gi://GLib";
 import GstAudio from "gi://GstAudio";
 
 import { RepeatMode } from "../../player/queue.js";
-import { load_thumbnails } from "../webimage.js";
 import { Settings } from "src/application.js";
 import { PlayerScale } from "./scale.js";
 import { PlayerSidebarView } from "./sidebar.js";
 import { QueueTrack } from "libmuse/types/parsers/queue.js";
 import { escape_label, pretty_subtitles } from "src/util/text.js";
 import { MuzikaPlayer } from "src/player";
+import { DynamicImage, DynamicImageVisibleChild } from "../dynamic-image.js";
 
 export interface FullPlayerViewOptions {
   player: MuzikaPlayer;
@@ -47,7 +47,7 @@ export class FullPlayerView extends Gtk.ActionBar {
     }, this);
   }
 
-  _image!: Gtk.Image;
+  _image!: DynamicImage;
   _title!: Gtk.Label;
   _subtitle!: Gtk.Label;
   _shuffle_button!: Gtk.ToggleButton;
@@ -105,6 +105,10 @@ export class FullPlayerView extends Gtk.ActionBar {
           return true;
         }
       });
+    });
+
+    this._image.connect("play", () => {
+      this.activate_action("win.show-video", GLib.Variant.new_boolean(true));
     });
   }
 
@@ -329,13 +333,17 @@ export class FullPlayerView extends Gtk.ActionBar {
       this.abort_thumbnail = null;
     }
 
+    const isAudio = track.videoType === "MUSIC_VIDEO_TYPE_ATV";
+
     // thumbnail
 
-    this._image.icon_name = "image-missing-symbolic";
+    this._image.visible_child = isAudio
+      ? DynamicImageVisibleChild.IMAGE
+      : DynamicImageVisibleChild.PICTURE;
 
     this.abort_thumbnail = new AbortController();
 
-    load_thumbnails(this._image, track.thumbnails, {
+    this._image.load_thumbnails(track.thumbnails, {
       width: 74,
       signal: this.abort_thumbnail.signal,
     });

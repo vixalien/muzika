@@ -21,6 +21,8 @@
     <file preprocess="xml-stripblanks">ui/components/navbar/section.ui</file>
     <file preprocess="xml-stripblanks">ui/components/navbar/title.ui</file>
     <file preprocess="xml-stripblanks">ui/components/paginator.ui</file>
+    <file preprocess="xml-stripblanks">ui/components/player/video/mini.ui</file>
+    <file preprocess="xml-stripblanks">ui/components/player/video/view.ui</file>
     <file preprocess="xml-stripblanks">ui/components/player/full.ui</file>
     <file preprocess="xml-stripblanks">ui/components/player/lyrics.ui</file>
     <file preprocess="xml-stripblanks">ui/components/player/mini.ui</file>
@@ -79,6 +81,8 @@
     <file preprocess="xml-stripblanks" alias="profit-symbolic.svg">icons/profit-symbolic.svg</file>
     <file preprocess="xml-stripblanks" alias="progress-symbolic.svg">icons/progress-symbolic.svg</file>
     <file preprocess="xml-stripblanks" alias="sentiment-satisfied-symbolic.svg">icons/sentiment-satisfied-symbolic.svg</file>
+    <file preprocess="xml-stripblanks" alias="skip-backwards-10-symbolic.svg">icons/skip-backwards-10-symbolic.svg</file>
+    <file preprocess="xml-stripblanks" alias="skip-forward-10-symbolic.svg">icons/skip-forward-10-symbolic.svg</file>
     <file preprocess="xml-stripblanks" alias="sonar-symbolic.svg">icons/sonar-symbolic.svg</file>
     <file preprocess="xml-stripblanks" alias="sound-wave-symbolic.svg">icons/sound-wave-symbolic.svg</file>
     <file preprocess="xml-stripblanks" alias="subtitles-symbolic.svg">icons/subtitles-symbolic.svg</file>

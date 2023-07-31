@@ -11,16 +11,10 @@ template $FullPlayerView : ActionBar {
       margin-start: 12;
       margin-end: 6;
 
-      Image image {
-        icon-name: "image-missing-symbolic";
-        pixel-size: 74;
+      $DynamicImage image {
         valign: center;
-        overflow: hidden;
-
-        styles [
-          "br-9",
-          "card",
-        ]
+        image-size: 74;
+        persistent-play-button: false;
       }
 
       Box now_playing_labels {
