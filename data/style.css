@@ -243,3 +243,7 @@ label.bold-link link {
   border-radius: 4px;
   padding: 12px 24px;
 }
+
+.black-bg {
+  background-color: black;
+}
