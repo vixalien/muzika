@@ -244,17 +244,6 @@ label.bold-link link {
   padding: 12px 24px;
 }
 
-.inline-song-list-view {
-  border-spacing: 6px;
-  padding-left: 6px;
-  padding-right: 6px;
-  padding-bottom: 18px;
-}
-
-.inline-song-list-view>row {
-  border-radius: 12px;
-}
-
 .black-bg {
   background-color: black;
 }
