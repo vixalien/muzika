@@ -1,26 +1,39 @@
-import { AudioFormat, Format, Song } from "src/muse";
-import { format_has_audio } from ".";
-import { languages } from "src/components/player/video/languages";
+import { AudioFormat, Format, Song, VideoFormat } from "src/muse";
 
 export function convert_formats_to_dash(song: Song) {
-  const formats = [...song.formats, ...song.adaptive_formats];
+  const duration = get_presentation_duration(song.formats);
 
-  const duration = get_presentation_duration(formats);
+  const video_formats = song.formats.filter((format) =>
+    format.has_video
+  ) as VideoFormat[];
+  const audio_formats = song.formats.filter((format) =>
+    format.has_audio
+  ) as AudioFormat[];
 
-  const translable_caption = song.captions?.find((caption) =>
-    caption.translatable
-  );
+  const get_max = (key: keyof VideoFormat) =>
+    video_formats
+      .reduce((acc: any, format) => {
+        if (format[key] as number > acc) {
+          return format[key];
+        }
+        return acc;
+      }, 0);
+
+  const max_width = get_max("width");
+  const max_height = get_max("height");
+  const max_fps = get_max("fps");
 
   return `<?xml version="1.0"?>\n` + objectToSchema({
     "@name": "MPD",
     "xmlns:xsi": "http://www.w3.org/2001/XMLSchema-instance",
     "xmlns": "urn:mpeg:dash:schema:mpd:2011",
-    "xsi:schemaLocation": "urn:mpeg:dash:schema:mpd:2011 DASH-MPD.xsd",
-    "xmlns:yt": "http://youtube.com/yt/2012/10/10",
     "profiles": "urn:mpeg:dash:profile:isoff-on-demand:2011",
     "type": "static",
     "mediaPresentationDuration": duration,
-    "minBufferTime": "PT1.500S",
+    "minBufferTime": "PT2S",
+    // "suggestedPresentationDelay": "PT2S",
+    // "xmlns:xsi": "http://www.w3.org/2001/XMLSchema-instance",
+    // "xsi:schemaLocation": "urn:mpeg:dash:schema:mpd:2011 DASH-MPD.xsd",
     "#children": [
       {
         "@name": "ProgramInformation",
@@ -29,28 +42,18 @@ export function convert_formats_to_dash(song: Song) {
       },
       {
         "@name": "Period",
+        "duration": duration,
         "#children": [
-          ...formats.reduce((acc, format, index) => {
+          ...song.formats.reduce((acc, format, index) => {
             if (format.has_audio && format.has_video) return acc;
 
             const representation: Record<string, any> = {
               "@name": "Representation",
-              "id": format.itag,
+              "id": `format-${format.itag}`,
               "mimeType": escape_attribute(format.mime_type.split(";")[0]),
-              "codecs": escape_attribute(format.codecs.split(", ").join(",")),
+              "codecs": escape_attribute(format.codecs.split(",")[0]),
               "bandwidth": format.average_bitrate || format.bitrate,
-              "audioSamplingRate": format_has_audio(format)
-                ? format.sample_rate
-                : null,
               "#children": [
-                ...(format_has_audio(format)
-                  ? [{
-                    "@name": "AudioChannelConfiguration",
-                    "schemeIdUri":
-                      "urn:mpeg:dash:23003:3:audio_channel_configuration:2011",
-                    "value": format.channels,
-                  }]
-                  : []),
                 {
                   "@name": "BaseURL",
                   "@noindent": true,
@@ -90,6 +93,7 @@ export function convert_formats_to_dash(song: Song) {
               representation.frameRate = format.fps;
               representation.par = get_ratio(format.width, format.height);
               representation.sar = "1:1";
+              representation.startWithSAP = "1";
             }
 
             if (format.has_audio) {
@@ -99,20 +103,33 @@ export function convert_formats_to_dash(song: Song) {
 
             const definition: Record<string, any> = {
               "@name": "AdaptationSet",
-              "mimeType": escape_attribute(format.mime_type.split(";")[0]),
+              "group": index,
+              "bitstreamSwitching": "true",
               "segmentAlignment": "true",
-              // "contentType": format.has_audio ? "audio" : "video",
-              "#children": [
-                {
-                  "@name": "Role",
-                  "schemeIdUri": "urn:mpeg:dash:role:2011",
-                  "value": "main",
-                },
-                representation,
-              ],
+              "subsegmentStartsWithSAP": "1",
+              "#children": [representation],
             };
+
+            if (format.has_video) {
+              definition.maxWidth = max_width;
+              definition.maxHeight = max_height;
+              definition.maxFrameRate = max_fps;
+            }
+
+            if (format.has_audio) {
+              definition.lang = "en";
+            }
+
             const existing = acc.find((item) => {
-              return item.mimeType === definition.mimeType;
+              const first_representation = item["#children"][0];
+
+              if (!first_representation) return false;
+
+              return (
+                first_representation.mimeType === representation.mimeType &&
+                first_representation.codecs.split(".")[0] ===
+                  representation.codecs.split(".")[0]
+              );
             });
 
             if (existing) {
@@ -130,8 +147,8 @@ export function convert_formats_to_dash(song: Song) {
 
             return {
               "@name": "AdaptationSet",
-              "mimeType": "text/vtt",
               "lang": caption.lang,
+              "mimeType": "text/vtt",
               "#children": [
                 {
                   "@name": "Representation",
@@ -148,38 +165,6 @@ export function convert_formats_to_dash(song: Song) {
               ],
             };
           }),
-          ...(translable_caption
-            ? languages.map((lang) => {
-              const url = new URL(translable_caption.url);
-              url.searchParams.set("fmt", "vtt");
-              url.searchParams.set("tlang", lang.code);
-
-              return {
-                "@name": "AdaptationSet",
-                "mimeType": "text/vtt",
-                "lang": lang.code,
-                "#children": [
-                  {
-                    "@name": "Representation",
-                    "id": `caption-translated-${lang.code}`,
-                    "bandwidth": 256,
-                    "#children": [
-                      {
-                        "@name": "Role",
-                        "schemeIdUri": "urn:mpeg:dash:role:2011",
-                        "value": "dub",
-                      },
-                      {
-                        "@name": "BaseURL",
-                        "@noindent": true,
-                        "#children": escape_uri(url.toString()),
-                      },
-                    ],
-                  },
-                ],
-              };
-            })
-            : []),
         ],
       },
     ],

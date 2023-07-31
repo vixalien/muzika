@@ -217,13 +217,6 @@ export class MuzikaMediaStream extends Gtk.MediaStream {
           Gdk.Paintable.$gtype,
           GObject.ParamFlags.READABLE,
         ),
-        media_info: GObject.param_spec_object(
-          "media-info",
-          "Media Info",
-          "The media info",
-          GstPlay.PlayMediaInfo.$gtype,
-          GObject.ParamFlags.READABLE,
-        ),
       },
     }, this);
   }
@@ -284,17 +277,7 @@ export class MuzikaMediaStream extends Gtk.MediaStream {
 
   protected _play: GstPlay.Play;
 
-  protected _initial_seek_to: number | null = null;
-
-  get initial_seek_to() {
-    return this._initial_seek_to;
-  }
-
-  set initial_seek_to(initial_seek_to: number | null) {
-    this._initial_seek_to = initial_seek_to;
-
-    this.notify("timestamp");
-  }
+  initial_seek_to: number | null = null;
 
   private do_initial_seek() {
     if (this.initial_seek_to !== null) {
@@ -827,12 +810,6 @@ export class MuzikaPlayer extends MuzikaMediaStream {
 
         this.set_uri(uri);
 
-        if (this.playing) {
-          this._play.play();
-        } else {
-          this._play.pause();
-        }
-
         this.add_history = true;
       })
       .catch((error) => {
@@ -1087,13 +1064,21 @@ function get_song_uri(song: Song, skip_number_of_formats_check = true) {
     })
     .filter((e) => {
       if (format_has_audio(e)) {
-        return audio_quality === AudioQuality.auto ||
-          e.audio_quality == AudioQuality[audio_quality];
+        if (Settings.get_enum("audio-quality") === AudioQuality.auto) {
+          return true;
+        }
+
+        return e.audio_quality ==
+          AudioQuality[Settings.get_enum("audio-quality")];
       }
 
       if (format_has_video(e)) {
-        return video_quality === VideoQuality.auto ||
-          e.video_quality == VideoQuality[video_quality];
+        if (Settings.get_enum("video-quality") === AudioQuality.auto) {
+          return true;
+        }
+
+        return e.video_quality ==
+          VideoQuality[Settings.get_enum("video-quality")];
       }
 
       return false;
@@ -1131,7 +1116,6 @@ function get_song_uri(song: Song, skip_number_of_formats_check = true) {
   return `data:application/dash+xml;base64,${
     btoa(convert_formats_to_dash({
       ...song,
-      adaptive_formats: [],
       formats: streams,
     }))
   }`;

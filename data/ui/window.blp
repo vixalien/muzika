@@ -19,20 +19,18 @@ template $MuzikaWindow : Adw.ApplicationWindow {
     }
   }
 
-  Stack main_stack {
-    transition-type: slide_up_down;
-    
-    Adw.ToolbarView toolbar_view {
-      reveal-bottom-bars: false;
-      bottom-bar-style: raised;
-      content: Adw.ToastOverlay toast_overlay {
-        Adw.NavigationSplitView split_view {
-          min-sidebar-width: 250;
-          max-sidebar-width: 350;
-          show-content: true;
-          sidebar: 
-          Adw.NavigationPage {
-            title: _("Navigation");
+  Adw.ToolbarView toolbar_view {
+    reveal-bottom-bars: false;
+    bottom-bar-style: raised;
+    content: Overlay {
+    Adw.ToastOverlay toast_overlay {
+      Adw.NavigationSplitView split_view {
+        min-sidebar-width: 250;
+        max-sidebar-width: 350;
+        show-content: true;
+        sidebar: 
+        Adw.NavigationPage {
+          title: _("Navigation");
 
             Adw.ToolbarView {
               hexpand: false;
@@ -107,7 +105,17 @@ template $MuzikaWindow : Adw.ApplicationWindow {
       };
     }
 
-    $VideoPlayerView video_player_view {}
+
+
+    [overlay]
+    Adw.Bin {
+      Picture picture {}
+    }
+  
+
+    }
+
+    ;
   }
 }
 
