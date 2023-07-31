@@ -254,3 +254,7 @@ label.bold-link link {
 .inline-song-list-view>row {
   border-radius: 12px;
 }
+
+.black-bg {
+  background-color: black;
+}
