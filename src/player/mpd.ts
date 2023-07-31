@@ -1,6 +1,4 @@
 import { AudioFormat, Format, Song, VideoFormat } from "src/muse";
-import { format_has_audio } from ".";
-import { languages } from "src/components/player/video/languages";
 
 export function convert_formats_to_dash(song: Song) {
   const duration = get_presentation_duration(song.formats);
@@ -21,9 +19,9 @@ export function convert_formats_to_dash(song: Song) {
         return acc;
       }, 0);
 
-  const translable_caption = song.captions?.find((caption) =>
-    caption.translatable
-  );
+  const max_width = get_max("width");
+  const max_height = get_max("height");
+  const max_fps = get_max("fps");
 
   return `<?xml version="1.0"?>\n` + objectToSchema({
     "@name": "MPD",
@@ -149,8 +147,8 @@ export function convert_formats_to_dash(song: Song) {
 
             return {
               "@name": "AdaptationSet",
-              "mimeType": "text/vtt",
               "lang": caption.lang,
+              "mimeType": "text/vtt",
               "#children": [
                 {
                   "@name": "Representation",
@@ -167,38 +165,6 @@ export function convert_formats_to_dash(song: Song) {
               ],
             };
           }),
-          ...(translable_caption
-            ? languages.map((lang) => {
-              const url = new URL(translable_caption.url);
-              url.searchParams.set("fmt", "vtt");
-              url.searchParams.set("tlang", lang.code);
-
-              return {
-                "@name": "AdaptationSet",
-                "mimeType": "text/vtt",
-                "lang": lang.code,
-                "#children": [
-                  {
-                    "@name": "Representation",
-                    "id": `caption-translated-${lang.code}`,
-                    "bandwidth": 256,
-                    "#children": [
-                      {
-                        "@name": "Role",
-                        "schemeIdUri": "urn:mpeg:dash:role:2011",
-                        "value": "dub",
-                      },
-                      {
-                        "@name": "BaseURL",
-                        "@noindent": true,
-                        "#children": escape_uri(url.toString()),
-                      },
-                    ],
-                  },
-                ],
-              };
-            })
-            : []),
         ],
       },
     ],

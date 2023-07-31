@@ -211,13 +211,6 @@ export class MuzikaMediaStream extends Gtk.MediaStream {
           Gdk.Paintable.$gtype,
           GObject.ParamFlags.READABLE,
         ),
-        media_info: GObject.param_spec_object(
-          "media-info",
-          "Media Info",
-          "The media info",
-          GstPlay.PlayMediaInfo.$gtype,
-          GObject.ParamFlags.READABLE,
-        ),
       },
     }, this);
   }
@@ -1087,21 +1080,21 @@ function get_song_uri(song: Song) {
     })
     .filter((e) => {
       if (format_has_audio(e)) {
-        if (audio_quality === AudioQuality.auto) {
+        if (Settings.get_enum("audio-quality") === AudioQuality.auto) {
           return true;
         }
 
         return e.audio_quality ==
-          AudioQuality[audio_quality];
+          AudioQuality[Settings.get_enum("audio-quality")];
       }
 
       if (format_has_video(e)) {
-        if (video_quality === AudioQuality.auto) {
+        if (Settings.get_enum("video-quality") === AudioQuality.auto) {
           return true;
         }
 
         return e.video_quality ==
-          VideoQuality[video_quality];
+          VideoQuality[Settings.get_enum("video-quality")];
       }
 
       return false;
@@ -1167,9 +1160,4 @@ enum AudioQuality {
   low = 2,
   medium = 3,
   high = 4,
-}
-
-// compare numbers of different precisions
-function compare_numbers(a: number, b: number): boolean {
-  return Math.abs(Math.fround(a) - Math.fround(b)) < 0.00001;
 }
