@@ -22,7 +22,7 @@ template $MuzikaWindow : Adw.ApplicationWindow {
   Adw.ToolbarView toolbar_view {
     reveal-bottom-bars: false;
     bottom-bar-style: raised;
-    content: 
+    content: Overlay {
     Adw.ToastOverlay toast_overlay {
       Adw.NavigationSplitView split_view {
         min-sidebar-width: 250;
@@ -102,6 +102,16 @@ template $MuzikaWindow : Adw.ApplicationWindow {
 
         ;
       }
+    }
+
+
+
+    [overlay]
+    Adw.Bin {
+      Picture picture {}
+    }
+  
+
     }
 
     ;

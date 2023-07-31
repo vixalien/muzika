@@ -3,7 +3,9 @@ import GObject from "gi://GObject";
 import Gio from "gi://Gio";
 import GLib from "gi://GLib";
 import GstPlay from "gi://GstPlay";
+import GstVideo from "gi://GstVideo";
 import Gtk from "gi://Gtk?version=4.0";
+import Gdk from "gi://Gdk?version=4.0";
 
 import {
   Queue,
@@ -208,14 +210,31 @@ export class MuzikaMediaStream extends Gtk.MediaStream {
           false,
           GObject.ParamFlags.READABLE,
         ),
+        paintable: GObject.param_spec_object(
+          "paintable",
+          "Paintable",
+          "The GdkPaintable representing the video",
+          Gdk.Paintable.$gtype,
+          GObject.ParamFlags.READABLE,
+        ),
       },
     }, this);
+  }
+
+  private _paintable: Gdk.Paintable | null = null;
+
+  get paintable(): Gdk.Paintable | null {
+    return this._paintable;
   }
 
   constructor() {
     super();
 
     this._play = new GstPlay.Play();
+
+    const play_config = this._play.get_config();
+    GstPlay.Play.config_set_seek_accurate(play_config, true);
+    this._play.set_config(play_config);
 
     const adapter = new MuzikaPlaySignalAdapter(this._play);
 
@@ -233,8 +252,20 @@ export class MuzikaMediaStream extends Gtk.MediaStream {
     adapter.connect("volume-changed", this.volume_changed_cb.bind(this));
     adapter.connect("mute-changed", this.mute_changed_cb.bind(this));
     adapter.connect("seek-done", this.seek_done_cb.bind(this));
+    adapter.connect(
+      "warning",
+      (_object, error: GLib.Error) => {
+        console.warn("player warning", error.code, error.message);
+      },
+    );
 
-    const sink = Gst.ElementFactory.make("fakesink", "sink")!;
+    const sink = Gst.ElementFactory.make(
+      "gtk4paintablesink",
+      "sink",
+    )! as GstVideo.VideoSink;
+
+    this._paintable = (sink as any).paintable;
+    this.notify("paintable");
 
     if (!sink) {
       throw new Error("Failed to create sink");
@@ -247,7 +278,7 @@ export class MuzikaMediaStream extends Gtk.MediaStream {
 
   protected _play: GstPlay.Play;
 
-  protected initial_seek_to: number | null = null;
+  initial_seek_to: number | null = null;
 
   private do_initial_seek() {
     if (this.initial_seek_to !== null) {
@@ -450,7 +481,7 @@ export class MuzikaMediaStream extends Gtk.MediaStream {
     }
 
     if (state == GstPlay.PlayState.STOPPED) {
-      this.update(0);
+      this.update(this.initial_seek_to ?? 0);
 
       if (this.prepared) {
         this.stream_unprepared();
@@ -636,10 +667,18 @@ export class MuzikaPlayer extends MuzikaMediaStream {
     this.load_state();
 
     Settings.connect("changed::audio-quality", () => {
+      console.log(
+        "audio-quality changed",
+        AudioQuality[Settings.get_enum("audio-quality")],
+      );
       this.update_uri();
     });
 
     Settings.connect("changed::video-quality", () => {
+      console.log(
+        "video-quality changed",
+        VideoQuality[Settings.get_enum("video-quality")],
+      );
       this.update_uri();
     });
   }
@@ -685,8 +724,9 @@ export class MuzikaPlayer extends MuzikaMediaStream {
   private update_uri() {
     const song = this.now_playing?.object.song;
 
-    if (!song || this._play.get_media_info()) return;
+    if (!song || !this._play.get_media_info()) return;
 
+    this.initial_seek_to = this.get_timestamp();
     this.set_uri(get_song_uri(song));
   }
 
@@ -738,7 +778,7 @@ export class MuzikaPlayer extends MuzikaMediaStream {
 
         const uri = get_song_uri(song);
 
-        this._play.set_uri(uri);
+        this.set_uri(uri);
 
         this.add_history = true;
       })
@@ -920,37 +960,62 @@ function get_song_uri(song: Song) {
   const streams = [...song.formats, ...song.adaptive_formats]
     .filter((e) => {
       if (format_has_audio(e)) {
+        if (Settings.get_enum("audio-quality") === AudioQuality.auto) {
+          return true;
+        }
+
         return e.audio_quality ==
           AudioQuality[Settings.get_enum("audio-quality")];
       }
 
       if (format_has_video(e)) {
+        if (Settings.get_enum("video-quality") === AudioQuality.auto) {
+          return true;
+        }
+
         return e.video_quality ==
           VideoQuality[Settings.get_enum("video-quality")];
       }
 
       return false;
+    })
+    .sort((a, b) => {
+      // sort from lowest quality to highest
+
+      if (format_has_audio(a) && format_has_audio(b)) {
+        return a.sample_rate - b.sample_rate;
+      } else if (format_has_video(a) && format_has_video(b)) {
+        return a.width - b.width;
+      } else {
+        return 0;
+      }
     });
 
   return `data:application/dash+xml;base64,${
-    btoa(convert_formats_to_dash(streams))
+    btoa(convert_formats_to_dash({
+      ...song,
+      formats: streams,
+    }))
   }`;
 }
 
 enum VideoQuality {
-  tiny = 0,
-  small = 1,
-  medium = 2,
-  large = 3,
-  hd720 = 4,
-  hd1080 = 5,
-  hd2160 = 7,
-  highres = 8,
+  auto = 0,
+  tiny = 1,
+  small = 2,
+  medium = 3,
+  large = 4,
+  hd720 = 5,
+  hd1080 = 6,
+  hd1440 = 7,
+  hd2160 = 8,
+  highres = 9,
 }
 
 enum AudioQuality {
-  tiny = 0,
-  low = 1,
-  medium = 2,
-  high = 3,
+  auto = 0,
+  tiny = 1,
+  low = 2,
+  medium = 3,
+  high = 4,
 }

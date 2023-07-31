@@ -57,6 +57,7 @@ export class Window extends Adw.ApplicationWindow {
           "navbar_window",
           "split_view",
           "account",
+          "picture",
         ],
         Children: [
           "toast_overlay",
@@ -81,6 +82,7 @@ export class Window extends Adw.ApplicationWindow {
   private _navbar_window!: Gtk.ScrolledWindow;
   private _split_view!: Adw.NavigationSplitView;
   private _account!: Gtk.MenuButton;
+  private _picture!: Gtk.Picture;
 
   navigator: Navigator;
   player_view: PlayerView;
@@ -107,6 +109,12 @@ export class Window extends Adw.ApplicationWindow {
     this.navigator.navigate("home");
 
     const player = get_player();
+
+    player.connect("notify::paintable", () => {
+      this._picture.set_paintable(player.paintable);
+    });
+
+    this._picture.set_paintable(player.paintable);
 
     player.queue.connect(
       "notify::current",
