@@ -624,6 +624,9 @@ export class MuzikaPlayer extends MuzikaMediaStream {
 
     this._queue.connect("notify::current", () => {
       this.load(this.queue.current?.object ?? null)
+        .then(() => {
+          this.save_state();
+        })
         .catch((e) => {
           console.log("caught error", e);
         });
