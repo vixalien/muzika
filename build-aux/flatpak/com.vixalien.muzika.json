@@ -14,7 +14,7 @@
     "env": {
       "CARGO_HOME": "/run/build/cargo-c/cargo"
     },
-    "append-path": "/usr/lib/sdk/node18/bin"
+    "append-path": "/usr/lib/sdk/node18/bin:/usr/lib/sdk/rust-stable/bin"
   },
   "command": "com.vixalien.muzika",
   "finish-args": [
