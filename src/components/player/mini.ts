@@ -20,7 +20,6 @@ export class MiniPlayerView extends Gtk.Overlay {
         "title",
         "subtitle",
         "play_button",
-        "next_button",
       ],
     }, this);
   }
@@ -29,7 +28,6 @@ export class MiniPlayerView extends Gtk.Overlay {
   private _title!: Gtk.Label;
   private _subtitle!: Gtk.Label;
   private _play_button!: Gtk.Button;
-  private _next_button!: Gtk.Button;
 
   player: MuzikaPlayer;
 
