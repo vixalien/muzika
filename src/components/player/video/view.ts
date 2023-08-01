@@ -47,15 +47,19 @@ export class VideoPlayerView extends Adw.Bin {
 
     // hover
     const hover = new Gtk.EventControllerMotion();
-    hover.connect("enter", () => {
-      this.show_ui(true);
+
+    hover.connect("enter", this.extend_ui_visible_time.bind(this));
+
+    // fix everytime cursor is inside the window, the ui will be shown
+    const last_motion = [0, 0] as [number, number];
+    hover.connect("motion", (_, x, y) => {
+      if (x == last_motion[0] && y == last_motion[1]) return;
+      last_motion[0] = x;
+      last_motion[1] = y;
+      this.extend_ui_visible_time();
     });
-    hover.connect("motion", () => {
-      this.show_ui(true);
-    });
-    hover.connect("leave", () => {
-      this.show_ui(false);
-    });
+
+    hover.connect("leave", this.extend_ui_visible_time.bind(this));
 
     // click
     const click = new Gtk.GestureClick();
@@ -113,18 +117,39 @@ export class VideoPlayerView extends Adw.Bin {
     window.fullscreened = !window.fullscreened;
   }
 
-  show_ui(show: boolean) {
-    if (show === false) {
-      return GLib.timeout_add_seconds(GLib.PRIORITY_DEFAULT, 1, () => {
-        this._toolbar_view.reveal_top_bars =
-          this._toolbar_view.reveal_bottom_bars =
-            false;
-        return false;
-      });
+  private timeout_id: number | null = null;
+
+  private extend_ui_visible_time() {
+    this.show_ui();
+
+    if (this.timeout_id) {
+      GLib.source_remove(this.timeout_id);
     }
 
+    this.timeout_id = GLib.timeout_add_seconds(GLib.PRIORITY_DEFAULT, 1, () => {
+      this.hide_ui();
+
+      this.timeout_id = null;
+
+      return false;
+    });
+  }
+
+  private hide_ui() {
     this._toolbar_view.reveal_top_bars =
       this._toolbar_view.reveal_bottom_bars =
-        show;
+        false;
+  }
+
+  private show_ui() {
+    this._toolbar_view.reveal_top_bars =
+      this._toolbar_view.reveal_bottom_bars =
+        true;
+  }
+
+  private toggle_ui() {
+    this._toolbar_view.reveal_top_bars =
+      this._toolbar_view.reveal_bottom_bars =
+        !this._toolbar_view.reveal_top_bars;
   }
 }
