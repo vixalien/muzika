@@ -1,4 +1,5 @@
 import { AudioFormat, Format, Song, VideoFormat } from "src/muse";
+import { format_has_audio } from ".";
 
 export function convert_formats_to_dash(song: Song) {
   const duration = get_presentation_duration(song.formats);
@@ -19,20 +20,16 @@ export function convert_formats_to_dash(song: Song) {
         return acc;
       }, 0);
 
-  const max_width = get_max("width");
-  const max_height = get_max("height");
-  const max_fps = get_max("fps");
-
   return `<?xml version="1.0"?>\n` + objectToSchema({
     "@name": "MPD",
+    "xmlns:xsi": "http://www.w3.org/2001/XMLSchema-instance",
     "xmlns": "urn:mpeg:dash:schema:mpd:2011",
+    "xsi:schemaLocation": "urn:mpeg:dash:schema:mpd:2011 DASH-MPD.xsd",
+    "xmlns:yt": "http://youtube.com/yt/2012/10/10",
     "profiles": "urn:mpeg:dash:profile:isoff-on-demand:2011",
     "type": "static",
     "mediaPresentationDuration": duration,
-    "minBufferTime": "PT2S",
-    // "suggestedPresentationDelay": "PT2S",
-    // "xmlns:xsi": "http://www.w3.org/2001/XMLSchema-instance",
-    // "xsi:schemaLocation": "urn:mpeg:dash:schema:mpd:2011 DASH-MPD.xsd",
+    "minBufferTime": "PT1.500S",
     "#children": [
       {
         "@name": "ProgramInformation",
@@ -41,18 +38,29 @@ export function convert_formats_to_dash(song: Song) {
       },
       {
         "@name": "Period",
-        "duration": duration,
         "#children": [
           ...song.formats.reduce((acc, format, index) => {
             if (format.has_audio && format.has_video) return acc;
 
             const representation: Record<string, any> = {
               "@name": "Representation",
-              "id": `format-${format.itag}`,
+              "id": format.itag,
               "mimeType": escape_attribute(format.mime_type.split(";")[0]),
               "codecs": escape_attribute(format.codecs.split(",")[0]),
               "bandwidth": format.average_bitrate || format.bitrate,
+              "audioSamplingRate": format_has_audio(format)
+                ? format.sample_rate
+                : null,
+              "startWithSAP": "1",
               "#children": [
+                ...(format_has_audio(format)
+                  ? [{
+                    "@name": "AudioChannelConfiguration",
+                    "schemeIdUri":
+                      "urn:mpeg:dash:23003:3:audio_channel_configuration:2011",
+                    "value": format.channels,
+                  }]
+                  : []),
                 {
                   "@name": "BaseURL",
                   "@noindent": true,
@@ -102,33 +110,19 @@ export function convert_formats_to_dash(song: Song) {
 
             const definition: Record<string, any> = {
               "@name": "AdaptationSet",
-              "group": index,
-              "bitstreamSwitching": "true",
-              "segmentAlignment": "true",
-              "subsegmentStartsWithSAP": "1",
-              "#children": [representation],
+              "mimeType": escape_attribute(format.mime_type.split(";")[0]),
+              "subsegmentAlignment": "true",
+              "#children": [
+                {
+                  "@name": "Role",
+                  "schemeIdUri": "urn:mpeg:dash:role:2011",
+                  "value": "main",
+                },
+                representation,
+              ],
             };
-
-            if (format.has_video) {
-              definition.maxWidth = max_width;
-              definition.maxHeight = max_height;
-              definition.maxFrameRate = max_fps;
-            }
-
-            if (format.has_audio) {
-              definition.lang = "en";
-            }
-
             const existing = acc.find((item) => {
-              const first_representation = item["#children"][0];
-
-              if (!first_representation) return false;
-
-              return (
-                first_representation.mimeType === representation.mimeType &&
-                first_representation.codecs.split(".")[0] ===
-                  representation.codecs.split(".")[0]
-              );
+              return item.mimeType === definition.mimeType;
             });
 
             if (existing) {
@@ -170,6 +164,18 @@ export function convert_formats_to_dash(song: Song) {
   });
 }
 
+function format_duration(duration: number) {
+  // Format to PT(#H)(#M)#S (ISO 8601)
+
+  const hours = Math.floor(duration / 3600);
+  const minutes = Math.floor((duration - hours * 3600) / 60);
+  const seconds = duration - hours * 3600 - minutes * 60;
+
+  return `PT${hours ? `${hours}H` : ""}${
+    minutes ? `${minutes}M` : ""
+  }${seconds}S`;
+}
+
 function get_presentation_duration(media: Format[]) {
   let maxDuration = 0;
   for (const format of media) {
@@ -177,7 +183,7 @@ function get_presentation_duration(media: Format[]) {
       maxDuration = format.duration_ms;
     }
   }
-  return `PT${maxDuration / 1000}S`;
+  return format_duration(maxDuration / 1000);
 }
 
 function escape_attribute(str: string) {
