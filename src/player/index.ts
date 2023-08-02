@@ -1045,17 +1045,16 @@ export function format_has_video(format: Format): format is VideoFormat {
   return format.has_video;
 }
 
-function get_song_uri(song: Song, skip_number_of_formats_check = true) {
+function get_song_uri(song: Song) {
   const audio_quality = Settings.get_enum("audio-quality");
   const video_quality = Settings.get_enum("video-quality");
 
-  // don't use the dash manifest for now: subtitles won't work
-  // if (
-  //   audio_quality === AudioQuality.auto &&
-  //   video_quality === VideoQuality.auto && song.hlsManifestUrl
-  // ) {
-  //   return song.hlsManifestUrl;
-  // }
+  if (
+    audio_quality === AudioQuality.auto &&
+    video_quality === VideoQuality.auto && song.hlsManifestUrl
+  ) {
+    return song.hlsManifestUrl;
+  }
 
   const streams = [...song.formats, ...song.adaptive_formats]
     .filter((format) => {
@@ -1064,21 +1063,21 @@ function get_song_uri(song: Song, skip_number_of_formats_check = true) {
     })
     .filter((e) => {
       if (format_has_audio(e)) {
-        if (Settings.get_enum("audio-quality") === AudioQuality.auto) {
+        if (audio_quality === AudioQuality.auto) {
           return true;
         }
 
         return e.audio_quality ==
-          AudioQuality[Settings.get_enum("audio-quality")];
+          AudioQuality[audio_quality];
       }
 
       if (format_has_video(e)) {
-        if (Settings.get_enum("video-quality") === AudioQuality.auto) {
+        if (video_quality === AudioQuality.auto) {
           return true;
         }
 
         return e.video_quality ==
-          VideoQuality[Settings.get_enum("video-quality")];
+          VideoQuality[video_quality];
       }
 
       return false;
