@@ -951,33 +951,43 @@ export type TrackMetadata = {
   settings: QueueSettings;
 };
 
-function format_has_audio(format: Format): format is AudioFormat {
+export function format_has_audio(format: Format): format is AudioFormat {
   return format.has_audio;
 }
 
-function format_has_video(format: Format): format is VideoFormat {
+export function format_has_video(format: Format): format is VideoFormat {
   return format.has_video;
 }
 
 function get_song_uri(song: Song) {
+  const audio_quality = Settings.get_enum("audio-quality");
+  const video_quality = Settings.get_enum("video-quality");
+
+  if (
+    audio_quality === AudioQuality.auto &&
+    video_quality === VideoQuality.auto && song.hlsManifestUrl
+  ) {
+    return song.hlsManifestUrl;
+  }
+
   const streams = [...song.formats, ...song.adaptive_formats]
     .filter((e) => {
       if (format_has_audio(e)) {
-        if (Settings.get_enum("audio-quality") === AudioQuality.auto) {
+        if (audio_quality === AudioQuality.auto) {
           return true;
         }
 
         return e.audio_quality ==
-          AudioQuality[Settings.get_enum("audio-quality")];
+          AudioQuality[audio_quality];
       }
 
       if (format_has_video(e)) {
-        if (Settings.get_enum("video-quality") === AudioQuality.auto) {
+        if (video_quality === AudioQuality.auto) {
           return true;
         }
 
         return e.video_quality ==
-          VideoQuality[Settings.get_enum("video-quality")];
+          VideoQuality[video_quality];
       }
 
       return false;
