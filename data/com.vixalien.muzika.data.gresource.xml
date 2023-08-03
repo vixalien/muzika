@@ -21,6 +21,8 @@
     <file preprocess="xml-stripblanks">ui/components/navbar/section.ui</file>
     <file preprocess="xml-stripblanks">ui/components/navbar/title.ui</file>
     <file preprocess="xml-stripblanks">ui/components/paginator.ui</file>
+    <file preprocess="xml-stripblanks">ui/components/player/video/controls.ui</file>
+    <file preprocess="xml-stripblanks">ui/components/player/video/full.ui</file>
     <file preprocess="xml-stripblanks">ui/components/player/video/mini.ui</file>
     <file preprocess="xml-stripblanks">ui/components/player/video/view.ui</file>
     <file preprocess="xml-stripblanks">ui/components/player/full.ui</file>
