@@ -111,7 +111,7 @@ export function convert_formats_to_dash(song: Song) {
             const definition: Record<string, any> = {
               "@name": "AdaptationSet",
               "mimeType": escape_attribute(format.mime_type.split(";")[0]),
-              "subsegmentAlignment": "true",
+              "segmentAlignment": "true",
               "#children": [
                 {
                   "@name": "Role",
@@ -219,6 +219,8 @@ function objectToSchema(obj: any) {
 
   for (const key in obj) {
     const value = obj[key];
+
+    if (value === null) continue;
 
     if (key.startsWith("@")) continue;
 
