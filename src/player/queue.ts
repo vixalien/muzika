@@ -45,6 +45,12 @@ function durstenfeld_shuffle<T extends any>(array: T[]) {
   return array;
 }
 
+export enum PreferredMediaType {
+  AUTO = 0,
+  SONG,
+  VIDEO,
+}
+
 export class Queue extends GObject.Object {
   static {
     GObject.registerClass({
@@ -124,6 +130,22 @@ export class Queue extends GObject.Object {
           null as any,
           GObject.ParamFlags.READWRITE,
         ),
+        "preferred-media-type": GObject.param_spec_uint(
+          "preferred-media-type",
+          "The preferred media type",
+          "Whether the users prefers to play tracks as-is, track or video versions",
+          PreferredMediaType.AUTO,
+          PreferredMediaType.VIDEO,
+          PreferredMediaType.AUTO,
+          GObject.ParamFlags.READWRITE,
+        ),
+        "current-is-video": GObject.param_spec_boolean(
+          "current-is-video",
+          "Current Is Video",
+          "Whether the currently playing track has a video",
+          false,
+          GObject.ParamFlags.READWRITE,
+        ),
       },
       Signals: {
         "prepare-next": {
@@ -132,6 +154,8 @@ export class Queue extends GObject.Object {
       },
     }, this);
   }
+
+  preferred_media_type = PreferredMediaType.AUTO;
 
   private _list: Gio.ListStore<ObjectContainer<QueueMeta>> = new Gio
     .ListStore();
@@ -149,9 +173,60 @@ export class Queue extends GObject.Object {
     this.change_position(-1);
   }
 
-  get current() {
+  private update_current_if_necessary() {
     if (this.position < 0 || this.position >= this.list.n_items) return null;
-    return this.list.get_item(this.position);
+
+    const track = this.list.get_item(this.position);
+
+    if (!track || !track.object) return null;
+
+    let final_track: ObjectContainer<QueueMeta>;
+
+    switch (this.preferred_media_type) {
+      case PreferredMediaType.AUTO:
+        final_track = track;
+        break;
+      case PreferredMediaType.SONG: {
+        if (
+          track.object.videoType !== "MUSIC_VIDEO_TYPE_ATV" &&
+          track.object.counterpart
+        ) {
+          final_track = this.get_counterpart(track.object)!;
+        } else {
+          final_track = track;
+        }
+        break;
+      }
+      case PreferredMediaType.VIDEO: {
+        if (
+          track.object.videoType === "MUSIC_VIDEO_TYPE_ATV" &&
+          track.object.counterpart
+        ) {
+          final_track = this.get_counterpart(track.object)!;
+        } else {
+          final_track = track;
+        }
+        break;
+      }
+    }
+
+    if (!final_track) return;
+
+    this.list.splice(this.position, 1, [final_track]);
+
+    return track;
+  }
+
+  get current() {
+    return this.update_current_if_necessary();
+  }
+
+  get current_is_video() {
+    const track = this.current?.object;
+
+    if (!track) return false;
+
+    return track.videoType !== "MUSIC_VIDEO_TYPE_ATV";
   }
 
   get can_play_next() {
@@ -170,8 +245,8 @@ export class Queue extends GObject.Object {
     return this._position;
   }
 
-  change_position(position: number) {
-    if (position != this._position) {
+  change_position(position: number, force = false) {
+    if (position != this._position || force) {
       this._position = position;
 
       this.notify("position");
@@ -506,6 +581,8 @@ export class Queue extends GObject.Object {
     }
 
     if (options.play) {
+      this.preferred_media_type = PreferredMediaType.AUTO;
+
       this.set_settings(_omit(queue, ["tracks"]));
 
       const position = queue.current?.index
@@ -553,6 +630,7 @@ export class Queue extends GObject.Object {
     }
 
     if (options.play) {
+      this.preferred_media_type = PreferredMediaType.AUTO;
       this.change_position(0);
     }
 
@@ -625,10 +703,10 @@ export class Queue extends GObject.Object {
     return track;
   }
 
-  private update_position(position: number) {
+  private update_position(position: number, force = false) {
     if (position === -1) return null;
 
-    this.change_position(position);
+    this.change_position(position, force);
 
     this.update_track_settings();
   }
@@ -704,6 +782,31 @@ export class Queue extends GObject.Object {
       new_position,
     );
   }
+
+  private get_counterpart(track: QueueMeta) {
+    const counterpart = track.counterpart;
+
+    if (!counterpart) return null;
+
+    return new ObjectContainer(
+      track_to_meta({
+        ...counterpart,
+        counterpart: {
+          ...track,
+          counterpart: null,
+        },
+      }),
+    );
+  }
+
+  switch_counterpart() {
+    this.preferred_media_type = this.current_is_video
+      ? PreferredMediaType.SONG
+      : PreferredMediaType.VIDEO;
+
+    this.update_current_if_necessary();
+    this.update_position(this.position, true);
+  }
 }
 
 interface AddSongOptions {
@@ -738,4 +841,11 @@ export function tracks_to_meta(
   playlist: string | null = null,
 ): QueueMeta[] {
   return tracks.map((track) => ({ ...track, playlist }));
+}
+
+export function track_to_meta(
+  track: QueueTrack,
+  playlist: string | null = null,
+) {
+  return { ...track, playlist };
 }

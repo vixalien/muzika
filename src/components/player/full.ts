@@ -38,6 +38,8 @@ export class FullPlayerView extends Gtk.ActionBar {
         "lyrics_button",
         "related_button",
         "scale_and_timer",
+        "music_counterpart",
+        "video_counterpart",
       ],
       Signals: {
         "sidebar-button-clicked": {
@@ -63,6 +65,8 @@ export class FullPlayerView extends Gtk.ActionBar {
   _lyrics_button!: Gtk.ToggleButton;
   _related_button!: Gtk.ToggleButton;
   _scale_and_timer!: Gtk.Box;
+  _music_counterpart!: Gtk.ToggleButton;
+  _video_counterpart!: Gtk.ToggleButton;
 
   player: MuzikaPlayer;
 
@@ -161,6 +165,7 @@ export class FullPlayerView extends Gtk.ActionBar {
     this._progress_label.label = seconds_to_string(0);
 
     const song = this.player.queue.current?.object;
+
     if (song) {
       this.show_song(song!);
     }
@@ -333,17 +338,19 @@ export class FullPlayerView extends Gtk.ActionBar {
       this.abort_thumbnail = null;
     }
 
-    const isAudio = track.videoType === "MUSIC_VIDEO_TYPE_ATV";
-
     // thumbnail
 
-    this._image.visible_child = isAudio
-      ? DynamicImageVisibleChild.IMAGE
-      : DynamicImageVisibleChild.PICTURE;
+    this._video_counterpart.sensitive =
+      this._music_counterpart.sensitive =
+        !!track.counterpart;
 
-    if (!isAudio) {
+    if (this.player.queue.current_is_video) {
+      this._video_counterpart.active = true;
+      this._image.visible_child = DynamicImageVisibleChild.PICTURE;
       this._image.picture.paintable = this.player.paintable!;
     } else {
+      this._music_counterpart.active = true;
+      this._image.visible_child = DynamicImageVisibleChild.IMAGE;
       this.abort_thumbnail = new AbortController();
 
       this._image.load_thumbnails(track.thumbnails, {
@@ -375,6 +382,10 @@ export class FullPlayerView extends Gtk.ActionBar {
     this._duration_label.label = track.duration_seconds
       ? seconds_to_string(track.duration_seconds)
       : track.duration ?? "00:00";
+  }
+
+  private switch_counterpart() {
+    this.player.queue.switch_counterpart();
   }
 }
 
