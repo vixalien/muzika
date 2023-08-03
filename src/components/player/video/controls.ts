@@ -2,11 +2,11 @@ import GObject from "gi://GObject";
 import Adw from "gi://Adw";
 import Gtk from "gi://Gtk?version=4.0";
 
-import { MiniVideoPlayer } from "./mini";
-import { FullVideoPlayer } from "./full";
+import { MiniVideoControls } from "./mini";
+import { FullVideoControls } from "./full";
 
-MiniVideoPlayer;
-FullVideoPlayer;
+MiniVideoControls;
+FullVideoControls;
 
 export class VideoControls extends Adw.Bin {
   static {
@@ -32,8 +32,8 @@ export class VideoControls extends Adw.Bin {
   }
 
   private _stack!: Gtk.Stack;
-  private _mini!: MiniVideoPlayer;
-  private _full!: FullVideoPlayer;
+  private _mini!: MiniVideoControls;
+  private _full!: FullVideoControls;
 
   constructor() {
     super();
