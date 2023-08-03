@@ -15,13 +15,15 @@ template $FullPlayerView : ActionBar {
         valign: center;
         image-size: 74;
         persistent-play-button: false;
+
+        styles ["black-bg"]
       }
 
       Box now_playing_labels {
         orientation: vertical;
         spacing: 3;
         valign: center;
-        homogeneous: true;
+        homogeneous: false;
         width-request: 100;
 
         Label title {
@@ -47,6 +49,25 @@ template $FullPlayerView : ActionBar {
           styles [
             "flat-links",
           ]
+        }
+
+        Box actions {
+          margin-top: 6;
+          
+          styles ["linked"]
+
+          ToggleButton music_counterpart {
+            icon-name: "emblem-music-symbolic";
+
+            clicked => $switch_counterpart();
+          }
+
+          ToggleButton video_counterpart {
+            icon-name: "emblem-videos-symbolic";
+            group: music_counterpart;
+
+            clicked => $switch_counterpart();
+          }
         }
       }
     }
