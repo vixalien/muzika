@@ -55,7 +55,6 @@ export class FullVideoControls extends Adw.Bin {
     const player = get_player();
 
     this.song_changed();
-    this.update_play_button();
 
     // update the player when the current song changes
     this.listeners.connect(
@@ -63,6 +62,8 @@ export class FullVideoControls extends Adw.Bin {
       "notify::current",
       this.song_changed.bind(this),
     );
+
+    this.update_play_button();
 
     this.listeners.connect(player, "notify::is-buffering", () => {
       this.update_play_button();
@@ -75,6 +76,9 @@ export class FullVideoControls extends Adw.Bin {
         this.update_play_button();
       },
     );
+
+    this._scale.set_duration(player.duration);
+    this._duration_label.label = micro_to_string(player.duration);
 
     this.listeners.connect(
       player,
