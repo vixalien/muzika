@@ -341,12 +341,17 @@ export class FullPlayerView extends Gtk.ActionBar {
       ? DynamicImageVisibleChild.IMAGE
       : DynamicImageVisibleChild.PICTURE;
 
-    this.abort_thumbnail = new AbortController();
+    if (!isAudio) {
+      this._image.picture.paintable = this.player.paintable!;
+    } else {
+      this.abort_thumbnail = new AbortController();
 
-    this._image.load_thumbnails(track.thumbnails, {
-      width: 74,
-      signal: this.abort_thumbnail.signal,
-    });
+      this._image.load_thumbnails(track.thumbnails, {
+        width: 74,
+        signal: this.abort_thumbnail.signal,
+      });
+    }
+
     // labels
 
     if (track.album) {
