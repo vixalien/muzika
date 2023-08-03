@@ -7,10 +7,10 @@ import { get_player } from "src/application";
 import { PlayerScale } from "../scale";
 import { SignalListeners } from "src/util/signal-listener";
 
-export class FullVideoPlayer extends Adw.Bin {
+export class FullVideoControls extends Adw.Bin {
   static {
     GObject.registerClass({
-      GTypeName: "FullVideoPlayer",
+      GTypeName: "FullVideoControls",
       Template:
         "resource:///com/vixalien/muzika/ui/components/player/video/full.ui",
       InternalChildren: [
