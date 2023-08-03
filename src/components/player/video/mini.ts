@@ -7,10 +7,10 @@ import { get_player } from "src/application";
 import { PlayerScale } from "../scale";
 import { SignalListeners } from "src/util/signal-listener";
 
-export class MiniVideoPlayer extends Adw.Bin {
+export class MiniVideoControls extends Adw.Bin {
   static {
     GObject.registerClass({
-      GTypeName: "MiniVideoPlayer",
+      GTypeName: "MiniVideoControls",
       Template:
         "resource:///com/vixalien/muzika/ui/components/player/video/mini.ui",
       InternalChildren: [
