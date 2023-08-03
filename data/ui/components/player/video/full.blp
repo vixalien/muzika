@@ -1,0 +1,135 @@
+using Gtk 4.0;
+using Adw 1;
+
+template $FullVideoPlayer : Adw.Bin {
+  Adw.Clamp {
+    margin-end: 6;
+    margin-bottom: 6;
+    margin-start: 6;
+    valign: end;
+    maximum-size: 800;
+    tightening-threshold: 600;
+
+    Box {
+      orientation: horizontal;
+
+      styles [
+        "osd",
+        "toolbar",
+      ]
+
+      Box {
+        spacing: 6;
+        halign: center;
+
+        Button {
+          icon-name: "skip-backwards-10-symbolic";
+          clicked => $skip_backwards();
+
+          styles [
+            "flat",
+          ]
+        }
+
+        Button play_button {
+          icon-name: "media-playback-start-symbolic";
+          action-name: "player.play-pause";
+
+          styles [
+            "flat",
+          ]
+        }
+
+        Button {
+          icon-name: "skip-forward-10-symbolic";
+          clicked => $skip_forward();
+
+          styles [
+            "flat",
+          ]
+        }
+      }
+
+      Box {
+        orientation: horizontal;
+
+        Label progress_label {
+          label: "00:10";
+
+          styles [
+            "numeric",
+            "caption",
+          ]
+        }
+
+        $PlayerScale scale {
+          
+        }
+
+        Label duration_label {
+          label: "03:10";
+
+          styles [
+            "numeric",
+            "caption",
+          ]
+        }
+      }
+
+      MenuButton {
+        icon-name: "view-more-symbolic";
+        menu-model: player-model;
+
+        styles [
+          "flat",
+        ]
+      }
+    }
+  }
+}
+
+menu player-model {
+  submenu {
+    label: _("Quality");
+
+    item {
+      label: _("Vorbis");
+      action: "app.audio-profile";
+      target: "vorbis";
+    }
+
+    item {
+      label: _("Opus");
+      action: "app.audio-profile";
+      target: "opus";
+    }
+
+    item {
+      label: _("FLAC");
+      action: "app.audio-profile";
+      target: "flac";
+    }
+
+    item {
+      label: _("MP3");
+      action: "app.audio-profile";
+      target: "mp3";
+    }
+  }
+
+  submenu {
+    label: _("Audio Channel");
+
+    item {
+      label: _("Stereo");
+      action: "app.audio-channel";
+      target: "stereo";
+    }
+
+    item {
+      label: _("Mono");
+      action: "app.audio-channel";
+      target: "mono";
+    }
+  }
+}

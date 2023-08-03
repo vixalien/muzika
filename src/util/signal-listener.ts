@@ -18,4 +18,20 @@ export class SignalListeners {
 
     this.listeners.clear();
   }
+
+  connect<
+    Obj extends GObject.Object,
+    Signal extends string,
+    Return extends any,
+  >(
+    widget: Obj,
+    signal: Signal,
+    fn: Obj["connect"] extends (arg0: Signal, ...args: infer P) => Return
+      ? (...args: P) => Return
+      : Function,
+  ) {
+    const listener = widget.connect(signal, fn as any);
+    this.add(widget, listener);
+    return listener;
+  }
 }

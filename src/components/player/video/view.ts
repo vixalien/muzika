@@ -4,7 +4,7 @@ import Adw from "gi://Adw";
 import GLib from "gi://GLib";
 
 import { get_player } from "src/application";
-import "./mini";
+import "./controls";
 
 export class VideoPlayerView extends Adw.Bin {
   static {
@@ -73,7 +73,7 @@ export class VideoPlayerView extends Adw.Bin {
     });
     click.propagation_phase = Gtk.PropagationPhase.TARGET;
 
-    this._toolbar_view.add_controller(hover);
+    // this._toolbar_view.add_controller(hover);
     this._toolbar_view.add_controller(click);
   }
 

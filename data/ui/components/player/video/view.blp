@@ -8,33 +8,46 @@ template $VideoPlayerView : Adw.Bin {
     }
 
     [overlay]
-    Adw.ToolbarView toolbar_view {
-      [top]
-      Adw.Bin {
-        styles ["osd"]
+    Adw.BreakpointBin {
+      width-request: 200;
+      height-request: 200;
+      
+      Adw.Breakpoint {
+        condition ("max-width: 700sp")
 
-        Adw.HeaderBar {
-          [start]
-          Button collapse {
-            icon-name: "go-down-symbolic";
-            action-name: "win.show-video";
-            action-target: "false";
-          }
-
-          [start]
-          Button fullscreen {
-            icon-name: "view-fullscreen-symbolic";
-
-            clicked => $on_fullscreen_clicked();
-          }
-
-          title-widget: Adw.WindowTitle window_title {
-          };
+        setters {
+          controls.show-mini: true;
         }
       }
 
-      [bottom]
-      $MiniVideoPlayer {}
+      Adw.ToolbarView toolbar_view {
+        [top]
+        Adw.Bin {
+          styles ["osd"]
+
+          Adw.HeaderBar {
+            [start]
+            Button collapse {
+              icon-name: "go-down-symbolic";
+              action-name: "win.show-video";
+              action-target: "false";
+            }
+
+            [start]
+            Button fullscreen {
+              icon-name: "view-fullscreen-symbolic";
+
+              clicked => $on_fullscreen_clicked();
+            }
+
+            title-widget: Adw.WindowTitle window_title {
+            };
+          }
+        }
+
+        [bottom]
+        $VideoControls controls {}
+      }
     }
   }
 }
