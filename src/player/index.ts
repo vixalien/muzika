@@ -623,6 +623,8 @@ export class MuzikaPlayer extends MuzikaMediaStream {
     this._queue = new Queue({ app: options.app });
 
     this._queue.connect("notify::current", () => {
+      this._play.set_video_track_enabled(this.queue.current_is_video);
+
       this.load(this.queue.current?.object ?? null)
         .then(() => {
           this.save_state();
