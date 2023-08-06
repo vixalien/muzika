@@ -35,10 +35,6 @@ export class VideoControls extends Adw.Bin {
   private _mini!: MiniVideoControls;
   private _full!: FullVideoControls;
 
-  constructor() {
-    super();
-  }
-
   get show_mini(): boolean {
     return this._stack.visible_child === this._mini;
   }

@@ -35,10 +35,6 @@ export class ExplorePage extends Adw.Bin
 
   contents?: ExploreContents;
 
-  constructor() {
-    super();
-  }
-
   static load(ctx: EndpointContext) {
     return get_explore({
       signal: ctx.signal,

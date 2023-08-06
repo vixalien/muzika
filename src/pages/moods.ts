@@ -29,10 +29,6 @@ export class MoodsPage extends Adw.Bin
 
   contents?: MoodCategories;
 
-  constructor() {
-    super();
-  }
-
   static load(ctx: EndpointContext) {
     return get_mood_categories({
       signal: ctx.signal,
