@@ -73,7 +73,7 @@ export class VideoPlayerView extends Adw.Bin {
     });
     click.propagation_phase = Gtk.PropagationPhase.TARGET;
 
-    // this._toolbar_view.add_controller(hover);
+    this._toolbar_view.add_controller(hover);
     this._toolbar_view.add_controller(click);
   }
 
@@ -126,7 +126,7 @@ export class VideoPlayerView extends Adw.Bin {
       GLib.source_remove(this.timeout_id);
     }
 
-    this.timeout_id = GLib.timeout_add_seconds(GLib.PRIORITY_DEFAULT, 1, () => {
+    this.timeout_id = GLib.timeout_add_seconds(GLib.PRIORITY_DEFAULT, 3, () => {
       this.hide_ui();
 
       this.timeout_id = null;
