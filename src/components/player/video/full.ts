@@ -6,6 +6,7 @@ import Gtk from "gi://Gtk?version=4.0";
 import { get_player } from "src/application";
 import { PlayerScale } from "../scale";
 import { SignalListeners } from "src/util/signal-listener";
+import { micro_to_string, seconds_to_string } from "src/util/time";
 
 export class FullVideoControls extends Adw.Bin {
   static {
@@ -153,33 +154,4 @@ export class FullVideoControls extends Adw.Bin {
     this.clear_listeners();
     super.vfunc_unmap();
   }
-}
-
-function seconds_to_string(seconds: number) {
-  // show the duration in the format "mm:ss"
-  // show hours if the duration is longer than an hour
-
-  const hours = Math.floor(seconds / 3600);
-  const minutes = Math.floor(seconds / 60) % 60;
-  seconds = Math.floor(seconds % 60);
-
-  let string = "";
-
-  if (hours > 0) {
-    string += hours.toString().padStart(2, "0") + ":";
-  }
-
-  string += minutes.toString().padStart(2, "0") + ":";
-
-  string += seconds.toString().padStart(2, "0");
-
-  return string;
-}
-
-function micro_to_seconds(micro: number) {
-  return micro / 1000000;
-}
-
-function micro_to_string(micro: number) {
-  return seconds_to_string(micro_to_seconds(micro));
 }
