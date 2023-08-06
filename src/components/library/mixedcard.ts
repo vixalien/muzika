@@ -36,10 +36,6 @@ export class MixedCard extends Gtk.ListBoxRow {
     }, this);
   }
 
-  constructor() {
-    super();
-  }
-
   _avatar!: Adw.Avatar;
   _image!: Gtk.Image;
   _image_overlay!: Gtk.Overlay;

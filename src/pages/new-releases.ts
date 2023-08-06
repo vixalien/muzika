@@ -29,10 +29,6 @@ export class NewReleasesPage extends Adw.Bin
 
   contents?: NewReleases;
 
-  constructor() {
-    super();
-  }
-
   static async load(ctx: EndpointContext) {
     const data = await get_new_releases({
       signal: ctx.signal,

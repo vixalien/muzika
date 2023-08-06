@@ -8,8 +8,4 @@ export class AlbumHeader extends PlaylistHeader {
       GTypeName: "AlbumHeader",
     }, this);
   }
-
-  constructor() {
-    super();
-  }
 }
