@@ -117,8 +117,7 @@
       "sources": [
         {
           "type": "git",
-          "path": "../..",
-          "branch": "HEAD"
+          "path": "../.."
         }
       ]
     }
