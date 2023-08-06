@@ -180,20 +180,15 @@ export class Queue extends GObject.Object {
 
     if (!track || !track.object) return null;
 
-    let final_track: ObjectContainer<QueueMeta>;
+    let final_track = track;
 
     switch (this.preferred_media_type) {
-      case PreferredMediaType.AUTO:
-        final_track = track;
-        break;
       case PreferredMediaType.SONG: {
         if (
           track.object.videoType !== "MUSIC_VIDEO_TYPE_ATV" &&
           track.object.counterpart
         ) {
           final_track = this.get_counterpart(track.object)!;
-        } else {
-          final_track = track;
         }
         break;
       }
@@ -203,8 +198,6 @@ export class Queue extends GObject.Object {
           track.object.counterpart
         ) {
           final_track = this.get_counterpart(track.object)!;
-        } else {
-          final_track = track;
         }
         break;
       }
@@ -214,7 +207,7 @@ export class Queue extends GObject.Object {
 
     this.list.splice(this.position, 1, [final_track]);
 
-    return track;
+    return final_track;
   }
 
   get current() {
