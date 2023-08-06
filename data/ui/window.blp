@@ -21,93 +21,94 @@ template $MuzikaWindow : Adw.ApplicationWindow {
 
   Stack main_stack {
     transition-type: slide_up_down;
-  Adw.ToolbarView toolbar_view {
-    reveal-bottom-bars: false;
-    bottom-bar-style: raised;
-    content: Adw.ToastOverlay toast_overlay {
-      Adw.NavigationSplitView split_view {
-        min-sidebar-width: 250;
-        max-sidebar-width: 350;
-        show-content: true;
-        sidebar: 
-        Adw.NavigationPage {
-          title: _("Navigation");
+    
+    Adw.ToolbarView toolbar_view {
+      reveal-bottom-bars: false;
+      bottom-bar-style: raised;
+      content: Adw.ToastOverlay toast_overlay {
+        Adw.NavigationSplitView split_view {
+          min-sidebar-width: 250;
+          max-sidebar-width: 350;
+          show-content: true;
+          sidebar: 
+          Adw.NavigationPage {
+            title: _("Navigation");
 
-          Adw.ToolbarView {
-            hexpand: false;
+            Adw.ToolbarView {
+              hexpand: false;
 
-            [top]
-            Adw.HeaderBar nav_header_bar {
-              [start]
-              MenuButton account {
-                icon-name: "avatar-default-symbolic";
+              [top]
+              Adw.HeaderBar nav_header_bar {
+                [start]
+                MenuButton account {
+                  icon-name: "avatar-default-symbolic";
+                }
+                title-widget: 
+                Label {
+                  label: "Muzika";
+
+                  styles [
+                    "heading",
+                  ]
+                }
+
+                ;
+
+                [end]
+                MenuButton {
+                  icon-name: "open-menu-symbolic";
+                  menu-model: primary_menu;
+                }
               }
-              title-widget: 
-              Label {
-                label: "Muzika";
-
-                styles [
-                  "heading",
-                ]
-              }
-
-              ;
-
-              [end]
-              MenuButton {
-                icon-name: "open-menu-symbolic";
-                menu-model: primary_menu;
-              }
-            }
-            content: 
-            ScrolledWindow navbar_window {
-              vexpand: true;
-            }
-
-            ;
-          }
-        }
-
-        ;
-        content: 
-        Adw.NavigationPage {
-          Adw.BreakpointBin {
-            width-request: 300;
-            height-request: 200;
-
-            Adw.Breakpoint {
-              condition ("max-width: 800sp")
-
-              setters {
-                overlay_split_view.collapsed: true;
-              }
-            }
-
-            Adw.OverlaySplitView overlay_split_view {
-              sidebar-position: end;
-              sidebar-width-fraction: 0.4;
-              min-sidebar-width: 250;
-              max-sidebar-width: 350;
-              show-sidebar: false;
-              pin-sidebar: true;
               content: 
-              Adw.NavigationView navigation_view {
+              ScrolledWindow navbar_window {
                 vexpand: true;
-                width-request: 300;
               }
 
               ;
             }
           }
+
+          ;
+          content: 
+          Adw.NavigationPage {
+            Adw.BreakpointBin {
+              width-request: 300;
+              height-request: 200;
+
+              Adw.Breakpoint {
+                condition ("max-width: 800sp")
+
+                setters {
+                  overlay_split_view.collapsed: true;
+                }
+              }
+
+              Adw.OverlaySplitView overlay_split_view {
+                sidebar-position: end;
+                sidebar-width-fraction: 0.4;
+                min-sidebar-width: 250;
+                max-sidebar-width: 350;
+                show-sidebar: false;
+                pin-sidebar: true;
+                content: 
+                Adw.NavigationView navigation_view {
+                  vexpand: true;
+                  width-request: 300;
+                }
+
+                ;
+              }
+            }
+          }
+
+          ;
         }
+      };
+    }
 
-        ;
-      }
-    };
+    $VideoPlayerView video_player_view {}
   }
-
-  $VideoPlayerView video_player_view {}
-}
 }
 
 menu primary_menu {
