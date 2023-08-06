@@ -29,10 +29,6 @@ export class MoodPlaylistsPage extends Adw.Bin
 
   contents?: MoodPlaylists;
 
-  constructor() {
-    super();
-  }
-
   static async load(ctx: EndpointContext) {
     const data = await get_mood_playlists(ctx.match.params.params, {
       signal: ctx.signal,

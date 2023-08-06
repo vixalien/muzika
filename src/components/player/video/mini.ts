@@ -27,10 +27,6 @@ export class MiniVideoControls extends Adw.Bin {
   private _duration_label!: Gtk.Label;
   private _scale!: PlayerScale;
 
-  constructor() {
-    super();
-  }
-
   song_changed() {
     this._scale.value = 0;
     this._progress_label.label = seconds_to_string(0);
