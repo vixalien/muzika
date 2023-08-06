@@ -11,6 +11,7 @@ import { QueueTrack } from "libmuse/types/parsers/queue.js";
 import { escape_label, pretty_subtitles } from "src/util/text.js";
 import { MuzikaPlayer } from "src/player";
 import { DynamicImage, DynamicImageVisibleChild } from "../dynamic-image.js";
+import { micro_to_string, seconds_to_string } from "src/util/time.js";
 
 export interface FullPlayerViewOptions {
   player: MuzikaPlayer;
@@ -387,33 +388,4 @@ export class FullPlayerView extends Gtk.ActionBar {
   private switch_counterpart() {
     this.player.queue.switch_counterpart();
   }
-}
-
-function seconds_to_string(seconds: number) {
-  // show the duration in the format "mm:ss"
-  // show hours if the duration is longer than an hour
-
-  const hours = Math.floor(seconds / 3600);
-  const minutes = Math.floor(seconds / 60) % 60;
-  seconds = Math.floor(seconds % 60);
-
-  let string = "";
-
-  if (hours > 0) {
-    string += hours.toString().padStart(2, "0") + ":";
-  }
-
-  string += minutes.toString().padStart(2, "0") + ":";
-
-  string += seconds.toString().padStart(2, "0");
-
-  return string;
-}
-
-function micro_to_seconds(micro: number) {
-  return micro / 1000000;
-}
-
-function micro_to_string(micro: number) {
-  return seconds_to_string(micro_to_seconds(micro));
 }
