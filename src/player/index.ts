@@ -973,21 +973,13 @@ function get_song_uri(song: Song) {
   const streams = [...song.formats, ...song.adaptive_formats]
     .filter((e) => {
       if (format_has_audio(e)) {
-        if (audio_quality === AudioQuality.auto) {
-          return true;
-        }
-
-        return e.audio_quality ==
-          AudioQuality[audio_quality];
+        return audio_quality === AudioQuality.auto ||
+          e.audio_quality == AudioQuality[audio_quality];
       }
 
       if (format_has_video(e)) {
-        if (video_quality === AudioQuality.auto) {
-          return true;
-        }
-
-        return e.video_quality ==
-          VideoQuality[video_quality];
+        return video_quality === VideoQuality.auto ||
+          e.video_quality == VideoQuality[audio_quality];
       }
 
       return false;

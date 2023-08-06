@@ -222,11 +222,7 @@ export class Queue extends GObject.Object {
   }
 
   get current_is_video() {
-    const track = this.current?.object;
-
-    if (!track) return false;
-
-    return track.videoType !== "MUSIC_VIDEO_TYPE_ATV";
+    return this.current?.object?.videoType !== "MUSIC_VIDEO_TYPE_ATV";
   }
 
   get can_play_next() {
