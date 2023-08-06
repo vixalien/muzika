@@ -2,23 +2,23 @@
 <?xml-model href="https://gitlab.gnome.org/GNOME/glib/-/raw/HEAD/gio/gschema.dtd" type="application/xml-dtd"?>
 <schemalist gettext-domain="muzika">
 	<enum id="com.vixalien.muzika.AudioQuality">
-    <value nick='auto' value='0' />
-    <value nick='tiny' value='1' />
-    <value nick='low' value='2' />
-    <value nick='medium' value='3' />
-    <value nick='high' value='4' />
+		<value nick='auto' value='0' />
+		<value nick='tiny' value='1' />
+		<value nick='low' value='2' />
+		<value nick='medium' value='3' />
+		<value nick='high' value='4' />
 	</enum>
 	<enum id="com.vixalien.muzika.VideoQuality">
-    <value nick='auto' value='0' />
-    <value nick='tiny' value='1' />
-    <value nick='small' value='2' />
-    <value nick='medium' value='3' />
-    <value nick='large' value='4' />
-    <value nick='hd720' value='5' />
-    <value nick='hd1080' value='6' />
-    <value nick='hd1440' value='7' />
-    <value nick='hd2160' value='8' />
-    <value nick='highres' value='9' />
+		<value nick='auto' value='0' />
+		<value nick='tiny' value='1' />
+		<value nick='small' value='2' />
+		<value nick='medium' value='3' />
+		<value nick='large' value='4' />
+		<value nick='hd720' value='5' />
+		<value nick='hd1080' value='6' />
+		<value nick='hd1440' value='7' />
+		<value nick='hd2160' value='8' />
+		<value nick='highres' value='9' />
 	</enum>
 	<schema id="com.vixalien.muzika" path="/com/vixalien/muzika/">
 		<key name="prefer-list" type="b">
@@ -38,14 +38,14 @@
 			<description>The saved last size of the window (to be restored)</description>
 		</key>
 		<key name="audio-quality" enum="com.vixalien.muzika.AudioQuality">
-      <default>'auto'</default>
-      <summary>Audio Quality</summary>
-      <description>Preferred audio quality.</description>
-    </key>
+			<default>'auto'</default>
+			<summary>Audio Quality</summary>
+			<description>Preferred audio quality.</description>
+		</key>
 		<key name="video-quality" enum="com.vixalien.muzika.VideoQuality">
-      <default>'auto'</default>
-      <summary>Video Quality</summary>
-      <description>Preferred video quality.</description>
-    </key>
+			<default>'auto'</default>
+			<summary>Video Quality</summary>
+			<description>Preferred video quality.</description>
+		</key>
 	</schema>
 </schemalist>
