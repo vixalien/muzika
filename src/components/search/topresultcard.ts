@@ -10,7 +10,10 @@ import {
   TopResultSong,
 } from "../../muse.js";
 import { load_thumbnails } from "../webimage.js";
-import { TopResultVideo } from "libmuse/types/parsers/search.js";
+import {
+  TopResultPlaylist,
+  TopResultVideo,
+} from "libmuse/types/parsers/search.js";
 import { DynamicImage, DynamicImageState } from "../dynamic-image.js";
 import { pretty_subtitles } from "src/util/text.js";
 
@@ -104,6 +107,8 @@ export class TopResultCard extends Adw.Bin {
           ),
         );
         break;
+      case "playlist":
+        uri = `playlist:${this.result.browseId}`;
     }
 
     if (uri) {
@@ -245,6 +250,35 @@ export class TopResultCard extends Adw.Bin {
       this._secondary.sensitive = true;
       this._secondary.action_name = "queue.play-playlist";
       this._secondary.action_target = GLib.Variant.new_string(artist.radioId);
+    } else {
+      this._secondary.sensitive = false;
+    }
+  }
+
+  set_playlist(playlist: TopResultPlaylist) {
+    this.result = playlist;
+
+    this.dynamic_image.load_thumbnails(playlist.thumbnails);
+
+    this._title.label = playlist.title;
+
+    this.set_subtitle(_("Playlist"), [], playlist.description);
+
+    this._primary_content.label = _("Play");
+    this._primary_content.icon_name = "media-playback-start-symbolic";
+    this._primary.sensitive = true;
+    this._primary.action_name = "queue.play-playlist";
+    this._primary.action_target = GLib.Variant.new_string(playlist.browseId);
+
+    this._secondary_content.label = _("Shuffle");
+    this._secondary_content.icon_name = "media-playlist-shuffle-symbolic";
+
+    if (playlist.shuffleId) {
+      this._secondary.sensitive = true;
+      this._secondary.action_name = "queue.play-playlist";
+      this._secondary.action_target = GLib.Variant.new_string(
+        playlist.shuffleId,
+      );
     } else {
       this._secondary.sensitive = false;
     }

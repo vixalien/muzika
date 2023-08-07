@@ -84,6 +84,9 @@ export class TopResultSection extends Gtk.Box {
       case "artist":
         card.set_artist(top_result);
         break;
+      case "playlist":
+        card.set_playlist(top_result);
+        break;
         // default:
         //   console.error("Unknown top result type", top_result.type);
         //   return;
