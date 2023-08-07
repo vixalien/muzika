@@ -7,6 +7,7 @@ import { get_player } from "src/application";
 import { PlayerScale } from "../scale";
 import { SignalListeners } from "src/util/signal-listener";
 import { micro_to_string, seconds_to_string } from "src/util/time";
+import { generate_song_menu } from "./util";
 
 export class MiniVideoControls extends Adw.Bin {
   static {
@@ -59,18 +60,38 @@ export class MiniVideoControls extends Adw.Bin {
     }
   }
 
+  private media_info_changed() {
+    const player = get_player();
+
+    const song = player.now_playing?.object.song;
+    const media_info = player.media_info;
+
+    if (song && media_info) {
+      this._menu_button.set_menu_model(generate_song_menu(song, media_info));
+    } else {
+      this._menu_button.set_menu_model(null);
+    }
+  }
+
   private listeners = new SignalListeners();
 
   private setup_player() {
     const player = get_player();
 
     this.song_changed();
+    this.media_info_changed();
 
     // update the player when the current song changes
     this.listeners.connect(
       player.queue,
       "notify::current",
       this.song_changed.bind(this),
+    );
+
+    this.listeners.connect(
+      player,
+      "notify::media-info",
+      this.media_info_changed.bind(this),
     );
 
     this.update_play_button();
