@@ -19,7 +19,17 @@ export class MiniVideoControls extends Adw.Bin {
         "progress_label",
         "duration_label",
         "scale",
+        "menu_button",
       ],
+      Properties: {
+        "inhibit-hide": GObject.ParamSpec.boolean(
+          "inhibit-hide",
+          "Inhibit Hide",
+          "Inhibit the hiding of the controls, for example when the mouse is over them.",
+          GObject.ParamFlags.READWRITE,
+          true,
+        ),
+      },
     }, this);
   }
 
@@ -27,6 +37,9 @@ export class MiniVideoControls extends Adw.Bin {
   private _progress_label!: Gtk.Label;
   private _duration_label!: Gtk.Label;
   private _scale!: PlayerScale;
+  private _menu_button!: Gtk.MenuButton;
+
+  inhibit_hide = false;
 
   song_changed() {
     this._scale.value = 0;
@@ -109,6 +122,14 @@ export class MiniVideoControls extends Adw.Bin {
         this._progress_label.label = micro_to_string(player.timestamp);
       },
     );
+
+    this.listeners.connect(
+      this._menu_button,
+      "notify::active",
+      () => {
+        this.inhibit_hide = this._menu_button.active;
+      },
+    );
   }
 
   private update_play_button() {
@@ -142,6 +163,7 @@ export class MiniVideoControls extends Adw.Bin {
   }
 
   clear_listeners() {
+    this.inhibit_hide = false;
     this.listeners.clear();
   }
 

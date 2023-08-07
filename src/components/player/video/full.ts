@@ -7,6 +7,7 @@ import { get_player } from "src/application";
 import { PlayerScale } from "../scale";
 import { SignalListeners } from "src/util/signal-listener";
 import { micro_to_string, seconds_to_string } from "src/util/time";
+import { generate_subtitles_menu } from "./util";
 
 export class FullVideoControls extends Adw.Bin {
   static {
@@ -19,7 +20,17 @@ export class FullVideoControls extends Adw.Bin {
         "progress_label",
         "duration_label",
         "scale",
+        "menu_button",
       ],
+      Properties: {
+        "inhibit-hide": GObject.ParamSpec.boolean(
+          "inhibit-hide",
+          "Inhibit Hide",
+          "Inhibit the hiding of the controls, for example when the mouse is over them.",
+          GObject.ParamFlags.READWRITE,
+          true,
+        ),
+      },
     }, this);
   }
 
@@ -27,6 +38,9 @@ export class FullVideoControls extends Adw.Bin {
   private _progress_label!: Gtk.Label;
   private _duration_label!: Gtk.Label;
   private _scale!: PlayerScale;
+  private _menu_button!: Gtk.MenuButton;
+
+  inhibit_hide = false;
 
   song_changed() {
     this._scale.value = 0;
@@ -46,18 +60,36 @@ export class FullVideoControls extends Adw.Bin {
     }
   }
 
+  private now_playing_changed() {
+    const player = get_player();
+    const song = player.now_playing?.object.song;
+
+    if (song) {
+      console.log("subtitles", song.captions);
+
+      this._menu_button.set_menu_model(generate_subtitles_menu(song));
+    }
+  }
+
   private listeners = new SignalListeners();
 
   private setup_player() {
     const player = get_player();
 
     this.song_changed();
+    this.now_playing_changed();
 
     // update the player when the current song changes
     this.listeners.connect(
       player.queue,
       "notify::current",
       this.song_changed.bind(this),
+    );
+
+    this.listeners.connect(
+      player,
+      "notify::now-playing",
+      this.now_playing_changed.bind(this),
     );
 
     this.update_play_button();
@@ -109,6 +141,14 @@ export class FullVideoControls extends Adw.Bin {
         this._progress_label.label = micro_to_string(player.timestamp);
       },
     );
+
+    this.listeners.connect(
+      this._menu_button,
+      "notify::active",
+      () => {
+        this.inhibit_hide = this._menu_button.active;
+      },
+    );
   }
 
   private update_play_button() {
@@ -142,6 +182,7 @@ export class FullVideoControls extends Adw.Bin {
   }
 
   clear_listeners() {
+    this.inhibit_hide = false;
     this.listeners.clear();
   }
 
