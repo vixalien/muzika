@@ -878,6 +878,9 @@ export class MuzikaPlayer extends MuzikaMediaStream {
   get_action_group() {
     const action_group = Gio.SimpleActionGroup.new();
 
+    action_group.add_action(Settings.create_action("video-quality"));
+    action_group.add_action(Settings.create_action("audio-quality"));
+
     (action_group.add_action_entries as AddActionEntries)([
       {
         name: "play",
@@ -980,8 +983,13 @@ function get_song_uri(song: Song) {
       }
 
       if (format_has_video(e)) {
+        console.log(
+          "video quality of stream",
+          e.video_quality,
+          VideoQuality[video_quality],
+        );
         return video_quality === VideoQuality.auto ||
-          e.video_quality == VideoQuality[audio_quality];
+          e.video_quality == VideoQuality[video_quality];
       }
 
       return false;
