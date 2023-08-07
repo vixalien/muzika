@@ -217,6 +217,13 @@ export class MuzikaMediaStream extends Gtk.MediaStream {
           Gdk.Paintable.$gtype,
           GObject.ParamFlags.READABLE,
         ),
+        media_info: GObject.param_spec_object(
+          "media-info",
+          "Media Info",
+          "The media info",
+          GstPlay.PlayMediaInfo.$gtype,
+          GObject.ParamFlags.READABLE,
+        ),
       },
     }, this);
   }
@@ -288,6 +295,21 @@ export class MuzikaMediaStream extends Gtk.MediaStream {
   }
 
   // PROPERTIES
+
+  // property: media-info
+
+  protected _media_info: GstPlay.PlayMediaInfo | null = null;
+
+  get media_info() {
+    return this._media_info;
+  }
+
+  set media_info(media_info: GstPlay.PlayMediaInfo | null) {
+    this._media_info = media_info;
+    this.notify("media-info");
+  }
+
+  // property: state
 
   private _state = GstPlay.PlayState.STOPPED;
 
@@ -514,10 +536,12 @@ export class MuzikaMediaStream extends Gtk.MediaStream {
     this.notify("ended");
   }
 
-  private media_info_updated_cb(
+  protected media_info_updated_cb(
     _play: GstPlay.Play,
     info: GstPlay.PlayMediaInfo,
   ): void {
+    this._media_info = info;
+
     if (!this.prepared) {
       this.stream_prepared(
         info.get_number_of_audio_streams() > 0,
@@ -875,6 +899,25 @@ export class MuzikaPlayer extends MuzikaMediaStream {
     this.playing = !this.playing;
   }
 
+  protected media_info_updated_cb(
+    _play: GstPlay.Play,
+    info: GstPlay.PlayMediaInfo,
+  ): void {
+    super.media_info_updated_cb(_play, info);
+
+    // update current subtitle in UI
+    if (!this._action_group) return;
+
+    const index = this._play.get_current_subtitle_track()?.get_index() ?? -1;
+
+    this._action_group.change_action_state(
+      "subtitle-index",
+      GLib.Variant.new("i", index),
+    );
+  }
+
+  private _action_group: Gio.SimpleActionGroup | null = null;
+
   get_action_group() {
     const action_group = Gio.SimpleActionGroup.new();
 
@@ -908,6 +951,34 @@ export class MuzikaPlayer extends MuzikaMediaStream {
           this.seek(param.get_double());
         },
       },
+      {
+        name: "subtitle-index",
+        parameter_type: "i",
+        activate: (action, param: GLib.Variant<"i"> | null) => {
+          if (!param) return;
+
+          if (param.get_type_string() != "i") return;
+
+          action.change_state(param);
+        },
+        state: "-1",
+        change_state: (action, value: GLib.Variant<"i"> | null) => {
+          if (!value) return;
+
+          let int = value.get_int32();
+          const subtitle_streams =
+            this._play.media_info.get_subtitle_streams().length;
+
+          if (int < -1) {
+            int = -1;
+          } else if (int >= subtitle_streams) {
+            return;
+          }
+
+          this.set_subtitle_index(value.get_int32());
+          action.set_state(value);
+        },
+      },
     ]);
 
     this.connect("notify::playing", () => {
@@ -936,7 +1007,19 @@ export class MuzikaPlayer extends MuzikaMediaStream {
 
     action_group.action_enabled_changed("next", this.queue.can_play_next);
 
+    this._action_group = action_group;
+
     return action_group;
+  }
+
+  private set_subtitle_index(index: number) {
+    if (index < 0) {
+      this._play.set_subtitle_track_enabled(false);
+      return;
+    }
+
+    this._play.set_subtitle_track(index);
+    this._play.set_subtitle_track_enabled(true);
   }
 }
 
@@ -968,12 +1051,13 @@ function get_song_uri(song: Song, skip_number_of_formats_check = true) {
   const audio_quality = Settings.get_enum("audio-quality");
   const video_quality = Settings.get_enum("video-quality");
 
-  if (
-    audio_quality === AudioQuality.auto &&
-    video_quality === VideoQuality.auto && song.hlsManifestUrl
-  ) {
-    return song.hlsManifestUrl;
-  }
+  // don't use the dash manifest for now: subtitles won't work
+  // if (
+  //   audio_quality === AudioQuality.auto &&
+  //   video_quality === VideoQuality.auto && song.hlsManifestUrl
+  // ) {
+  //   return song.hlsManifestUrl;
+  // }
 
   const streams = [...song.formats, ...song.adaptive_formats]
     .filter((e) => {
