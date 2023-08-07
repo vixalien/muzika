@@ -70,8 +70,6 @@ export class FullVideoControls extends Adw.Bin {
 
     if (song && media_info) {
       this._menu_button.set_menu_model(generate_song_menu(song, media_info));
-      const popover = this._menu_button.popover as Gtk.PopoverMenu;
-      popover.add_child(new VolumeControls(), "volume-controls");
     } else {
       this._menu_button.set_menu_model(null);
     }

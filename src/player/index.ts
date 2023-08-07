@@ -211,6 +211,13 @@ export class MuzikaMediaStream extends Gtk.MediaStream {
           Gdk.Paintable.$gtype,
           GObject.ParamFlags.READABLE,
         ),
+        media_info: GObject.param_spec_object(
+          "media-info",
+          "Media Info",
+          "The media info",
+          GstPlay.PlayMediaInfo.$gtype,
+          GObject.ParamFlags.READABLE,
+        ),
       },
     }, this);
   }
@@ -1023,6 +1030,8 @@ export class MuzikaPlayer extends MuzikaMediaStream {
 
     this._action_group = action_group;
 
+    this._action_group = action_group;
+
     return action_group;
   }
 
@@ -1065,12 +1074,13 @@ function get_song_uri(song: Song) {
   const audio_quality = Settings.get_enum("audio-quality");
   const video_quality = Settings.get_enum("video-quality");
 
-  if (
-    audio_quality === AudioQuality.auto &&
-    video_quality === VideoQuality.auto && song.hlsManifestUrl
-  ) {
-    return song.hlsManifestUrl;
-  }
+  // don't use the dash manifest for now: subtitles won't work
+  // if (
+  //   audio_quality === AudioQuality.auto &&
+  //   video_quality === VideoQuality.auto && song.hlsManifestUrl
+  // ) {
+  //   return song.hlsManifestUrl;
+  // }
 
   const streams = [...song.formats, ...song.adaptive_formats]
     .filter((format) => {
