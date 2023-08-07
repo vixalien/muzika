@@ -4,7 +4,9 @@ import Adw from "gi://Adw";
 import GLib from "gi://GLib";
 
 import { get_player } from "src/application";
-import "./controls";
+import { VideoControls } from "./controls";
+
+VideoControls;
 
 export class VideoPlayerView extends Adw.Bin {
   static {
@@ -17,6 +19,7 @@ export class VideoPlayerView extends Adw.Bin {
         "fullscreen",
         "toolbar_view",
         "window_title",
+        "controls",
       ],
     }, this);
   }
@@ -25,6 +28,7 @@ export class VideoPlayerView extends Adw.Bin {
   private _fullscreen!: Gtk.Button;
   private _toolbar_view!: Adw.ToolbarView;
   private _window_title!: Adw.WindowTitle;
+  private _controls!: VideoControls;
 
   constructor() {
     super();
@@ -75,6 +79,10 @@ export class VideoPlayerView extends Adw.Bin {
 
     this._toolbar_view.add_controller(hover);
     this._toolbar_view.add_controller(click);
+
+    this._controls.connect("notify::inhibit-hide", () => {
+      this.extend_ui_visible_time();
+    });
   }
 
   private song_changed() {
@@ -124,7 +132,10 @@ export class VideoPlayerView extends Adw.Bin {
 
     if (this.timeout_id) {
       GLib.source_remove(this.timeout_id);
+      this.timeout_id = null;
     }
+
+    if (this._controls.inhibit_hide) return;
 
     this.timeout_id = GLib.timeout_add_seconds(GLib.PRIORITY_DEFAULT, 3, () => {
       this.hide_ui();
