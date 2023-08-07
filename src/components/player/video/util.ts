@@ -1,37 +1,51 @@
 import Gio from "gi://Gio";
+import GstPlay from "gi://GstPlay";
 
 import { Song } from "src/muse";
 import { languages } from "./languages";
 import { format_has_video } from "src/player";
 
-export function generate_subtitles_menu(song: Song) {
-  if (!song.captions || song.captions.length === 0) return null;
+export function generate_subtitles_menu(
+  song: Song,
+  media_info: GstPlay.PlayMediaInfo,
+) {
+  const subtitles = media_info.get_subtitle_streams();
+
+  if (!song.captions || song.captions.length === 0 || subtitles.length === 0) {
+    return null;
+  }
+
+  const original_captions = subtitles.slice(0, song.captions.length);
+
+  const translated_captions = subtitles.slice(song.captions.length);
 
   const menu = Gio.Menu.new();
 
-  song.captions.forEach((caption, index) => {
+  menu.append(_("Off"), "player.subtitle-index(-1)");
+
+  original_captions.forEach((caption, index) => {
+    // get better language names
+    const code = caption.get_tags()?.get_string("language-code")[1];
+
     menu.append(
-      caption.name || caption.lang,
-      `player.set-subtitle-index(${index})`,
+      code ? get_language_name(code) : caption.get_language(),
+      `player.subtitle-index(${index})`,
     );
   });
 
-  const translable_caption = song.captions.find((caption) =>
-    caption.translable
-  );
-
-  if (translable_caption) {
+  if (translated_captions.length > 0) {
     const submenu = Gio.Menu.new();
 
-    for (const lang of languages) {
-      const url = new URL(translable_caption.url);
-      url.searchParams.set("fmt", "vtt");
-      url.searchParams.set("tlang", lang.code);
+    translated_captions.forEach((caption, index) => {
+      const adjusted_index = index + original_captions.length;
 
-      submenu.append(lang.name, `player.set-subtitle-url("${lang.code}")`);
-    }
+      submenu.append(
+        languages[index]?.name ?? caption.get_language(),
+        `player.subtitle-index(${adjusted_index})`,
+      );
+    });
 
-    menu.append_submenu("Auto-translate", submenu);
+    menu.append_submenu(_("Auto-translate"), submenu);
   }
 
   return menu;
@@ -67,10 +81,13 @@ export function generate_video_menu(song: Song) {
   return menu;
 }
 
-export function generate_song_menu(song: Song) {
+export function generate_song_menu(
+  song: Song,
+  media_info: GstPlay.PlayMediaInfo,
+) {
   const menu = Gio.Menu.new();
 
-  const subtitles_menu = generate_subtitles_menu(song);
+  const subtitles_menu = generate_subtitles_menu(song, media_info);
   if (subtitles_menu) {
     menu.append_submenu(_("Subtitles"), subtitles_menu);
   }
@@ -94,3 +111,13 @@ const VideoQualities: { name: string; value: string }[] = [
   { name: "2160p (4K)", value: "hd2160" },
   { name: "High Resolution", value: "highres" },
 ];
+
+function get_language_name(code: string) {
+  const language = languages.find((lang) => lang.code === code);
+
+  if (language) {
+    return language.name;
+  }
+
+  return code;
+}

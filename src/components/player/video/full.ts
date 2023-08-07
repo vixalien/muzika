@@ -60,12 +60,16 @@ export class FullVideoControls extends Adw.Bin {
     }
   }
 
-  private now_playing_changed() {
+  private media_info_changed() {
     const player = get_player();
-    const song = player.now_playing?.object.song;
 
-    if (song) {
-      this._menu_button.set_menu_model(generate_song_menu(song));
+    const song = player.now_playing?.object.song;
+    const media_info = player.media_info;
+
+    if (song && media_info) {
+      this._menu_button.set_menu_model(generate_song_menu(song, media_info));
+    } else {
+      this._menu_button.set_menu_model(null);
     }
   }
 
@@ -75,7 +79,7 @@ export class FullVideoControls extends Adw.Bin {
     const player = get_player();
 
     this.song_changed();
-    this.now_playing_changed();
+    this.media_info_changed();
 
     // update the player when the current song changes
     this.listeners.connect(
@@ -86,8 +90,8 @@ export class FullVideoControls extends Adw.Bin {
 
     this.listeners.connect(
       player,
-      "notify::now-playing",
-      this.now_playing_changed.bind(this),
+      "notify::media-info",
+      this.media_info_changed.bind(this),
     );
 
     this.update_play_button();
