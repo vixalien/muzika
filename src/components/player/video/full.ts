@@ -7,7 +7,7 @@ import { get_player } from "src/application";
 import { PlayerScale } from "../scale";
 import { SignalListeners } from "src/util/signal-listener";
 import { micro_to_string, seconds_to_string } from "src/util/time";
-import { generate_subtitles_menu } from "./util";
+import { generate_song_menu } from "./util";
 
 export class FullVideoControls extends Adw.Bin {
   static {
@@ -65,9 +65,7 @@ export class FullVideoControls extends Adw.Bin {
     const song = player.now_playing?.object.song;
 
     if (song) {
-      console.log("subtitles", song.captions);
-
-      this._menu_button.set_menu_model(generate_subtitles_menu(song));
+      this._menu_button.set_menu_model(generate_song_menu(song));
     }
   }
 
