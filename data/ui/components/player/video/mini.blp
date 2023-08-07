@@ -83,7 +83,6 @@ template $MiniVideoControls : Adw.Bin {
           [end]
           MenuButton menu_button {
             icon-name: "view-more-symbolic";
-            menu-model: player-model;
 
             styles [
               "flat",
@@ -92,50 +91,4 @@ template $MiniVideoControls : Adw.Bin {
         }
       }
     }
-}
-
-menu player-model {
-  submenu {
-    label: _("Quality");
-
-    item {
-      label: _("Vorbis");
-      action: "app.audio-profile";
-      target: "vorbis";
-    }
-
-    item {
-      label: _("Opus");
-      action: "app.audio-profile";
-      target: "opus";
-    }
-
-    item {
-      label: _("FLAC");
-      action: "app.audio-profile";
-      target: "flac";
-    }
-
-    item {
-      label: _("MP3");
-      action: "app.audio-profile";
-      target: "mp3";
-    }
-  }
-
-  submenu {
-    label: _("Audio Channel");
-
-    item {
-      label: _("Stereo");
-      action: "app.audio-channel";
-      target: "stereo";
-    }
-
-    item {
-      label: _("Mono");
-      action: "app.audio-channel";
-      target: "mono";
-    }
-  }
 }
