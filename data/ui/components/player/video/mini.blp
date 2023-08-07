@@ -33,46 +33,10 @@ template $MiniVideoControls : Adw.Bin {
             ]
           }
 
-          Label duration_label {
-            label: "03:10";
-            hexpand: true;
-            halign: end;
-
-            styles [
-              "numeric",
-              "caption",
-            ]
-          }
-        }
-      }
-
-      CenterBox {
-        [center]
-        Box {
-          spacing: 6;
-          halign: center;
-
-          Button {
-            icon-name: "skip-backwards-10-symbolic";
-            clicked => $skip_backwards();
-
-            styles [
-              "flat",
-            ]
-          }
-
-          Button play_button {
-            icon-name: "media-playback-start-symbolic";
-            action-name: "player.play-pause";
-
-            styles [
-              "flat",
-            ]
-          }
-
-          Button {
-            icon-name: "skip-forward-10-symbolic";
-            clicked => $skip_forward();
+          [end]
+          MenuButton menu_button {
+            icon-name: "view-more-symbolic";
+            direction: up;
 
             styles [
               "flat",
