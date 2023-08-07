@@ -964,7 +964,7 @@ export function format_has_video(format: Format): format is VideoFormat {
   return format.has_video;
 }
 
-function get_song_uri(song: Song) {
+function get_song_uri(song: Song, skip_number_of_formats_check = true) {
   const audio_quality = Settings.get_enum("audio-quality");
   const video_quality = Settings.get_enum("video-quality");
 
@@ -983,11 +983,6 @@ function get_song_uri(song: Song) {
       }
 
       if (format_has_video(e)) {
-        console.log(
-          "video quality of stream",
-          e.video_quality,
-          VideoQuality[video_quality],
-        );
         return video_quality === VideoQuality.auto ||
           e.video_quality == VideoQuality[video_quality];
       }
@@ -1005,6 +1000,18 @@ function get_song_uri(song: Song) {
         return 0;
       }
     });
+
+  if (!skip_number_of_formats_check) {
+    if (streams.filter(format_has_audio).length === 0) {
+      Settings.set_enum("audio-quality", AudioQuality.auto);
+    }
+
+    if (streams.filter(format_has_video).length === 0) {
+      Settings.set_enum("video-quality", VideoQuality.auto);
+    }
+
+    return get_song_uri(song, true);
+  }
 
   return `data:application/dash+xml;base64,${
     btoa(convert_formats_to_dash({
