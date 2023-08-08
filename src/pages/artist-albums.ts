@@ -1,6 +1,7 @@
 import GObject from "gi://GObject";
 import Adw from "gi://Adw";
 import GLib from "gi://GLib";
+import Gtk from "gi://Gtk?version=4.0";
 
 import { ArtistAlbums, get_artist_albums } from "src/muse.js";
 
@@ -8,8 +9,12 @@ import { EndpointContext, MuzikaComponent } from "src/navigation.js";
 import { CarouselGridView } from "src/components/carousel/view/grid";
 import { PlayableContainer } from "src/util/playablelist";
 import { MixedCardItem } from "src/components/library/mixedcard";
+import {
+  set_scrolled_window_initial_vscroll,
+  VScrollState,
+} from "src/util/scrolled";
 
-interface ArtistAlbumsState {
+interface ArtistAlbumsState extends VScrollState {
   contents: ArtistAlbums;
 }
 
@@ -21,11 +26,12 @@ export class ArtistAlbumsPage extends Adw.Bin
     GObject.registerClass({
       GTypeName: "ArtistAlbumsPage",
       Template: "resource:///com/vixalien/muzika/ui/pages/artist-albums.ui",
-      InternalChildren: ["view"],
+      InternalChildren: ["view", "scrolled"],
     }, this);
   }
 
   private _view!: CarouselGridView;
+  private _scrolled!: Gtk.ScrolledWindow;
 
   constructor() {
     super();
@@ -88,10 +94,12 @@ export class ArtistAlbumsPage extends Adw.Bin
   get_state() {
     return {
       contents: this.results!,
+      vscroll: this._scrolled.get_vadjustment().get_value(),
     };
   }
 
   restore_state(state: ArtistAlbumsState): void {
+    set_scrolled_window_initial_vscroll(this._scrolled, state.vscroll);
     this.show_artist_albums(state.contents);
   }
 
