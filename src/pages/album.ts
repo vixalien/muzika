@@ -238,9 +238,8 @@ export class AlbumPage extends Adw.Bin
   }
 
   restore_state(state: AlbumState) {
-    this.present({ album: state.album, track: state.track });
-
     set_scrolled_window_initial_vscroll(this._scrolled, state.vscroll);
+    this.present({ album: state.album, track: state.track });
   }
 }
 
