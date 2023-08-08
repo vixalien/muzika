@@ -9,6 +9,10 @@ import { LibraryView } from "../../components/library/view.js";
 import type { LibraryOrder, Order } from "libmuse/types/mixins/utils.js";
 import { MixedCardItem } from "src/components/library/mixedcard.js";
 import { EndpointContext, MuzikaComponent } from "src/navigation.js";
+import {
+  set_scrolled_window_initial_vscroll,
+  VScrollState,
+} from "src/util/scrolled.js";
 
 export const library_orders = new Map<string, LibraryOrder>([
   [_("Recent activity"), "recent_activity"],
@@ -45,7 +49,7 @@ export interface LibraryPageOptions {
   uri: string;
 }
 
-interface LibraryState {
+interface LibraryState extends VScrollState {
   results: LibraryResults;
   order?: string;
 }
@@ -131,12 +135,15 @@ export class AbstractLibraryPage<PageOrder extends LibraryOrder | Order = Order>
 
     this.results = state.results;
     this.show_library(state.results);
+
+    set_scrolled_window_initial_vscroll(this.view.scrolled, state.vscroll);
   }
 
   get_state(): LibraryState {
     return {
       results: this.results!,
       order: this.order,
+      vscroll: this.view.scrolled.get_vadjustment().get_value(),
     };
   }
 
