@@ -7,10 +7,14 @@ import { get_new_releases, NewReleases } from "../muse.js";
 import { Carousel } from "../components/carousel/index.js";
 import { Loading } from "../components/loading.js";
 import { EndpointContext, MuzikaComponent } from "src/navigation.js";
+import {
+  set_scrolled_window_initial_vscroll,
+  VScrollState,
+} from "src/util/scrolled.js";
 
 Loading;
 
-export interface NewReleasesPageState {
+export interface NewReleasesPageState extends VScrollState {
   contents: NewReleases;
 }
 
@@ -54,10 +58,12 @@ export class NewReleasesPage extends Adw.Bin
   get_state() {
     return {
       contents: this.contents!,
+      vscroll: this._scrolled.get_vadjustment().get_value(),
     };
   }
 
   restore_state(state: NewReleasesPageState) {
+    set_scrolled_window_initial_vscroll(this._scrolled, state.vscroll);
     this.present(state.contents);
   }
 
