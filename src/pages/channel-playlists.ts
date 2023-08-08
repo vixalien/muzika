@@ -2,10 +2,7 @@ import GObject from "gi://GObject";
 import Adw from "gi://Adw";
 import GLib from "gi://GLib";
 
-import {
-  ChannelPlaylists,
-  get_artist_albums as get_channel_playlists,
-} from "src/muse.js";
+import { ChannelPlaylists, get_channel_playlists } from "src/muse.js";
 
 import { EndpointContext, MuzikaComponent } from "src/navigation.js";
 import { CarouselGridView } from "src/components/carousel/view/grid";
