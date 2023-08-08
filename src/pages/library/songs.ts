@@ -11,6 +11,10 @@ import type { Order } from "libmuse/types/mixins/utils.js";
 import { EndpointContext, MuzikaComponent } from "src/navigation.js";
 import { PlayableContainer, PlayableList } from "src/util/playablelist.js";
 import { PlaylistItemView } from "src/components/playlist/itemview.js";
+import {
+  set_scrolled_window_initial_vscroll,
+  VScrollState,
+} from "src/util/scrolled.js";
 
 // make sure paginator is registered before LibrarySongsPage
 Paginator;
@@ -22,13 +26,14 @@ export class LibrarySongsPage extends Adw.Bin
       GTypeName: "LibrarySongsPage",
       Template:
         "resource:///com/vixalien/muzika/ui/components/library/songs.ui",
-      InternalChildren: ["item_view", "drop_down", "paginator"],
+      InternalChildren: ["item_view", "drop_down", "paginator", "scrolled"],
     }, this);
   }
 
   private _drop_down!: Gtk.DropDown;
   private _paginator!: Paginator;
   private _item_view!: PlaylistItemView;
+  private _scrolled!: Gtk.ScrolledWindow;
 
   private items = new PlayableList();
 
@@ -111,10 +116,13 @@ export class LibrarySongsPage extends Adw.Bin
     return {
       results: this.results!,
       order: this.order,
+      vscroll: this._scrolled.get_vadjustment().get_value(),
     };
   }
 
   restore_state(state: LibrarySongsState): void {
+    set_scrolled_window_initial_vscroll(this._scrolled, state.vscroll);
+
     if (state.order) {
       const order = order_id_to_name(state.order, alphabetical_orders);
 
@@ -159,7 +167,7 @@ interface LoadedSongs {
   order?: Order;
 }
 
-interface LibrarySongsState {
+interface LibrarySongsState extends VScrollState {
   results: LibrarySongs;
   order?: string;
 }
