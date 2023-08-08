@@ -805,10 +805,10 @@ levn@^0.4.1:
     prelude-ls "^1.2.1"
     type-check "~0.4.0"
 
-libmuse@^0.0.73:
-  version "0.0.73"
-  resolved "https://registry.yarnpkg.com/libmuse/-/libmuse-0.0.73.tgz#63fdfe922acfbfb05d0282052751279dfebb4d8e"
-  integrity sha512-BbaZGSmCxfDLo7N54LfCmXKdLC6trGxLnH+Bt0ZAjvf7Y7m1HwQVF+erWBSG82SmizSjTWrzVoalfegJfTzSoQ==
+libmuse@^0.0.74:
+  version "0.0.74"
+  resolved "https://registry.yarnpkg.com/libmuse/-/libmuse-0.0.74.tgz#f886cad52416e15301f44f2e725a4e4c665237d5"
+  integrity sha512-XUeUgymsBfoQFp0lIf2nE/XWpFSjRdGtTvy/8qPntwyvkLRBA6WS49IkFDF8k+VMJ/Wv2wN/2FTxOn07zAQqPA==
   dependencies:
     jsonpath-plus "7.2.0"
 

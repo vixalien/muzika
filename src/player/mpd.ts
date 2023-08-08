@@ -1,25 +1,11 @@
-import { AudioFormat, Format, Song, VideoFormat } from "src/muse";
+import { AudioFormat, Format, Song } from "src/muse";
 import { format_has_audio } from ".";
 import { languages } from "src/components/player/video/languages";
 
 export function convert_formats_to_dash(song: Song) {
-  const duration = get_presentation_duration(song.formats);
+  const formats = song.adaptive_formats;
 
-  const video_formats = song.formats.filter((format) =>
-    format.has_video
-  ) as VideoFormat[];
-  const audio_formats = song.formats.filter((format) =>
-    format.has_audio
-  ) as AudioFormat[];
-
-  const get_max = (key: keyof VideoFormat) =>
-    video_formats
-      .reduce((acc: any, format) => {
-        if (format[key] as number > acc) {
-          return format[key];
-        }
-        return acc;
-      }, 0);
+  const duration = get_presentation_duration(formats);
 
   const translable_caption = song.captions?.find((caption) =>
     caption.translatable
@@ -44,7 +30,7 @@ export function convert_formats_to_dash(song: Song) {
       {
         "@name": "Period",
         "#children": [
-          ...song.formats.reduce((acc, format, index) => {
+          ...formats.reduce((acc, format, index) => {
             if (format.has_audio && format.has_video) return acc;
 
             const representation: Record<string, any> = {
@@ -56,7 +42,6 @@ export function convert_formats_to_dash(song: Song) {
               "audioSamplingRate": format_has_audio(format)
                 ? format.sample_rate
                 : null,
-              "startWithSAP": "1",
               "#children": [
                 ...(format_has_audio(format)
                   ? [{
@@ -105,7 +90,6 @@ export function convert_formats_to_dash(song: Song) {
               representation.frameRate = format.fps;
               representation.par = get_ratio(format.width, format.height);
               representation.sar = "1:1";
-              representation.startWithSAP = "1";
             }
 
             if (format.has_audio) {
