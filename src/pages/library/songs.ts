@@ -10,6 +10,10 @@ import { Paginator } from "src/components/paginator.js";
 import { PlaylistItemCard } from "src/components/playlist/item.js";
 import type { Order } from "libmuse/types/mixins/utils.js";
 import { EndpointContext, MuzikaComponent } from "src/navigation.js";
+import {
+  set_scrolled_window_initial_vscroll,
+  VScrollState,
+} from "src/util/scrolled.js";
 
 // make sure paginator is registered before LibrarySongsPage
 Paginator;
@@ -21,13 +25,14 @@ export class LibrarySongsPage extends Adw.Bin
       GTypeName: "LibrarySongsPage",
       Template:
         "resource:///com/vixalien/muzika/ui/components/library/songs.ui",
-      InternalChildren: ["drop_down", "paginator"],
+      InternalChildren: ["drop_down", "paginator", "scrolled"],
       Children: ["list"],
     }, this);
   }
 
   private _drop_down!: Gtk.DropDown;
   private _paginator!: Paginator;
+  private _scrolled!: Gtk.ScrolledWindow;
 
   list!: Gtk.Box;
 
@@ -115,10 +120,13 @@ export class LibrarySongsPage extends Adw.Bin
     return {
       results: this.results!,
       order: this.order,
+      vscroll: this._scrolled.get_vadjustment().get_value(),
     };
   }
 
   restore_state(state: LibrarySongsState): void {
+    set_scrolled_window_initial_vscroll(this._scrolled, state.vscroll);
+
     if (state.order) {
       const order = order_id_to_name(state.order, alphabetical_orders);
 
@@ -163,7 +171,7 @@ interface LoadedSongs {
   order?: Order;
 }
 
-interface LibrarySongsState {
+interface LibrarySongsState extends VScrollState {
   results: LibrarySongs;
   order?: string;
 }
