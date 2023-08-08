@@ -13,10 +13,14 @@ import { Carousel } from "../components/carousel/index.js";
 import { Loading } from "../components/loading.js";
 import { EndpointContext, MuzikaComponent } from "src/navigation.js";
 import { MixedCardItem } from "src/components/library/mixedcard.js";
+import {
+  set_scrolled_window_initial_vscroll,
+  VScrollState,
+} from "src/util/scrolled.js";
 
 Loading;
 
-export interface ChartsPageState {
+export interface ChartsPageState extends VScrollState {
   contents: Charts;
 }
 
@@ -88,10 +92,12 @@ export class ChartsPage extends Adw.Bin
   get_state() {
     return {
       contents: this.contents!,
+      vscroll: this._scrolled.get_vadjustment().get_value(),
     };
   }
 
   restore_state(state: ChartsPageState) {
+    set_scrolled_window_initial_vscroll(this._scrolled, state.vscroll);
     this.present(state.contents);
   }
 
