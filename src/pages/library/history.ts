@@ -6,6 +6,10 @@ import { get_history, History, PlaylistItem } from "../../muse.js";
 
 import { PlaylistItemCard } from "src/components/playlist/item.js";
 import { EndpointContext, MuzikaComponent } from "src/navigation.js";
+import {
+  set_scrolled_window_initial_vscroll,
+  VScrollState,
+} from "src/util/scrolled.js";
 
 interface PlaylistItemWithCategory extends PlaylistItem {
   category?: string;
@@ -15,7 +19,7 @@ interface HistoryTitleOptions {
   title: string;
 }
 
-interface HistoryState {
+interface HistoryState extends VScrollState {
   results: History;
 }
 
@@ -50,11 +54,12 @@ export class HistoryPage extends Adw.Bin
       GTypeName: "HistoryPage",
       Template:
         "resource:///com/vixalien/muzika/ui/components/library/history.ui",
-      InternalChildren: ["list"],
+      InternalChildren: ["list", "scrolled"],
     }, this);
   }
 
   private _list!: Gtk.ListBox;
+  private _scrolled!: Gtk.ScrolledWindow;
 
   results?: History;
 
@@ -106,10 +111,12 @@ export class HistoryPage extends Adw.Bin
   get_state() {
     return {
       results: this.results!,
+      vscroll: this._scrolled.get_vadjustment().get_value(),
     };
   }
 
   restore_state(state: HistoryState) {
+    set_scrolled_window_initial_vscroll(this._scrolled, state.vscroll);
     this.present(state.results);
   }
 
