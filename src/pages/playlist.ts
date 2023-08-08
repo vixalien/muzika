@@ -28,8 +28,12 @@ import {
 } from "src/components/playlist/edit.js";
 import { Window } from "src/window.js";
 import { PlayableContainer, PlayableList } from "src/util/playablelist.js";
+import {
+  set_scrolled_window_initial_vscroll,
+  VScrollState,
+} from "src/util/scrolled.js";
 
-interface PlaylistState {
+interface PlaylistState extends VScrollState {
   playlist: Playlist;
 }
 
@@ -411,10 +415,13 @@ export class PlaylistPage extends Adw.Bin
           .map((container) => (container as PlayableContainer).object)
           .filter((item) => item != null) as PlaylistItem[],
       },
+      vscroll: this._scrolled.get_vadjustment().get_value(),
     };
   }
 
   restore_state(state: PlaylistState) {
     this.present(state.playlist);
+
+    set_scrolled_window_initial_vscroll(this._scrolled, state.vscroll);
   }
 }
