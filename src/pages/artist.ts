@@ -13,8 +13,12 @@ import { PlaylistListView } from "src/components/playlist/listview.js";
 import { PlaylistItemView } from "src/components/playlist/itemview.js";
 import { PlayableContainer, PlayableList } from "src/util/playablelist.js";
 import { get_square_thumbnails } from "src/components/webimage.js";
+import {
+  set_scrolled_window_initial_vscroll,
+  VScrollState,
+} from "src/util/scrolled.js";
 
-interface ArtistState {
+interface ArtistState extends VScrollState {
   artist: Artist;
 }
 
@@ -34,6 +38,7 @@ export class ArtistPage extends Adw.Bin
         "header",
         "carousels",
         "menu",
+        "scrolled",
       ],
     }, this);
   }
@@ -46,6 +51,7 @@ export class ArtistPage extends Adw.Bin
   private _header!: ArtistHeader;
   private _carousels!: Gtk.Box;
   private _menu!: Gtk.MenuButton;
+  private _scrolled!: Gtk.ScrolledWindow;
 
   model = new PlayableList();
 
@@ -195,10 +201,13 @@ export class ArtistPage extends Adw.Bin
   get_state(): ArtistState {
     return {
       artist: this.artist!,
+      vscroll: this._scrolled.vadjustment.value,
     };
   }
 
   restore_state(state: ArtistState) {
     this.present(state.artist);
+
+    set_scrolled_window_initial_vscroll(this._scrolled, state.vscroll);
   }
 }
