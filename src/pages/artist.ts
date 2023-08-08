@@ -12,8 +12,12 @@ import { EndpointContext, MuzikaComponent } from "src/navigation.js";
 import { PlaylistListView } from "src/components/playlist/listview.js";
 import { PlaylistItemView } from "src/components/playlist/itemview.js";
 import { PlayableContainer, PlayableList } from "src/util/playablelist.js";
+import {
+  set_scrolled_window_initial_vscroll,
+  VScrollState,
+} from "src/util/scrolled.js";
 
-interface ArtistState {
+interface ArtistState extends VScrollState {
   artist: Artist;
 }
 
@@ -33,6 +37,7 @@ export class ArtistPage extends Adw.Bin
         "more_top_songs",
         "playlist_item_view",
         "header",
+        "scrolled",
       ],
     }, this);
   }
@@ -45,6 +50,7 @@ export class ArtistPage extends Adw.Bin
   private _more_top_songs!: Gtk.Button;
   private _playlist_item_view!: PlaylistItemView;
   private _header!: ArtistHeader;
+  private _scrolled!: Gtk.ScrolledWindow;
 
   model = new PlayableList();
 
@@ -178,10 +184,13 @@ export class ArtistPage extends Adw.Bin
   get_state(): ArtistState {
     return {
       artist: this.artist!,
+      vscroll: this._scrolled.vadjustment.value,
     };
   }
 
   restore_state(state: ArtistState) {
     this.present(state.artist);
+
+    set_scrolled_window_initial_vscroll(this._scrolled, state.vscroll);
   }
 }
