@@ -108,8 +108,6 @@ export class PlayableContainer<T extends Object = PlaylistItem>
       case "song":
       case "inline-video":
       case "flat-song":
-      case "top-song":
-      case "trending-song":
         props = { object: item, video_id: item.videoId ?? undefined };
         break;
       case "watch-playlist":
