@@ -11,8 +11,12 @@ import { AlbumHeader } from "../components/album/header.js";
 import { EndpointContext, MuzikaComponent } from "src/navigation.js";
 import { PlaylistItemView } from "src/components/playlist/itemview.js";
 import { PlayableContainer, PlayableList } from "src/util/playablelist.js";
+import {
+  set_scrolled_window_initial_vscroll,
+  VScrollState,
+} from "src/util/scrolled.js";
 
-interface AlbumState {
+interface AlbumState extends VScrollState {
   album: AlbumResult;
   track?: string;
 }
@@ -39,6 +43,7 @@ export class AlbumPage extends Adw.Bin
         "playlist_item_view",
         "header",
         "menu",
+        "scrolled",
       ],
     }, this);
   }
@@ -52,6 +57,7 @@ export class AlbumPage extends Adw.Bin
   private _playlist_item_view!: PlaylistItemView;
   private _header!: AlbumHeader;
   private _menu!: Gtk.MenuButton;
+  private _scrolled!: Gtk.ScrolledWindow;
 
   track: string | null = null;
 
@@ -227,11 +233,14 @@ export class AlbumPage extends Adw.Bin
     return {
       album: this.album!,
       track: this.track ?? undefined,
+      vscroll: this._scrolled.get_vadjustment().get_value(),
     };
   }
 
   restore_state(state: AlbumState) {
     this.present({ album: state.album, track: state.track });
+
+    set_scrolled_window_initial_vscroll(this._scrolled, state.vscroll);
   }
 }
 
