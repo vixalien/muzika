@@ -2,7 +2,7 @@ import Gtk from "gi://Gtk?version=4.0";
 import GObject from "gi://GObject";
 import GLib from "gi://GLib";
 
-import { ArtistRun, FlatSong, Thumbnail } from "../../muse.js";
+import { ArtistRun, FlatSong, PlaylistItem, Thumbnail } from "../../muse.js";
 import { DynamicImage, DynamicImageState } from "../dynamic-image.js";
 
 // first register the DynamicImage class
@@ -15,7 +15,11 @@ import {
   Ranked,
 } from "libmuse/types/parsers/browsing.js";
 
-export type InlineSong = FlatSong | Ranked<ParsedSong> | Ranked<ParsedVideo>;
+export type InlineSong =
+  | FlatSong
+  | Ranked<ParsedSong>
+  | Ranked<ParsedVideo>
+  | PlaylistItem;
 
 export class FlatSongCard extends Gtk.Box {
   static {
@@ -141,7 +145,22 @@ export class FlatSongCard extends Gtk.Box {
     this.setup_video(song.videoId);
   }
 
+  show_playlist_item(song: PlaylistItem) {
+    this.song = song;
+
+    this.set_title(song.title);
+    this.set_subtitle(song.artists ?? []);
+
+    this.load_thumbnails(song.thumbnails);
+    this.setup_video(song.videoId);
+  }
+
   show_item(content: InlineSong) {
+    if (is_playlist_item(content)) {
+      this.show_playlist_item(content);
+      return;
+    }
+
     switch (content.type) {
       case "flat-song":
         this.show_flat_song(content);
@@ -161,4 +180,9 @@ export class FlatSongCard extends Gtk.Box {
   set_state(state: DynamicImageState) {
     this._dynamic_image.state = state;
   }
+}
+
+export function is_playlist_item(song: InlineSong): song is PlaylistItem {
+  return Object.hasOwn(song, "isAvailable") &&
+    Object.hasOwn(song, "setVideoId");
 }
