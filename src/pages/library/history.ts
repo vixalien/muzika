@@ -10,12 +10,16 @@ import {
   SectionedPlayableContainer,
   SectionedPlayableList,
 } from "src/util/playablelist.js";
+import {
+  set_scrolled_window_initial_vscroll,
+  VScrollState,
+} from "src/util/scrolled.js";
 
 interface HistoryTitleOptions {
   title?: string;
 }
 
-interface HistoryState {
+interface HistoryState extends VScrollState {
   results: History;
 }
 
@@ -65,11 +69,12 @@ export class HistoryPage extends Adw.Bin
       GTypeName: "HistoryPage",
       Template:
         "resource:///com/vixalien/muzika/ui/components/library/history.ui",
-      InternalChildren: ["item_view"],
+      InternalChildren: ["item_view", "scrolled"],
     }, this);
   }
 
   private _item_view!: PlaylistItemView;
+  private _scrolled!: Gtk.ScrolledWindow;
 
   results?: History;
 
@@ -139,10 +144,12 @@ export class HistoryPage extends Adw.Bin
   get_state() {
     return {
       results: this.results!,
+      vscroll: this._scrolled.get_vadjustment().get_value(),
     };
   }
 
   restore_state(state: HistoryState) {
+    set_scrolled_window_initial_vscroll(this._scrolled, state.vscroll);
     this.present(state.results);
   }
 
