@@ -18,10 +18,14 @@ import { Paginator } from "../components/paginator.js";
 import { InlineTabSwitcher, Tab } from "../components/inline-tab-switcher.js";
 import { EndpointContext, MuzikaComponent } from "src/navigation.js";
 import { escape_label } from "src/util/text.js";
+import {
+  set_scrolled_window_initial_vscroll,
+  VScrollState,
+} from "src/util/scrolled.js";
 
 const vprintf = imports.format.vprintf;
 
-interface SearchState {
+interface SearchState extends VScrollState {
   results: SearchResults;
   args: Parameters<typeof search>;
 }
@@ -329,11 +333,14 @@ export class SearchPage extends Adw.Bin
     return {
       results: this.results!,
       args: this.args,
+      vscroll: this._scrolled.get_vadjustment().get_value(),
     };
   }
 
   restore_state(state: SearchState) {
     this.present(state);
+
+    set_scrolled_window_initial_vscroll(this._scrolled, state.vscroll);
   }
 }
 
