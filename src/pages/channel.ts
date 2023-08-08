@@ -16,8 +16,12 @@ import { EndpointContext, MuzikaComponent } from "src/navigation.js";
 import { PlaylistListView } from "src/components/playlist/listview.js";
 import { PlaylistItemView } from "src/components/playlist/itemview.js";
 import { PlayableContainer, PlayableList } from "src/util/playablelist.js";
+import {
+  set_scrolled_window_initial_vscroll,
+  VScrollState,
+} from "src/util/scrolled.js";
 
-interface ChannelState {
+interface ChannelState extends VScrollState {
   channel: Channel;
 }
 
@@ -36,6 +40,7 @@ export class ChannelPage extends Adw.Bin
         "songs_on_repeat",
         "playlist_item_view",
         "header",
+        "scrolled",
       ],
     }, this);
   }
@@ -47,6 +52,7 @@ export class ChannelPage extends Adw.Bin
   private _songs_on_repeat!: Gtk.Box;
   private _playlist_item_view!: PlaylistItemView;
   private _header!: ArtistHeader;
+  private _scrolled!: Gtk.ScrolledWindow;
 
   model = new PlayableList();
 
@@ -153,10 +159,12 @@ export class ChannelPage extends Adw.Bin
   get_state(): ChannelState {
     return {
       channel: this.channel!,
+      vscroll: this._scrolled.get_vadjustment().get_value(),
     };
   }
 
   restore_state(state: ChannelState) {
+    set_scrolled_window_initial_vscroll(this._scrolled, state.vscroll);
     this.present(state.channel);
   }
 }
