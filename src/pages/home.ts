@@ -9,11 +9,15 @@ import { get_home, Home, MixedContent } from "../muse.js";
 import { Carousel } from "../components/carousel/index.js";
 import { Loading } from "../components/loading.js";
 import { EndpointContext, MuzikaComponent } from "src/navigation.js";
+import {
+  set_scrolled_window_initial_vscroll,
+  VScrollState,
+} from "src/util/scrolled.js";
 
 Loading;
 Paginator;
 
-export interface HomePageState {
+export interface HomePageState extends VScrollState {
   home: Home;
 }
 
@@ -65,11 +69,14 @@ export class HomePage extends Adw.Bin
   get_state() {
     return {
       home: this.home!,
+      vscroll: this._scrolled.get_vadjustment().get_value(),
     };
   }
 
   restore_state(state: HomePageState) {
     this.present(state.home);
+
+    set_scrolled_window_initial_vscroll(this._scrolled, state.vscroll);
   }
 
   clear() {
