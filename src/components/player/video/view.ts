@@ -77,8 +77,8 @@ export class VideoPlayerView extends Adw.Bin {
     });
     click.propagation_phase = Gtk.PropagationPhase.TARGET;
 
-    this._toolbar_view.add_controller(hover);
-    this._toolbar_view.add_controller(click);
+    this.add_controller(hover);
+    this._picture.add_controller(click);
 
     this._controls.connect("notify::inhibit-hide", () => {
       this.extend_ui_visible_time();
