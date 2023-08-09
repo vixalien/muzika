@@ -3,7 +3,7 @@ import { format_has_audio } from ".";
 import { languages } from "src/components/player/video/languages";
 
 export function convert_formats_to_dash(song: Song) {
-  const formats = song.adaptive_formats;
+  const formats = [...song.formats, ...song.adaptive_formats];
 
   const duration = get_presentation_duration(formats);
 
