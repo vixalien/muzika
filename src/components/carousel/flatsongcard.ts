@@ -3,17 +3,17 @@ import GObject from "gi://GObject";
 import GLib from "gi://GLib";
 
 import { ArtistRun, FlatSong, Thumbnail } from "../../muse.js";
-import { DynamicImage, DynamicImageState } from "../dynamic-image.js";
 
 // first register the DynamicImage class
-import "../dynamic-image.js";
 import { pretty_subtitles } from "src/util/text.js";
-import { load_thumbnails } from "../webimage.js";
 import {
   ParsedSong,
   ParsedVideo,
   Ranked,
 } from "libmuse/types/parsers/browsing.js";
+import { DynamicImage2 } from "../dynamic-image-2.js";
+
+DynamicImage2;
 
 export type InlineSong = FlatSong | Ranked<ParsedSong> | Ranked<ParsedVideo>;
 
@@ -37,7 +37,7 @@ export class FlatSongCard extends Gtk.Box {
   private _title!: Gtk.Label;
   private _explicit!: Gtk.Image;
   private _subtitle!: Gtk.Label;
-  private _dynamic_image!: DynamicImage;
+  private _dynamic_image!: DynamicImage2;
 
   constructor() {
     super();
@@ -58,9 +58,9 @@ export class FlatSongCard extends Gtk.Box {
 
   private load_thumbnails(
     thumbnails: Thumbnail[],
-    options: Parameters<typeof load_thumbnails>[2] = 60,
+    // options: Parameters<typeof load_thumbnails>[2] = 60,
   ) {
-    this._dynamic_image.load_thumbnails(thumbnails, options);
+    this._dynamic_image.video_thumbnails = thumbnails;
   }
 
   private set_title(title: string) {
@@ -101,9 +101,9 @@ export class FlatSongCard extends Gtk.Box {
   }
 
   private setup_video(videoId: string | null) {
-    if (videoId) {
-      this._dynamic_image.setup_video(videoId);
-    }
+    // if (videoId) {
+    //   this._dynamic_image.setup_video(videoId);
+    // }
   }
 
   private show_explicit(explicit: boolean) {
@@ -158,7 +158,7 @@ export class FlatSongCard extends Gtk.Box {
     }
   }
 
-  set_state(state: DynamicImageState) {
-    this._dynamic_image.state = state;
+  set_state(state: any) {
+    // this._dynamic_image.state = state;
   }
 }
