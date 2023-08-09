@@ -249,7 +249,6 @@ export class MuzikaMediaStream extends Gtk.MediaStream {
     adapter.connect("end-of-stream", this.eos_cb.bind(this));
     adapter.connect("error", this.error_cb.bind(this));
     adapter.connect("state-changed", this.state_changed_cb.bind(this));
-    adapter.connect("uri-loaded", this.uri_loaded_cb.bind(this));
     adapter.connect("position-updated", this.position_updated_cb.bind(this));
     adapter.connect("duration-changed", this.duration_changed_cb.bind(this));
     adapter.connect(
@@ -331,14 +330,6 @@ export class MuzikaMediaStream extends Gtk.MediaStream {
     if (!this._play.media_info) return 0;
 
     return this._play.media_info.get_duration() / Gst.USECOND;
-  }
-
-  // property: ended
-
-  protected _ended = false;
-
-  get ended() {
-    return this._ended;
   }
 
   // property: error
@@ -465,21 +456,6 @@ export class MuzikaMediaStream extends Gtk.MediaStream {
     }
   }
 
-  private uri_loaded_cb(_play: GstPlay.Play): void {
-    if (this.prepared) {
-      this.stream_unprepared();
-    }
-
-    this._ended = false;
-    this.notify("ended");
-
-    if (this.playing) {
-      this._play.play();
-    } else {
-      this._play.pause();
-    }
-  }
-
   private position_updated_cb(_play: GstPlay.Play, position: number): void {
     this.update(position / Gst.USECOND);
   }
@@ -518,9 +494,6 @@ export class MuzikaMediaStream extends Gtk.MediaStream {
         );
 
         this.do_initial_seek();
-
-        this._ended = false;
-        this.notify("ended");
       }
     }
   }
@@ -532,8 +505,9 @@ export class MuzikaMediaStream extends Gtk.MediaStream {
   protected eos_cb(_play: GstPlay.Play): void {
     this.stream_ended();
 
-    this._ended = true;
-    this.notify("ended");
+    if (this.prepared) {
+      this.stream_unprepared();
+    }
   }
 
   protected media_info_updated_cb(
@@ -809,6 +783,12 @@ export class MuzikaPlayer extends MuzikaMediaStream {
 
         this.set_uri(uri);
 
+        if (this.playing) {
+          this._play.play();
+        } else {
+          this._play.pause();
+        }
+
         this.add_history = true;
       })
       .catch((error) => {
@@ -819,10 +799,7 @@ export class MuzikaPlayer extends MuzikaMediaStream {
   }
 
   protected eos_cb(_play: GstPlay.Play): void {
-    this.stream_ended();
-
-    this._ended = true;
-    this.notify("ended");
+    super.eos_cb(_play);
 
     this.queue.repeat_or_next();
   }
