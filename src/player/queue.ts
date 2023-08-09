@@ -558,6 +558,7 @@ export class Queue extends GObject.Object {
 
     if (options.play) {
       this.clear();
+      this.preferred_media_type = PreferredMediaType.AUTO;
     }
 
     if (options.next) {
@@ -570,8 +571,6 @@ export class Queue extends GObject.Object {
     }
 
     if (options.play) {
-      this.preferred_media_type = PreferredMediaType.AUTO;
-
       this.set_settings(_omit(queue, ["tracks"]));
 
       const position = queue.current?.index
@@ -606,6 +605,7 @@ export class Queue extends GObject.Object {
 
     if (options.play) {
       this.clear();
+      this.preferred_media_type = PreferredMediaType.AUTO;
     }
 
     if (options.next) {
@@ -619,7 +619,6 @@ export class Queue extends GObject.Object {
     }
 
     if (options.play) {
-      this.preferred_media_type = PreferredMediaType.AUTO;
       this.change_position(0);
     }
 
