@@ -67,10 +67,10 @@ export class Paginator extends Gtk.Revealer {
     super({
       reveal_child: false,
     });
+  }
 
-    this._button.connect("clicked", () => {
-      this.loading = true;
-      this.emit("activate");
-    });
+  private on_button_clicked() {
+    this.loading = true;
+    this.emit("activate");
   }
 }

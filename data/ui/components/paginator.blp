@@ -15,11 +15,12 @@ template $Paginator : Revealer {
       transition-type: crossfade;
 
       Button button {
+        label: _("Load More");
+        clicked => $on_button_clicked();
+        
         styles [
           "pill",
         ]
-
-        label: _("Load More");
       }
 
       [spinner]
