@@ -8,101 +8,92 @@ template $PlaylistListItem : Box {
   ]
 
   Box {
-    margin-top: 3;
-    margin-bottom: 3;
-    margin-start: 3;
-    margin-end: 3;
+    spacing: 12;
+    hexpand: true;
     valign: center;
 
-    Box {
-      width-request: 320;
-      spacing: 12;
-      hexpand: true;
-      valign: center;
+    $DynamicImage dynamic_image {
+      image-size: 48;
+      icon-size: 16;
+      persistent-play-button: false;
+      halign: center;
+    }
 
-      $DynamicImage dynamic_image {
-        image-size: "48";
-        icon-size: "16";
-        persistent-play-button: "false";
+    Box chart_rank {
+      visible: false;
+      width-request: 36;
+      hexpand: false;
+
+      Box {
+        valign: center;
+        hexpand: true;
         halign: center;
-      }
+        spacing: 6;
 
-      Box chart_rank {
-        visible: false;
-        width-request: 36;
-        hexpand: false;
+        Label rank {
+          label: "1";
+        }
 
-        Box {
-          valign: center;
-          hexpand: true;
-          halign: center;
-          spacing: 6;
-
-          Label rank {
-            label: "1";
-          }
-
-          Image change {
-            icon-name: "pan-down-symbolic";
-          }
+        Image change {
+          icon-name: "pan-down-symbolic";
         }
       }
+    }
 
-      Box meta {
-        orientation: vertical;
-        valign: center;
-        spacing: 3;
+    Box meta {
+      orientation: vertical;
+      valign: center;
+      spacing: 3;
+      hexpand: true;
+
+      Label title {
         hexpand: true;
+        max-width-chars: 1;
+        ellipsize: end;
+        lines: 2;
+        xalign: 0;
+        wrap: true;
+        wrap-mode: char;
 
-        Label title {
+        styles [
+          "heading",
+        ]
+      }
+
+      Box subtitles {
+        spacing: 6;
+
+        styles [
+          "dim-label",
+        ]
+
+        Image explicit {
+          visible: false;
+          valign: center;
+          icon-name: "network-cellular-edge-symbolic";
+        }
+
+        Label subtitle {
+          use-markup: true;
           hexpand: true;
           max-width-chars: 1;
           ellipsize: end;
-          lines: 2;
           xalign: 0;
           wrap: true;
-          wrap-mode: char;
 
           styles [
-            "heading",
+            "flat-links",
           ]
         }
-
-        Box subtitles {
-          spacing: 6;
-
-          styles [
-            "dim-label",
-          ]
-
-          Image explicit {
-            visible: false;
-            valign: center;
-            icon-name: "network-cellular-edge-symbolic";
-          }
-
-          Label subtitle {
-            use-markup: true;
-            hexpand: true;
-            max-width-chars: 1;
-            ellipsize: end;
-            xalign: 0;
-            wrap: true;
-
-            styles [
-              "flat-links",
-            ]
-          }
-        }
       }
+    }
 
-      Button add {
-        icon-name: "list-add-symbolic";
-        visible: false;
-        clicked => $add_cb();
+    Button add {
+      icon-name: "list-add-symbolic";
+      visible: false;
+      clicked => $add_cb();
 
-        styles ["flat"]
-      }
+      styles ["flat"]
     }
   }
 }

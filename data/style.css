@@ -163,13 +163,15 @@ label.bold-link link {
 
 .carousel-list-view,
 .carousel-grid-view,
-.carousel-flat-song-view {
+.carousel-flat-song-view,
+.playlist-list-view {
   border-spacing: 6px;
   padding-left: 6px;
   padding-right: 6px;
 }
 
-.carousel-list-view>row {
+.carousel-list-view>row,
+.playlist-list-view>row {
   border-radius: 12px;
   padding: 6px;
 }
@@ -190,8 +192,7 @@ label.bold-link link {
   background-color: transparent;
 }
 
-.playlist-column-view listview,
-.playlist-list-view {
+.playlist-column-view listview {
   border-spacing: 6px;
 }
 

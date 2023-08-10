@@ -27,10 +27,7 @@ export class PlaylistListView extends Gtk.ListView {
   playlistId?: string;
 
   constructor() {
-    super({
-      margin_start: 12,
-      margin_end: 12,
-    });
+    super();
 
     this.add_css_class("playlist-list-view");
 
