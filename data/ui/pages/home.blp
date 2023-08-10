@@ -20,7 +20,13 @@ template $HomePage : Adw.Bin {
           orientation: vertical;
           spacing: 12;
 
+          Box carousels {
+            orientation: vertical;
+            spacing: 12;
+          }
+
           $Paginator paginator {
+            can-paginate: true;
           }
         }
       }
