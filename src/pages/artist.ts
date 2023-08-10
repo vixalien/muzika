@@ -33,6 +33,7 @@ export class ArtistPage extends Adw.Bin
         "more_top_songs",
         "playlist_item_view",
         "header",
+        "carousels",
       ],
     }, this);
   }
@@ -45,6 +46,7 @@ export class ArtistPage extends Adw.Bin
   private _more_top_songs!: Gtk.Button;
   private _playlist_item_view!: PlaylistItemView;
   private _header!: ArtistHeader;
+  private _carousels!: Gtk.Box;
 
   model = new PlayableList();
 
@@ -161,8 +163,7 @@ export class ArtistPage extends Adw.Bin
       title,
       contents: data.results,
     });
-
-    this._inner_box.append(carousel);
+    this._carousels.append(carousel);
   }
 
   static async load(context: EndpointContext) {
