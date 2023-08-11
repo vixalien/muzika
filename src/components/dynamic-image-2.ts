@@ -135,10 +135,17 @@ export class DynamicImage2 extends Gtk.Overlay {
       case DynamicImage2StorageType.COVER_THUMBNAIL:
         child = new Gtk.Image({
           overflow: Gtk.Overflow.HIDDEN,
+          icon_name: "image-missing-symbolic",
         });
         break;
       case DynamicImage2StorageType.AVATAR:
-        child = new Adw.Avatar();
+        child = new Adw.Avatar({
+          overflow: Gtk.Overflow.HIDDEN,
+        });
+        child.add_css_class("rounded");
+        // TODO: get rid of this
+        // see https://gitlab.gnome.org/GNOME/gtk/-/issues/5960
+        child.add_css_class("card");
         break;
       case DynamicImage2StorageType.VIDEO_THUMBNAIL:
         child = new Gtk.Picture({
