@@ -1,0 +1,58 @@
+using Gtk 4.0;
+using Adw 1;
+
+template $DynamicAction : Adw.Bin {
+  overflow: hidden;
+
+  styles [
+    "br-9",
+  ]
+
+  Stack stack {
+    halign: end;
+    valign: end;
+    margin-end: 6;
+    margin-bottom: 6;
+
+    Adw.Bin blank {
+    }
+
+    Button play {
+      clicked => $play_cb();
+
+      styles [ "osd", "floating-button" ]
+
+      Image play_image {
+        icon-name: "media-playback-start-symbolic";
+      }
+    }
+
+    Button pause {
+      clicked => $pause_cb();
+
+      styles [ "osd", "floating-button" ]
+
+      Image pause_image {
+        icon-name: "media-playback-pause-symbolic";
+      }
+    }
+
+    Adw.Bin loading {
+      styles [ "osd", "floating-button" ]
+
+      Spinner spinner {
+        margin-start: 3;
+        margin-end: 3;
+        margin-top: 3;
+        margin-bottom: 3;
+      }
+    }
+
+    Image wave {
+      icon-name: "sound-wave-symbolic";
+      pixel-size: 48;
+
+      styles ["osd", "floating-button"]
+    }
+  }
+}

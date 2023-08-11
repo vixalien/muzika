@@ -3,6 +3,7 @@ import GObject from "gi://GObject";
 import Adw from "gi://Adw";
 import { Thumbnail } from "libmuse";
 import { load_thumbnails } from "./webimage";
+import { DynamicAction } from "./dynamic-action";
 
 export enum DynamicImage2StorageType {
   EMPTY = 0,
@@ -54,6 +55,14 @@ export class DynamicImage2 extends Gtk.Overlay {
         ),
       },
     }, this);
+  }
+
+  action = new DynamicAction();
+
+  constructor() {
+    super();
+
+    this.add_overlay(this.action);
   }
 
   // child methods
