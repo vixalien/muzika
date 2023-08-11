@@ -4,6 +4,7 @@ import Adw from "gi://Adw";
 import { Thumbnail } from "libmuse";
 import { load_thumbnails } from "./webimage";
 import { DynamicAction } from "./dynamic-action";
+import { SignalListeners } from "src/util/signal-listener";
 
 export enum DynamicImage2StorageType {
   EMPTY = 0,
@@ -21,6 +22,16 @@ export type DynamicImage2InnerChild<Type extends DynamicImage2StorageType> =
     : Type extends DynamicImage2StorageType.VIDEO_THUMBNAIL ? Gtk.Image
     : never;
 
+export interface DynamicImage2ConstructorProperties
+  extends Gtk.Overlay.ConstructorProperties {
+  size: number;
+  action_size: number;
+  storage_type: DynamicImage2StorageType;
+  track_number: number;
+  playlist: boolean;
+  persistent_play_button: boolean;
+}
+
 export class DynamicImage2 extends Gtk.Overlay {
   static {
     GObject.registerClass({
@@ -30,6 +41,15 @@ export class DynamicImage2 extends Gtk.Overlay {
           "size",
           "Size",
           "The size of the dynamic image",
+          GObject.ParamFlags.READWRITE,
+          0,
+          1000000,
+          0,
+        ),
+        "action-size": GObject.ParamSpec.int(
+          "action-size",
+          "Action Size",
+          "The size of the inset dynamic action",
           GObject.ParamFlags.READWRITE,
           0,
           1000000,
@@ -53,17 +73,57 @@ export class DynamicImage2 extends Gtk.Overlay {
           1000000,
           0,
         ),
+        "playlist": GObject.ParamSpec.boolean(
+          "playlist",
+          "Playlist",
+          "Whether this dynamic image is showing a playlist",
+          GObject.ParamFlags.READWRITE,
+          false,
+        ),
+        "persistent-play-button": GObject.ParamSpec.boolean(
+          "persistent-play-button",
+          "Persistent Play Button",
+          "Whether to always show the play button",
+          GObject.ParamFlags.READWRITE,
+          false,
+        ),
       },
     }, this);
   }
 
   action = new DynamicAction();
 
-  constructor() {
+  controller_listeners = new SignalListeners();
+
+  constructor(props: Partial<DynamicImage2ConstructorProperties> = {}) {
     super();
 
     this.add_overlay(this.action);
+
+    this.controller = new Gtk.EventControllerMotion();
+
+    this.controller.connect("enter", () => {
+      this.action.hovering = true;
+    });
+
+    this.controller.connect("leave", () => {
+      this.action.hovering = false;
+    });
+
+    this.add_controller(this.controller);
+
+    this.action.fill = props?.playlist ?? true;
+
+    if (props.size) this.size = props.size;
+    if (props.action_size) this.action_size = props.action_size;
+    if (props.storage_type) this.storage_type = props.storage_type;
+    if (props.track_number) this.track_number = props.track_number;
+    if (props.persistent_play_button != null) {
+      this.persistent_play_button = props.persistent_play_button;
+    }
   }
+
+  private controller: Gtk.EventControllerMotion;
 
   // child methods
 
@@ -174,6 +234,20 @@ export class DynamicImage2 extends Gtk.Overlay {
     this.update_size();
   }
 
+  // property: playlist
+
+  private _playlist = false;
+
+  get playlist() {
+    return this._playlist;
+  }
+
+  set playlist(playlist: boolean) {
+    if (playlist == this._playlist) return;
+
+    this.action.fill = !playlist;
+  }
+
   // property: size
 
   private _size = 0;
@@ -185,6 +259,26 @@ export class DynamicImage2 extends Gtk.Overlay {
   set size(size: number) {
     this._size = size;
     this.update_size();
+  }
+
+  // property: dynamic-image
+
+  get persistent_play_button() {
+    return this.action.persistent_play_button;
+  }
+
+  set persistent_play_button(size: boolean) {
+    this.action.persistent_play_button = size;
+  }
+
+  // property: action-size
+
+  get action_size() {
+    return this.action.size;
+  }
+
+  set action_size(size: number) {
+    this.action.size = size;
   }
 
   // property: storage type

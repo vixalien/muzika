@@ -9,6 +9,15 @@ export enum DynamicActionState {
   LOADING,
 }
 
+export interface DynamicActionConstructorProperties
+  extends Adw.Bin.ConstructorProperties {
+  size: number;
+  state: DynamicActionState;
+  fill: boolean;
+  persistent_play_button: boolean;
+  hovering: boolean;
+}
+
 export class DynamicAction extends Adw.Bin {
   static {
     GObject.registerClass({
@@ -52,6 +61,13 @@ export class DynamicAction extends Adw.Bin {
           GObject.ParamFlags.READWRITE,
           false,
         ),
+        "hovering": GObject.ParamSpec.boolean(
+          "hovering",
+          "Hovering",
+          "Whether the mouse is hovering over this dynamic action",
+          GObject.ParamFlags.READWRITE,
+          false,
+        ),
         "persistent-play-button": GObject.ParamSpec.boolean(
           "persistent-play-button",
           "Persistent Play Button",
@@ -60,7 +76,15 @@ export class DynamicAction extends Adw.Bin {
           false,
         ),
       },
+      Signals: {
+        play: {},
+        pause: {},
+      },
     }, this);
+  }
+
+  constructor(props?: Partial<DynamicActionConstructorProperties>) {
+    super(props);
   }
 
   private _stack!: Gtk.Stack;
@@ -74,6 +98,21 @@ export class DynamicAction extends Adw.Bin {
   private _spinner!: Gtk.Spinner;
 
   private images = [this._play_image, this._pause_image, this._wave];
+
+  // property: hovering
+
+  private _hovering = false;
+
+  get hovering() {
+    return this._hovering;
+  }
+
+  set hovering(hovering: boolean) {
+    if (hovering == this._hovering) return;
+
+    this._hovering = hovering;
+    this.update_stack();
+  }
 
   // property: fill
 
@@ -143,7 +182,7 @@ export class DynamicAction extends Adw.Bin {
     this.update_sizing();
   }
 
-  private update_stack(hovering = false) {
+  private update_stack() {
     let stop_spinning = true;
 
     let osd = false;
@@ -154,7 +193,7 @@ export class DynamicAction extends Adw.Bin {
     } else {
       switch (this.state) {
         case DynamicActionState.DEFAULT:
-          if (hovering) {
+          if (this.hovering) {
             osd = true;
             this._stack.visible_child = this._play;
           } else {
@@ -172,7 +211,7 @@ export class DynamicAction extends Adw.Bin {
           osd = true;
           break;
         case DynamicActionState.PLAYING:
-          if (hovering) {
+          if (this.hovering) {
             this._stack.visible_child = this._pause;
           } else {
             this._stack.visible_child = this._wave;
@@ -235,9 +274,13 @@ export class DynamicAction extends Adw.Bin {
     set_properties(this._spinner, "width_request", size);
   }
 
-  private play_cb() {}
+  private play_cb() {
+    this.emit("play");
+  }
 
-  private pause_cb() {}
+  private pause_cb() {
+    this.emit("pause");
+  }
 }
 
 function set_properties<
