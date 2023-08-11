@@ -4,17 +4,24 @@ using Adw 1;
 template $DynamicAction : Adw.Bin {
   overflow: hidden;
 
-  styles [
-    "br-9",
-  ]
-
   Stack stack {
     halign: end;
     valign: end;
     margin-end: 6;
     margin-bottom: 6;
+    transition-type: crossfade;
 
     Adw.Bin blank {
+    }
+
+    Button persistent_play {
+      clicked => $play_cb();
+
+      styles [ "floating-button" ]
+
+      Image persistent_play_image {
+        icon-name: "play-white";
+      }
     }
 
     Button play {

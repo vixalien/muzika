@@ -29,9 +29,11 @@ export class DynamicAction extends Adw.Bin {
         "blank",
         "play",
         "pause",
+        "persistent_play",
         "loading",
         "pause_image",
         "play_image",
+        "persistent_play_image",
         "wave",
         "spinner",
       ],
@@ -58,6 +60,13 @@ export class DynamicAction extends Adw.Bin {
           "fill",
           "Fill",
           "If this dynamic action should fill the container or just display at the bottom right edge",
+          GObject.ParamFlags.READWRITE,
+          false,
+        ),
+        "locked": GObject.ParamSpec.boolean(
+          "locked",
+          "Static",
+          "If this dynamic action should stop updating it's state",
           GObject.ParamFlags.READWRITE,
           false,
         ),
@@ -90,14 +99,21 @@ export class DynamicAction extends Adw.Bin {
   private _stack!: Gtk.Stack;
   private _blank!: Adw.Bin;
   private _play!: Gtk.Button;
+  private _persistent_play!: Gtk.Button;
   private _pause!: Gtk.Button;
   private _loading!: Adw.Bin;
   private _pause_image!: Gtk.Image;
   private _play_image!: Gtk.Image;
+  private _persistent_play_image!: Gtk.Image;
   private _wave!: Gtk.Image;
   private _spinner!: Gtk.Spinner;
 
-  private images = [this._play_image, this._pause_image, this._wave];
+  private images = [
+    this._play_image,
+    this._pause_image,
+    this._persistent_play_image,
+    this._wave,
+  ];
 
   // property: hovering
 
@@ -182,7 +198,9 @@ export class DynamicAction extends Adw.Bin {
     this.update_sizing();
   }
 
-  private update_stack() {
+  private update_stack(force = false) {
+    if (this.locked && !force) return;
+
     let stop_spinning = true;
 
     let osd = false;
@@ -198,7 +216,7 @@ export class DynamicAction extends Adw.Bin {
             this._stack.visible_child = this._play;
           } else {
             if (this.persistent_play_button) {
-              this._stack.visible_child = this._play;
+              this._stack.visible_child = this._persistent_play;
             } else {
               visible = false;
             }
@@ -272,6 +290,26 @@ export class DynamicAction extends Adw.Bin {
 
     set_properties(this.images, "pixel_size", size);
     set_properties(this._spinner, "width_request", size);
+  }
+
+  // property: locked
+
+  private _locked = false;
+
+  get locked() {
+    return this._locked;
+  }
+
+  set locked(is_locked: boolean) {
+    if (is_locked == this._locked) return;
+
+    this._locked = is_locked;
+
+    if (is_locked) {
+      this.state = DynamicActionState.DEFAULT;
+    }
+
+    this.update_stack(true);
   }
 
   private play_cb() {

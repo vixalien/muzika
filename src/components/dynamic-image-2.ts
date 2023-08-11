@@ -96,7 +96,9 @@ export class DynamicImage2 extends Gtk.Overlay {
   controller_listeners = new SignalListeners();
 
   constructor(props: Partial<DynamicImage2ConstructorProperties> = {}) {
-    super();
+    super({
+      overflow: Gtk.Overflow.HIDDEN,
+    });
 
     this.add_overlay(this.action);
 
@@ -128,14 +130,10 @@ export class DynamicImage2 extends Gtk.Overlay {
   // child methods
 
   private update_image_class() {
-    const child = this.get_child();
-
     if (
       this.storage_type !== DynamicImage2StorageType.COVER_THUMBNAIL &&
       this.storage_type !== DynamicImage2StorageType.VIDEO_THUMBNAIL
     ) return;
-
-    if (!child) return;
 
     const all_classes = ["icon-dropshadow", "lowres-icon", "br-6", "br-9"];
     const classes = ["card"];
@@ -149,11 +147,11 @@ export class DynamicImage2 extends Gtk.Overlay {
     }
 
     all_classes.filter((c) => !classes.includes(c)).forEach((c) => {
-      child.remove_css_class(c);
+      this.remove_css_class(c);
     });
 
     classes.forEach((c) => {
-      child.add_css_class(c);
+      this.add_css_class(c);
     });
   }
 
@@ -208,6 +206,8 @@ export class DynamicImage2 extends Gtk.Overlay {
         });
         break;
       case DynamicImage2StorageType.AVATAR:
+        this.action.locked = true;
+
         child = new Adw.Avatar({
           overflow: Gtk.Overflow.HIDDEN,
         });
