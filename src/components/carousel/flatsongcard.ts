@@ -60,7 +60,7 @@ export class FlatSongCard extends Gtk.Box {
     thumbnails: Thumbnail[],
     // options: Parameters<typeof load_thumbnails>[2] = 60,
   ) {
-    this._dynamic_image.video_thumbnails = thumbnails;
+    this._dynamic_image.cover_thumbnails = thumbnails;
   }
 
   private set_title(title: string) {
