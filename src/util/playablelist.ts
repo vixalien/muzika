@@ -166,7 +166,7 @@ export class PlayableContainer<T extends Object = PlaylistItem>
   static new_from_playlist_item(
     item: PlaylistItem,
   ): PlayableContainer<PlaylistItem> {
-    return new this({
+    return new PlayableContainer({
       object: item,
       video_id: item.videoId,
     });
@@ -175,13 +175,13 @@ export class PlayableContainer<T extends Object = PlaylistItem>
   static new_from_mixed_card_item(
     item: MixedCardItem,
   ): PlayableContainer<MixedCardItem> {
-    return new this(get_mixed_card_props(item));
+    return new PlayableContainer(get_mixed_card_props(item));
   }
 
   static new_from_search_content(
     item: SearchContent,
   ): PlayableContainer<SearchContent> {
-    return new this(get_search_content_props(item));
+    return new PlayableContainer(get_search_content_props(item));
   }
 }
 
@@ -242,7 +242,7 @@ export class SectionedPlayableContainer<
     item: T,
     section: Section | null = null,
   ): SectionedPlayableContainer<T, Section> {
-    return new this({
+    return new SectionedPlayableContainer({
       object: item,
       section: section ? new ObjectContainer(section) : null,
     });
@@ -252,7 +252,7 @@ export class SectionedPlayableContainer<
     item: PlaylistItem,
     section: Section | null = null,
   ) {
-    return new this({
+    return new SectionedPlayableContainer({
       object: item,
       video_id: item.videoId,
       section: section ? new ObjectContainer(section) : null,
@@ -263,7 +263,7 @@ export class SectionedPlayableContainer<
     item: MixedCardItem,
     section: Section | null = null,
   ) {
-    return new this({
+    return new SectionedPlayableContainer({
       ...get_mixed_card_props(item),
       section: section ? new ObjectContainer(section) : null,
     });
@@ -273,7 +273,7 @@ export class SectionedPlayableContainer<
     item: SearchContent,
     section: Section | null = null,
   ) {
-    return new this({
+    return new SectionedPlayableContainer({
       ...get_search_content_props(item),
       section: section ? new ObjectContainer(section) : null,
     });
