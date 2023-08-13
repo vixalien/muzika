@@ -18,12 +18,12 @@ DynamicImage2;
 
 export type InlineSong = FlatSong | Ranked<ParsedSong> | Ranked<ParsedVideo>;
 
-export class FlatSongCard extends Gtk.Box {
+export class FlatCard extends Gtk.Box {
   static {
     GObject.registerClass({
-      GTypeName: "FlatSongCard",
+      GTypeName: "FlatCard",
       Template:
-        "resource:///com/vixalien/muzika/ui/components/carousel/flatsong.ui",
+        "resource:///com/vixalien/muzika/ui/components/carousel/flatcard.ui",
       InternalChildren: [
         "title",
         "explicit",

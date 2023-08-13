@@ -3,7 +3,7 @@ import GObject from "gi://GObject";
 
 import { PlayableContainer, PlayableList } from "src/util/playablelist.js";
 import { FlatSong } from "src/muse";
-import { FlatSongCard, InlineSong } from "../flatsongcard";
+import { FlatCard, InlineSong } from "../flatcard";
 
 export class CarouselFlatSongView extends Gtk.GridView {
   static {
@@ -36,12 +36,12 @@ export class CarouselFlatSongView extends Gtk.GridView {
   }
 
   setup_cb(_factory: Gtk.ListItemFactory, list_item: Gtk.ListItem) {
-    const card = new FlatSongCard();
+    const card = new FlatCard();
     list_item.set_child(card);
   }
 
   bind_cb(_factory: Gtk.ListItemFactory, list_item: Gtk.ListItem) {
-    const card = list_item.child as FlatSongCard;
+    const card = list_item.child as FlatCard;
     const container = list_item.item as PlayableContainer<InlineSong>;
 
     if (container.object) {
