@@ -1,13 +1,16 @@
 import Gtk from "gi://Gtk?version=4.0";
 import GObject from "gi://GObject";
+import GLib from "gi://GLib";
 
 import { PlayableContainer, PlayableList } from "src/util/playablelist.js";
-import { FlatSong, SearchContent } from "src/muse";
-import { FlatCard, InlineSong } from "../flatcard";
+import { SearchContent } from "src/muse";
+import { FlatCard, FlatCardItem, InlineSong } from "../flatcard";
+import { MixedCardItem } from "src/components/library/mixedcard";
+import { flat_view_activate_cb, FlatViewChildType } from "./util";
 
 export interface FlatGridViewConstructorProperties
   extends Gtk.GridView.ConstructorProperties {
-  search_results: boolean;
+  child_type: FlatViewChildType;
 }
 
 export class FlatGridView extends Gtk.GridView {
@@ -15,22 +18,24 @@ export class FlatGridView extends Gtk.GridView {
     GObject.registerClass({
       GTypeName: "FlatGridView",
       Properties: {
-        "search-results": GObject.ParamSpec.boolean(
-          "search-results",
-          "Search Results",
-          "Whether the cards are search results",
+        "child-type": GObject.ParamSpec.uint(
+          "child-type",
+          "Child Type",
+          "The type of children rendered by this listview",
           GObject.ParamFlags.READWRITE,
-          false,
+          FlatViewChildType.INLINE_SONG,
+          FlatViewChildType.MIXED_CARD,
+          FlatViewChildType.INLINE_SONG,
         ),
       },
     }, this);
   }
 
-  items = new PlayableList<FlatSong | SearchContent>();
+  items = new PlayableList<FlatCardItem>();
 
-  search_results = false;
+  child_type = FlatViewChildType.INLINE_SONG;
 
-  constructor(props: Partial<FlatGridViewConstructorProperties>) {
+  constructor(props?: Partial<FlatGridViewConstructorProperties>) {
     super({
       single_click_activate: true,
       margin_bottom: 18,
@@ -39,6 +44,8 @@ export class FlatGridView extends Gtk.GridView {
       orientation: Gtk.Orientation.HORIZONTAL,
       ...props,
     });
+
+    this.connect("activate", flat_view_activate_cb.bind(this));
 
     this.add_css_class("transparent");
     this.add_css_class("carousel-grid-view");
@@ -64,10 +71,16 @@ export class FlatGridView extends Gtk.GridView {
     >;
 
     if (container.object) {
-      if (this.search_results) {
-        card.show_search_item(container.object as SearchContent);
-      } else {
-        card.show_item(container.object as InlineSong);
+      switch (this.child_type) {
+        case FlatViewChildType.INLINE_SONG:
+          card.show_inline_song(container.object as InlineSong);
+          break;
+        case FlatViewChildType.SEARCH_CONTENT:
+          card.show_search_item(container.object as SearchContent);
+          break;
+        case FlatViewChildType.MIXED_CARD:
+          card.show_mixed_item(container.object as MixedCardItem);
+          break;
       }
 
       container.connect("notify::state", () => {

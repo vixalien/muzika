@@ -2,12 +2,14 @@ import Gtk from "gi://Gtk?version=4.0";
 import GObject from "gi://GObject";
 
 import { PlayableContainer, PlayableList } from "src/util/playablelist.js";
-import { FlatSong, SearchContent } from "src/muse";
-import { FlatCard, InlineSong } from "../flatcard";
+import { SearchContent } from "src/muse";
+import { FlatCard, FlatCardItem, InlineSong } from "../flatcard";
+import { MixedCardItem } from "src/components/library/mixedcard";
+import { flat_view_activate_cb, FlatViewChildType } from "./util";
 
 export interface FlatListViewConstructorProperties
   extends Gtk.GridView.ConstructorProperties {
-  search_results: boolean;
+  child_type: FlatViewChildType;
 }
 
 export class FlatListView extends Gtk.ListView {
@@ -15,26 +17,39 @@ export class FlatListView extends Gtk.ListView {
     GObject.registerClass({
       GTypeName: "FlatListView",
       Properties: {
-        "search-results": GObject.ParamSpec.boolean(
-          "search-results",
-          "Search Results",
-          "Whether the cards are search results",
+        "child-type": GObject.ParamSpec.uint(
+          "child-type",
+          "Child Type",
+          "The type of children rendered by this listview",
           GObject.ParamFlags.READWRITE,
-          false,
+          FlatViewChildType.INLINE_SONG,
+          FlatViewChildType.MIXED_CARD,
+          FlatViewChildType.INLINE_SONG,
         ),
       },
     }, this);
   }
 
-  items = new PlayableList<FlatSong | SearchContent>();
+  private _items!: PlayableList<FlatCardItem>;
 
-  search_results = false;
+  get items() {
+    return this._items;
+  }
 
-  constructor(props: Partial<FlatListViewConstructorProperties>) {
+  set items(items: PlayableList<FlatCardItem>) {
+    this._items = items;
+    this.model = Gtk.NoSelection.new(items);
+  }
+
+  child_type = FlatViewChildType.INLINE_SONG;
+
+  constructor(props?: Partial<FlatListViewConstructorProperties>) {
     super({
       single_click_activate: true,
       ...props,
     });
+
+    this.connect("activate", flat_view_activate_cb.bind(this));
 
     this.add_css_class("transparent");
     this.add_css_class("carousel-flat-list-view");
@@ -45,7 +60,7 @@ export class FlatListView extends Gtk.ListView {
     factory.connect("teardown", this.teardown_cb.bind(this));
 
     this.factory = factory;
-    this.model = Gtk.NoSelection.new(this.items);
+    this.items = new PlayableList<FlatCardItem>();
   }
 
   setup_cb(_factory: Gtk.ListItemFactory, list_item: Gtk.ListItem) {
@@ -60,10 +75,16 @@ export class FlatListView extends Gtk.ListView {
     >;
 
     if (container.object) {
-      if (this.search_results) {
-        card.show_search_item(container.object as SearchContent);
-      } else {
-        card.show_item(container.object as InlineSong);
+      switch (this.child_type) {
+        case FlatViewChildType.INLINE_SONG:
+          card.show_inline_song(container.object as InlineSong);
+          break;
+        case FlatViewChildType.SEARCH_CONTENT:
+          card.show_search_item(container.object as SearchContent);
+          break;
+        case FlatViewChildType.MIXED_CARD:
+          card.show_mixed_item(container.object as MixedCardItem);
+          break;
       }
 
       container.connect("notify::state", () => {

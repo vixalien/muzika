@@ -39,56 +39,6 @@ export class SearchSection extends Gtk.Box {
     this.args = options.args;
     this.show_more = options.show_more ?? false;
     this.show_type = options.show_type ?? true;
-
-    this._card_view.connect("activate", this.row_activated.bind(this));
-  }
-
-  row_activated(_: this, position: number) {
-    const content = this._card_view.items.get_item(position)
-      ?.object as SearchContent;
-
-    if (!content) return;
-
-    // row.dynamic_image.state = DynamicImageState.LOADING;
-
-    let uri: string | null = null;
-
-    switch (content.type) {
-      case "playlist":
-        uri = `playlist:${content.browseId}`;
-        break;
-      case "artist":
-        uri = `artist:${content.browseId}`;
-        break;
-      case "profile":
-        uri = `channel:${content.browseId}`;
-        break;
-      case "album":
-        uri = `album:${content.browseId}`;
-        break;
-      case "radio":
-        this.activate_action(
-          "queue.play-playlist",
-          GLib.Variant.new_string(
-            `${content.playlistId}?video=${content.videoId}`,
-          ),
-        );
-        break;
-      case "song":
-      case "video":
-        this.activate_action(
-          "queue.play-song",
-          GLib.Variant.new_string(content.videoId),
-        );
-        break;
-    }
-
-    if (uri) {
-      this.activate_action(
-        "navigator.visit",
-        GLib.Variant.new_string("muzika:" + uri),
-      );
-    }
   }
 
   set_category(category: SearchResults["categories"][0]) {

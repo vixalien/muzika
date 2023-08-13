@@ -138,12 +138,6 @@ export class Carousel<
   show_listview(contents: (MixedCardItem | null)[]) {
     const listview = new CarouselListView();
 
-    listview.connect("activate", (_, position) => {
-      const container = listview.items.get_item(position);
-
-      this.activate_cb(container?.object ?? null);
-    });
-
     listview.items.splice(
       0,
       0,
@@ -157,12 +151,6 @@ export class Carousel<
 
   show_gridview(contents: (MixedCardItem | null)[]) {
     const flatsongview = new FlatGridView();
-
-    flatsongview.connect("activate", (_, position) => {
-      const container = flatsongview.items.get_item(position);
-
-      this.activate_cb(container?.object ?? null);
-    });
 
     flatsongview.items.splice(
       0,
@@ -178,19 +166,6 @@ export class Carousel<
   show_moodview(contents: ParsedMoodOrGenre[]) {
     const moodview = new CarouselMoodView();
 
-    moodview.connect("activate", (_, position) => {
-      const container = moodview.items.get_item(position);
-
-      const params = container?.object.params;
-
-      if (!params) return;
-
-      this.activate_action(
-        "navigator.visit",
-        GLib.Variant.new_string("muzika:mood-playlists:" + params),
-      );
-    });
-
     moodview.items.splice(
       0,
       0,
@@ -200,45 +175,6 @@ export class Carousel<
     );
 
     this._scrolled.child = moodview;
-  }
-
-  activate_cb(item: MixedCardItem | null) {
-    if (!item) return;
-
-    let uri: string | null = null;
-
-    switch (item.type) {
-      case "playlist":
-      case "watch-playlist":
-        uri = `playlist:${item.playlistId}`;
-        break;
-      case "artist":
-        uri = `artist:${item.browseId}`;
-        break;
-      case "album":
-        uri = `album:${item.browseId}`;
-        break;
-      case "inline-video":
-      case "song":
-      case "video":
-      case "flat-song":
-        if (item.videoId) {
-          this.activate_action(
-            "queue.play-song",
-            GLib.Variant.new_string(
-              item.videoId,
-            ),
-          );
-        }
-        break;
-    }
-
-    if (uri) {
-      this.activate_action(
-        "navigator.visit",
-        GLib.Variant.new_string("muzika:" + uri),
-      );
-    }
   }
 
   show_content(

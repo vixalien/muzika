@@ -4,6 +4,7 @@ import Adw from "gi://Adw";
 
 import { PlayableContainer, PlayableList } from "src/util/playablelist.js";
 import { ParsedMoodOrGenre } from "libmuse/types/parsers/browsing";
+import { mood_activate_cb } from "./util";
 
 export class MoodBox extends Adw.Bin {
   static {
@@ -52,6 +53,8 @@ export class CarouselMoodView extends Gtk.GridView {
       max_columns: 4,
       orientation: Gtk.Orientation.HORIZONTAL,
     });
+
+    this.connect("activate", mood_activate_cb.bind(this));
 
     this.add_css_class("transparent");
     this.add_css_class("carousel-mood-view");

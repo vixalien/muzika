@@ -1,10 +1,12 @@
 import Gtk from "gi://Gtk?version=4.0";
 import GObject from "gi://GObject";
+import GLib from "gi://GLib";
 
 import { MixedItem } from "src/muse.js";
 import { CarouselCard } from "../card.js";
 import { MixedCardItem } from "src/components/library/mixedcard.js";
 import { PlayableContainer, PlayableList } from "src/util/playablelist.js";
+import { mixed_card_activate_cb } from "./util.js";
 
 export type RequiredMixedItem = NonNullable<MixedItem>;
 
@@ -15,7 +17,16 @@ export class CarouselGridView extends Gtk.GridView {
     }, this);
   }
 
-  items = new PlayableList<MixedCardItem>();
+  private _items!: PlayableList<MixedCardItem>;
+
+  get items() {
+    return this._items;
+  }
+
+  set items(items: PlayableList<MixedCardItem>) {
+    this._items = items;
+    this.model = Gtk.NoSelection.new(items);
+  }
 
   constructor(props?: Gtk.GridView.ConstructorProperties) {
     super({
@@ -23,6 +34,8 @@ export class CarouselGridView extends Gtk.GridView {
       orientation: Gtk.Orientation.HORIZONTAL,
       ...props,
     });
+
+    this.connect("activate", mixed_card_activate_cb.bind(this));
 
     this.add_css_class("transparent");
     this.add_css_class("carousel-grid-view");
@@ -34,7 +47,8 @@ export class CarouselGridView extends Gtk.GridView {
     factory.connect("teardown", this.teardown_cb.bind(this));
 
     this.factory = factory;
-    this.model = Gtk.NoSelection.new(this.items);
+
+    this.items = new PlayableList<MixedCardItem>();
   }
 
   setup_cb(_factory: Gtk.ListItemFactory, list_item: Gtk.ListItem) {
@@ -45,8 +59,6 @@ export class CarouselGridView extends Gtk.GridView {
   bind_cb(_factory: Gtk.ListItemFactory, list_item: Gtk.ListItem) {
     const card = list_item.child as CarouselCard;
     const container = list_item.item as PlayableContainer<MixedCardItem>;
-
-    card.fill_space = true;
 
     if (container.object) {
       card.show_item(container.object);
