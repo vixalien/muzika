@@ -22,13 +22,13 @@ export class LibrarySongsPage extends Adw.Bin
       GTypeName: "LibrarySongsPage",
       Template:
         "resource:///com/vixalien/muzika/ui/components/library/songs.ui",
-      InternalChildren: ["list_view", "drop_down", "paginator"],
+      InternalChildren: ["item_view", "drop_down", "paginator"],
     }, this);
   }
 
   private _drop_down!: Gtk.DropDown;
   private _paginator!: Paginator;
-  private _list_view!: PlaylistItemView;
+  private _item_view!: PlaylistItemView;
 
   private items = new PlayableList();
 
@@ -41,7 +41,7 @@ export class LibrarySongsPage extends Adw.Bin
   constructor() {
     super();
 
-    this._list_view.model = this.items;
+    this._item_view.model = this.items;
 
     if (this.filters && this.filters.length >= 0) {
       const string_list = Gtk.StringList.new(this.filters);

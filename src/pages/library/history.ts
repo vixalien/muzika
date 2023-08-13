@@ -6,11 +6,7 @@ import { get_history, History, PlaylistItem } from "../../muse.js";
 
 import { EndpointContext, MuzikaComponent } from "src/navigation.js";
 import { PlaylistItemView } from "src/components/playlist/itemview.js";
-import {
-  SectionedPlayableContainer,
-  SectionedPlayableList,
-} from "src/util/playablelist.js";
-
+import { PlayableContainer, PlayableList } from "src/util/playablelist.js";
 
 interface HistoryTitleOptions {
   title?: string;
@@ -63,18 +59,18 @@ export class HistoryPage extends Adw.Bin
 
   results?: History;
 
-  model = new SectionedPlayableList<PlaylistItem>();
+  model = new PlayableList<PlaylistItem>();
 
   constructor() {
     super();
 
     this._item_view.model = this.model;
 
-    const factory = new Gtk.SignalListItemFactory();
-    factory.connect("setup", this._header_setup_cb.bind(this));
-    factory.connect("bind", this._header_bind_cb.bind(this));
-
     // TODO: see https://gitlab.gnome.org/GNOME/gjs/-/issues/570
+    // const factory = new Gtk.SignalListItemFactory();
+    // factory.connect("setup", this._header_setup_cb.bind(this));
+    // factory.connect("bind", this._header_bind_cb.bind(this));
+
     // this._item_view.header_factory s= factory;
   }
 
@@ -105,15 +101,9 @@ export class HistoryPage extends Adw.Bin
   private show_library(library: History) {
     const items = library.categories.reduce((acc, category) => {
       return acc.concat(category.items.map((item, index) => {
-        if (index === 0) {
-          return SectionedPlayableContainer.new_from_playlist_item(item, {
-            title: category.title,
-          });
-        }
-
-        return SectionedPlayableContainer.new_from_playlist_item(item);
+        return PlayableContainer.new_from_playlist_item(item);
       }));
-    }, [] as SectionedPlayableContainer<PlaylistItem, CategoryMeta>[]);
+    }, [] as PlayableContainer[]);
 
     this.model.splice(
       this.model.n_items,

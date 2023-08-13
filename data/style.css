@@ -203,6 +203,11 @@ label.bold-link link {
   border-radius: 9px;
 }
 
+.playlist-column-view {
+  padding-left: 6px;
+  padding-right: 6px;
+}
+
 .insights-clamp {
   background-color: alpha(@window_fg_color, .03);
 }

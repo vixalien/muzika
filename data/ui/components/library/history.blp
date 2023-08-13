@@ -6,11 +6,26 @@ template $HistoryPage : Adw.Bin {
     [top]
     Adw.HeaderBar {}
   
-    content: ScrolledWindow {
-      hexpand: true;
-      hscrollbar-policy: never;
+    content: Adw.BreakpointBin {
+      width-request: 200;
+      height-request: 200;
+      
+      Adw.Breakpoint {
+        condition ("max-width: 700sp")
 
-      $PlaylistItemView item_view {}
+        setters {
+          item_view.show_column: false;
+        }
+      }
+      
+      ScrolledWindow {
+        hexpand: true;
+        hscrollbar-policy: never;
+
+        $PlaylistItemView item_view {
+          show-column: true;
+        }
+      }
     };
   }
 }

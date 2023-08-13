@@ -6,27 +6,42 @@ template $LibrarySongsPage : Adw.Bin {
     [top]
     Adw.HeaderBar {}
   
-    content: ScrolledWindow {
-      hexpand: true;
-      hscrollbar-policy: never;
+    content: Adw.BreakpointBin {
+      width-request: 200;
+      height-request: 200;
+      
+      Adw.Breakpoint {
+        condition ("max-width: 700sp")
 
-      Box {
-        orientation: vertical;
-        spacing: 12;
+        setters {
+          item_view.show_column: false;
+        }
+      }
+      
+      ScrolledWindow {
+        hexpand: true;
+        hscrollbar-policy: never;
 
         Box {
-          valign: start;
+          orientation: vertical;
+          spacing: 12;
 
-          DropDown drop_down {
-            halign: end;
-            hexpand: true;
+          Box {
+            styles ["toolbar"]
+
+            DropDown drop_down {
+              halign: end;
+              hexpand: true;
+            }
           }
-        }
 
-        $PlaylistItemView list_view {}
+          $PlaylistItemView item_view {
+            show-column: true;
+          }
 
-        $Paginator paginator {
-          activate => $load_more();
+          $Paginator paginator {
+            activate => $load_more();
+          }
         }
       }
     };

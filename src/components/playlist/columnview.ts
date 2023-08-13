@@ -559,10 +559,7 @@ export class PlaylistColumnView extends Gtk.ColumnView {
   }
 
   constructor(options: PlaylistColumnViewOptions = {}) {
-    super({
-      margin_start: 12,
-      margin_end: 12,
-    });
+    super();
 
     this._image_column.connect(
       "selection-mode-toggled",
