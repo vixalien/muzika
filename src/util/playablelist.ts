@@ -1,11 +1,99 @@
 import Gio from "gi://Gio";
 import GObject from "gi://GObject";
+import Gtk from "gi://Gtk?version=4.0";
 
 import { PlaylistItem, SearchContent } from "src/muse";
 import { DynamicImageState } from "src/components/dynamic-image";
 import { SignalListeners } from "./signal-listener";
 import { get_player } from "src/application";
 import { MixedCardItem } from "src/components/library/mixedcard";
+import { ObjectContainer } from "./objectcontainer";
+
+function get_mixed_card_props(item: MixedCardItem) {
+  let props: PlayableContainerProps<MixedCardItem>;
+
+  switch (item.type) {
+    case "album":
+      props = {
+        object: item,
+        is_playlist: true,
+        playlist_id: item.audioPlaylistId,
+      };
+      break;
+    case "artist":
+    case "channel":
+    case "library-artist":
+      props = { object: item };
+      break;
+    case "video":
+    case "song":
+    case "inline-video":
+    case "flat-song":
+      props = { object: item, video_id: item.videoId ?? undefined };
+      break;
+    case "watch-playlist":
+    case "playlist":
+      props = {
+        object: item,
+        is_playlist: true,
+        playlist_id: item.playlistId,
+      };
+      break;
+    default:
+      props = { object: item };
+      break;
+  }
+
+  return props;
+}
+
+function get_search_content_props(item: SearchContent) {
+  let props: PlayableContainerProps<SearchContent>;
+
+  switch (item.type) {
+    case "album":
+      props = {
+        object: item,
+        is_playlist: true,
+        // playlist_id: item.audioPlaylistId,
+      };
+      break;
+    case "artist":
+    case "profile":
+      props = { object: item };
+      break;
+    case "playlist":
+      props = {
+        object: item,
+        is_playlist: true,
+        playlist_id: item.browseId,
+      };
+      break;
+    case "radio":
+      props = {
+        object: item,
+        is_playlist: true,
+        playlist_id: item.playlistId,
+      };
+      break;
+    case "song":
+    case "video":
+      props = { object: item, video_id: item.videoId ?? undefined };
+      break;
+    default:
+      props = { object: item };
+      break;
+  }
+
+  return props;
+}
+
+export interface PlayableContainerProps<T extends Object = PlaylistItem> {
+  object: T;
+  video_id?: string;
+  playlist_id?: string;
+  is_playlist?: boolean;
+}
 
 export class PlayableContainer<T extends Object = PlaylistItem>
   extends GObject.Object {
@@ -68,7 +156,7 @@ export class PlayableContainer<T extends Object = PlaylistItem>
 
     if (props.video_id) this.video_id = props.video_id;
     if (props.playlist_id) this.playlist_id = props.playlist_id;
-    if (props.is_playlist) this.is_playlist = props.is_playlist;
+    if (props.is_playlist != null) this.is_playlist = props.is_playlist;
   }
 
   static new<T extends Object>(object: T): PlayableContainer<T> {
@@ -78,110 +166,128 @@ export class PlayableContainer<T extends Object = PlaylistItem>
   static new_from_playlist_item(
     item: PlaylistItem,
   ): PlayableContainer<PlaylistItem> {
-    return new PlayableContainer({
+    return new this({
       object: item,
       video_id: item.videoId,
     });
   }
 
-  static new_from_mixed_card_item<T extends MixedCardItem>(
+  static new_from_mixed_card_item(
     item: MixedCardItem,
-  ): PlayableContainer<T> {
-    type Props = PlayableContainerProps<MixedCardItem>;
-
-    let props: Props;
-
-    switch (item.type) {
-      case "album":
-        props = {
-          object: item,
-          is_playlist: true,
-          playlist_id: item.audioPlaylistId,
-        };
-        break;
-      case "artist":
-      case "channel":
-      case "library-artist":
-        props = { object: item };
-        break;
-      case "video":
-      case "song":
-      case "inline-video":
-      case "flat-song":
-        props = { object: item, video_id: item.videoId ?? undefined };
-        break;
-      case "watch-playlist":
-      case "playlist":
-        props = {
-          object: item,
-          is_playlist: true,
-          playlist_id: item.playlistId,
-        };
-        break;
-      default:
-        props = { object: item };
-        break;
-    }
-
-    return new PlayableContainer(props as PlayableContainerProps<T>);
+  ): PlayableContainer<MixedCardItem> {
+    return new this(get_mixed_card_props(item));
   }
 
-  static new_from_search_content<T extends SearchContent>(
+  static new_from_search_content(
     item: SearchContent,
-  ): PlayableContainer<T> {
-    type Props = PlayableContainerProps<SearchContent>;
-
-    let props: Props;
-
-    switch (item.type) {
-      case "album":
-        props = {
-          object: item,
-          is_playlist: true,
-          // playlist_id: item.audioPlaylistId,
-        };
-        break;
-      case "artist":
-      case "profile":
-        props = { object: item };
-        break;
-      case "playlist":
-        props = {
-          object: item,
-          is_playlist: true,
-          playlist_id: item.browseId,
-        };
-        break;
-      case "radio":
-        props = {
-          object: item,
-          is_playlist: true,
-          playlist_id: item.playlistId,
-        };
-        break;
-      case "song":
-      case "video":
-        props = { object: item, video_id: item.videoId ?? undefined };
-        break;
-      default:
-        props = { object: item };
-        break;
-    }
-
-    return new PlayableContainer(props as PlayableContainerProps<T>);
+  ): PlayableContainer<SearchContent> {
+    return new this(get_search_content_props(item));
   }
 }
 
-export interface PlayableContainerProps<T extends Object = PlaylistItem> {
-  object: T;
-  video_id?: string;
-  playlist_id?: string;
-  is_playlist?: boolean;
+export interface SectionedPlayableContainerProps<
+  T extends Object = PlaylistItem,
+  Section extends Object = Object,
+> extends PlayableContainerProps<T> {
+  section?: ObjectContainer<Section> | null;
 }
 
-export class PlayableList<T extends Object = PlaylistItem>
-  extends GObject.Object
-  implements Gio.ListModel {
+export class SectionedPlayableContainer<
+  T extends Object = PlaylistItem,
+  Section extends Object = Object,
+> extends PlayableContainer<T> {
+  static {
+    GObject.registerClass({
+      GTypeName: "SectionedPlayableContainer",
+      Properties: {
+        section: GObject.ParamSpec.object(
+          "section",
+          "Section",
+          "If this item starts a section, this property will be set to the section",
+          GObject.ParamFlags.READWRITE,
+          ObjectContainer.$gtype,
+        ),
+      },
+    }, this);
+  }
+
+  constructor(props: SectionedPlayableContainerProps<T, Section>) {
+    super(props);
+
+    this.state = DynamicImageState.DEFAULT;
+    this.object = props.object;
+
+    if (props.section != null) this.section = props.section;
+  }
+
+  section: ObjectContainer<Section> | null = null;
+
+  get_section() {
+    return this.section?.object ?? null;
+  }
+
+  set_section(section: Section | null) {
+    if (section) {
+      this.section = new ObjectContainer(section);
+    } else {
+      this.section = null;
+    }
+  }
+
+  has_section() {
+    return this.section?.object != null;
+  }
+
+  static new<T extends Object, Section extends Object = Object>(
+    item: T,
+    section: Section | null = null,
+  ): SectionedPlayableContainer<T, Section> {
+    return new this({
+      object: item,
+      section: section ? new ObjectContainer(section) : null,
+    });
+  }
+
+  static new_from_playlist_item<Section extends Object = Object>(
+    item: PlaylistItem,
+    section: Section | null = null,
+  ) {
+    return new this({
+      object: item,
+      video_id: item.videoId,
+      section: section ? new ObjectContainer(section) : null,
+    });
+  }
+
+  static new_from_mixed_card_item<Section extends Object = Object>(
+    item: MixedCardItem,
+    section: Section | null = null,
+  ) {
+    return new this({
+      ...get_mixed_card_props(item),
+      section: section ? new ObjectContainer(section) : null,
+    });
+  }
+
+  static new_from_search_content<Section extends Object = Object>(
+    item: SearchContent,
+    section: Section | null = null,
+  ) {
+    return new this({
+      ...get_search_content_props(item),
+      section: section ? new ObjectContainer(section) : null,
+    });
+  }
+}
+
+export interface PlayableListProps {
+  item_type?: GObject.GType;
+}
+
+export class PlayableList<
+  T extends Object = PlaylistItem,
+  Container extends PlayableContainer<T> = PlayableContainer<T>,
+> extends GObject.Object implements Gio.ListModel {
   static {
     GObject.registerClass({
       GTypeName: "PlayableList",
@@ -209,7 +315,7 @@ export class PlayableList<T extends Object = PlaylistItem>
     }, this);
   }
 
-  private array = new Array<PlayableContainer<T>>();
+  protected array = new Array<Container>();
 
   constructor(props: PlayableListProps = {}) {
     super(props);
@@ -227,8 +333,8 @@ export class PlayableList<T extends Object = PlaylistItem>
     return this.n_items;
   }
 
-  get_item(position: number): PlayableContainer<T> | null {
-    return this.vfunc_get_item(position) as PlayableContainer<T> | null;
+  get_item(position: number): Container | null {
+    return this.vfunc_get_item(position) as Container | null;
   }
 
   items_changed(position: number, removed: number, added: number): void {
@@ -252,7 +358,7 @@ export class PlayableList<T extends Object = PlaylistItem>
   }
 
   find(
-    fn: (item: PlayableContainer<T>) => boolean,
+    fn: (item: Container) => boolean,
   ): number | null {
     const index = this.array.findIndex(fn);
 
@@ -263,7 +369,7 @@ export class PlayableList<T extends Object = PlaylistItem>
     return this.find((item) => item.video_id === video_id);
   }
 
-  append(item: PlayableContainer<T>): void {
+  append(item: Container): void {
     this.array.push(item);
 
     this.items_changed(this.array.length - 1, 0, 1);
@@ -275,7 +381,7 @@ export class PlayableList<T extends Object = PlaylistItem>
     this.items_changed(item, 1, 0);
   }
 
-  insert(position: number, item: PlayableContainer<T>): void {
+  insert(position: number, item: Container): void {
     this.array.splice(position, 0, item);
 
     this.items_changed(position, 0, 1);
@@ -284,7 +390,7 @@ export class PlayableList<T extends Object = PlaylistItem>
   splice(
     position: number,
     removed: number,
-    added: PlayableContainer<T>[],
+    added: Container[],
   ): void {
     this.array.splice(position, removed, ...added);
 
@@ -348,6 +454,38 @@ export class PlayableList<T extends Object = PlaylistItem>
   }
 }
 
-export interface PlayableListProps {
-  item_type?: GObject.GType;
+export class SectionedPlayableList<T extends Object = PlaylistItem>
+  extends PlayableList<T, SectionedPlayableContainer<T>> {
+  static {
+    GObject.registerClass({
+      GTypeName: "SectionedPlayableList",
+      Implements: [Gtk.SectionModel],
+    }, this);
+  }
+
+  vfunc_get_section(position: number) {
+    let start = -1, end = -1;
+
+    for (let i = position; i >= 0; i--) {
+      if (this.array[i].has_section()) {
+        start = i;
+        break;
+      }
+    }
+
+    for (let i = position + 1; i < this.array.length; i++) {
+      if (this.array[i].has_section()) {
+        end = i;
+        break;
+      }
+    }
+
+    if (start == -1) {
+      return [0, this.array.length];
+    } else if (end == -1) {
+      return [start, this.array.length];
+    }
+
+    return [start, end];
+  }
 }

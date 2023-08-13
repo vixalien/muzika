@@ -4,7 +4,11 @@ import Gio from "gi://Gio";
 
 import { PlaylistColumnView } from "./columnview";
 import { PlaylistListView } from "./listview";
-import { PlayableContainer, PlayableList } from "src/util/playablelist";
+import {
+  PlayableContainer,
+  PlayableList,
+  SectionedPlayableContainer,
+} from "src/util/playablelist";
 import { get_player } from "src/application";
 import { SignalListeners } from "src/util/signal-listener";
 
@@ -134,6 +138,10 @@ export class PlaylistItemView extends Gtk.Stack {
       model: model as any,
     });
 
+    if (model && model instanceof SectionedPlayableContainer) {
+      this.multi_selection_model.get_section = model.get_section;
+    }
+
     this._list_view.model = this.multi_selection_model;
     this._column_view.model = this.multi_selection_model;
 
@@ -179,6 +187,14 @@ export class PlaylistItemView extends Gtk.Stack {
 
   private _list_view: PlaylistListView;
   private _column_view: PlaylistColumnView;
+
+  get header_factory() {
+    return this._column_view.header_factory;
+  }
+
+  set header_factory(factory: Gtk.ListItemFactory) {
+    this._column_view.header_factory = this._list_view.header_factory = factory;
+  }
 
   constructor(options: PlaylistItemViewOptions = {}) {
     super({

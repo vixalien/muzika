@@ -10,20 +10,7 @@ template $HistoryPage : Adw.Bin {
       hexpand: true;
       hscrollbar-policy: never;
 
-      Box box {
-        orientation: vertical;
-        margin-top: 12;
-        margin-bottom: 12;
-        margin-start: 12;
-        margin-end: 12;
-        spacing: 12;
-
-        ListBox list {
-          styles [
-            "background",
-          ]
-        }
-      }
+      $PlaylistItemView item_view {}
     };
   }
 }
