@@ -12,6 +12,7 @@ import {
   Ranked,
 } from "libmuse/types/parsers/browsing.js";
 import { DynamicImage2 } from "../dynamic-image-2.js";
+import { DynamicActionState } from "../dynamic-action.js";
 
 DynamicImage2;
 
@@ -101,9 +102,9 @@ export class FlatSongCard extends Gtk.Box {
   }
 
   private setup_video(videoId: string | null) {
-    // if (videoId) {
-    //   this._dynamic_image.setup_video(videoId);
-    // }
+    if (videoId) {
+      this._dynamic_image.setup_video(videoId);
+    }
   }
 
   private show_explicit(explicit: boolean) {
@@ -158,7 +159,12 @@ export class FlatSongCard extends Gtk.Box {
     }
   }
 
-  set_state(state: any) {
-    // this._dynamic_image.state = state;
+  set_state(state: DynamicActionState) {
+    this._dynamic_image.state = state;
+  }
+
+  vfunc_unmap(): void {
+    this._dynamic_image.clear();
+    super.vfunc_unmap();
   }
 }

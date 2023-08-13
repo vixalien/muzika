@@ -3,8 +3,9 @@ import GObject from "gi://GObject";
 import Adw from "gi://Adw";
 import { Thumbnail } from "libmuse";
 import { load_thumbnails } from "./webimage";
-import { DynamicAction } from "./dynamic-action";
+import { DynamicAction, DynamicActionState } from "./dynamic-action";
 import { SignalListeners } from "src/util/signal-listener";
+import { get_player } from "src/application";
 
 export enum DynamicImage2StorageType {
   EMPTY = 0,
@@ -55,6 +56,15 @@ export class DynamicImage2 extends Gtk.Overlay {
           1000000,
           0,
         ),
+        "state": GObject.ParamSpec.uint(
+          "state",
+          "State",
+          "The current state of the dynamic action",
+          GObject.ParamFlags.READWRITE,
+          DynamicActionState.DEFAULT,
+          DynamicActionState.LOADING,
+          DynamicActionState.DEFAULT,
+        ),
         "storage-type": GObject.ParamSpec.uint(
           "storage-type",
           "Storage Type",
@@ -88,12 +98,16 @@ export class DynamicImage2 extends Gtk.Overlay {
           false,
         ),
       },
+      Signals: {
+        play: {},
+        pause: {},
+      },
     }, this);
   }
 
-  action = new DynamicAction();
+  private action = new DynamicAction();
 
-  controller_listeners = new SignalListeners();
+  private listeners = new SignalListeners();
 
   constructor(props: Partial<DynamicImage2ConstructorProperties> = {}) {
     super({
@@ -113,6 +127,9 @@ export class DynamicImage2 extends Gtk.Overlay {
     });
 
     this.add_controller(this.controller);
+
+    this.listeners.connect(this.action, "play", this.play_cb.bind(this));
+    this.listeners.connect(this.action, "pause", this.pause_cb.bind(this));
 
     this.action.fill = props?.playlist ?? true;
 
@@ -327,6 +344,16 @@ export class DynamicImage2 extends Gtk.Overlay {
     }
   }
 
+  // property: state
+
+  get state() {
+    return this.action.state;
+  }
+
+  set state(state: DynamicActionState) {
+    this.action.state = state;
+  }
+
   private thumbnails: Thumbnail[] | null = null;
 
   // setters: cover_thumbnails
@@ -396,5 +423,51 @@ export class DynamicImage2 extends Gtk.Overlay {
     } else {
       return null;
     }
+  }
+
+  private videoId: string | null = null;
+  private playlistId: string | null = null;
+
+  setup_video(videoId: string, playlistId: string | null = null) {
+    this.videoId = videoId;
+    this.playlistId = playlistId;
+  }
+
+  setup_playlist(playlistId: string) {
+    this.playlistId = playlistId;
+  }
+
+  private play_cb() {
+    const player = get_player();
+
+    this.emit("play");
+
+    if (player.now_playing?.object.track.videoId === this.videoId) {
+      player.play();
+    } else if (this.playlistId) {
+      this.state = DynamicActionState.LOADING;
+      player.queue.play_playlist(this.playlistId, this.videoId ?? undefined);
+    } else if (this.videoId) {
+      this.state = DynamicActionState.LOADING;
+      player.queue.play_song(this.videoId);
+    }
+  }
+
+  private pause_cb() {
+    const player = get_player();
+
+    this.emit("pause");
+
+    if (this.playlistId && !this.videoId) {
+      if (player.now_playing?.object.track.playlist === this.playlistId) {
+        player.pause();
+      }
+    } else if (player.now_playing?.object.track.videoId === this.videoId) {
+      player.pause();
+    }
+  }
+
+  clear() {
+    this.listeners.clear();
   }
 }

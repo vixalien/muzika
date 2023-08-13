@@ -92,65 +92,8 @@ export class CarouselCard extends Gtk.Box {
     this.subtitle_authors = [];
     this.content = undefined;
     this.set_align(Gtk.Align.FILL);
-    // this._dynamic_image.clear();
+    this._dynamic_image.clear();
   }
-
-  get fill_space() {
-    return true;
-    // return this._dynamic_image.picture.fill_space;
-  }
-
-  set fill_space(fill_space: boolean) {
-    // this._dynamic_image.picture.fill_space = fill_space;
-    // this._playlist_image.picture.fill_space = fill_space;
-  }
-
-  // utils
-
-  // private show_image(image_type: CarouselImageType) {
-  //   switch (image_type) {
-  //     case CarouselImageType.AVATAR:
-  //       this._image_stack.visible_child = this._avatar;
-  //       break;
-  //     case CarouselImageType.DYNAMIC_IMAGE:
-  //       this._image_stack.visible_child = this._dynamic_image;
-  //       this._dynamic_image.visible_child = DynamicImageVisibleChild.IMAGE;
-  //       break;
-  //     case CarouselImageType.DYNAMIC_PICTURE:
-  //       this._image_stack.visible_child = this._dynamic_image;
-  //       this._dynamic_image.visible_child = DynamicImageVisibleChild.PICTURE;
-  //       break;
-  //     case CarouselImageType.PLAYLIST_IMAGE:
-  //       this._image_stack.visible_child = this._playlist_image;
-  //       break;
-  //   }
-  // }
-
-  // private load_thumbnails(
-  //   thumbnails: Thumbnail[],
-  //   options: Parameters<typeof load_thumbnails>[2] = 60,
-  // ) {
-  //   let image: Gtk.Image | Gtk.Picture | Adw.Avatar | null = null;
-
-  //   switch (this._image_stack.visible_child) {
-  //     case this._avatar:
-  //       image = this._avatar;
-  //       break;
-  //     case this._dynamic_image:
-  //       this._dynamic_image.load_thumbnails(thumbnails, options);
-  //       break;
-  //     case this._playlist_image:
-  //       this._playlist_image.load_thumbnails(thumbnails, options);
-  //       break;
-  //     default:
-  //       null;
-  //       break;
-  //   }
-
-  //   if (image) {
-  //     return load_thumbnails(image, thumbnails, options);
-  //   }
-  // }
 
   private setup_image(
     image_type: CarouselImageType,
@@ -162,13 +105,16 @@ export class CarouselCard extends Gtk.Box {
         this._dynamic_image.avatar_thumbnails = thumbnails;
         break;
       case CarouselImageType.DYNAMIC_IMAGE:
+        this._dynamic_image.persistent_play_button = true;
         this._dynamic_image.cover_thumbnails = thumbnails;
         break;
         // TODO: fix
       case CarouselImageType.PLAYLIST_IMAGE:
+        this._dynamic_image.playlist = true;
         this._dynamic_image.cover_thumbnails = thumbnails;
         break;
       case CarouselImageType.DYNAMIC_PICTURE:
+        this._dynamic_image.persistent_play_button = true;
         this._dynamic_image.video_thumbnails = thumbnails;
         break;
     }
@@ -218,27 +164,14 @@ export class CarouselCard extends Gtk.Box {
 
   private setup_video(videoId: string | null) {
     if (videoId) {
-      // TODO: fix
-      // this._dynamic_image.setup_video(videoId);
+      this._dynamic_image.setup_video(videoId);
     }
   }
 
   private setup_playlist(playlistId: string | null) {
-    // TODO: fix
-    // switch (this._image_stack.visible_child) {
-    //   case this._playlist_image: {
-    //     if (playlistId) {
-    //       this._playlist_image.setup_playlist(playlistId);
-    //     }
-    //     break;
-    //   }
-    //   case this._dynamic_image: {
-    //     if (playlistId) {
-    //       this._dynamic_image.setup_playlist(playlistId);
-    //     }
-    //     break;
-    //   }
-    // }
+    if (playlistId) {
+      this._dynamic_image.setup_playlist(playlistId);
+    }
   }
 
   private set_align(align: Gtk.Align) {
@@ -363,25 +296,6 @@ export class CarouselCard extends Gtk.Box {
   }
 
   set_state(state: DynamicImageState) {
-    // this._dynamic_image.state = state;
-
-    // let playlist_image_state: PlaylistImageState;
-
-    // switch (state) {
-    //   case DynamicImageState.DEFAULT:
-    //     playlist_image_state = PlaylistImageState.DEFAULT;
-    //     break;
-    //   case DynamicImageState.LOADING:
-    //     playlist_image_state = PlaylistImageState.LOADING;
-    //     break;
-    //   case DynamicImageState.PAUSED:
-    //     playlist_image_state = PlaylistImageState.PAUSED;
-    //     break;
-    //   case DynamicImageState.PLAYING:
-    //     playlist_image_state = PlaylistImageState.PLAYING;
-    //     break;
-    // }
-
-    // this._playlist_image.state = playlist_image_state;
+    this._dynamic_image.state = state;
   }
 }

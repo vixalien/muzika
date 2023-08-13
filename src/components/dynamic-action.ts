@@ -3,10 +3,10 @@ import Adw from "gi://Adw";
 import Gtk from "gi://Gtk?version=4.0";
 
 export enum DynamicActionState {
-  DEFAULT = 0,
+  DEFAULT,
+  LOADING,
   PLAYING,
   PAUSED,
-  LOADING,
 }
 
 export interface DynamicActionConstructorProperties
