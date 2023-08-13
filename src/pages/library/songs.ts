@@ -7,9 +7,10 @@ import { get_library_songs, LibrarySongs } from "../../muse.js";
 
 import { alphabetical_orders, order_id_to_name } from "./base.js";
 import { Paginator } from "src/components/paginator.js";
-import { PlaylistItemCard } from "src/components/playlist/item.js";
 import type { Order } from "libmuse/types/mixins/utils.js";
 import { EndpointContext, MuzikaComponent } from "src/navigation.js";
+import { PlayableContainer, PlayableList } from "src/util/playablelist.js";
+import { PlaylistItemView } from "src/components/playlist/itemview.js";
 
 // make sure paginator is registered before LibrarySongsPage
 Paginator;
@@ -21,15 +22,15 @@ export class LibrarySongsPage extends Adw.Bin
       GTypeName: "LibrarySongsPage",
       Template:
         "resource:///com/vixalien/muzika/ui/components/library/songs.ui",
-      InternalChildren: ["drop_down", "paginator"],
-      Children: ["list"],
+      InternalChildren: ["list_view", "drop_down", "paginator"],
     }, this);
   }
 
   private _drop_down!: Gtk.DropDown;
   private _paginator!: Paginator;
+  private _list_view!: PlaylistItemView;
 
-  list!: Gtk.Box;
+  private items = new PlayableList();
 
   uri = "library:songs";
   loader = get_library_songs;
@@ -40,9 +41,7 @@ export class LibrarySongsPage extends Adw.Bin
   constructor() {
     super();
 
-    this._paginator.connect("activate", () => {
-      this.load_more();
-    });
+    this._list_view.model = this.items;
 
     if (this.filters && this.filters.length >= 0) {
       const string_list = Gtk.StringList.new(this.filters);
@@ -78,6 +77,7 @@ export class LibrarySongsPage extends Adw.Bin
 
     this.loader({ continuation: this.results.continuation })
       .then((library) => {
+        this.results!.items.push(...library.items);
         this.results!.continuation = library.continuation;
 
         this.show_library(library);
@@ -87,15 +87,11 @@ export class LibrarySongsPage extends Adw.Bin
   }
 
   show_library(library: LibrarySongs) {
-    library.items.forEach((item) => {
-      if (!item) return;
-
-      const card = new PlaylistItemCard();
-
-      card.set_item(item);
-
-      this.list.append(card);
-    });
+    this.items.splice(
+      this.items.n_items,
+      0,
+      library.items.map(PlayableContainer.new_from_playlist_item),
+    );
 
     this._paginator.reveal_child = library.continuation != null;
   }

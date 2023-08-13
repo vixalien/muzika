@@ -10,15 +10,11 @@ template $LibrarySongsPage : Adw.Bin {
       hexpand: true;
       hscrollbar-policy: never;
 
-      Box box {
+      Box {
         orientation: vertical;
-        margin-top: 12;
-        margin-bottom: 12;
-        margin-start: 12;
-        margin-end: 12;
         spacing: 12;
 
-        Box tools {
+        Box {
           valign: start;
 
           DropDown drop_down {
@@ -27,13 +23,10 @@ template $LibrarySongsPage : Adw.Bin {
           }
         }
 
-        ListBox list {
-          styles [
-            "background",
-          ]
-        }
+        $PlaylistItemView list_view {}
 
         $Paginator paginator {
+          activate => $load_more();
         }
       }
     };
