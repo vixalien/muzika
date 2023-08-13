@@ -143,7 +143,13 @@ export class DynamicAction extends Adw.Bin {
 
     this._fill = fill;
 
-    const top_widgets = [this._play, this._pause, this._loading, this._wave];
+    const top_widgets = [
+      this._play,
+      this._pause,
+      this._persistent_play,
+      this._loading,
+      this._wave,
+    ];
 
     set_properties(
       this._stack,
