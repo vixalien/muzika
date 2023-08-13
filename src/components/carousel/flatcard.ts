@@ -5,6 +5,7 @@ import GLib from "gi://GLib";
 import {
   ArtistRun,
   FlatSong,
+  ParsedLibraryArtist,
   SearchAlbum,
   SearchArtist,
   SearchContent,
@@ -19,14 +20,21 @@ import {
 // first register the DynamicImage class
 import { pretty_subtitles } from "src/util/text.js";
 import {
+  ParsedAlbum,
+  ParsedPlaylist,
   ParsedSong,
   ParsedVideo,
   Ranked,
+  RelatedArtist,
+  WatchPlaylist,
 } from "libmuse/types/parsers/browsing.js";
 import { DynamicImage2, DynamicImage2StorageType } from "../dynamic-image-2.js";
 import { DynamicActionState } from "../dynamic-action.js";
+import { MixedCardItem } from "../library/mixedcard.js";
 
 DynamicImage2;
+
+export type FlatCardItem = MixedCardItem | InlineSong | SearchContent;
 
 export type InlineSong =
   | FlatSong
@@ -48,7 +56,7 @@ export class FlatCard extends Gtk.Box {
     }, this);
   }
 
-  song?: InlineSong | SearchContent;
+  content?: FlatCardItem;
 
   private _title!: Gtk.Label;
   private _explicit!: Gtk.Image;
@@ -150,7 +158,7 @@ export class FlatCard extends Gtk.Box {
   }
 
   show_flat_song(song: FlatSong) {
-    this.song = song;
+    this.content = song;
 
     this.set_title(song.title);
     this.set_subtitle(_("Song"), song.artists ?? [], [song.views]);
@@ -161,7 +169,7 @@ export class FlatCard extends Gtk.Box {
   }
 
   show_song(song: Ranked<ParsedSong>) {
-    this.song = song;
+    this.content = song;
 
     this.set_title(song.title);
     this.set_subtitle(_("Song"), song.artists, [song.views ?? song.duration]);
@@ -170,21 +178,21 @@ export class FlatCard extends Gtk.Box {
     this.setup_video(song.videoId);
   }
 
-  show_video(song: Ranked<ParsedVideo>) {
-    this.song = song;
+  show_video(video: Ranked<ParsedVideo>) {
+    this.content = video;
 
-    this.set_title(song.title);
-    this.set_subtitle(_("Video"), song.artists ?? [], [song.views]);
+    this.set_title(video.title);
+    this.set_subtitle(_("Video"), video.artists ?? [], [video.views]);
 
     this.load_thumbnails(
-      song.thumbnails,
+      video.thumbnails,
       // DynamicImage2StorageType.VIDEO_THUMBNAIL,
     );
-    this.setup_video(song.videoId);
+    this.setup_video(video.videoId);
   }
 
   show_search_song(song: SearchSong) {
-    this.song = song;
+    this.content = song;
 
     this.set_title(song.title);
     this.set_subtitle(_("Song"), song.artists, [song.views ?? song.duration]);
@@ -193,76 +201,172 @@ export class FlatCard extends Gtk.Box {
     this.setup_video(song.videoId);
   }
 
-  show_search_video(song: SearchVideo) {
-    this.song = song;
+  show_search_video(video: SearchVideo) {
+    this.content = video;
 
-    this.set_title(song.title);
-    this.set_subtitle(_("Video"), song.artists, [song.views ?? song.duration]);
+    this.set_title(video.title);
+    this.set_subtitle(_("Video"), video.artists, [
+      video.views ?? video.duration,
+    ]);
 
     this.load_thumbnails(
-      song.thumbnails,
+      video.thumbnails,
       // DynamicImage2StorageType.VIDEO_THUMBNAIL,
     );
-    this.setup_video(song.videoId);
+    this.setup_video(video.videoId);
   }
 
-  show_search_album(song: SearchAlbum) {
-    this.song = song;
+  show_search_album(album: SearchAlbum) {
+    this.content = album;
 
     this.show_type = true;
-    this.set_title(song.title);
-    this.set_subtitle(song.album_type, song.artists);
+    this.set_title(album.title);
+    this.set_subtitle(album.album_type, album.artists);
 
-    this.load_thumbnails(song.thumbnails);
+    this.load_thumbnails(album.thumbnails);
   }
 
-  show_search_playlist(song: SearchPlaylist) {
-    this.song = song;
+  show_search_playlist(playlist: SearchPlaylist) {
+    this.content = playlist;
 
-    this.set_title(song.title);
-    this.set_subtitle(_("Playlist"), song.authors);
+    this.set_title(playlist.title);
+    this.set_subtitle(_("Playlist"), playlist.authors);
 
-    this.load_thumbnails(song.thumbnails);
-    this.setup_playlist(song.browseId);
+    this.load_thumbnails(playlist.thumbnails);
+    this.setup_playlist(playlist.browseId);
   }
 
-  show_search_artist(song: SearchArtist) {
-    this.song = song;
+  show_search_artist(artist: SearchArtist) {
+    this.content = artist;
 
-    this.set_title(song.name);
+    this.set_title(artist.name);
 
     this.show_type = false;
-    this.set_subtitle(_("Playlist"), [song.subscribers]);
+    this.set_subtitle(_("Playlist"), [artist.subscribers]);
 
-    this.load_thumbnails(song.thumbnails, DynamicImage2StorageType.AVATAR);
-    this.setup_playlist(song.browseId);
+    this.load_thumbnails(artist.thumbnails, DynamicImage2StorageType.AVATAR);
   }
 
-  show_search_profile(song: SearchProfile) {
-    this.song = song;
+  show_search_profile(profile: SearchProfile) {
+    this.content = profile;
 
-    this.set_title(song.name);
+    this.set_title(profile.name);
 
     this.show_type = false;
-    this.set_subtitle(_("Profile"), [song.username]);
+    this.set_subtitle(_("Profile"), [profile.username]);
 
-    this.load_thumbnails(song.thumbnails, DynamicImage2StorageType.AVATAR);
-    this.setup_playlist(song.browseId);
+    this.load_thumbnails(profile.thumbnails, DynamicImage2StorageType.AVATAR);
+    this.setup_playlist(profile.browseId);
   }
 
-  show_search_radio(song: SearchRadio) {
-    this.song = song;
+  show_search_radio(radio: SearchRadio) {
+    this.content = radio;
 
-    this.set_title(song.title);
+    this.set_title(radio.title);
 
     this.show_type = false;
     this.set_subtitle(_("Radio"), []);
 
-    this.load_thumbnails(song.thumbnails);
-    this.setup_playlist(song.playlistId);
+    this.load_thumbnails(radio.thumbnails);
+    this.setup_playlist(radio.playlistId);
   }
 
-  show_item(content: InlineSong) {
+  show_mixed_song(song: ParsedSong) {
+    this.content = song;
+
+    this.set_title(song.title);
+    this.set_subtitle(_("Song"), song.artists, [song.views ?? song.duration]);
+    this.show_explicit(song.isExplicit);
+
+    this.load_thumbnails(song.thumbnails);
+    this.setup_video(song.videoId);
+  }
+
+  show_mixed_artist(artist: RelatedArtist) {
+    this.content = artist;
+
+    // this.set_align(Gtk.Align.CENTER);
+    this.set_title(artist.name);
+    this.set_subtitle(_("Artist"), [artist.subscribers]);
+
+    this.load_thumbnails(artist.thumbnails, DynamicImage2StorageType.AVATAR);
+  }
+
+  show_mixed_library_artist(artist: ParsedLibraryArtist) {
+    this.content = artist;
+
+    // this.set_align(Gtk.Align.CENTER);
+    this.set_title(artist.name);
+    this.set_subtitle(_("Artist"), [artist.subscribers]);
+
+    // TODO: upscale image
+    this.load_thumbnails(artist.thumbnails, DynamicImage2StorageType.AVATAR);
+  }
+
+  show_mixed_video(video: ParsedVideo) {
+    this.content = video;
+
+    this.set_title(video.title);
+    this.set_subtitle(_("Video"), video.artists ?? [], [video.views]);
+
+    this.load_thumbnails(
+      video.thumbnails,
+      // DynamicImage2StorageType.VIDEO_THUMBNAIL,
+    );
+    this.setup_video(video.videoId);
+  }
+
+  show_mixed_inline_video(video: ParsedSong) {
+    this.content = video;
+
+    this.set_title(video.title);
+    this.set_subtitle(_("Video"), video.artists ?? [], [video.views]);
+
+    this.load_thumbnails(
+      video.thumbnails,
+      // DynamicImage2StorageType.VIDEO_THUMBNAIL,
+    );
+    this.setup_video(video.videoId);
+  }
+
+  show_mixed_playlist(playlist: ParsedPlaylist) {
+    this.content = playlist;
+
+    this.set_title(playlist.title);
+    this.set_subtitle(
+      _("Playlist"),
+      playlist.description ? [playlist.description] : (playlist.authors ?? []),
+    );
+
+    this.load_thumbnails(playlist.thumbnails);
+    this.setup_playlist(playlist.playlistId);
+  }
+
+  show_mixed_watch_playlist(playlist: WatchPlaylist) {
+    this.content = playlist;
+
+    this.set_title(playlist.title);
+    this.show_type = false;
+    this.set_subtitle(
+      _("Radio"),
+      _("Start Radio"),
+    );
+
+    this.load_thumbnails(playlist.thumbnails);
+    this.setup_playlist(playlist.playlistId);
+  }
+
+  show_mixed_album(album: ParsedAlbum) {
+    this.content = album;
+
+    this.show_type = true;
+    this.set_title(album.title);
+    this.set_subtitle(_("Album"), album.artists, [album.year]);
+
+    this.load_thumbnails(album.thumbnails);
+  }
+
+  show_inline_song(content: InlineSong) {
     switch (content.type) {
       case "flat-song":
         this.show_flat_song(content);
@@ -305,6 +409,40 @@ export class FlatCard extends Gtk.Box {
       default:
         console.error("Unknown search content type", (content as any).type);
         return;
+    }
+  }
+
+  show_mixed_item(content: MixedCardItem) {
+    switch (content.type) {
+      case "song":
+        this.show_mixed_song(content);
+        break;
+      case "channel":
+      case "artist":
+        this.show_mixed_artist(content);
+        break;
+      case "library-artist":
+        this.show_mixed_library_artist(content);
+        break;
+      case "video":
+        this.show_mixed_video(content);
+        break;
+      case "inline-video":
+        this.show_mixed_inline_video(content);
+        break;
+      case "playlist":
+        this.show_mixed_playlist(content);
+        break;
+      case "album":
+        this.show_mixed_album(content);
+        break;
+      case "watch-playlist":
+        this.show_mixed_watch_playlist(content);
+        break;
+      case "flat-song":
+        this.show_flat_song(content);
+      default:
+        console.warn(`Unknown content type: ${content.type}`);
     }
   }
 

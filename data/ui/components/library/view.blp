@@ -28,6 +28,7 @@ template $LibraryView : Box {
           ToggleButton list_button {
             icon-name: "view-list-symbolic";
             group: grid_button;
+            toggled => $on_list_button_toggled_cb();
           }
         }
 
@@ -40,6 +41,20 @@ template $LibraryView : Box {
       Stack stack {
         vhomogeneous: false;
         transition-type: slide_left_right;
+
+        [grid]
+        $CarouselGridView grid {
+          orientation: vertical;
+        }
+
+        [list]
+        $FlatListView list {
+          child-type: 2;
+        }
+      }
+
+      $Paginator paginator {
+        activate => $paginated_cb();
       }
     }
   }
