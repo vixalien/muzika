@@ -1,7 +1,7 @@
 import Gio from "gi://Gio";
 import GObject from "gi://GObject";
 
-import { PlaylistItem } from "src/muse";
+import { PlaylistItem, SearchContent } from "src/muse";
 import { DynamicImageState } from "src/components/dynamic-image";
 import { SignalListeners } from "./signal-listener";
 import { get_player } from "src/application";
@@ -117,6 +117,51 @@ export class PlayableContainer<T extends Object = PlaylistItem>
           is_playlist: true,
           playlist_id: item.playlistId,
         };
+        break;
+      default:
+        props = { object: item };
+        break;
+    }
+
+    return new PlayableContainer(props as PlayableContainerProps<T>);
+  }
+
+  static new_from_search_content<T extends SearchContent>(
+    item: SearchContent,
+  ): PlayableContainer<T> {
+    type Props = PlayableContainerProps<SearchContent>;
+
+    let props: Props;
+
+    switch (item.type) {
+      case "album":
+        props = {
+          object: item,
+          is_playlist: true,
+          // playlist_id: item.audioPlaylistId,
+        };
+        break;
+      case "artist":
+      case "profile":
+        props = { object: item };
+        break;
+      case "playlist":
+        props = {
+          object: item,
+          is_playlist: true,
+          playlist_id: item.browseId,
+        };
+        break;
+      case "radio":
+        props = {
+          object: item,
+          is_playlist: true,
+          playlist_id: item.playlistId,
+        };
+        break;
+      case "song":
+      case "video":
+        props = { object: item, video_id: item.videoId ?? undefined };
         break;
       default:
         props = { object: item };

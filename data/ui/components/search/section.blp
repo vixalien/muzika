@@ -28,14 +28,7 @@ template $SearchSection : Box {
     }
   }
 
-  ListBox content {
-    margin-start: 9;
-    margin-end: 9;
-    margin-bottom: 6;
-    selection-mode: none;
-
-    styles [
-      "background",
-    ]
+  $FlatListView card_view {
+    search-results: true;
   }
 }

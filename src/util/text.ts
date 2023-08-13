@@ -34,6 +34,7 @@ function normalize_nodes(nodes?: string | (string | null)[]): string[] {
 export function pretty_subtitles(
   artists: (string | null | ArtistRun)[],
   options: (string | null)[] | PrettySubtitleOptions = [],
+  type: string | null = null,
 ) {
   const { prefix, suffix = [] } = Array.isArray(options)
     ? { suffix: normalize_nodes(options), prefix: [] }
@@ -64,13 +65,15 @@ export function pretty_subtitles(
   }
 
   const merge = (authors: string[]) => {
-    return [
+    const string = [
       prefix.map(escape_label).join(" • "),
       authors.join(", "),
       suffix.map(escape_label).join(" • "),
     ]
       .filter(Boolean)
       .join(" • ");
+
+    return type != null ? `${type} • ${string}` : string;
   };
 
   return { markup: merge(author_markup), plain: merge(author_plain) };

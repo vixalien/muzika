@@ -10,7 +10,7 @@ import { MixedContent, MixedItem } from "../../muse.js";
 import { MixedCardItem } from "../library/mixedcard.js";
 import { PlayableContainer } from "src/util/playablelist.js";
 import { CarouselListView } from "./view/list.js";
-import { CarouselFlatSongView } from "./view/flatsong.js";
+import { FlatGridView } from "./view/flatgrid.js";
 import { CarouselMoodView } from "./view/mood.js";
 import { ParsedMoodOrGenre } from "libmuse/types/parsers/browsing.js";
 
@@ -156,7 +156,7 @@ export class Carousel<
   }
 
   show_gridview(contents: (MixedCardItem | null)[]) {
-    const flatsongview = new CarouselFlatSongView();
+    const flatsongview = new FlatGridView();
 
     flatsongview.connect("activate", (_, position) => {
       const container = flatsongview.items.get_item(position);
