@@ -45,9 +45,9 @@ export class PlaylistListView extends Gtk.ListView {
 
     item.signals = new SignalListeners();
 
-    if (this.album) {
-      item.dynamic_image.visible_child = DynamicImageVisibleChild.NUMBER;
-    }
+    // if (this.album) {
+    //   item.dynamic_image.visible_child = DynamicImageVisibleChild.NUMBER;
+    // }
 
     list_item.set_child(item);
   }
@@ -60,22 +60,23 @@ export class PlaylistListView extends Gtk.ListView {
 
     item.show_add = this.show_add;
 
-    item.dynamic_image.connect(
-      "selection-mode-toggled",
-      (_dynamic_image, value) => {
-        this.selection_mode_toggled(list_item.position, value);
-      },
-    );
+    // TODO: selection mode
+    // item.dynamic_image.selection_mode = this.selection_mode;
+    // item.dynamic_image.selected = list_item.selected;
 
-    item.dynamic_image.selection_mode = this.selection_mode;
-    item.dynamic_image.selected = list_item.selected;
-
-    item.position = list_item.position;
     item.set_item(playlist_item, this.playlistId);
 
     if (this.album) {
-      item.dynamic_image.track_number = (list_item.position + 1).toString();
+      item.dynamic_image.track_number = list_item.position + 1;
     }
+
+    // item.signals.connect(
+    //   item.dynamic_image,
+    //   "selection-mode-toggled",
+    //   (_dynamic_image, value) => {
+    //     this.selection_mode_toggled(list_item.position, value);
+    //   },
+    // );
 
     item.signals.add(
       container,
@@ -84,18 +85,18 @@ export class PlaylistListView extends Gtk.ListView {
       }),
     );
 
-    item.signals.add(
-      container,
-      container.connect("notify", () => {
-        item.dynamic_image.selection_mode = this.selection_mode;
-        item.show_add = this.show_add;
-      }),
-    );
+    // item.signals.add(
+    //   container,
+    //   container.connect("notify", () => {
+    //     item.dynamic_image.selection_mode = this.selection_mode;
+    //     item.show_add = this.show_add;
+    //   }),
+    // );
 
     item.signals.add(
       item,
-      item.connect("add", (_, position) => {
-        this.emit("add", position);
+      item.connect("add", (_) => {
+        this.emit("add", list_item.position);
       }),
     );
   }
@@ -104,6 +105,7 @@ export class PlaylistListView extends Gtk.ListView {
     const item = list_item.child as PlaylistListItemWithSignals;
 
     item.signals.clear();
+    item.clear();
   }
 
   teardown_cb(_factory: Gtk.SignalListItemFactory, list_item: Gtk.ListItem) {
