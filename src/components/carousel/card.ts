@@ -1,6 +1,5 @@
 import Gtk from "gi://Gtk?version=4.0";
 import GObject from "gi://GObject";
-import Adw from "gi://Adw";
 import GLib from "gi://GLib";
 
 import {
@@ -15,15 +14,12 @@ import {
 } from "../../muse.js";
 import { load_thumbnails } from "../webimage.js";
 import { ParsedLibraryArtist } from "libmuse/types/parsers/library.js";
-import {
-  DynamicImage,
-  DynamicImageState,
-  DynamicImageVisibleChild,
-} from "../dynamic-image.js";
-import { PlaylistImage, PlaylistImageState } from "../playlist-image.js";
+import { DynamicImageState } from "../dynamic-image.js";
+import { PlaylistImage } from "../playlist-image.js";
 import { pretty_subtitles } from "src/util/text.js";
 import { MixedCardItem } from "../library/mixedcard.js";
 import { DynamicImage2 } from "../dynamic-image-2.js";
+import { SignalListeners } from "src/util/signal-listener.js";
 
 enum CarouselImageType {
   AVATAR,
@@ -58,41 +54,58 @@ export class CarouselCard extends Gtk.Box {
 
   private content?: MixedCardItem;
 
+  private listeners = new SignalListeners();
+  private hover = new Gtk.EventControllerMotion();
+
   constructor() {
     super();
 
-    const hover = new Gtk.EventControllerMotion();
-
-    hover.connect("enter", () => {
+    this.listeners.connect(this.hover, "enter", () => {
       this._subtitle.add_css_class("hover");
     });
 
-    hover.connect("leave", () => {
+    this.listeners.connect(this.hover, "leave", () => {
       this._subtitle.remove_css_class("hover");
     });
 
-    this._subtitles.add_controller(hover);
+    this._subtitles.add_controller(this.hover);
 
-    this._subtitle.connect("activate-link", (_, uri) => {
-      if (uri && uri.startsWith("muzika:")) {
-        this.activate_action(
-          "navigator.visit",
-          GLib.Variant.new_string(uri),
-        );
+    this.listeners.connect(
+      this._subtitle,
+      "activate-link",
+      (_: Gtk.Label, uri: string) => {
+        if (uri && uri.startsWith("muzika:")) {
+          this.activate_action(
+            "navigator.visit",
+            GLib.Variant.new_string(uri),
+          );
 
-        return true;
-      }
-    });
+          return true;
+        }
+      },
+    );
   }
 
-  clear() {
+  reset() {
+    this.set_align(Gtk.Align.FILL);
+
     this._title.label = "";
     this._subtitle.label = "";
     this._explicit.visible = false;
     this.subtitle_authors = [];
     this.content = undefined;
-    this.set_align(Gtk.Align.FILL);
+
     this._dynamic_image.clear();
+  }
+
+  clear() {
+    this._dynamic_image.clear();
+
+    this.listeners.clear();
+
+    if (this.hover.widget != null) {
+      this._subtitles.remove_controller(this.hover);
+    }
   }
 
   private setup_image(
