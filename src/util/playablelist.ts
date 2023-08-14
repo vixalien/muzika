@@ -101,10 +101,10 @@ export class PlayableContainer<T extends Object = PlaylistItem>
     GObject.registerClass({
       GTypeName: "PlayableContainer",
       Properties: {
-        item: GObject.ParamSpec.object(
-          "item",
-          "Item",
-          "The contained item",
+        object: GObject.ParamSpec.object(
+          "object",
+          "Contained Object",
+          "The contained object",
           GObject.ParamFlags.READWRITE,
           GObject.Object.$gtype,
         ),
