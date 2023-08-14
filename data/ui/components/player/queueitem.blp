@@ -27,14 +27,8 @@ template $QueueItem : Box {
     spacing: 3;
 
     Label title {
-      label: "";
-      hexpand: true;
-      max-width-chars: 1;
       ellipsize: end;
-      lines: 2;
       xalign: 0;
-      wrap: true;
-      wrap-mode: char;
 
       styles [
         "heading",
@@ -56,11 +50,8 @@ template $QueueItem : Box {
 
       Label subtitle {
         use-markup: true;
-        hexpand: true;
-        max-width-chars: 1;
         ellipsize: end;
         xalign: 0;
-        wrap: true;
 
         styles [
           "flat-links",
