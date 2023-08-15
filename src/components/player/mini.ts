@@ -45,7 +45,7 @@ export class MiniPlayerView extends Gtk.Overlay {
   }
 
   song_changed() {
-    this.progress_bar.value = 0;
+    this.progress_bar.value = this.player.timestamp;
 
     const song = this.player.queue.current?.object;
     if (song) {

@@ -162,8 +162,9 @@ export class FullPlayerView extends Gtk.ActionBar {
   }
 
   song_changed() {
-    this.scale.value = 0;
-    this._progress_label.label = seconds_to_string(0);
+    this.scale.value = this.player.timestamp;
+
+    this._progress_label.label = micro_to_string(this.player.timestamp);
 
     const song = this.player.queue.current?.object;
 
