@@ -26,7 +26,6 @@ export class DynamicAction extends Adw.Bin {
         "resource:///com/vixalien/muzika/ui/components/dynamic-action.ui",
       InternalChildren: [
         "stack",
-        "blank",
         "play",
         "pause",
         "persistent_play",
@@ -97,7 +96,6 @@ export class DynamicAction extends Adw.Bin {
   }
 
   private _stack!: Gtk.Stack;
-  private _blank!: Adw.Bin;
   private _play!: Gtk.Button;
   private _persistent_play!: Gtk.Button;
   private _pause!: Gtk.Button;
@@ -209,44 +207,35 @@ export class DynamicAction extends Adw.Bin {
 
     let stop_spinning = true;
 
-    let osd = false;
     let visible = true;
 
-    if (false) {
-      visible = false;
-    } else {
-      switch (this.state) {
-        case DynamicActionState.DEFAULT:
-          if (this.hovering) {
-            osd = true;
-            this._stack.visible_child = this._play;
-          } else {
-            if (this.persistent_play_button) {
-              this._stack.visible_child = this._persistent_play;
-            } else {
-              visible = false;
-            }
-          }
-          break;
-        case DynamicActionState.LOADING:
-          stop_spinning = false;
-          this._stack.visible_child = this._loading;
-          this._spinner.spinning = true;
-          osd = true;
-          break;
-        case DynamicActionState.PLAYING:
-          if (this.hovering) {
-            this._stack.visible_child = this._pause;
-          } else {
-            this._stack.visible_child = this._wave;
-          }
-          osd = true;
-          break;
-        case DynamicActionState.PAUSED:
+    switch (this.state) {
+      case DynamicActionState.DEFAULT:
+        if (this.hovering) {
           this._stack.visible_child = this._play;
-          osd = true;
-          break;
-      }
+        } else {
+          if (this.persistent_play_button) {
+            this._stack.visible_child = this._persistent_play;
+          } else {
+            visible = false;
+          }
+        }
+        break;
+      case DynamicActionState.LOADING:
+        stop_spinning = false;
+        this._stack.visible_child = this._loading;
+        this._spinner.spinning = true;
+        break;
+      case DynamicActionState.PLAYING:
+        if (this.hovering) {
+          this._stack.visible_child = this._pause;
+        } else {
+          this._stack.visible_child = this._wave;
+        }
+        break;
+      case DynamicActionState.PAUSED:
+        this._stack.visible_child = this._play;
+        break;
     }
 
     this._stack.visible = visible;
@@ -254,24 +243,6 @@ export class DynamicAction extends Adw.Bin {
     if ((stop_spinning || !this._stack.visible) && this._spinner.spinning) {
       this._spinner.spinning = false;
     }
-
-    // for number, don't use osd, but instead hide the number label
-    // if (
-    //   this._stack.visible &&
-    //   this.visible_child === DynamicImageVisibleChild.NUMBER
-    // ) {
-    //   this._image_stack.opacity = osd ? 0 : 1;
-
-    //   this._stack.remove_css_class("osd");
-    // } else {
-    //   this._image_stack.opacity = 1;
-
-    //   if (osd) {
-    //     this._stack.add_css_class("osd");
-    //   } else {
-    //     this._stack.remove_css_class("osd");
-    //   }
-    // }
   }
 
   // property: persistent-play-button

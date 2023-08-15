@@ -5,19 +5,17 @@ template $DynamicAction : Adw.Bin {
   overflow: hidden;
 
   Stack stack {
+    visible: false;
     halign: end;
     valign: end;
     margin-end: 6;
     margin-bottom: 6;
     transition-type: crossfade;
 
-    Adw.Bin blank {
-    }
-
     Button persistent_play {
       clicked => $play_cb();
 
-      styles [ "floating-button" ]
+      styles [ "floating-button", "no-padding" ]
 
       Image persistent_play_image {
         icon-name: "play-white";
@@ -27,7 +25,7 @@ template $DynamicAction : Adw.Bin {
     Button play {
       clicked => $play_cb();
 
-      styles [ "osd", "floating-button" ]
+      styles [ "osd", "floating-button", "no-padding" ]
 
       Image play_image {
         icon-name: "media-playback-start-symbolic";
@@ -37,7 +35,7 @@ template $DynamicAction : Adw.Bin {
     Button pause {
       clicked => $pause_cb();
 
-      styles [ "osd", "floating-button" ]
+      styles [ "osd", "floating-button", "no-padding" ]
 
       Image pause_image {
         icon-name: "media-playback-pause-symbolic";
