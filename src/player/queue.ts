@@ -2,12 +2,7 @@ import GObject from "gi://GObject";
 import Gio from "gi://Gio";
 import GLib from "gi://GLib";
 
-import {
-  get_queue,
-  get_queue_ids,
-  Queue as MuseQueue,
-  QueueOptions,
-} from "../muse.js";
+import { get_queue, Queue as MuseQueue } from "../muse.js";
 import { ObjectContainer } from "../util/objectcontainer.js";
 import { QueueTrack } from "libmuse/types/parsers/queue.js";
 import { AddActionEntries } from "src/util/action.js";
@@ -173,14 +168,10 @@ export class Queue extends GObject.Object {
     this.change_position(-1);
   }
 
-  private update_current_if_necessary() {
-    if (this.position < 0 || this.position >= this.list.n_items) return null;
-
-    const track = this.list.get_item(this.position);
-
+  private get_correct_counterpart(track: ObjectContainer<QueueMeta> | null) {
     if (!track || !track.object) return null;
 
-    let final_track = track;
+    let correct_track: ObjectContainer<QueueMeta> | null = null;
 
     switch (this.preferred_media_type) {
       case PreferredMediaType.SONG: {
@@ -188,7 +179,7 @@ export class Queue extends GObject.Object {
           track.object.videoType !== "MUSIC_VIDEO_TYPE_ATV" &&
           track.object.counterpart
         ) {
-          final_track = this.get_counterpart(track.object)!;
+          correct_track = this.get_counterpart(track.object)!;
         }
         break;
       }
@@ -197,21 +188,20 @@ export class Queue extends GObject.Object {
           track.object.videoType === "MUSIC_VIDEO_TYPE_ATV" &&
           track.object.counterpart
         ) {
-          final_track = this.get_counterpart(track.object)!;
+          correct_track = this.get_counterpart(track.object)!;
         }
         break;
       }
     }
 
-    if (!final_track) return;
+    if (!correct_track) return null;
 
-    this.list.splice(this.position, 1, [final_track]);
-
-    return final_track;
+    return correct_track;
   }
 
   get current() {
-    return this.update_current_if_necessary();
+    if (this.position < 0 || this.position >= this.list.n_items) return null;
+    return this.list.get_item(this.position);
   }
 
   get current_is_video() {
@@ -660,7 +650,15 @@ export class Queue extends GObject.Object {
       }
     }
 
-    return [position, this.list.get_item(position)?.object ?? null];
+    const item = this.list.get_item(position);
+
+    const correct_item = this.get_correct_counterpart(item) ?? item;
+
+    if (correct_item) {
+      this.list.splice(position, 1, [correct_item]);
+    }
+
+    return [position, correct_item?.object ?? null];
   }
 
   next(): QueueTrack | null {
@@ -699,26 +697,38 @@ export class Queue extends GObject.Object {
     this.update_track_settings();
   }
 
-  previous(): QueueTrack | null {
+  peek_previous(): [number, QueueTrack | null] {
+    let position: number;
+
     if (this.repeat === RepeatMode.ALL) {
       if (this.position <= 0) {
-        this.change_position(this.list.n_items - 1);
+        position = this.list.n_items - 1;
       } else {
-        this.increment_position(-1);
+        position = this.position - 1;
       }
-
-      this.update_track_settings();
-
-      return this.list.get_item(this.position)?.object!;
     } else {
-      if (this.position <= 0) return null;
+      if (this.position <= 0) position = -1;
 
-      this.increment_position(-1);
-
-      this.update_track_settings();
-
-      return this.list.get_item(this.position)?.object!;
+      position = this.position - 1;
     }
+
+    const item = this.list.get_item(position);
+
+    const correct_item = this.get_correct_counterpart(item) ?? item;
+
+    if (correct_item) {
+      this.list.splice(position, 1, [correct_item]);
+    }
+
+    return [position, correct_item?.object ?? null];
+  }
+
+  previous(): QueueTrack | null {
+    const [position, track] = this.peek_previous();
+
+    this.update_position(position);
+
+    return track;
   }
 
   private add_to_queue_at_position(
@@ -792,8 +802,14 @@ export class Queue extends GObject.Object {
       ? PreferredMediaType.SONG
       : PreferredMediaType.VIDEO;
 
-    this.update_current_if_necessary();
-    this.update_position(this.position, true);
+    const item = this.list.get_item(this.position);
+
+    const correct_item = this.get_correct_counterpart(item) ?? item;
+
+    if (correct_item) {
+      this.list.splice(this.position, 1, [correct_item]);
+      this.update_position(this.position, true);
+    }
   }
 }
 
