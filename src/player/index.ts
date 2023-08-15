@@ -623,7 +623,21 @@ export class MuzikaPlayer extends MuzikaMediaStream {
     this._queue.connect("notify::current", () => {
       this._play.set_video_track_enabled(this.queue.current_is_video);
 
-      this.load(this.queue.current?.object ?? null)
+      const current = this.queue.current?.object;
+
+      const now_playing_videoId = this.now_playing?.object.track.videoId;
+      const counterpart_videoId = current?.counterpart?.videoId;
+
+      // try to seek to the same position
+      if (
+        counterpart_videoId && now_playing_videoId &&
+        counterpart_videoId === now_playing_videoId && current.duration_seconds
+      ) {
+        this.initial_seek_to = (this.timestamp / this.duration) *
+          (current.duration_seconds * Gst.MSECOND);
+      }
+
+      this.load(current ?? null)
         .then(() => {
           this.save_state();
         })
