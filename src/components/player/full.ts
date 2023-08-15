@@ -10,12 +10,14 @@ import { PlayerSidebarView } from "./sidebar.js";
 import { QueueTrack } from "libmuse/types/parsers/queue.js";
 import { escape_label, pretty_subtitles } from "src/util/text.js";
 import { MuzikaPlayer } from "src/player";
-import { DynamicImage, DynamicImageVisibleChild } from "../dynamic-image.js";
 import { micro_to_string, seconds_to_string } from "src/util/time.js";
+import { PlayerPreview } from "./preview.js";
 
 export interface FullPlayerViewOptions {
   player: MuzikaPlayer;
 }
+
+PlayerPreview;
 
 export class FullPlayerView extends Gtk.ActionBar {
   static {
@@ -23,7 +25,7 @@ export class FullPlayerView extends Gtk.ActionBar {
       GTypeName: "FullPlayerView",
       Template: "resource:///com/vixalien/muzika/ui/components/player/full.ui",
       InternalChildren: [
-        "image",
+        "player_preview",
         "title",
         "subtitle",
         "shuffle_button",
@@ -50,7 +52,7 @@ export class FullPlayerView extends Gtk.ActionBar {
     }, this);
   }
 
-  _image!: DynamicImage;
+  _player_preview!: PlayerPreview;
   _title!: Gtk.Label;
   _subtitle!: Gtk.Label;
   _shuffle_button!: Gtk.ToggleButton;
@@ -112,7 +114,7 @@ export class FullPlayerView extends Gtk.ActionBar {
       });
     });
 
-    this._image.connect("play", () => {
+    this._player_preview.connect("activate", () => {
       this.activate_action("win.show-video", GLib.Variant.new_boolean(true));
     });
   }
@@ -328,18 +330,7 @@ export class FullPlayerView extends Gtk.ActionBar {
     }
   }
 
-  /**
-   * loading multiple thumbnails can result in the previous one loading
-   * after the current one, so we need to abort the previous one
-   */
-  abort_thumbnail: AbortController | null = null;
-
   show_song(track: QueueTrack) {
-    if (this.abort_thumbnail != null) {
-      this.abort_thumbnail.abort();
-      this.abort_thumbnail = null;
-    }
-
     // thumbnail
 
     this._video_counterpart.sensitive =
@@ -348,17 +339,8 @@ export class FullPlayerView extends Gtk.ActionBar {
 
     if (this.player.queue.current_is_video) {
       this._video_counterpart.active = true;
-      this._image.visible_child = DynamicImageVisibleChild.PICTURE;
-      this._image.picture.paintable = this.player.paintable!;
     } else {
       this._music_counterpart.active = true;
-      this._image.visible_child = DynamicImageVisibleChild.IMAGE;
-      this.abort_thumbnail = new AbortController();
-
-      this._image.load_thumbnails(track.thumbnails, {
-        width: 74,
-        signal: this.abort_thumbnail.signal,
-      });
     }
 
     // labels

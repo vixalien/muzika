@@ -2,72 +2,66 @@ using Gtk 4.0;
 using Adw 1;
 
 template $FullPlayerView : ActionBar {
+  // to make the thumbnail look aligned
+  margin-start: 3;
+  margin-end: 3;
+
   [start]
-  Box {
-    Box song_info_box {
-      spacing: 12;
-      margin-top: 6;
-      margin-bottom: 6;
-      margin-start: 12;
-      margin-end: 6;
+  Box song_info_box {
+    spacing: 12;
 
-      $DynamicImage image {
-        valign: center;
-        image-size: 74;
-        persistent-play-button: false;
+    $PlayerPreview player_preview {
+      valign: center;
+      size: 78;
+    }
 
-        styles ["black-bg"]
+    Box now_playing_labels {
+      orientation: vertical;
+      valign: center;
+      homogeneous: false;
+      width-request: 100;
+
+      Label title {
+        halign: start;
+        use-markup: true;
+        hexpand: true;
+        ellipsize: end;
+        xalign: 0;
+
+        styles [
+          "heading",
+          "flat-links",
+        ]
       }
 
-      Box now_playing_labels {
-        orientation: vertical;
-        spacing: 3;
-        valign: center;
-        homogeneous: false;
-        width-request: 100;
+      Label subtitle {
+        halign: start;
+        use-markup: true;
+        hexpand: true;
+        ellipsize: end;
+        xalign: 0;
 
-        Label title {
-          halign: start;
-          use-markup: true;
-          hexpand: true;
-          ellipsize: end;
-          xalign: 0;
+        styles [
+          "flat-links",
+        ]
+      }
 
-          styles [
-            "heading",
-            "flat-links",
-          ]
+      Box actions {
+        margin-top: 6;
+        
+        styles ["linked"]
+
+        ToggleButton music_counterpart {
+          icon-name: "emblem-music-symbolic";
+
+          clicked => $switch_counterpart();
         }
 
-        Label subtitle {
-          halign: start;
-          use-markup: true;
-          hexpand: true;
-          ellipsize: end;
-          xalign: 0;
+        ToggleButton video_counterpart {
+          icon-name: "emblem-videos-symbolic";
+          group: music_counterpart;
 
-          styles [
-            "flat-links",
-          ]
-        }
-
-        Box actions {
-          margin-top: 6;
-          
-          styles ["linked"]
-
-          ToggleButton music_counterpart {
-            icon-name: "emblem-music-symbolic";
-
-            clicked => $switch_counterpart();
-          }
-
-          ToggleButton video_counterpart {
-            icon-name: "emblem-videos-symbolic";
-            group: music_counterpart;
-
-            clicked => $switch_counterpart();
-          }
+          clicked => $switch_counterpart();
         }
       }
     }
@@ -76,10 +70,6 @@ template $FullPlayerView : ActionBar {
   [center]
   Box buttons_and_scale {
     orientation: vertical;
-    margin-top: 6;
-    margin-bottom: 6;
-    margin-start: 6;
-    margin-end: 6;
     hexpand: true;
 
     Box buttons {
@@ -182,10 +172,6 @@ template $FullPlayerView : ActionBar {
   Box buttons_box {
     valign: center;
     spacing: 6;
-    margin-top: 6;
-    margin-bottom: 6;
-    margin-start: 6;
-    margin-end: 12;
 
     VolumeButton volume_button {
       tooltip-text: _("Adjust Volume");
