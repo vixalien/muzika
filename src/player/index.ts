@@ -284,13 +284,31 @@ export class MuzikaMediaStream extends Gtk.MediaStream {
 
   protected _play: GstPlay.Play;
 
-  initial_seek_to: number | null = null;
+  protected _initial_seek_to: number | null = null;
+
+  get initial_seek_to() {
+    return this._initial_seek_to;
+  }
+
+  set initial_seek_to(initial_seek_to: number | null) {
+    this._initial_seek_to = initial_seek_to;
+
+    this.notify("timestamp");
+  }
 
   private do_initial_seek() {
     if (this.initial_seek_to !== null) {
       this.seek(this.initial_seek_to);
       this.initial_seek_to = null;
     }
+  }
+
+  get timestamp() {
+    if (this.initial_seek_to != null) {
+      return this.initial_seek_to;
+    }
+
+    return super.timestamp;
   }
 
   // PROPERTIES
@@ -457,6 +475,10 @@ export class MuzikaMediaStream extends Gtk.MediaStream {
   }
 
   private position_updated_cb(_play: GstPlay.Play, position: number): void {
+    if (this.seeking && position === 0) {
+      return;
+    }
+
     this.update(position / Gst.USECOND);
   }
 

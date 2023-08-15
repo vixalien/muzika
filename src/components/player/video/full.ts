@@ -43,10 +43,11 @@ export class FullVideoControls extends Adw.Bin {
   inhibit_hide = false;
 
   song_changed() {
-    this._scale.value = 0;
-    this._progress_label.label = seconds_to_string(0);
-
     const player = get_player();
+
+    this._scale.value = player.timestamp;
+    this._progress_label.label = micro_to_string(player.timestamp);
+
     const track = player.queue.current?.object;
 
     if (track) {
