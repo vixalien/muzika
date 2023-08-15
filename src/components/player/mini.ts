@@ -1,10 +1,12 @@
 import Gtk from "gi://Gtk?version=4.0";
 import GObject from "gi://GObject";
+import GLib from "gi://GLib";
 
 import { load_thumbnails } from "../webimage.js";
 import { PlayerProgressBar } from "./progress.js";
 import { QueueTrack } from "libmuse/types/parsers/queue.js";
 import { MuzikaPlayer } from "src/player";
+import { PlayerPreview } from "./preview.js";
 
 export interface MiniPlayerViewOptions {
   player: MuzikaPlayer;
@@ -16,7 +18,7 @@ export class MiniPlayerView extends Gtk.Overlay {
       GTypeName: "MiniPlayerView",
       Template: "resource:///com/vixalien/muzika/ui/components/player/mini.ui",
       InternalChildren: [
-        "image",
+        "player_preview",
         "title",
         "subtitle",
         "play_button",
@@ -24,7 +26,7 @@ export class MiniPlayerView extends Gtk.Overlay {
     }, this);
   }
 
-  private _image!: Gtk.Image;
+  private _player_preview!: PlayerPreview;
   private _title!: Gtk.Label;
   private _subtitle!: Gtk.Label;
   private _play_button!: Gtk.Button;
@@ -42,6 +44,10 @@ export class MiniPlayerView extends Gtk.Overlay {
     this.add_overlay(this.progress_bar);
 
     this.setup_player();
+
+    this._player_preview.connect("activate", () => {
+      this.activate_action("win.show-video", GLib.Variant.new_boolean(true));
+    });
   }
 
   song_changed() {
@@ -90,30 +96,7 @@ export class MiniPlayerView extends Gtk.Overlay {
     }
   }
 
-  /**
-   * loading multiple thumbnails can result in the previous one loading
-   * after the current one, so we need to abort the previous one
-   */
-  abort_thumbnail: AbortController | null = null;
-
   show_song(track: QueueTrack) {
-    if (this.abort_thumbnail != null) {
-      this.abort_thumbnail.abort();
-      this.abort_thumbnail = null;
-    }
-
-    // thumbnail
-
-    this._image.icon_name = "image-missing-symbolic";
-
-    this.abort_thumbnail = new AbortController();
-
-    load_thumbnails(this._image, track.thumbnails, {
-      width: 74,
-      signal: this.abort_thumbnail.signal,
-    });
-    // labels
-
     this._title.label = track.title;
     this._subtitle.label = track.artists[0].name;
   }
