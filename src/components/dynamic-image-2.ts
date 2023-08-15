@@ -62,7 +62,7 @@ export class DynamicImage2 extends Gtk.Overlay {
           "The current state of the dynamic action",
           GObject.ParamFlags.READWRITE,
           DynamicActionState.DEFAULT,
-          DynamicActionState.LOADING,
+          DynamicActionState.PAUSED,
           DynamicActionState.DEFAULT,
         ),
         "storage-type": GObject.ParamSpec.uint(

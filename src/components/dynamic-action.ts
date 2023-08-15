@@ -53,7 +53,7 @@ export class DynamicAction extends Adw.Bin {
           "The current state of this dynamic action",
           GObject.ParamFlags.READWRITE,
           DynamicActionState.DEFAULT,
-          DynamicActionState.LOADING,
+          DynamicActionState.PAUSED,
           DynamicActionState.DEFAULT,
         ),
         "fill": GObject.ParamSpec.boolean(
