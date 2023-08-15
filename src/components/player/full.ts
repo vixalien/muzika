@@ -12,6 +12,7 @@ import { escape_label, pretty_subtitles } from "src/util/text.js";
 import { MuzikaPlayer } from "src/player";
 import { micro_to_string, seconds_to_string } from "src/util/time.js";
 import { PlayerPreview } from "./preview.js";
+import { SignalListeners } from "src/util/signal-listener.js";
 
 export interface FullPlayerViewOptions {
   player: MuzikaPlayer;
@@ -82,41 +83,15 @@ export class FullPlayerView extends Gtk.ActionBar {
 
     this.scale = new PlayerScale();
     this.scale.insert_after(this._scale_and_timer, this._progress_label);
-    this.scale.connect("notify::value", () => {
-      this._progress_label.label = micro_to_string(this.scale.value);
-    });
 
-    this.setup_player();
-
-    this._lyrics_button.connect(
-      "clicked",
-      this.handle_sidebar_button.bind(this),
+    this._volume_button.adjustment = Gtk.Adjustment.new(
+      Settings.get_double("volume"),
+      0,
+      1,
+      0.01,
+      0.1,
+      0,
     );
-    this._queue_button.connect(
-      "clicked",
-      this.handle_sidebar_button.bind(this),
-    );
-    this._related_button.connect(
-      "clicked",
-      this.handle_sidebar_button.bind(this),
-    );
-
-    [this._title, this._subtitle].forEach((label) => {
-      label.connect("activate-link", (_, uri) => {
-        if (uri && uri.startsWith("muzika:")) {
-          this.activate_action(
-            "navigator.visit",
-            GLib.Variant.new_string(uri),
-          );
-
-          return true;
-        }
-      });
-    });
-
-    this._player_preview.connect("activate", () => {
-      this.activate_action("win.show-video", GLib.Variant.new_boolean(true));
-    });
   }
 
   private buttons_map = new Map<Gtk.ToggleButton, PlayerSidebarView>([
@@ -187,57 +162,138 @@ export class FullPlayerView extends Gtk.ActionBar {
     );
   }
 
+  private listeners = new SignalListeners();
+
   setup_player() {
     this.song_changed();
+    this.song_meta_changed(),
+      // update the player when the current song changes
+      this.listeners.connect(
+        this.player.queue,
+        "notify::current",
+        this.song_changed.bind(this),
+      );
 
-    // update the player when the current song changes
-    this.player.queue.connect(
-      "notify::current",
-      this.song_changed.bind(this),
-    );
-
-    this.player.connect(
+    this.listeners.connect(
+      this.player,
       "notify::now-playing",
       this.song_meta_changed.bind(this),
     );
 
-    this.player.connect("notify::is-buffering", () => {
+    this.listeners.connect(this.player, "notify::is-buffering", () => {
       this.update_play_button();
     });
 
-    this.player.connect("notify::playing", () => {
+    this.listeners.connect(this.player, "notify::playing", () => {
       this.update_play_button();
     });
 
-    this.player.connect("notify::duration", () => {
+    this.update_play_button();
+
+    this.listeners.connect(this.player, "notify::duration", () => {
       this.scale.set_duration(this.player.duration);
       this._duration_label.label = micro_to_string(this.player.duration);
     });
 
-    this.scale.connect("user-changed-value", (_, value) => {
-      this.activate_action(
-        "player.seek",
-        GLib.Variant.new_double(this.scale.value),
-      );
-    });
+    this.listeners.connect(
+      this.scale,
+      "user-changed-value",
+      (_: any) => {
+        this.activate_action(
+          "player.seek",
+          GLib.Variant.new_double(this.scale.value),
+        );
+      },
+    );
 
     // buttons
 
-    this.update_repeat_button();
-
-    this.player.queue.connect("notify::repeat", () => {
+    this.listeners.connect(this.player.queue, "notify::repeat", () => {
       this.update_repeat_button();
     });
 
-    this.player.queue.connect("notify::shuffle", () => {
+    this.update_repeat_button();
+
+    this.listeners.connect(this.player.queue, "notify::shuffle", () => {
       this._shuffle_button.set_active(this.player.queue.shuffle);
     });
 
-    this.setup_volume_button();
+    this._shuffle_button.set_active(this.player.queue.shuffle);
 
-    this.player.connect("notify::timestamp", () => {
+    this.listeners.connect(
+      this._lyrics_button,
+      "clicked",
+      this.handle_sidebar_button.bind(this) as any,
+    );
+    this.listeners.connect(
+      this._queue_button,
+      "clicked",
+      this.handle_sidebar_button.bind(this) as any,
+    );
+    this.listeners.connect(
+      this._related_button,
+      "clicked",
+      this.handle_sidebar_button.bind(this) as any,
+    );
+
+    // setting up volume button
+
+    const volume = Settings.get_double("volume");
+    this.set_volume_slider_value(volume);
+
+    this.listeners.connect(Settings, "changed::volume", () => {
+      const volume = Settings.get_double("volume");
+
+      if (volume !== this.get_volume_slider_value()) {
+        this.set_volume_slider_value(volume);
+      }
+    });
+
+    this.listeners.connect(this._volume_button, "value-changed", () => {
+      Settings.set_double("volume", this.get_volume_slider_value());
+    });
+
+    this.listeners.connect(this._volume_button, "query-tooltip", (
+      _widget: Gtk.VolumeButton,
+      _x: number,
+      _y: number,
+      _keyboard_mode: boolean,
+      tooltip: Gtk.Tooltip,
+    ) => {
+      tooltip.set_text(
+        `${Math.round(this.get_volume_slider_value() * 100)}%`,
+      );
+      return true;
+    });
+
+    this.listeners.connect(this.player, "notify::timestamp", () => {
       this.scale.update_position(this.player.timestamp);
       this._progress_label.label = micro_to_string(this.player.timestamp);
+    });
+
+    this.listeners.connect(this.scale, "notify::value", () => {
+      this._progress_label.label = micro_to_string(this.scale.value);
+    });
+
+    [this._title, this._subtitle].forEach((label) => {
+      this.listeners.connect(
+        label,
+        "activate-link",
+        (_: Gtk.Label, uri: string) => {
+          if (uri && uri.startsWith("muzika:")) {
+            this.activate_action(
+              "navigator.visit",
+              GLib.Variant.new_string(uri),
+            );
+
+            return true;
+          }
+        },
+      );
+    });
+
+    this.listeners.connect(this._player_preview, "activate", () => {
+      this.activate_action("win.show-video", GLib.Variant.new_boolean(true));
     });
   }
 
@@ -256,45 +312,6 @@ export class FullPlayerView extends Gtk.ActionBar {
         GstAudio.StreamVolumeFormat.CUBIC,
         value,
       );
-  }
-
-  setup_volume_button() {
-    this._volume_button.adjustment = Gtk.Adjustment.new(
-      Settings.get_double("volume"),
-      0,
-      1,
-      0.01,
-      0.1,
-      0,
-    );
-
-    this._volume_button.connect("value-changed", () => {
-      Settings.set_double("volume", this.get_volume_slider_value());
-    });
-
-    Settings.connect("changed::volume", () => {
-      const volume = Settings.get_double("volume");
-
-      if (volume !== this.get_volume_slider_value()) {
-        this.set_volume_slider_value(volume);
-      }
-    });
-
-    this._volume_button.connect(
-      "query-tooltip",
-      (
-        _widget: Gtk.VolumeButton,
-        _x: number,
-        _y: number,
-        _keyboard_mode: boolean,
-        tooltip: Gtk.Tooltip,
-      ) => {
-        tooltip.set_text(
-          `${Math.round(this.get_volume_slider_value() * 100)}%`,
-        );
-        return true;
-      },
-    );
   }
 
   update_repeat_button() {
@@ -370,5 +387,16 @@ export class FullPlayerView extends Gtk.ActionBar {
 
   private switch_counterpart() {
     this.player.queue.switch_counterpart();
+  }
+
+  vfunc_map(): void {
+    this.listeners.clear();
+    this.setup_player();
+    super.vfunc_map();
+  }
+
+  vfunc_unmap(): void {
+    this.listeners.clear();
+    super.vfunc_unmap();
   }
 }
