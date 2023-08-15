@@ -7,6 +7,7 @@ import { PlayerProgressBar } from "./progress.js";
 import { QueueTrack } from "libmuse/types/parsers/queue.js";
 import { MuzikaPlayer } from "src/player";
 import { PlayerPreview } from "./preview.js";
+import { SignalListeners } from "src/util/signal-listener.js";
 
 export interface MiniPlayerViewOptions {
   player: MuzikaPlayer;
@@ -42,12 +43,6 @@ export class MiniPlayerView extends Gtk.Overlay {
 
     this.progress_bar = new PlayerProgressBar();
     this.add_overlay(this.progress_bar);
-
-    this.setup_player();
-
-    this._player_preview.connect("activate", () => {
-      this.activate_action("win.show-video", GLib.Variant.new_boolean(true));
-    });
   }
 
   song_changed() {
@@ -59,30 +54,43 @@ export class MiniPlayerView extends Gtk.Overlay {
     }
   }
 
+  private listeners = new SignalListeners();
+
   setup_player() {
     this.song_changed();
 
+    this.listeners.connect(this._player_preview, "activate", () => {
+      this.activate_action("win.show-video", GLib.Variant.new_boolean(true));
+    });
+
     // update the player when the current song changes
-    this.player.queue.connect(
+    this.listeners.connect(
+      this.player.queue,
       "notify::current",
       this.song_changed.bind(this),
     );
 
-    this.player.connect("notify::buffering", () => {
+    this.listeners.connect(this.player, "notify::buffering", () => {
       this.update_play_button();
     });
 
-    this.player.connect("notify::playing", () => {
+    this.listeners.connect(this.player, "notify::playing", () => {
       this.update_play_button();
     });
 
-    this.player.connect("notify::duration", () => {
+    this.update_play_button();
+
+    this.listeners.connect(this.player, "notify::duration", () => {
       this.progress_bar.set_duration(this.player.duration);
     });
 
-    this.player.connect("notify::timestamp", () => {
+    this.progress_bar.set_duration(this.player.duration);
+
+    this.listeners.connect(this.player, "notify::timestamp", () => {
       this.progress_bar.update_position(this.player.timestamp);
     });
+
+    this.progress_bar.update_position(this.player.timestamp);
   }
 
   update_play_button() {
@@ -99,5 +107,16 @@ export class MiniPlayerView extends Gtk.Overlay {
   show_song(track: QueueTrack) {
     this._title.label = track.title;
     this._subtitle.label = track.artists[0].name;
+  }
+
+  vfunc_map(): void {
+    this.listeners.clear();
+    this.setup_player();
+    super.vfunc_map();
+  }
+
+  vfunc_unmap(): void {
+    this.listeners.clear();
+    super.vfunc_unmap();
   }
 }
