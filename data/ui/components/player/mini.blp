@@ -9,16 +9,9 @@ template $MiniPlayerView : Overlay {
     Box song_info_box {
       spacing: 12;
 
-      Image image {
-        icon-name: "image-missing-symbolic";
-        pixel-size: 46;
+      $PlayerPreview player_preview {
         valign: center;
-        overflow: hidden;
-
-        styles [
-          "br-9",
-          "card",
-        ]
+        size: 46;
       }
 
       Box now_playing_labels {
