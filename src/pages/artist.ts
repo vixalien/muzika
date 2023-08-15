@@ -1,7 +1,6 @@
 import Gtk from "gi://Gtk?version=4.0";
 import GObject from "gi://GObject";
 import GLib from "gi://GLib";
-import Gio from "gi://Gio";
 import Adw from "gi://Adw";
 
 import { Artist, Category, get_artist, MixedItem } from "../muse.js";
@@ -27,8 +26,6 @@ export class ArtistPage extends Adw.Bin
       GTypeName: "ArtistPage",
       Template: "resource:///com/vixalien/muzika/ui/pages/artist.ui",
       InternalChildren: [
-        "breakpoint",
-        "inner_box",
         "top_songs",
         "more_top_songs",
         "playlist_item_view",
@@ -40,8 +37,6 @@ export class ArtistPage extends Adw.Bin
 
   artist?: Artist;
 
-  private _breakpoint!: Adw.Breakpoint;
-  private _inner_box!: Gtk.Box;
   private _top_songs!: Gtk.Box;
   private _more_top_songs!: Gtk.Button;
   private _playlist_item_view!: PlaylistItemView;
@@ -54,16 +49,6 @@ export class ArtistPage extends Adw.Bin
     super();
 
     this._playlist_item_view.model = this.model;
-
-    this._breakpoint.connect("unapply", () => {
-      this._playlist_item_view.show_column = true;
-      this._header.show_large_header = true;
-    });
-
-    this._breakpoint.connect("apply", () => {
-      this._playlist_item_view.show_column = false;
-      this._header.show_large_header = false;
-    });
   }
 
   show_top_songs(songs: Artist["songs"]) {

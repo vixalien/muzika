@@ -22,8 +22,14 @@ template $PlaylistPage : Adw.Bin {
       width-request: 200;
       height-request: 200;
       
-      Adw.Breakpoint breakpoint {
+      Adw.Breakpoint {
         condition ("max-width: 700sp")
+
+        setters {
+          playlist_item_view.show_column: false;
+          suggestions_item_view.show_column: false;
+          header.show_large_header: false;
+        }
       }
 
       ScrolledWindow scrolled {
@@ -54,7 +60,9 @@ template $PlaylistPage : Adw.Bin {
                   show-column: true;
                 }
 
-                $Paginator paginator {}
+                $Paginator paginator {
+                  activate => $load_more();
+                }
 
                 Box more {
                   margin-top: 12;

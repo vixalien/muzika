@@ -32,7 +32,6 @@ export class AlbumPage extends Adw.Bin
       GTypeName: "AlbumPage",
       Template: "resource:///com/vixalien/muzika/ui/pages/album.ui",
       InternalChildren: [
-        "breakpoint",
         "trackCount",
         "duration",
         "insights_clamp",
@@ -46,7 +45,6 @@ export class AlbumPage extends Adw.Bin
 
   album?: AlbumResult;
 
-  private _breakpoint!: Adw.Breakpoint;
   private _trackCount!: Gtk.Label;
   private _duration!: Gtk.Label;
   private _insights_clamp!: Adw.Clamp;
@@ -63,16 +61,6 @@ export class AlbumPage extends Adw.Bin
     super();
 
     this._playlist_item_view.model = this.model;
-
-    this._breakpoint.connect("unapply", () => {
-      this._playlist_item_view.show_column = true;
-      this._header.show_large_header = true;
-    });
-
-    this._breakpoint.connect("apply", () => {
-      this._playlist_item_view.show_column = false;
-      this._header.show_large_header = false;
-    });
   }
 
   append_tracks(tracks: PlaylistItem[]) {

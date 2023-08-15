@@ -15,8 +15,13 @@ template $AlbumPage : Adw.Bin {
       width-request: 200;
       height-request: 200;
       
-      Adw.Breakpoint breakpoint {
+      Adw.Breakpoint {
         condition ("max-width: 700sp")
+
+        setters {
+          header.show_large_header: false;
+          playlist_item_view.show_column: false;
+        }
       }
 
       ScrolledWindow scrolled {

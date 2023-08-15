@@ -10,8 +10,13 @@ template $ChannelPage : Adw.Bin {
       width-request: 200;
       height-request: 200;
       
-      Adw.Breakpoint breakpoint {
+      Adw.Breakpoint {
         condition ("max-width: 700sp")
+
+        setters {
+          header.show_large_header: false;
+          playlist_item_view.show_column: false;
+        }
       }
 
       ScrolledWindow {
@@ -25,7 +30,7 @@ template $ChannelPage : Adw.Bin {
           tightening-threshold: 1200;
           maximum-size: 1400;
 
-          Box inner_box {
+          Box {
             spacing: 18;
             orientation: vertical;
 
@@ -73,7 +78,9 @@ template $ChannelPage : Adw.Bin {
               }
             }
 
-            Box content {
+            Box carousels {
+              spacing: 12;
+              orientation: vertical;
             }
           }
         }
