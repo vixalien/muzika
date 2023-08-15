@@ -14,6 +14,43 @@ export class PlaylistListView extends Gtk.ListView {
   static {
     GObject.registerClass({
       GTypeName: "PlaylistListView",
+      Properties: {
+        "show-rank": GObject.param_spec_boolean(
+          "show-rank",
+          "Show Rank",
+          "Whether to show chart rank and trend change",
+          false,
+          GObject.ParamFlags.READWRITE,
+        ),
+        playlistId: GObject.param_spec_string(
+          "playlist-id",
+          "Playlist ID",
+          "The playlist ID",
+          null as any,
+          GObject.ParamFlags.READWRITE,
+        ),
+        album: GObject.param_spec_boolean(
+          "album",
+          "Album",
+          "Whether this is currently displaying an album",
+          false,
+          GObject.ParamFlags.READWRITE,
+        ),
+        show_add: GObject.param_spec_boolean(
+          "show-add",
+          "Show Add",
+          "Show the add to playlist button",
+          false,
+          GObject.ParamFlags.READWRITE,
+        ),
+        selection_mode: GObject.param_spec_boolean(
+          "selection-mode",
+          "Selection Mode",
+          "Whether the selection mode is toggled on",
+          false,
+          GObject.ParamFlags.READWRITE,
+        ),
+      },
       Signals: {
         "add": {
           param_types: [GObject.TYPE_INT],
@@ -26,8 +63,15 @@ export class PlaylistListView extends Gtk.ListView {
   selection_mode = false;
   playlistId?: string;
 
-  constructor() {
-    super();
+  constructor(
+    { model, album, ...props }: Partial<Gtk.ListView.ConstructorProperties> =
+      {},
+  ) {
+    super(props);
+
+    if (album != null) this.album = album;
+
+    if (model !== undefined) this.model = model!;
 
     this.add_css_class("playlist-list-view");
 

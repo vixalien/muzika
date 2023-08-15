@@ -5,9 +5,9 @@ import GLib from "gi://GLib";
 
 import { ObjectContainer } from "src/util/objectcontainer";
 import { PlaylistItem } from "src/muse";
-import { DynamicImage, DynamicImageVisibleChild } from "../dynamic-image";
 import { escape_label, pretty_subtitles } from "src/util/text";
 import { PlayableContainer } from "src/util/playablelist";
+import { DynamicImage2, DynamicImage2StorageType } from "../dynamic-image-2";
 
 class ImageColumn extends Gtk.ColumnViewColumn {
   static {
@@ -35,47 +35,46 @@ class ImageColumn extends Gtk.ColumnViewColumn {
   }
 
   setup_cb(_factory: Gtk.SignalListItemFactory, list_item: Gtk.ListItem) {
-    const dynamic_image = new DynamicImage({
-      image_size: 36,
-      icon_size: 16,
+    const dynamic_image = new DynamicImage2({
+      size: 36,
+      action_size: 16,
+      storage_type: this.album
+        ? DynamicImage2StorageType.TRACK_NUMBER
+        : DynamicImage2StorageType.COVER_THUMBNAIL,
       persistent_play_button: false,
     });
-
-    if (this.album) {
-      dynamic_image.visible_child = DynamicImageVisibleChild.NUMBER;
-    }
 
     list_item.set_child(dynamic_image);
   }
 
   bind_cb(_factory: Gtk.SignalListItemFactory, list_item: Gtk.ListItem) {
-    const dynamic_image = list_item.child as DynamicImage;
+    const dynamic_image = list_item.child as DynamicImage2;
     const container = list_item.item as PlayableContainer;
 
     const playlist_item = container.object;
 
-    dynamic_image.connect("selection-mode-toggled", (_dynamic_image, value) => {
-      this.emit("selection-mode-toggled", list_item.position, value);
-    });
+    // dynamic_image.connect("selection-mode-toggled", (_dynamic_image, value) => {
+    //   this.emit("selection-mode-toggled", list_item.position, value);
+    // });
 
     container.connect("notify::state", () => {
       dynamic_image.state = container.state;
     });
 
     if (this.album) {
-      dynamic_image.track_number = (list_item.position + 1).toString();
+      dynamic_image.track_number = list_item.position + 1;
     } else {
-      dynamic_image.load_thumbnails(playlist_item.thumbnails);
+      dynamic_image.cover_thumbnails = playlist_item.thumbnails;
     }
 
-    dynamic_image.selection_mode = this.selection_mode;
-    dynamic_image.selected = list_item.selected;
+    // dynamic_image.selection_mode = this.selection_mode;
+    // dynamic_image.selected = list_item.selected;
 
     dynamic_image.setup_video(playlist_item.videoId, this.playlistId);
 
-    container.connect("notify", () => {
-      dynamic_image.selection_mode = this.selection_mode;
-    });
+    // container.connect("notify", () => {
+    //   dynamic_image.selection_mode = this.selection_mode;
+    // });
   }
 }
 
@@ -191,16 +190,14 @@ class TitleBox extends Gtk.Box {
     this.label = new Gtk.Label({
       hexpand: true,
       ellipsize: Pango.EllipsizeMode.END,
-      lines: 2,
       xalign: 0,
     });
 
     this.explicit = new Gtk.Image({
       valign: Gtk.Align.CENTER,
       icon_name: "network-cellular-edge-symbolic",
+      css_classes: ["dim-label"],
     });
-
-    this.explicit.add_css_class("dim-label");
 
     this.append(this.label);
     this.append(this.explicit);
@@ -215,7 +212,7 @@ class TitleColumn extends Gtk.ColumnViewColumn {
   constructor() {
     super({
       title: _("Song"),
-      expand: true,
+      // expand: true,
     });
 
     const factory = Gtk.SignalListItemFactory.new();
@@ -264,8 +261,8 @@ class ArtistColumn extends Gtk.ColumnViewColumn {
     const label = new Gtk.Label({
       hexpand: true,
       ellipsize: Pango.EllipsizeMode.END,
-      lines: 2,
       xalign: 0,
+      css_classes: ["flat-links", "dim-label"],
     });
 
     label.connect("activate-link", (_, uri) => {
@@ -275,9 +272,6 @@ class ArtistColumn extends Gtk.ColumnViewColumn {
         return true;
       }
     });
-
-    label.add_css_class("flat-links");
-    label.add_css_class("dim-label");
 
     list_item.set_child(label);
   }
@@ -317,8 +311,8 @@ class AlbumColumn extends Gtk.ColumnViewColumn {
     const label = new Gtk.Label({
       hexpand: true,
       ellipsize: Pango.EllipsizeMode.END,
-      lines: 2,
       xalign: 0,
+      css_classes: ["flat-links", "dim-label"],
     });
 
     label.connect("activate-link", (_, uri) => {
@@ -328,9 +322,6 @@ class AlbumColumn extends Gtk.ColumnViewColumn {
         return true;
       }
     });
-
-    label.add_css_class("flat-links");
-    label.add_css_class("dim-label");
 
     list_item.set_child(label);
   }
@@ -380,9 +371,8 @@ class DurationColumn extends Gtk.ColumnViewColumn {
   setup_cb(_factory: Gtk.SignalListItemFactory, list_item: Gtk.ListItem) {
     const label = new Gtk.Label({
       xalign: 0,
+      css_classes: ["dim-label"],
     });
-
-    label.add_css_class("dim-label");
 
     list_item.set_child(label);
   }
@@ -437,9 +427,9 @@ class AddColumn extends Gtk.ColumnViewColumn {
   bind_cb(_factory: Gtk.SignalListItemFactory, list_item: Gtk.ListItem) {
     const button = list_item.child as AddColumnButton;
 
-    button.listener = button.connect("clicked", () => {
-      this.emit("add", list_item.position);
-    });
+    // button.listener = button.connect("clicked", () => {
+    //   this.emit("add", list_item.position);
+    // });
   }
 
   unbind_cb(_factory: Gtk.SignalListItemFactory, list_item: Gtk.ListItem) {
@@ -481,6 +471,13 @@ export class PlaylistColumnView extends Gtk.ColumnView {
           "show-add",
           "Show Add",
           "Show the add to playlist button",
+          false,
+          GObject.ParamFlags.READWRITE,
+        ),
+        selection_mode: GObject.param_spec_boolean(
+          "selection-mode",
+          "Selection Mode",
+          "Whether the selection mode is toggled on",
           false,
           GObject.ParamFlags.READWRITE,
         ),
@@ -558,33 +555,41 @@ export class PlaylistColumnView extends Gtk.ColumnView {
     this._image_column.album = value;
   }
 
-  constructor(options: PlaylistColumnViewOptions = {}) {
-    super();
+  constructor(
+    { selection_mode, show_rank, show_add, album, ...options }: Partial<
+      PlaylistColumnViewOptions
+    > = {},
+  ) {
+    super(options);
 
-    this._image_column.connect(
-      "selection-mode-toggled",
-      (_, position: number, value: boolean) => {
-        const selection_model = this.model as Gtk.SelectionModel;
-
-        if (value) {
-          selection_model.select_item(position, false);
-        } else {
-          selection_model.unselect_item(position);
-        }
-      },
-    );
-
-    if (options.album != null) {
-      this.album = options.album;
+    if (selection_mode != null) {
+      this.selection_mode = selection_mode;
     }
 
-    if (options.show_rank != null) {
-      this.show_rank = true;
+    if (show_rank != null) {
+      this.show_rank = show_rank;
     }
 
-    if (options.playlistId != null) {
-      this.playlistId = options.playlistId;
+    if (show_add != null) {
+      this.show_add = show_add;
     }
+
+    if (album != null) {
+      this.album = album;
+    }
+
+    // this._image_column.connect(
+    //   "selection-mode-toggled",
+    //   (_, position: number, value: boolean) => {
+    //     const selection_model = this.model as Gtk.SelectionModel;
+
+    //     if (value) {
+    //       selection_model.select_item(position, false);
+    //     } else {
+    //       selection_model.unselect_item(position);
+    //     }
+    //   },
+    // );
 
     this.add_css_class("playlist-column-view");
 
@@ -626,8 +631,10 @@ export class PlaylistColumnView extends Gtk.ColumnView {
   }
 }
 
-export interface PlaylistColumnViewOptions {
-  playlistId?: string;
-  show_rank?: boolean;
-  album?: null;
+export interface PlaylistColumnViewOptions
+  extends Gtk.ColumnView.ConstructorProperties {
+  playlistId: string;
+  show_rank: boolean;
+  album: boolean;
+  show_add: boolean;
 }
