@@ -282,6 +282,7 @@ export class CarouselCard extends Gtk.Box {
         this.show_song(content);
         break;
       case "artist":
+      case "channel":
         this.show_artist(content);
         break;
       case "library-artist":
