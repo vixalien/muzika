@@ -100,6 +100,8 @@ export class PlayerPreview extends Gtk.Stack {
     } else {
       this.visible_child = this._image;
 
+      this._image.icon_name = "image-missing-symbolic";
+
       this.abort_thumbnail = new AbortController();
 
       load_thumbnails(this._image, song.thumbnails, {
