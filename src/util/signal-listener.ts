@@ -26,9 +26,7 @@ export class SignalListeners {
   >(
     widget: Obj,
     signal: Signal,
-    fn: Obj["connect"] extends (arg0: Signal, ...args: infer P) => Return
-      ? (...args: P) => Return
-      : Function,
+    fn: (...args: any[]) => any
   ) {
     const listener = widget.connect(signal, fn as any);
     this.add(widget, listener);
