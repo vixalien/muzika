@@ -2,94 +2,94 @@ using Gtk 4.0;
 using Adw 1;
 
 template $MiniVideoControls : Adw.Bin {
-    Adw.Clamp {
-      margin-end: 6;
-      margin-bottom: 6;
-      margin-start: 6;
-      valign: end;
+  Adw.Clamp {
+    margin-end: 6;
+    margin-bottom: 6;
+    margin-start: 6;
+    valign: end;
+
+    Box {
+      orientation: vertical;
+
+      styles [
+        "osd",
+        "toolbar",
+      ]
 
       Box {
         orientation: vertical;
 
-        styles [
-          "osd",
-          "toolbar",
-        ]
-
-        Box {
-          orientation: vertical;
-
-          $PlayerScale scale {
-            
-          }
-
-          Box {
-            Label progress_label {
-              label: "00:10";
-
-              styles [
-                "numeric",
-                "caption",
-              ]
-            }
-
-            Label duration_label {
-              label: "03:10";
-              hexpand: true;
-              halign: end;
-
-              styles [
-                "numeric",
-                "caption",
-              ]
-            }
-          }
+        $PlayerScale scale {
+          
         }
 
-        CenterBox {
-          [center]
-          Box {
-            spacing: 6;
-            halign: center;
+        Box {
+          Label progress_label {
+            label: "00:10";
 
-            Button {
-              icon-name: "skip-backwards-10-symbolic";
-              clicked => $skip_backwards();
-
-              styles [
-                "flat",
-              ]
-            }
-
-            Button play_button {
-              icon-name: "media-playback-start-symbolic";
-              action-name: "player.play-pause";
-
-              styles [
-                "flat",
-              ]
-            }
-
-            Button {
-              icon-name: "skip-forward-10-symbolic";
-              clicked => $skip_forward();
-
-              styles [
-                "flat",
-              ]
-            }
+            styles [
+              "numeric",
+              "caption",
+            ]
           }
 
-          [end]
-          MenuButton menu_button {
-            icon-name: "view-more-symbolic";
-            direction: up;
+          Label duration_label {
+            label: "03:10";
+            hexpand: true;
+            halign: end;
+
+            styles [
+              "numeric",
+              "caption",
+            ]
+          }
+        }
+      }
+
+      CenterBox {
+        [center]
+        Box {
+          spacing: 6;
+          halign: center;
+
+          Button {
+            icon-name: "skip-backwards-10-symbolic";
+            clicked => $skip_backwards();
+
+            styles [
+              "flat",
+            ]
+          }
+
+          Button play_button {
+            icon-name: "media-playback-start-symbolic";
+            action-name: "player.play-pause";
+
+            styles [
+              "flat",
+            ]
+          }
+
+          Button {
+            icon-name: "skip-forward-10-symbolic";
+            clicked => $skip_forward();
 
             styles [
               "flat",
             ]
           }
         }
+
+        [end]
+        MenuButton menu_button {
+          icon-name: "view-more-symbolic";
+          direction: up;
+
+          styles [
+            "flat",
+          ]
+        }
       }
     }
+  }
 }
