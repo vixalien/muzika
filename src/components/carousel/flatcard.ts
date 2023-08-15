@@ -297,7 +297,7 @@ export class FlatCard extends Gtk.Box {
 
     // this.set_align(Gtk.Align.CENTER);
     this.set_title(artist.name);
-    this.set_subtitle(_("Artist"), [artist.subscribers]);
+    this.set_subtitle(_("Artist"), [artist.subscribers ?? artist.songs]);
 
     // TODO: upscale image
     this.load_thumbnails(artist.thumbnails, DynamicImage2StorageType.AVATAR);
