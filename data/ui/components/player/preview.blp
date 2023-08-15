@@ -1,0 +1,26 @@
+using Gtk 4.0;
+using Gdk 4.0;
+using Adw 1;
+
+template $PlayerPreview : Stack {
+  css-name: "button";
+  hhomogeneous: false;
+  interpolate-size: true;
+  transition-type: crossfade;
+  overflow: hidden;
+  cursor: Gdk.Cursor {
+    name: "pointer";
+  };
+
+  styles ["br-6", "card"]
+
+  Image image {
+    styles ["black-bg"]
+  }
+
+  $FixedRatioThumbnail picture {
+    orientation: horizontal;
+
+    styles ["black-bg"]
+  }
+}
