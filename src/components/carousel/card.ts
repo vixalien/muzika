@@ -12,7 +12,7 @@ import {
   Thumbnail,
   WatchPlaylist,
 } from "../../muse.js";
-import { load_thumbnails } from "../webimage.js";
+import { get_thumbnail_with_size } from "../webimage.js";
 import { ParsedLibraryArtist } from "libmuse/types/parsers/library.js";
 import { DynamicImageState } from "../dynamic-image.js";
 import { PlaylistImage } from "../playlist-image.js";
@@ -111,7 +111,6 @@ export class CarouselCard extends Gtk.Box {
   private setup_image(
     image_type: CarouselImageType,
     thumbnails: Thumbnail[],
-    options?: Parameters<typeof load_thumbnails>[2],
   ) {
     switch (image_type) {
       case CarouselImageType.AVATAR:
@@ -220,10 +219,10 @@ export class CarouselCard extends Gtk.Box {
     this.set_title(artist.name);
     this.set_subtitle(artist.subscribers ?? artist.songs ?? "");
 
-    this.setup_image(CarouselImageType.AVATAR, artist.thumbnails, {
-      width: 160,
-      upscale: true,
-    });
+    this.setup_image(CarouselImageType.AVATAR, [
+      ...artist.thumbnails,
+      get_thumbnail_with_size(artist.thumbnails[0], 160),
+    ]);
   }
 
   show_video(video: ParsedVideo) {
