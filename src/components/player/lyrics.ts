@@ -62,6 +62,8 @@ export class LyricsView extends Gtk.Stack {
   private _timed_listbox!: Gtk.ListBox;
   private _timed_source!: Gtk.Label;
 
+  private timed_click: Gtk.GestureClick;
+
   player: MuzikaPlayer;
 
   constructor({ player }: LyricsViewOptions) {
@@ -72,6 +74,16 @@ export class LyricsView extends Gtk.Stack {
     this.player = player;
 
     this._view.remove_css_class("view");
+
+    const click = new Gtk.GestureClick();
+
+    click.connect("pressed", (click) => {
+      click.set_state(Gtk.EventSequenceState.NONE);
+    });
+
+    this.timed_click = click;
+
+    this._timed_window.add_controller(click);
   }
 
   lyrics_browseId: string | null = null;
@@ -151,6 +163,8 @@ export class LyricsView extends Gtk.Stack {
       this._timed_source.label = lyrics.source;
 
       this.set_visible_child(this._timed_window);
+
+      this.setup_timed_lyrics();
     } else {
       this._buffer.text = lyrics.lyrics;
 
@@ -171,7 +185,7 @@ export class LyricsView extends Gtk.Stack {
     row: Gtk.ListBoxRow,
     force = false,
   ) {
-    if (((this.get_state_flags() & Gtk.StateFlags.ACTIVE) !== 0) && !force) {
+    if (this.timed_click.is_active() && !force) {
       return;
     }
 
@@ -199,13 +213,18 @@ export class LyricsView extends Gtk.Stack {
         "value",
       );
 
-      const animation = Adw.TimedAnimation.new(
+      const params = new Adw.SpringParams(0.89, 0.7, 124.7);
+
+      const animation = Adw.SpringAnimation.new(
         this._timed_window,
         this._timed_window.vadjustment.value,
         Math.min(Math.max(scroll_to, 0), this._timed_window.vadjustment.upper),
-        500,
+        params,
         property_target,
       );
+
+      animation.epsilon = 0.00483;
+      animation.initial_velocity = 10.9;
 
       animation.connect("done", () => {
         this.pending_animation = null;
