@@ -258,3 +258,21 @@ label.bold-link link {
 .black-bg {
   background-color: black;
 }
+
+.lyrics-line {
+  font-size: 20px;
+  font-weight: 800;
+  padding: 8px 12px;
+  line-height: 1;
+  background-color: transparent;
+  opacity: 0.48;
+  transition: .2s opacity, .2s font-size;
+}
+
+.lyrics-line:hover, .lyric-line:focus {
+  opacity: 0.88;
+}
+
+.lyrics-line:selected {
+  opacity: 1;
+}
