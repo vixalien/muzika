@@ -62,8 +62,6 @@ export class LyricsView extends Gtk.Stack {
   private _timed_listbox!: Gtk.ListBox;
   private _timed_source!: Gtk.Label;
 
-  private timed_click: Gtk.GestureClick;
-
   player: MuzikaPlayer;
 
   constructor({ player }: LyricsViewOptions) {
@@ -74,16 +72,6 @@ export class LyricsView extends Gtk.Stack {
     this.player = player;
 
     this._view.remove_css_class("view");
-
-    const click = new Gtk.GestureClick();
-
-    click.connect("pressed", (click) => {
-      click.set_state(Gtk.EventSequenceState.NONE);
-    });
-
-    this.timed_click = click;
-
-    this._timed_window.add_controller(click);
   }
 
   lyrics_browseId: string | null = null;
@@ -163,8 +151,6 @@ export class LyricsView extends Gtk.Stack {
       this._timed_source.label = lyrics.source;
 
       this.set_visible_child(this._timed_window);
-
-      this.setup_timed_lyrics();
     } else {
       this._buffer.text = lyrics.lyrics;
 
@@ -185,7 +171,7 @@ export class LyricsView extends Gtk.Stack {
     row: Gtk.ListBoxRow,
     force = false,
   ) {
-    if (this.timed_click.is_active() && !force) {
+    if (((this.get_state_flags() & Gtk.StateFlags.ACTIVE) !== 0) && !force) {
       return;
     }
 

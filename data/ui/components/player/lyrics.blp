@@ -51,6 +51,7 @@ template $LyricsView : Stack {
       ListBox timed_listbox {
         selection-mode: browse;
         row-activated => $lyrics_row_activated();
+        map => $setup_timed_lyrics();
         unmap => $clear();
 
         styles [
