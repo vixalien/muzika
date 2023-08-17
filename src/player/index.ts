@@ -769,6 +769,12 @@ export class MuzikaPlayer extends MuzikaMediaStream {
 
     this.initial_seek_to = this.get_timestamp();
     this.set_uri(get_song_uri(song));
+
+    if (this.playing) {
+      this._play.play();
+    } else {
+      this._play.pause();
+    }
   }
 
   async load(track: QueueMeta | null) {
@@ -1098,7 +1104,13 @@ function get_song_uri(song: Song, skip_number_of_formats_check = true) {
       } else {
         return 0;
       }
-    });
+    })
+    // .sort((a, b) => {
+    //   // webm is preferred
+    //   if (a.container === "webm" && b.container !== "webm") return -1;
+    //   if (a.container !== "webm" && b.container === "webm") return 1;
+    //   return 0;
+    // });
 
   if (!skip_number_of_formats_check) {
     if (streams.filter(format_has_audio).length === 0) {
@@ -1112,9 +1124,19 @@ function get_song_uri(song: Song, skip_number_of_formats_check = true) {
     return get_song_uri(song, true);
   }
 
+  console.log(
+    "manifest",
+    convert_formats_to_dash({
+      ...song,
+      adaptive_formats: [],
+      formats: streams,
+    }),
+  );
+
   return `data:application/dash+xml;base64,${
     btoa(convert_formats_to_dash({
       ...song,
+      adaptive_formats: [],
       formats: streams,
     }))
   }`;
