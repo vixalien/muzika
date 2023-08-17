@@ -37,7 +37,7 @@ export function convert_formats_to_dash(song: Song) {
               "@name": "Representation",
               "id": format.itag,
               "mimeType": escape_attribute(format.mime_type.split(";")[0]),
-              "codecs": escape_attribute(format.codecs.split(",")[0]),
+              "codecs": escape_attribute(format.codecs.split(", ").join(",")),
               "bandwidth": format.average_bitrate || format.bitrate,
               "audioSamplingRate": format_has_audio(format)
                 ? format.sample_rate
@@ -101,6 +101,7 @@ export function convert_formats_to_dash(song: Song) {
               "@name": "AdaptationSet",
               "mimeType": escape_attribute(format.mime_type.split(";")[0]),
               "segmentAlignment": "true",
+              "contentType": format.has_audio ? "audio" : "video",
               "#children": [
                 {
                   "@name": "Role",
