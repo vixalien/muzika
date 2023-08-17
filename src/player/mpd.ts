@@ -101,7 +101,7 @@ export function convert_formats_to_dash(song: Song) {
               "@name": "AdaptationSet",
               "mimeType": escape_attribute(format.mime_type.split(";")[0]),
               "segmentAlignment": "true",
-              "contentType": format.has_audio ? "audio" : "video",
+              // "contentType": format.has_audio ? "audio" : "video",
               "#children": [
                 {
                   "@name": "Role",
