@@ -1081,6 +1081,10 @@ function get_song_uri(song: Song, skip_number_of_formats_check = true) {
   // }
 
   const streams = [...song.formats, ...song.adaptive_formats]
+    .filter((format) => {
+      return format.mime_type.startsWith("video/mp4") ||
+        format.mime_type.startsWith("audio/mp4");
+    })
     .filter((e) => {
       if (format_has_audio(e)) {
         return audio_quality === AudioQuality.auto ||
@@ -1104,13 +1108,13 @@ function get_song_uri(song: Song, skip_number_of_formats_check = true) {
       } else {
         return 0;
       }
-    })
-    // .sort((a, b) => {
-    //   // webm is preferred
-    //   if (a.container === "webm" && b.container !== "webm") return -1;
-    //   if (a.container !== "webm" && b.container === "webm") return 1;
-    //   return 0;
-    // });
+    });
+  // .sort((a, b) => {
+  //   // webm is preferred
+  //   if (a.container === "webm" && b.container !== "webm") return -1;
+  //   if (a.container !== "webm" && b.container === "webm") return 1;
+  //   return 0;
+  // });
 
   if (!skip_number_of_formats_check) {
     if (streams.filter(format_has_audio).length === 0) {
@@ -1123,15 +1127,6 @@ function get_song_uri(song: Song, skip_number_of_formats_check = true) {
 
     return get_song_uri(song, true);
   }
-
-  console.log(
-    "manifest",
-    convert_formats_to_dash({
-      ...song,
-      adaptive_formats: [],
-      formats: streams,
-    }),
-  );
 
   return `data:application/dash+xml;base64,${
     btoa(convert_formats_to_dash({
