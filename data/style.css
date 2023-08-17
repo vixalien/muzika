@@ -266,11 +266,12 @@ label.bold-link link {
   line-height: 1;
   background-color: transparent;
   opacity: 0.48;
-  transition: .2s opacity, .2s font-size;
+  transition: .5s opacity;
 }
 
 .lyrics-line:hover, .lyric-line:focus {
   opacity: 0.88;
+  transition: .2s opacity;
 }
 
 .lyrics-line:selected {
