@@ -269,7 +269,7 @@ label.bold-link link {
   transition: .5s opacity;
 }
 
-.lyrics-line:hover, .lyric-line:focus {
+.lyrics-line:hover, .lyric-line:active {
   opacity: 0.88;
   transition: .2s opacity;
 }
