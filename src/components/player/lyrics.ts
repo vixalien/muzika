@@ -199,18 +199,13 @@ export class LyricsView extends Gtk.Stack {
         "value",
       );
 
-      const params = new Adw.SpringParams(0.89, 0.7, 124.7);
-
-      const animation = Adw.SpringAnimation.new(
+      const animation = Adw.TimedAnimation.new(
         this._timed_window,
         this._timed_window.vadjustment.value,
         Math.min(Math.max(scroll_to, 0), this._timed_window.vadjustment.upper),
-        params,
+        500,
         property_target,
       );
-
-      animation.epsilon = 0.00483;
-      animation.initial_velocity = 10.9;
 
       animation.connect("done", () => {
         this.pending_animation = null;
