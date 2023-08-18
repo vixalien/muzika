@@ -33,7 +33,6 @@ import { convert_formats_to_dash } from "./mpd";
 
 if (!Gst.is_initialized()) {
   GLib.setenv("GST_PLAY_USE_PLAYBIN3", "1", false);
-  GLib.setenv("GST_DEBUG", "2", false);
 
   Gst.init(null);
 }
