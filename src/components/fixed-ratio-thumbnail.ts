@@ -303,9 +303,9 @@ export class FixedRatioThumbnail extends Gtk.Widget implements Gtk.Orientable {
   vfunc_get_request_mode(): Gtk.SizeRequestMode {
     if (this.orientation === Gtk.Orientation.VERTICAL) {
       return Gtk.SizeRequestMode.HEIGHT_FOR_WIDTH;
-    } else {
-      return Gtk.SizeRequestMode.WIDTH_FOR_HEIGHT;
     }
+
+    return Gtk.SizeRequestMode.WIDTH_FOR_HEIGHT;
   }
 
   private paintable_invalidate_contents() {
