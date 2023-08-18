@@ -194,8 +194,6 @@ export class Queue extends GObject.Object {
       }
     }
 
-    if (!correct_track) return null;
-
     return correct_track;
   }
 
