@@ -31,15 +31,9 @@ import { list_model_to_array } from "src/util/list.js";
 import { get_track_settings, get_tracklist } from "./helpers.js";
 import { convert_formats_to_dash } from "./mpd";
 
-const preferred_quality: AudioFormat["audio_quality"] = "medium";
-const preferred_format: AudioFormat["audio_codec"] = "opus";
-
-type MaybeAdaptiveFormat = AudioFormat & {
-  adaptive: boolean;
-};
-
 if (!Gst.is_initialized()) {
   GLib.setenv("GST_PLAY_USE_PLAYBIN3", "1", false);
+  GLib.setenv("GST_DEBUG", "2", false);
 
   Gst.init(null);
 }
