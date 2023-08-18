@@ -652,10 +652,8 @@ export class MuzikaPlayer extends MuzikaMediaStream {
 
       // try to seek to the same position
       if (
-        counterpart_videoId && now_playing_videoId &&
-        counterpart_videoId === now_playing_videoId &&
-        current.duration_seconds &&
-        this.timestamp != 0
+        counterpart_videoId && counterpart_videoId === now_playing_videoId &&
+        current.duration_seconds && this.timestamp !== 0
       ) {
         this.initial_seek_to = (this.timestamp / this.duration) *
           (current.duration_seconds * Gst.MSECOND);
