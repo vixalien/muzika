@@ -707,7 +707,7 @@ export class Queue extends GObject.Object {
         position = this.position - 1;
       }
     } else {
-      if (this.position <= 0) position = -1;
+      if (this.position <= 0) return [-1, null];
 
       position = this.position - 1;
     }
