@@ -11,13 +11,14 @@ template $VolumeControls : Box {
     styles ["rounded", "flat"]
   }
 
-  Scale {
+  Scale scale {
     width-request: 200;
     adjustment: Adjustment adjustment {
       lower: 0.0;
       upper: 1.0;
       value: 0.5;
-      value-changed => $on_adjustment_value_changed();
     };
+
+    value-changed => $on_scale_value_changed();
   }
 }
