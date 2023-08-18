@@ -8,6 +8,7 @@ import { PlayerScale } from "../scale";
 import { SignalListeners } from "src/util/signal-listener";
 import { micro_to_string, seconds_to_string } from "src/util/time";
 import { generate_song_menu } from "./util";
+import { VolumeControls } from "./volume-controls";
 
 export class MiniVideoControls extends Adw.Bin {
   static {
@@ -69,6 +70,8 @@ export class MiniVideoControls extends Adw.Bin {
 
     if (song && media_info) {
       this._menu_button.set_menu_model(generate_song_menu(song, media_info));
+      const popover = this._menu_button.popover as Gtk.PopoverMenu;
+      popover.add_child(new VolumeControls(), "volume-controls");
     } else {
       this._menu_button.set_menu_model(null);
     }
