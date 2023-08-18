@@ -166,13 +166,14 @@ export class FullPlayerView extends Gtk.ActionBar {
 
   setup_player() {
     this.song_changed();
-    this.song_meta_changed(),
-      // update the player when the current song changes
-      this.listeners.connect(
-        this.player.queue,
-        "notify::current",
-        this.song_changed.bind(this),
-      );
+    this.song_meta_changed();
+
+    // update the player when the current song changes
+    this.listeners.connect(
+      this.player.queue,
+      "notify::current",
+      this.song_changed.bind(this),
+    );
 
     this.listeners.connect(
       this.player,
