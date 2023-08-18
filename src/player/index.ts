@@ -1113,7 +1113,11 @@ function get_song_uri(song: Song) {
       Settings.set_enum("audio-quality", AudioQuality.auto);
     }
 
-    if (!streams.some(format_has_video)) {
+    // only songs that are not artist tracks (ATV) can have audio only streams
+    if (
+      song.videoDetails.musicVideoType !== "MUSIC_VIDEO_TYPE_ATV" &&
+      !streams.some(format_has_video)
+    ) {
       Settings.set_enum("video-quality", VideoQuality.auto);
     }
 
