@@ -4,7 +4,6 @@ import GLib from "gi://GLib";
 import GstAudio from "gi://GstAudio";
 
 import { RepeatMode } from "../../player/queue.js";
-import { Settings } from "src/application.js";
 import { PlayerScale } from "./scale.js";
 import { PlayerSidebarView } from "./sidebar.js";
 import { QueueTrack } from "libmuse/types/parsers/queue.js";
@@ -85,7 +84,7 @@ export class FullPlayerView extends Gtk.ActionBar {
     this.scale.insert_after(this._scale_and_timer, this._progress_label);
 
     this._volume_button.adjustment = Gtk.Adjustment.new(
-      Settings.get_double("volume"),
+      this.player.volume,
       0,
       1,
       0.01,
@@ -239,19 +238,14 @@ export class FullPlayerView extends Gtk.ActionBar {
 
     // setting up volume button
 
-    const volume = Settings.get_double("volume");
-    this.set_volume_slider_value(volume);
+    this.set_volume_slider_value(this.player.volume);
 
-    this.listeners.connect(Settings, "changed::volume", () => {
-      const volume = Settings.get_double("volume");
-
-      if (volume !== this.get_volume_slider_value()) {
-        this.set_volume_slider_value(volume);
-      }
+    this.listeners.connect(this.player, "notify::volume", () => {
+      this.set_volume_slider_value(this.player.volume);
     });
 
     this.listeners.connect(this._volume_button, "value-changed", () => {
-      Settings.set_double("volume", this.get_volume_slider_value());
+      this.player.volume = this.get_volume_slider_value();
     });
 
     this.listeners.connect(this._volume_button, "query-tooltip", (

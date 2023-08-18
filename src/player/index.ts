@@ -30,6 +30,7 @@ import { store } from "src/util/giofilestore.js";
 import { list_model_to_array } from "src/util/list.js";
 import { get_track_settings, get_tracklist } from "./helpers.js";
 import { convert_formats_to_dash } from "./mpd";
+import { throttle } from "lodash-es";
 
 if (!Gst.is_initialized()) {
   GLib.setenv("GST_PLAY_USE_PLAYBIN3", "1", false);
@@ -273,6 +274,24 @@ export class MuzikaMediaStream extends Gtk.MediaStream {
     this._play.pipeline.set_property("video-sink", sink);
   }
 
+  get volume(): number {
+    return this._play.volume;
+  }
+
+  set volume(volume: number) {
+    this._play.volume = volume;
+    this.notify("volume");
+  }
+
+  get muted(): boolean {
+    return this._play.mute;
+  }
+
+  set muted(muted: boolean) {
+    this._play.mute = muted;
+    this.notify("muted");
+  }
+
   // UTILS
 
   protected _play: GstPlay.Play;
@@ -357,12 +376,6 @@ export class MuzikaMediaStream extends Gtk.MediaStream {
     return this._play.media_info.get_number_of_video_streams() > 0;
   }
 
-  // property: muted
-
-  get muted() {
-    return this._play.mute;
-  }
-
   // property: playing
 
   protected _playing = false;
@@ -401,16 +414,6 @@ export class MuzikaMediaStream extends Gtk.MediaStream {
   // }
 
   // property: seekable
-
-  // property: volume
-
-  get volume() {
-    return this._play.volume;
-  }
-
-  set volume(value) {
-    this._play.volume = value;
-  }
 
   // FUNCTIONS
 
@@ -675,14 +678,16 @@ export class MuzikaPlayer extends MuzikaMediaStream {
       }
     });
 
-    this.volume = Settings.get_double("volume");
+    super.volume = Settings.get_double("volume");
 
-    this.connect("notify::volume", () => {
-      const settings_volume = Settings.get_double("volume");
-      if (settings_volume !== this.volume) {
-        Settings.set_double("volume", this.volume);
+    Settings.connect("changed::muted", () => {
+      const settings_muted = Settings.get_boolean("muted");
+      if (settings_muted !== this.muted) {
+        this.muted = settings_muted;
       }
     });
+
+    super.muted = Settings.get_boolean("muted");
 
     // restore state
 
@@ -703,6 +708,44 @@ export class MuzikaPlayer extends MuzikaMediaStream {
       );
       this.update_uri();
     });
+  }
+
+  get volume() {
+    return super.volume;
+  }
+
+  private update_volume(value: number) {
+    super.volume = value;
+
+    if (value !== Settings.get_double("volume")) {
+      Settings.set_double("volume", value);
+    }
+  }
+
+  private throttled_update_volume = throttle(this.update_volume, 100, {
+    leading: true,
+    trailing: true,
+  });
+
+  set volume(value: number) {
+    // value and this.volume are of different precision
+    if (compare_numbers(this.volume, value)) return;
+
+    this.throttled_update_volume(value);
+  }
+
+  get muted() {
+    return super.muted;
+  }
+
+  set muted(value: boolean) {
+    if (this.muted === value) return;
+
+    super.muted = value;
+
+    if (value !== Settings.get_boolean("muted")) {
+      Settings.set_boolean("muted", value);
+    }
   }
 
   // property: current-meta
@@ -1124,4 +1167,9 @@ enum AudioQuality {
   low = 2,
   medium = 3,
   high = 4,
+}
+
+// compare numbers of different precisions
+function compare_numbers(a: number, b: number): boolean {
+  return Math.abs(Math.fround(a) - Math.fround(b)) < 0.00001;
 }

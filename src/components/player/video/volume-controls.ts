@@ -4,7 +4,7 @@ import GstAudio from "gi://GstAudio";
 
 import { VideoControls } from "./controls";
 import { SignalListeners } from "src/util/signal-listener";
-import { Settings } from "src/application";
+import { get_player } from "src/application";
 
 VideoControls;
 
@@ -14,12 +14,13 @@ export class VolumeControls extends Gtk.Box {
       GTypeName: "VolumeControls",
       Template:
         "resource:///com/vixalien/muzika/ui/components/player/video/volume-controls.ui",
-      InternalChildren: ["button", "adjustment"],
+      InternalChildren: ["button", "adjustment", "scale"],
     }, this);
   }
 
   private _button!: Gtk.ToggleButton;
   private _adjustment!: Gtk.Adjustment;
+  private _scale!: Gtk.Scale;
 
   listeners = new SignalListeners();
 
@@ -36,50 +37,81 @@ export class VolumeControls extends Gtk.Box {
   }
 
   private set_volume_slider_value(value: number) {
-    const adjusted_value = this._adjustment.value = GstAudio
+    this._adjustment.value = GstAudio
       .stream_volume_convert_volume(
         GstAudio.StreamVolumeFormat.LINEAR,
         GstAudio.StreamVolumeFormat.CUBIC,
         value,
       );
+  }
 
-    let icon_name: string, toggled = false;
+  update_icon(muted: boolean, volume: number) {
+    let icon_name: string;
 
-    if (adjusted_value === 0) {
+    if (muted) {
       icon_name = "audio-volume-muted-symbolic";
-      toggled = true;
-    } else if (adjusted_value < 0.33) {
-      icon_name = "audio-volume-low-symbolic";
-    } else if (adjusted_value < 0.66) {
-      icon_name = "audio-volume-medium-symbolic";
     } else {
-      icon_name = "audio-volume-high-symbolic";
+      if (volume === 0) {
+        icon_name = "audio-volume-muted-symbolic";
+      } else if (volume < 0.33) {
+        icon_name = "audio-volume-low-symbolic";
+      } else if (volume < 0.66) {
+        icon_name = "audio-volume-medium-symbolic";
+      } else {
+        icon_name = "audio-volume-high-symbolic";
+      }
     }
 
+    this.get_volume_slider_value();
+
     this._button.set_icon_name(icon_name);
-    this._button.set_active(toggled);
+  }
+
+  private update_values() {
+    const player = get_player(),
+      volume = player.volume,
+      muted = player.muted;
+
+    this.update_icon(muted, volume);
+
+    this._button.set_active(muted || volume === 0);
+
+    // don't update the value if the user is currently interacting with the slider
+    if (
+      this.get_volume_slider_value() != volume &&
+      (this._scale.get_state_flags() & Gtk.StateFlags.ACTIVE) === 0
+    ) {
+      this.set_volume_slider_value(volume);
+    }
   }
 
   private last_value = 0;
 
-  private on_togglebutton_toggled() {
-    const value = this.get_volume_slider_value();
+  private on_togglebutton_toggled(button: Gtk.ToggleButton) {
+    const player = get_player();
 
-    let new_value: number;
-
-    if (value === 0) {
-      new_value = this.last_value;
+    if (button.active) {
+      this.last_value = this.get_volume_slider_value();
+      player.volume = 0;
     } else {
-      this.last_value = value;
-      new_value = 0;
+      player.volume = this.last_value;
     }
 
-    this.set_volume_slider_value(new_value);
-    Settings.set_double("volume", new_value);
+    this.update_values();
   }
 
-  private on_adjustment_value_changed() {
-    Settings.set_double("volume", this.get_volume_slider_value());
+  private on_scale_value_changed() {
+    const player = get_player();
+
+    const volume = this.get_volume_slider_value();
+
+    player.volume = volume;
+
+    if (player.muted) {
+      player.muted = false;
+    }
+
+    this.update_icon(false, volume);
   }
 
   private on_query_tooltip(
@@ -103,14 +135,16 @@ export class VolumeControls extends Gtk.Box {
   }
 
   private setup_listeners() {
-    this.set_volume_slider_value(Settings.get_double("volume"));
+    const player = get_player();
 
-    this.listeners.connect(Settings, "changed::volume", () => {
-      const volume = Settings.get_double("volume");
+    this.update_values();
 
-      if (volume !== this.get_volume_slider_value()) {
-        this.set_volume_slider_value(volume);
-      }
+    this.listeners.connect(player, "notify::volume", () => {
+      this.update_values();
+    });
+
+    this.listeners.connect(player, "notify::muted", () => {
+      this.update_values();
     });
   }
 

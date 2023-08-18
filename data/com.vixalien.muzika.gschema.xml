@@ -32,6 +32,11 @@
 			<summary>Volume</summary>
 			<description>The volume of the player</description>
 		</key>
+		<key name="muted" type="b">
+			<default>false</default>
+			<summary>Muted</summary>
+			<description>Whether to mute all media</description>
+		</key>
 		<key name="last-window-size" type="(ii)">
 			<default>(-1,-1)</default>
 			<summary>Last width &amp; height of window</summary>
