@@ -480,6 +480,18 @@ export class Queue extends GObject.Object {
       },
     ]);
 
+    this.connect("notify::can-play-previous", () => {
+      action_group.action_enabled_changed("previous", this.can_play_previous);
+    });
+
+    action_group.action_enabled_changed("previous", this.can_play_previous);
+
+    this.connect("notify::can-play-next", () => {
+      action_group.action_enabled_changed("next", this.can_play_next);
+    });
+
+    action_group.action_enabled_changed("next", this.can_play_next);
+
     return action_group;
   }
 
