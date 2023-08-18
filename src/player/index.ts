@@ -1109,11 +1109,11 @@ function get_song_uri(song: Song) {
   // });
 
   if (!skip_number_of_formats_check) {
-    if (streams.filter(format_has_audio).length === 0) {
+    if (!streams.some(format_has_audio)) {
       Settings.set_enum("audio-quality", AudioQuality.auto);
     }
 
-    if (streams.filter(format_has_video).length === 0) {
+    if (!streams.some(format_has_video)) {
       Settings.set_enum("video-quality", VideoQuality.auto);
     }
 
