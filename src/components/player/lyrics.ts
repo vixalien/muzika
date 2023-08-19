@@ -248,7 +248,7 @@ export class LyricsView extends Gtk.Stack {
   private on_timestamp() {
     const player = get_player();
 
-    if (!this.lyrics || !this.lyrics.timed) {
+    if (!this.lyrics?.timed) {
       return;
     }
 
