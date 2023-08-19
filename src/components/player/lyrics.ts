@@ -260,18 +260,18 @@ export class LyricsView extends Gtk.Stack {
     if (line_id < 0) {
       this._timed_listbox.unselect_all();
       return;
-    } else {
-      const row = this._timed_listbox.get_row_at_index(line_id);
+    }
 
-      if (row) {
-        if (row === this._timed_listbox.get_selected_row()) {
-          return;
-        }
+    const row = this._timed_listbox.get_row_at_index(line_id);
 
-        this._timed_listbox.select_row(row);
-
-        this.scroll_to_row(this._timed_listbox, row);
+    if (row) {
+      if (row === this._timed_listbox.get_selected_row()) {
+        return;
       }
+
+      this._timed_listbox.select_row(row);
+
+      this.scroll_to_row(this._timed_listbox, row);
     }
   }
 
