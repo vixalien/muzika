@@ -1,5 +1,6 @@
 import Gio from "gi://Gio";
 import GstPlay from "gi://GstPlay";
+import GLib from "gi://GLib";
 
 import { Song } from "src/muse";
 import { languages } from "./languages";
@@ -87,15 +88,27 @@ export function generate_song_menu(
 ) {
   const menu = Gio.Menu.new();
 
+  const volume_controls_menu = new Gio.MenuItem();
+  volume_controls_menu.set_attribute_value(
+    "custom",
+    GLib.Variant.new_string("volume-controls"),
+  );
+
+  menu.append_item(volume_controls_menu);
+
+  const section = Gio.Menu.new();
+
   const subtitles_menu = generate_subtitles_menu(song, media_info);
   if (subtitles_menu) {
-    menu.append_submenu(_("Subtitles"), subtitles_menu);
+    section.append_submenu(_("Subtitles"), subtitles_menu);
   }
 
   const video_menu = generate_video_menu(song);
   if (video_menu) {
-    menu.append_submenu(_("Quality"), video_menu);
+    section.append_submenu(_("Quality"), video_menu);
   }
+
+  menu.append_section(null, section);
 
   return menu;
 }

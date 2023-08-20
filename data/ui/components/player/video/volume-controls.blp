@@ -1,0 +1,24 @@
+using Gtk 4.0;
+using Adw 1;
+
+template $VolumeControls : Box {
+  query-tooltip => $on_query_tooltip();
+
+  ToggleButton button {
+    icon-name: "audio-volume-high-symbolic";
+    toggled => $on_togglebutton_toggled();
+
+    styles ["rounded", "flat"]
+  }
+
+  Scale scale {
+    width-request: 200;
+    adjustment: Adjustment adjustment {
+      lower: 0.0;
+      upper: 1.0;
+      value: 0.5;
+    };
+
+    value-changed => $on_scale_value_changed();
+  }
+}
