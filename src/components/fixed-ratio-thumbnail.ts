@@ -241,7 +241,10 @@ export class FixedRatioThumbnail extends Gtk.Widget implements Gtk.Orientable {
   }
 
   get aspect_ratio() {
-    return this.paintable?.get_intrinsic_aspect_ratio() || 16 / 9;
+    return Math.min(
+      this.paintable?.get_intrinsic_aspect_ratio() || 16 / 9,
+      16 / 9,
+    );
   }
 
   vfunc_measure(
