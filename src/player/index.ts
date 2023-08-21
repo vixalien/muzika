@@ -1098,8 +1098,8 @@ function get_song_uri(song: Song, skip_number_of_formats_check = true) {
 
   const streams = [...song.formats, ...song.adaptive_formats]
     .filter((format) => {
-      return format.mime_type.startsWith("video/webm") ||
-        format.mime_type.startsWith("audio/webm");
+      return format.mime_type.startsWith("video/mp4") ||
+        format.mime_type.startsWith("audio/mp4");
     })
     .filter((e) => {
       if (format_has_audio(e)) {
