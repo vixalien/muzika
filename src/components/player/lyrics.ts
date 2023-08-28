@@ -264,11 +264,7 @@ export class LyricsView extends Gtk.Stack {
 
     const row = this._timed_listbox.get_row_at_index(line_id);
 
-    if (row) {
-      if (row === this._timed_listbox.get_selected_row()) {
-        return;
-      }
-
+    if (row && row !== this._timed_listbox.get_selected_row()) {
       this._timed_listbox.select_row(row);
 
       this.scroll_to_row(this._timed_listbox, row);
