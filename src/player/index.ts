@@ -1168,16 +1168,20 @@ function get_best_formats(
 function get_song_uri(song: Song) {
   const formats = [...song.formats, ...song.adaptive_formats];
 
+  const is_video = song.videoDetails.musicVideoType !== "MUSIC_VIDEO_TYPE_ATV";
+
   const audio_formats = get_best_formats(
     false,
     formats,
-    Settings.get_enum("audio-quality"),
+    // when playing a music video, get the medium audio quality
+    // ive never seen a video with a high audio quality, and using multiple
+    // video & audio formats causes dashdemux2 issues
+    is_video ? AudioQuality.medium : Settings.get_enum("audio-quality"),
   );
   // for music videos, no video formats are necessary
-  const video_formats =
-    song.videoDetails.musicVideoType !== "MUSIC_VIDEO_TYPE_ATV"
-      ? get_best_formats(true, formats, Settings.get_enum("video-quality"))
-      : [];
+  const video_formats = is_video
+    ? get_best_formats(true, formats, Settings.get_enum("video-quality"))
+    : [];
 
   const total_formats = [...video_formats, ...audio_formats];
 
