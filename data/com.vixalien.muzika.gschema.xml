@@ -43,12 +43,12 @@
 			<description>The saved last size of the window (to be restored)</description>
 		</key>
 		<key name="audio-quality" enum="com.vixalien.muzika.AudioQuality">
-			<default>'auto'</default>
+			<default>'medium'</default>
 			<summary>Audio Quality</summary>
 			<description>Preferred audio quality.</description>
 		</key>
 		<key name="video-quality" enum="com.vixalien.muzika.VideoQuality">
-			<default>'auto'</default>
+			<default>'hd720'</default>
 			<summary>Video Quality</summary>
 			<description>Preferred video quality.</description>
 		</key>
