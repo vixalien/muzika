@@ -1084,35 +1084,37 @@ export function format_has_video(format: Format): format is VideoFormat {
   return format.has_video;
 }
 
-function get_song_uri(song: Song, skip_number_of_formats_check = true) {
-  const audio_quality = Settings.get_enum("audio-quality");
-  const video_quality = Settings.get_enum("video-quality");
-
-  // don't use the dash manifest for now: subtitles won't work
-  // if (
-  //   audio_quality === AudioQuality.auto &&
-  //   video_quality === VideoQuality.auto && song.hlsManifestUrl
-  // ) {
-  //   return song.hlsManifestUrl;
-  // }
-
-  const streams = [...song.formats, ...song.adaptive_formats]
+function get_song_formats<
+  Video extends true | false,
+  Quality extends Video extends true ? VideoQuality : AudioQuality,
+  FormatType extends Video extends true ? VideoFormat : AudioFormat,
+>(video: Video, formats: FormatType[], quality: Quality) {
+  return formats
+    .filter(
+      // get requested formats
+      video ? format_has_video : format_has_audio,
+    )
     .filter((format) => {
-      return format.mime_type.startsWith("video/mp4") ||
-        format.mime_type.startsWith("audio/mp4");
+      // only use mp4 if format is auto
+      const mime_type = video
+        ? quality === VideoQuality.auto ? "video/mp4" : "video/webm"
+        : quality === AudioQuality.auto
+        ? "audio/mp4"
+        : "audio/webm";
+
+      return format.mime_type.startsWith(mime_type);
     })
-    .filter((e) => {
-      if (format_has_audio(e)) {
-        return audio_quality === AudioQuality.auto ||
-          e.audio_quality == AudioQuality[audio_quality];
+    .filter((format) => {
+      // filter requested manifests
+      if (video && format_has_video(format)) {
+        return quality === VideoQuality.auto ||
+          format.video_quality == VideoQuality[quality];
+      } else if (!video && format_has_audio(format)) {
+        return quality === AudioQuality.auto ||
+          format.audio_quality == AudioQuality[quality];
+      } else {
+        return false;
       }
-
-      if (format_has_video(e)) {
-        return video_quality === VideoQuality.auto ||
-          e.video_quality == VideoQuality[video_quality];
-      }
-
-      return false;
     })
     .sort((a, b) => {
       // sort from lowest quality to highest
@@ -1125,34 +1127,70 @@ function get_song_uri(song: Song, skip_number_of_formats_check = true) {
         return 0;
       }
     });
-  // .sort((a, b) => {
-  //   // webm is preferred
-  //   if (a.container === "webm" && b.container !== "webm") return -1;
-  //   if (a.container !== "webm" && b.container === "webm") return 1;
-  //   return 0;
-  // });
+}
 
-  if (!skip_number_of_formats_check) {
-    if (!streams.some(format_has_audio)) {
-      Settings.set_enum("audio-quality", AudioQuality.auto);
+// try get formats of the specified quality, if it's not possible, get the closest format
+function get_best_formats(
+  video: boolean,
+  formats: Format[],
+  quality: VideoQuality | AudioQuality,
+) {
+  const correct_formats = get_song_formats(video, formats, quality);
+
+  // if the requested format is auto, no further processing
+  if (video && quality === VideoQuality.auto) {
+    return correct_formats;
+  } else if (!video && quality === AudioQuality.auto) {
+    return correct_formats;
+  }
+
+  // try to get a lower bit quality format if possible
+  let best_quality = quality;
+  let best_formats: Format[] = [];
+
+  while (best_quality >= 0) {
+    best_formats = get_song_formats(
+      video,
+      formats,
+      best_quality,
+    );
+
+    if (best_formats.length > 0) {
+      return best_formats;
     }
 
-    // only songs that are not artist tracks (ATV) can have audio only streams
-    if (
-      song.videoDetails.musicVideoType !== "MUSIC_VIDEO_TYPE_ATV" &&
-      !streams.some(format_has_video)
-    ) {
-      Settings.set_enum("video-quality", VideoQuality.auto);
-    }
+    best_quality--;
+  }
 
-    return get_song_uri(song, true);
+  return best_formats;
+}
+
+function get_song_uri(song: Song) {
+  const formats = [...song.formats, ...song.adaptive_formats];
+
+  const audio_formats = get_best_formats(
+    false,
+    formats,
+    Settings.get_enum("audio-quality"),
+  );
+  // for music videos, no video formats are necessary
+  const video_formats =
+    song.videoDetails.musicVideoType !== "MUSIC_VIDEO_TYPE_ATV"
+      ? get_best_formats(true, formats, Settings.get_enum("video-quality"))
+      : [];
+
+  const total_formats = [...video_formats, ...audio_formats];
+
+  // if there is just one format (and no subtitles, play the format URL directly)
+  if (total_formats.length === 1 && song.captions.length === 0) {
+    return total_formats[0].url;
   }
 
   return `data:application/dash+xml;base64,${
     btoa(convert_formats_to_dash({
       ...song,
       adaptive_formats: [],
-      formats: streams,
+      formats: total_formats,
     }))
   }`;
 }
