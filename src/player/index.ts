@@ -497,9 +497,9 @@ export class MuzikaMediaStream extends Gtk.MediaStream {
     }
 
     if (state == GstPlay.PlayState.STOPPED) {
-      this.update(this.initial_seek_to ?? 0);
-
       if (this.prepared) {
+        // can only prepare position if seeked
+        this.update(this.initial_seek_to ?? 0);
         this.stream_unprepared();
       }
     } else {
