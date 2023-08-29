@@ -66,15 +66,18 @@ export class VideoPlayerView extends Adw.Bin {
     hover.connect("leave", this.extend_ui_visible_time.bind(this));
 
     // click
-    const click = new Gtk.GestureClick();
-    click.connect("released", (_, n) => {
+    const click = new Gtk.GestureClick({
+      propagation_phase: Gtk.PropagationPhase.TARGET,
+    });
+    click.connect("released", (click, n) => {
       if (n == 1) {
+        click.set_state(Gtk.EventSequenceState.CLAIMED);
         this.queue_toggle_ui();
       } else if (n == 2) {
+        click.set_state(Gtk.EventSequenceState.CLAIMED);
         this.on_fullscreen_clicked();
       }
     });
-    click.propagation_phase = Gtk.PropagationPhase.TARGET;
 
     this.add_controller(hover);
     this._picture.add_controller(click);
