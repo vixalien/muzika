@@ -18,7 +18,6 @@
     <file preprocess="xml-stripblanks">ui/components/nav/page.ui</file>
     <file preprocess="xml-stripblanks">ui/components/navbar/button.ui</file>
     <file preprocess="xml-stripblanks">ui/components/navbar/index.ui</file>
-    <file preprocess="xml-stripblanks">ui/components/navbar/section.ui</file>
     <file preprocess="xml-stripblanks">ui/components/navbar/title.ui</file>
     <file preprocess="xml-stripblanks">ui/components/paginator.ui</file>
     <file preprocess="xml-stripblanks">ui/components/player/video/controls.ui</file>

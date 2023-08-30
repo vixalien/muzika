@@ -269,11 +269,16 @@ label.bold-link link {
   transition: .5s opacity;
 }
 
-.lyrics-line:hover, .lyric-line:active {
+.lyrics-line:hover,
+.lyric-line:active {
   opacity: 0.88;
   transition: .2s opacity;
 }
 
 .lyrics-line:selected {
   opacity: 1;
+}
+
+.navigation-sidebar>header {
+  padding: 0;
 }

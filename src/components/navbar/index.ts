@@ -2,15 +2,16 @@ import GLib from "gi://GLib";
 import GObject from "gi://GObject";
 import Gtk from "gi://Gtk?version=4.0";
 import Adw from "gi://Adw";
+import Gio from "gi://Gio";
 
-import { match, MatchFunction } from "path-to-regexp";
+import { match } from "path-to-regexp";
 
 import { get_library_playlists, get_option } from "../../muse";
 import { Window } from "../../window";
-import { NavbarButton } from "./button";
-import { NavbarSection } from "./section";
-
-NavbarSection;
+import { NavbarButton, NavbarButtonContructorProperties } from "./button";
+import { ObjectContainer } from "src/util/objectcontainer";
+import { ListView } from "gi-types/gtk4";
+import { NavbarTitle } from "./title";
 
 export class NavbarView extends Gtk.Box {
   static {
@@ -20,8 +21,8 @@ export class NavbarView extends Gtk.Box {
         Template:
           "resource:///com/vixalien/muzika/ui/components/navbar/index.ui",
         InternalChildren: [
-          "section",
           "search",
+          "list_view",
         ],
         Signals: {
           activated: {
@@ -35,43 +36,54 @@ export class NavbarView extends Gtk.Box {
   }
 
   window: Window;
-  last_button: NavbarButton;
 
-  private _section!: NavbarSection;
+  private _list_view!: ListView;
   private _search!: Gtk.SearchEntry;
 
-  button_map = new Map<MatchFunction, NavbarButton>();
-  playlists = new Map<MatchFunction, NavbarButton>();
+  private model = new NavbarListStore();
+  private filter_model = Gtk.FilterListModel.new(
+    this.model,
+    Gtk.CustomFilter.new((obj: GObject.Object) => {
+      const button =
+        (obj as ObjectContainer<NavbarButtonContructorProperties>).object;
+
+      const logged_in = get_option("auth").has_token();
+
+      if (button.requires_login) {
+        return logged_in;
+      }
+
+      return true;
+    }),
+  );
+  private selection_model = Gtk.SingleSelection.new(this.filter_model);
 
   constructor(window: Window, view: Adw.NavigationSplitView) {
     super();
 
     this.window = window;
 
-    this.last_button = (this._section.items.get_first_child() as Gtk.ListBoxRow)
-      .child as NavbarButton;
+    const factory = Gtk.SignalListItemFactory.new();
+    factory.connect("setup", this.setup_cb.bind(this));
+    factory.connect("bind", this.bind_cb.bind(this));
 
-    this._section.items.select_row(
-      this._section.items.get_first_child()! as Gtk.ListBoxRow,
-    );
+    const header_factory = Gtk.SignalListItemFactory.new();
+    // header_factory.connect("setup", this.header_setup_cb.bind(this));
+    header_factory.connect("bind", this.header_bind_cb.bind(this));
 
-    this._section.items.connect("row-activated", (_, row) => {
-      const child = row as NavbarButton;
+    this._list_view.factory = factory;
+    this._list_view.header_factory = header_factory;
+    this._list_view.model = this.selection_model;
 
-      if (!(child instanceof NavbarButton)) return;
+    this.selection_model.select_item(0, true);
 
-      if (!child.link) return;
-
-      this.emit("activated", child.link);
-    });
+    this._list_view.connect("activate", this.activate_cb.bind(this));
 
     this.window.navigator.connect("notify::current-uri", () => {
       const path = this.window.navigator.current_uri;
 
       if (path) this.navigated(path);
     });
-
-    this.setup_buttons();
 
     this._search.connect("activate", () => {
       this.search();
@@ -86,53 +98,157 @@ export class NavbarView extends Gtk.Box {
       this.update_playlists();
     });
 
+    this.init_buttons();
     this.update_buttons();
     this.update_playlists();
+  }
+
+  private setup_cb(list_view: Gtk.ListView, list_item: Gtk.ListItem) {
+    const button = new NavbarButton();
+    list_item.child = button;
+  }
+
+  private bind_cb(list_view: Gtk.ListView, list_item: Gtk.ListItem) {
+    const button = list_item.child as NavbarButton;
+    button.show_button(
+      list_item.get_item<ObjectContainer<NavbarButtonContructorProperties>>()
+        .object,
+    );
+  }
+
+  private header_setup_cb(
+    list_view: Gtk.ListView,
+    list_header: Gtk.ListHeader,
+  ) {
+    const item = list_header.item as ObjectContainer<
+      NavbarButtonContructorProperties
+    >;
+
+    if (!item?.object.title) return;
+
+    const title = new NavbarTitle();
+    list_header.child = title;
+  }
+
+  private header_bind_cb(list_view: Gtk.ListView, list_header: Gtk.ListHeader) {
+    const item = list_header.item as ObjectContainer<
+      NavbarButtonContructorProperties
+    >;
+
+    if (item?.object.title) {
+      const object = item.object;
+
+      const title = new NavbarTitle();
+      title.label = object.title!;
+      list_header.child = title;
+    } else {
+      list_header.set_child(null);
+    }
+  }
+
+  private activate_cb(list_view: Gtk.ListView, position: number) {
+    const item = this.model.get_item(position)?.object;
+
+    if (item?.link) {
+      this.emit("activated", item.link);
+    }
+  }
+
+  private init_buttons() {
+    const buttons: NavbarButtonContructorProperties[] = [
+      {
+        icon_name: "go-home-symbolic",
+        label: _("Home"),
+        link: "home",
+      },
+      {
+        icon_name: "compass2-symbolic",
+        label: _("Explore"),
+        link: "explore",
+      },
+      {
+        icon_name: "library-symbolic",
+        label: _("Library"),
+        link: "library",
+        title: _("Library"),
+        requires_login: true,
+      },
+      {
+        icon_name: "library-artists-symbolic",
+        label: _("Artists"),
+        link: "library:artists",
+        requires_login: true,
+      },
+      {
+        icon_name: "music-artist-symbolic",
+        label: _("Subscriptions"),
+        link: "library:subscriptions",
+        requires_login: true,
+      },
+      {
+        icon_name: "library-music-symbolic",
+        label: _("Albums"),
+        link: "library:albums",
+        requires_login: true,
+      },
+      {
+        icon_name: "music-note-single-symbolic",
+        label: _("Songs"),
+        link: "library:songs",
+        requires_login: true,
+      },
+      {
+        icon_name: "preferences-system-time-symbolic",
+        label: _("History"),
+        link: "history",
+        requires_login: true,
+      },
+      {
+        title: _("Playlists"),
+        icon_name: "playlist-symbolic",
+        label: _("All Playlists"),
+        link: "library:playlists",
+        requires_login: true,
+      },
+    ];
+
+    this.model.splice(
+      0,
+      0,
+      buttons.map((button) => new ObjectContainer({ ...button, pinned: true })),
+    );
   }
 
   update_buttons() {
     const logged_in = get_option("auth").has_token();
 
-    for (const [_, button] of this.button_map) {
-      if (button.requires_login) {
-        button.visible = logged_in;
-      }
-    }
+    this.filter_model.filter.changed(
+      logged_in ? Gtk.FilterChange.LESS_STRICT : Gtk.FilterChange.MORE_STRICT,
+    );
   }
 
   clear_playlists() {
-    this.playlists.forEach((button) => {
-      button.unparent();
-    });
-
-    this.playlists.clear();
+    this.model.remove_all_unpinned();
   }
 
   update_playlists() {
-    this.clear_playlists();
-
     if (get_option("auth").has_token()) {
       get_library_playlists()
         .then((playlists) => {
           this.clear_playlists();
 
-          playlists.items.forEach((playlist) => {
-            const url = new URL("muzika:playlist:" + playlist.playlistId);
-
-            const path = url.pathname.replace(/(?<!\\):/g, "/");
-
-            const button = new NavbarButton();
-            button.icon_name = "view-grid-symbolic";
-            button.label = playlist.title;
-            button.link = "playlist:" + playlist.playlistId;
-
-            this.playlists.set(
-              match(path),
-              button,
-            );
-
-            this._section.items.append(button);
-          });
+          this.model.splice(
+            this.model.n_items,
+            0,
+            playlists.items.map((playlist) => {
+              return new ObjectContainer<NavbarButtonContructorProperties>({
+                icon_name: "view-grid-symbolic",
+                label: playlist.title,
+                link: "playlist:" + playlist.playlistId,
+                requires_login: true,
+              });
+            }),
+          );
         }).catch((err) => {
           this.clear_playlists();
 
@@ -154,58 +270,23 @@ export class NavbarView extends Gtk.Box {
     this.emit("searched");
   }
 
-  setup_buttons() {
-    let row = this._section.items.get_first_child() as NavbarButton;
-
-    while (row) {
-      if (row instanceof NavbarButton) {
-        if (!row.link) return;
-
-        const url = new URL("muzika:" + row.link);
-
-        const path = url.pathname.replace(/(?<!\\):/g, "/");
-
-        this.button_map.set(
-          match(path),
-          row,
-        );
-      }
-
-      row = row.get_next_sibling() as NavbarButton;
-    }
-  }
-
   navigated(uri: string) {
     const url = new URL("muzika:" + uri);
 
     const path = url.pathname.replace(/(?<!\\):/g, "/");
 
-    for (const [fn, button] of [...this.button_map, ...this.playlists]) {
-      const result = fn(path);
+    this.model.foreach((item, number) => {
+      const item_path = new URL("muzika:" + item.object.link).pathname.replace(
+        /(?<!\\):/g,
+        "/",
+      );
 
-      if (result) {
-        this.activate_button(button);
-        this.last_button = button;
-        return;
+      const match_fn = match(item_path);
+
+      if (match_fn(path)) {
+        this.selection_model.select_item(number, true);
       }
-    }
-
-    this.activate_button(this.last_button);
-  }
-
-  activate_button(button: NavbarButton) {
-    this._section.items.unselect_all();
-
-    let row = this._section.items.get_first_child() as Gtk.ListBoxRow | null;
-
-    while (row) {
-      if (row === button) {
-        this._section.items.select_row(row);
-        return;
-      }
-
-      row = row.get_next_sibling() as Gtk.ListBoxRow;
-    }
+    });
   }
 
   set_search(query: string) {
@@ -215,5 +296,161 @@ export class NavbarView extends Gtk.Box {
 
     // move cursor to end
     this._search.set_position(query.length);
+  }
+}
+
+export class NavbarListStore<
+  T extends NavbarButtonContructorProperties = NavbarButtonContructorProperties,
+> extends GObject.Object implements Gio.ListModel {
+  static {
+    GObject.registerClass({
+      GTypeName: "NavbarListStore",
+      Properties: {
+        item_type: GObject.ParamSpec.uint64(
+          "item-type",
+          "Item Type",
+          "The type of the items in the list",
+          GObject.ParamFlags.READWRITE,
+          0,
+          Number.MAX_SAFE_INTEGER,
+          0,
+        ),
+        n_items: GObject.ParamSpec.uint64(
+          "n-items",
+          "Number of Items",
+          "The number of items in the list",
+          GObject.ParamFlags.READABLE,
+          0,
+          Number.MAX_SAFE_INTEGER,
+          0,
+        ),
+      },
+      Implements: [Gio.ListModel, Gtk.SectionModel],
+    }, this);
+  }
+
+  private array = new Array<ObjectContainer<T>>();
+
+  constructor() {
+    super();
+  }
+
+  get_item_type(): GObject.GType<unknown> {
+    return this.vfunc_get_item_type();
+  }
+
+  get n_items(): number {
+    return this.array.length;
+  }
+
+  get_n_items(): number {
+    return this.n_items;
+  }
+
+  get_item(position: number): ObjectContainer<T> | null {
+    return this.vfunc_get_item(position) as ObjectContainer<T> | null;
+  }
+
+  items_changed(position: number, removed: number, added: number): void {
+    this.emit("items-changed", position, removed, added);
+
+    if (removed != added) {
+      this.notify("n-items");
+    }
+  }
+
+  vfunc_get_item(position: number): GObject.Object | null {
+    return this.array[position] ?? null;
+  }
+
+  vfunc_get_n_items(): number {
+    return this.array.length;
+  }
+
+  vfunc_get_item_type(): GObject.GType<unknown> {
+    return ObjectContainer.$gtype;
+  }
+
+  find(
+    fn: (item: ObjectContainer<T>) => boolean,
+  ): number | null {
+    const index = this.array.findIndex(fn);
+
+    return index === -1 ? null : index;
+  }
+
+  append(item: ObjectContainer<T>): void {
+    this.array.push(item);
+
+    this.items_changed(this.array.length - 1, 0, 1);
+  }
+
+  remove(item: number): void {
+    this.array.splice(item, 1);
+
+    this.items_changed(item, 1, 0);
+  }
+
+  insert(position: number, item: ObjectContainer<T>): void {
+    this.array.splice(position, 0, item);
+
+    this.items_changed(position, 0, 1);
+  }
+
+  foreach(fn: (item: ObjectContainer<T>, n: number) => void) {
+    this.array.forEach(fn);
+  }
+
+  splice(
+    position: number,
+    removed: number,
+    added: ObjectContainer<T>[],
+  ): void {
+    this.array.splice(position, removed, ...added);
+
+    this.items_changed(position, removed, added.length);
+  }
+
+  remove_all(): void {
+    const length = this.array.length;
+
+    this.array.splice(0, length);
+
+    this.items_changed(0, length, 0);
+  }
+
+  remove_all_unpinned(): void {
+    const length = this.array.length;
+
+    this.array = this.array.filter((item) => {
+      return item.object.pinned;
+    });
+
+    this.items_changed(0, length, length);
+  }
+
+  vfunc_get_section(position: number) {
+    const first_index = position === 0
+      ? 0
+      : this.array.findLastIndex((container, index) => {
+        return index <= position && container.object.title;
+      });
+    const last_index = this.array.findIndex((container, index) => {
+      return index > position && container.object.title;
+    });
+
+    if (first_index < 0) {
+      return [this.array.length, GLib.MAXUINT32];
+    }
+
+    if (last_index < 0) {
+      return [first_index, this.array.length];
+    }
+
+    return [first_index, last_index];
+  }
+
+  get get_section() {
+    return this.vfunc_get_section;
   }
 }

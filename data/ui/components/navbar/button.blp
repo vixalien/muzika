@@ -1,19 +1,17 @@
 using Gtk 4.0;
 
-template $NavbarButton : ListBoxRow {
-  Box {
-    margin-start: 6;
-    margin-end: 6;
-    margin-bottom: 6;
-    margin-top: 6;
-    spacing: 6;
+template $NavbarButton : Box {
+  margin-start: 6;
+  margin-end: 6;
+  margin-bottom: 6;
+  margin-top: 6;
+  spacing: 6;
 
-    Image image {
-      icon-name: "go-home-symbolic";
-    }
+  Image image {
+    icon-name: "go-home-symbolic";
+  }
 
-    Label label {
-      ellipsize: end;
-    }
+  Label label {
+    ellipsize: end;
   }
 }
