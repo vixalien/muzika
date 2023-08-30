@@ -179,6 +179,7 @@ export class PlaylistItemView extends Adw.Bin {
     }
 
     const props = {
+      header_factory: this.header_factory ?? null as any,
       model: this.multi_selection_model!,
       selection_mode: this.selection_mode,
       album: this.album,
@@ -195,6 +196,8 @@ export class PlaylistItemView extends Adw.Bin {
         props,
       );
     }
+
+    this;
   }
 
   // property: editable

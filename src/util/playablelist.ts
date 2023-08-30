@@ -488,4 +488,8 @@ export class SectionedPlayableList<T extends Object = PlaylistItem>
 
     return [start, end];
   }
+
+  get get_section() {
+    return this.vfunc_get_section;
+  }
 }
