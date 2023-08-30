@@ -2,52 +2,54 @@ using Gtk 4.0;
 using Adw 1;
 
 template $VideoPlayerView : Adw.Bin {
-  Adw.BreakpointBin {
-    width-request: 200;
-    height-request: 200;
-    
-    Adw.Breakpoint {
-      condition ("max-width: 700sp")
-
-      setters {
-        controls.show-mini: true;
-      }
-    }
-
-    Adw.ToolbarView toolbar_view {
-      extend-content-to-top-edge: true;
-      extend-content-to-bottom-edge: true;
+  WindowHandle {
+    Adw.BreakpointBin {
+      width-request: 200;
+      height-request: 200;
       
-      content: Picture picture {
-        styles ["black-bg"]
-      };
+      Adw.Breakpoint {
+        condition ("max-width: 700sp")
 
-      [top]
-      Adw.Bin {
-        styles ["osd"]
-
-        Adw.HeaderBar {
-          [start]
-          Button collapse {
-            icon-name: "go-down-symbolic";
-            action-name: "win.show-video";
-            action-target: "false";
-          }
-
-          [start]
-          Button fullscreen {
-            icon-name: "view-fullscreen-symbolic";
-
-            clicked => $on_fullscreen_clicked();
-          }
-
-          title-widget: Adw.WindowTitle window_title {
-          };
+        setters {
+          controls.show-mini: true;
         }
       }
 
-      [bottom]
-      $VideoControls controls {}
+      Adw.ToolbarView toolbar_view {
+        extend-content-to-top-edge: true;
+        extend-content-to-bottom-edge: true;
+        
+        content: Picture picture {
+          styles ["black-bg"]
+        };
+
+        [top]
+        Adw.Bin {
+          styles ["osd"]
+
+          Adw.HeaderBar {
+            [start]
+            Button collapse {
+              icon-name: "go-down-symbolic";
+              action-name: "win.show-video";
+              action-target: "false";
+            }
+
+            [start]
+            Button fullscreen {
+              icon-name: "view-fullscreen-symbolic";
+
+              clicked => $on_fullscreen_clicked();
+            }
+
+            title-widget: Adw.WindowTitle window_title {
+            };
+          }
+        }
+
+        [bottom]
+        $VideoControls controls {}
+      }
     }
   }
 }

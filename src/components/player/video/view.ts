@@ -66,16 +66,18 @@ export class VideoPlayerView extends Adw.Bin {
     hover.connect("leave", this.extend_ui_visible_time.bind(this));
 
     // click
-    const click = new Gtk.GestureClick();
-    click.connect("released", (_, n) => {
+    const click = new Gtk.GestureClick({
+      propagation_phase: Gtk.PropagationPhase.TARGET,
+    });
+    click.connect("released", (click, n) => {
       if (n == 1) {
-        this.activate_action("player.play-pause", null);
+        click.set_state(Gtk.EventSequenceState.CLAIMED);
+        this.queue_toggle_ui();
       } else if (n == 2) {
-        this.activate_action("player.play-pause", null);
+        click.set_state(Gtk.EventSequenceState.CLAIMED);
         this.on_fullscreen_clicked();
       }
     });
-    click.propagation_phase = Gtk.PropagationPhase.TARGET;
 
     this.add_controller(hover);
     this._picture.add_controller(click);
@@ -127,13 +129,33 @@ export class VideoPlayerView extends Adw.Bin {
 
   private timeout_id: number | null = null;
 
-  private extend_ui_visible_time() {
-    this.show_ui();
-
+  private remove_timeout() {
     if (this.timeout_id) {
       GLib.source_remove(this.timeout_id);
       this.timeout_id = null;
     }
+  }
+
+  private queue_toggle_ui() {
+    this.remove_timeout();
+
+    // wait a few seconds before hiding the UI elements
+    if (this._toolbar_view.reveal_top_bars) {
+      this.timeout_id = GLib.timeout_add(GLib.PRIORITY_DEFAULT, 200, () => {
+        this.hide_ui();
+
+        this.timeout_id = null;
+
+        return false;
+      });
+    } else {
+      this.show_ui();
+    }
+  }
+
+  private extend_ui_visible_time() {
+    this.show_ui();
+    this.remove_timeout();
 
     if (this._controls.inhibit_hide) return;
 
@@ -147,18 +169,24 @@ export class VideoPlayerView extends Adw.Bin {
   }
 
   private hide_ui() {
+    this.remove_timeout();
+
     this._toolbar_view.reveal_top_bars =
       this._toolbar_view.reveal_bottom_bars =
         false;
   }
 
   private show_ui() {
+    this.remove_timeout();
+
     this._toolbar_view.reveal_top_bars =
       this._toolbar_view.reveal_bottom_bars =
         true;
   }
 
   private toggle_ui() {
+    this.remove_timeout();
+
     this._toolbar_view.reveal_top_bars =
       this._toolbar_view.reveal_bottom_bars =
         !this._toolbar_view.reveal_top_bars;

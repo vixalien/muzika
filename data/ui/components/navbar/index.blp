@@ -11,68 +11,8 @@ template $NavbarView : Box {
     margin-top: 12;
   }
 
-  $NavbarSection section {
-    $NavbarButton {
-      icon-name: "go-home-symbolic";
-      label: _("Home");
-      link: "home";
-    }
-
-    $NavbarButton {
-      icon-name: "compass2-symbolic";
-      label: _("Explore");
-      link: "explore";
-    }
-
-    $NavbarButton {
-      icon-name: "library-symbolic";
-      label: _("Library");
-      link: "library";
-      title: _("Library");
-      requires-login: "true";
-    }
-
-    $NavbarButton {
-      icon-name: "library-artists-symbolic";
-      label: _("Artists");
-      link: "library:artists";
-      requires-login: "true";
-    }
-
-    $NavbarButton {
-      icon-name: "music-artist-symbolic";
-      label: _("Subscriptions");
-      link: "library:subscriptions";
-      requires-login: "true";
-    }
-
-    $NavbarButton {
-      icon-name: "library-music-symbolic";
-      label: _("Albums");
-      link: "library:albums";
-      requires-login: "true";
-    }
-
-    $NavbarButton {
-      icon-name: "music-note-single-symbolic";
-      label: _("Songs");
-      link: "library:songs";
-      requires-login: "true";
-    }
-
-    $NavbarButton {
-      icon-name: "preferences-system-time-symbolic";
-      label: _("History");
-      link: "history";
-      requires-login: "true";
-    }
-
-    $NavbarButton all_playlists {
-      title: _("Playlists");
-      icon-name: "playlist-symbolic";
-      label: _("All Playlists");
-      link: "library:playlists";
-      requires-login: "true";
-    }
+  ListView list_view {
+    single-click-activate: true;
+    styles ["navigation-sidebar"]
   }
 }
