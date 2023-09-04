@@ -4,9 +4,11 @@ import GLib from "gi://GLib";
 import Adw from "gi://Adw";
 
 import { SearchContent, TopResult } from "../../muse.js";
-import { InlineCard } from "./inlinecard.js";
 import { TopResultCard } from "./topresultcard.js";
-import { DynamicImageState } from "../dynamic-image.js";
+import { FlatListView } from "../carousel/view/flatlist.js";
+import { PlayableContainer } from "src/util/playablelist.js";
+
+TopResultCard;
 
 export class TopResultSection extends Gtk.Box {
   static {
@@ -14,15 +16,14 @@ export class TopResultSection extends Gtk.Box {
       GTypeName: "TopResultSection",
       Template:
         "resource:///com/vixalien/muzika/ui/components/search/topresultsection.ui",
-      InternalChildren: ["title", "box", "content"],
+      InternalChildren: ["box", "card", "list_view"],
     }, this);
   }
 
-  private _title!: Gtk.Label;
   private _box!: Gtk.Box;
-  private _content!: Gtk.Box;
+  private _card!: TopResultCard;
+  private _list_view!: FlatListView;
 
-  private top_card?: TopResultCard;
   breakpoint: Adw.Breakpoint;
 
   constructor(breakpoint: Adw.Breakpoint) {
@@ -39,107 +40,60 @@ export class TopResultSection extends Gtk.Box {
       this.breakpoint_applied = false;
       this.update_breakpoint();
     });
-  }
 
-  add_more_content(content: SearchContent) {
-    let card = new InlineCard();
-
-    switch (content.type) {
-      case "song":
-        card.set_song(content);
-        break;
-      case "video":
-        card.set_video(content);
-        break;
-      case "album":
-        card.set_album(content);
-        break;
-      case "artist":
-        card.set_artist(content);
-        break;
-      case "playlist":
-        card.set_playlist(content);
-        break;
-      default:
-        console.error("Unknown search content type", content.type);
-        return;
-    }
-
-    this._content.append(card);
+    this._list_view.connect("activate", this.row_activated.bind(this));
   }
 
   show_top_result(top_result: TopResult) {
-    const card = new TopResultCard();
-
-    switch (top_result.type) {
-      case "song":
-        card.set_song(top_result);
-        break;
-      case "video":
-        card.set_video(top_result);
-        break;
-      case "album":
-        card.set_album(top_result);
-        break;
-      case "artist":
-        card.set_artist(top_result);
-        break;
-      case "playlist":
-        card.set_playlist(top_result);
-        break;
-        // default:
-        //   console.error("Unknown top result type", top_result.type);
-        //   return;
-    }
+    this._card.show_top_result(top_result);
 
     if (top_result.more && top_result.more.length > 0) {
-      top_result.more.forEach(this.add_more_content.bind(this));
-
-      this._content.connect("row-activated", this.row_activated.bind(this));
+      this._list_view.visible = true;
+      this._list_view.items.splice(
+        0,
+        0,
+        top_result.more.map(PlayableContainer.new_from_search_content),
+      );
     } else {
-      const more_list = this._box.get_last_child() as Gtk.ListBox;
-      if (more_list) {
-        more_list.visible = false;
-      }
+      this._list_view.visible = false;
     }
 
-    this.top_card = card;
     this.update_breakpoint();
-
-    this._box.prepend(card);
   }
 
-  row_activated(_: this, row: InlineCard) {
-    if (!row.content) return;
+  row_activated(source: FlatListView, position: number) {
+    const content = source.items.get_item(position)?.object as SearchContent;
+
+    if (!content) return;
 
     let uri: string | null = null;
 
-    switch (row.content.type) {
+    switch (content.type) {
       case "playlist":
-        uri = `playlist:${row.content.browseId}`;
+        uri = `playlist:${content.browseId}`;
         break;
       case "artist":
-        uri = `artist:${row.content.browseId}`;
+        uri = `artist:${content.browseId}`;
         break;
       case "album":
-        uri = `album:${row.content.browseId}`;
+        uri = `album:${content.browseId}`;
         break;
       case "radio":
-        row.dynamic_image.state = DynamicImageState.LOADING;
+        // row.dynamic_image.state = DynamicImageState.LOADING;
         this.activate_action(
           "queue.play-playlist",
           GLib.Variant.new_string(
-            `${row.content.playlistId}?video=${row.content.videoId}`,
+            `${content.playlistId}?video=${content.videoId}`,
           ),
         );
         break;
       case "song":
       case "video":
-        row.dynamic_image.state = DynamicImageState.LOADING;
+        // row.dynamic_image.state = DynamicImageState.LOADING;
         this.activate_action(
           "queue.play-song",
           GLib.Variant.new_string(
-            row.content.videoId,
+            content.videoId,
           ),
         );
         break;
@@ -156,14 +110,12 @@ export class TopResultSection extends Gtk.Box {
   private breakpoint_applied = false;
 
   private update_breakpoint() {
-    if (!this.top_card) return;
-
     if (this.breakpoint_applied) {
       this._box.orientation = Gtk.Orientation.VERTICAL;
-      this.top_card.small_layout();
+      this._card.small_layout();
     } else {
       this._box.orientation = Gtk.Orientation.HORIZONTAL;
-      this.top_card.large_layout();
+      this._card.large_layout();
     }
   }
 }

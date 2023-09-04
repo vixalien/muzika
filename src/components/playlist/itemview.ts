@@ -1,6 +1,7 @@
 import Gtk from "gi://Gtk?version=4.0";
 import GObject from "gi://GObject";
 import Gio from "gi://Gio";
+import Adw from "gi://Adw";
 
 import { PlaylistColumnView } from "./columnview";
 import { PlaylistListView } from "./listview";
@@ -8,7 +9,7 @@ import { PlayableContainer, PlayableList } from "src/util/playablelist";
 import { get_player } from "src/application";
 import { SignalListeners } from "src/util/signal-listener";
 
-export class PlaylistItemView extends Gtk.Stack {
+export class PlaylistItemView extends Adw.Bin {
   static {
     GObject.registerClass({
       GTypeName: "PlaylistItemView",
@@ -26,6 +27,13 @@ export class PlaylistItemView extends Gtk.Stack {
           "Whether to show the rank of the playlist item",
           GObject.ParamFlags.READWRITE,
           false,
+        ),
+        "show-artists": GObject.ParamSpec.boolean(
+          "show-artists",
+          "Show Artists",
+          "Whether to show the artists of each track",
+          GObject.ParamFlags.READWRITE,
+          true,
         ),
         "show-column": GObject.ParamSpec.boolean(
           "show-column",
@@ -64,17 +72,34 @@ export class PlaylistItemView extends Gtk.Stack {
     }, this);
   }
 
+  private get_current_child() {
+    return this.child as CurrentChild;
+  }
+
+  private get_current_property<Key extends keyof CurrentChild>(property: Key) {
+    return this.get_current_child()[property];
+  }
+
+  private set_current_property<Key extends keyof CurrentChild>(
+    property: Key,
+    value: CurrentChild[Key],
+  ) {
+    return this.get_current_child()[property] = value;
+  }
+
   // property: selection-mode
 
+  private _selection_mode = false;
+
   get selection_mode() {
-    return this._column_view.selection_mode;
+    return this._selection_mode;
   }
 
   set selection_mode(value: boolean) {
-    this._column_view.selection_mode = value;
-    this._list_view.selection_mode = value;
+    this._selection_mode = value;
+    this.set_current_property("selection_mode", value);
 
-    if (this.selection_mode == false) {
+    if (value == false) {
       this.multi_selection_model?.unselect_all();
     }
   }
@@ -88,14 +113,9 @@ export class PlaylistItemView extends Gtk.Stack {
   }
 
   set playlistId(playlistId: string | undefined) {
-    if (!playlistId) return;
-
     this._playlistId = playlistId;
 
-    this._column_view.playlistId = playlistId;
-    this._list_view.playlistId = playlistId;
-
-    this.update();
+    this.set_current_property("playlistId", playlistId);
   }
 
   // property: album
@@ -109,10 +129,7 @@ export class PlaylistItemView extends Gtk.Stack {
   set album(album: boolean) {
     this._album = album;
 
-    this._column_view.album = album;
-    this._list_view.album = album;
-
-    this.update();
+    this.set_current_property("album", album);
   }
 
   // property: model
@@ -134,30 +151,79 @@ export class PlaylistItemView extends Gtk.Stack {
       model: model as any,
     });
 
-    this._list_view.model = this.multi_selection_model;
-    this._column_view.model = this.multi_selection_model;
+    this.set_current_property("model", this.multi_selection_model!);
 
     this.setup_listeners();
   }
 
   // property: show-rank
 
+  private _show_rank = false;
+
   get show_rank() {
-    return this._column_view.show_rank;
+    return this._show_rank;
   }
 
   set show_rank(show: boolean) {
-    this._column_view.show_rank = show;
+    this._show_rank = show;
+
+    const child = this.child as CurrentChild;
+
+    if (child instanceof PlaylistColumnView) {
+      child.show_rank = show;
+    }
+  }
+
+  // property: show-rank
+
+  private _show_artists = true;
+
+  get show_artists() {
+    return this._show_artists;
+  }
+
+  set show_artists(show: boolean) {
+    this._show_artists = show;
+
+    const child = this.child as CurrentChild;
+
+    if (child instanceof PlaylistColumnView) {
+      child.show_artists = show;
+    }
   }
 
   // property: show-column
 
   get show_column() {
-    return this.get_visible_child_name() === "column";
+    return this.child instanceof PlaylistColumnView;
   }
 
   set show_column(column: boolean) {
-    this.set_visible_child_name(column ? "column" : "list");
+    if (this.child != null && this.show_column === column) {
+      return;
+    }
+
+    const props = {
+      header_factory: this.header_factory ?? null as any,
+      model: this.multi_selection_model!,
+      selection_mode: this.selection_mode,
+      album: this.album,
+      show_add: this.show_add,
+    };
+
+    if (column) {
+      this.child = new PlaylistColumnView({
+        ...props,
+        show_rank: this.show_rank,
+        show_artists: this.show_artists,
+      });
+    } else {
+      this.child = new PlaylistListView(
+        props,
+      );
+    }
+
+    this;
   }
 
   // property: editable
@@ -166,39 +232,47 @@ export class PlaylistItemView extends Gtk.Stack {
 
   // property: show-add
 
+  private _show_add = false;
+
   get show_add() {
-    return this._column_view.show_add;
+    return this._show_add;
   }
 
   set show_add(show: boolean) {
-    this._column_view.show_add = show;
-    this._list_view.show_add = show;
+    this._show_add = show;
 
-    this.update();
+    this.set_current_property("show_add", show);
   }
 
-  private _list_view: PlaylistListView;
-  private _column_view: PlaylistColumnView;
+  // property: header-factory
 
-  constructor(options: PlaylistItemViewOptions = {}) {
+  private _header_factory: Gtk.ListItemFactory | null = null;
+
+  get header_factory() {
+    return this._header_factory;
+  }
+
+  set header_factory(factory: Gtk.ListItemFactory | null) {
+    this._header_factory = factory;
+
+    this.set_current_property("header_factory", factory!);
+  }
+
+  constructor(options: Partial<PlaylistItemViewOptions> = {}) {
     super({
-      vhomogeneous: false,
-      hhomogeneous: false,
+      // vhomogeneous: false,
+      // hhomogeneous: false,
     });
 
-    this._list_view = new PlaylistListView();
-    this._column_view = new PlaylistColumnView();
+    // this._list_view.connect("add", (_list, index) => {
+    //   this.add_cb(index);
+    // });
 
-    this._list_view.connect("add", (_list, index) => {
-      this.add_cb(index);
-    });
+    // this._column_view.connect("add", (_list, index) => {
+    //   this.add_cb(index);
+    // });
 
-    this._column_view.connect("add", (_list, index) => {
-      this.add_cb(index);
-    });
-
-    this.add_named(this._list_view, "list");
-    this.add_named(this._column_view, "column");
+    this.show_column = options.show_column ?? false;
 
     if (options.model) this.model = options.model;
   }
@@ -296,5 +370,8 @@ export class PlaylistItemView extends Gtk.Stack {
 }
 
 export interface PlaylistItemViewOptions {
-  model?: PlayableList;
+  model: PlayableList;
+  show_column: boolean;
 }
+
+type CurrentChild = PlaylistColumnView | PlaylistListView;

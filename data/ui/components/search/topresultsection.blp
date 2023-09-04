@@ -10,7 +10,7 @@ template $TopResultSection : Box {
     margin-end: 12;
     margin-bottom: 6;
 
-    Label title {
+    Label {
       label: _("Top Result");
 
       styles [
@@ -20,17 +20,12 @@ template $TopResultSection : Box {
   }
 
   Box box {
-    spacing: 12;
+    $TopResultCard card {}
 
-    ListBox content {
-      margin-start: 6;
-      margin-end: 6;
-      selection-mode: none;
+    $FlatListView list_view {
+      visible: false;
       hexpand: true;
-
-      styles [
-        "background",
-      ]
+      child-type: 1;
     }
   }
 }

@@ -5,6 +5,7 @@ import { MixedItem } from "src/muse.js";
 import { CarouselCard } from "../card.js";
 import { MixedCardItem } from "src/components/library/mixedcard.js";
 import { PlayableContainer, PlayableList } from "src/util/playablelist.js";
+import { mixed_card_activate_cb } from "./util.js";
 
 export type RequiredMixedItem = NonNullable<MixedItem>;
 
@@ -23,6 +24,8 @@ export class CarouselListView extends Gtk.ListView {
       margin_bottom: 18,
       orientation: Gtk.Orientation.HORIZONTAL,
     });
+
+    this.connect("activate", mixed_card_activate_cb.bind(this));
 
     this.add_css_class("transparent");
     this.add_css_class("carousel-list-view");

@@ -1,6 +1,6 @@
 using Gtk 4.0;
 
-template $FlatSongCard : Box {
+template $FlatCard : Box {
   width-request: 320;
   spacing: 12;
   hexpand: false;
@@ -12,10 +12,11 @@ template $FlatSongCard : Box {
     "padding-3",
   ]
 
-  $DynamicImage dynamic_image {
-    image-size: 48;
-    icon-size: 16;
-    persistent-play-button: false;
+  $DynamicImage2 dynamic_image {
+    size: 48;
+    action-size: 16;
+    // icon-size: 16;
+    // persistent-play-button: false;
   }
 
   Box meta {
@@ -24,13 +25,8 @@ template $FlatSongCard : Box {
     spacing: 3;
 
     Label title {
-      label: "";
-      hexpand: true;
-      max-width-chars: 1;
       ellipsize: end;
       xalign: 0;
-      wrap: true;
-      wrap-mode: char;
 
       styles [
         "heading",
@@ -52,11 +48,8 @@ template $FlatSongCard : Box {
 
       Label subtitle {
         use-markup: true;
-        hexpand: true;
-        max-width-chars: 1;
         ellipsize: end;
         xalign: 0;
-        wrap: true;
 
         styles [
           "flat-links",

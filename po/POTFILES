@@ -2,7 +2,6 @@ data/com.vixalien.muzika.desktop.in
 data/com.vixalien.muzika.appdata.xml.in.in
 data/com.vixalien.muzika.gschema.xml
 data/ui/components/carousel/carousel.blp
-data/ui/components/library/mixedcard.blp
 data/ui/components/navbar/button.blp
 data/ui/components/navbar/index.blp
 data/ui/components/paginator.blp
@@ -30,14 +29,13 @@ data/ui/pages/playlist.blp
 data/ui/pages/search.blp
 data/ui/window.blp
 src/components/carousel/card.ts
-src/components/library/mixedcard.ts
 src/components/nav/page.ts
+src/components/navbar/index.ts
 src/components/player/full.ts
 src/components/player/queue.ts
 src/components/playlist/bar.ts
 src/components/playlist/columnview.ts
 src/components/playlist/edit.ts
-src/components/search/inlinecard.ts
 src/components/search/topresultcard.ts
 src/endpoints.ts
 src/muse.ts
@@ -52,6 +50,7 @@ src/pages/library/base.ts
 src/pages/login.ts
 src/pages/playlist.ts
 src/pages/search.ts
+src/pages/preferences.ts
 src/player/queue.ts
 src/polyfills/fetch.ts
 src/util/giofilestore.ts

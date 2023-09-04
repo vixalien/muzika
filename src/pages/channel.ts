@@ -31,22 +31,20 @@ export class ChannelPage extends Adw.Bin
       GTypeName: "ChannelPage",
       Template: "resource:///com/vixalien/muzika/ui/pages/channel.ui",
       InternalChildren: [
-        "breakpoint",
-        "inner_box",
         "songs_on_repeat",
         "playlist_item_view",
         "header",
+        "carousels",
       ],
     }, this);
   }
 
   channel?: Channel;
 
-  private _breakpoint!: Adw.Breakpoint;
-  private _inner_box!: Gtk.Box;
   private _songs_on_repeat!: Gtk.Box;
   private _playlist_item_view!: PlaylistItemView;
   private _header!: ArtistHeader;
+  private _carousels!: Gtk.Box;
 
   model = new PlayableList();
 
@@ -54,16 +52,6 @@ export class ChannelPage extends Adw.Bin
     super();
 
     this._playlist_item_view.model = this.model;
-
-    this._breakpoint.connect("unapply", () => {
-      this._playlist_item_view.show_column = true;
-      this._header.show_large_header = true;
-    });
-
-    this._breakpoint.connect("apply", () => {
-      this._playlist_item_view.show_column = false;
-      this._header.show_large_header = false;
-    });
 
     this._header.set_description(null);
   }
@@ -137,7 +125,7 @@ export class ChannelPage extends Adw.Bin
       contents: data.results,
     });
 
-    this._inner_box.append(carousel);
+    this._carousels.append(carousel);
   }
 
   static async load(context: EndpointContext) {

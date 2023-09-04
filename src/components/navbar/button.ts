@@ -2,7 +2,7 @@ import GLib from "gi://GLib";
 import GObject from "gi://GObject";
 import Gtk from "gi://Gtk?version=4.0";
 
-export class NavbarButton extends Gtk.ListBoxRow {
+export class NavbarButton extends Gtk.Box {
   static {
     GObject.registerClass(
       {
@@ -60,7 +60,6 @@ export class NavbarButton extends Gtk.ListBoxRow {
 
   link: string | null = null;
   title: string | null = null;
-  requires_login = false;
 
   constructor(args?: any) {
     super(args);
@@ -84,4 +83,18 @@ export class NavbarButton extends Gtk.ListBoxRow {
     this.has_tooltip = this._label.get_layout().is_ellipsized();
     this.tooltip_text = label;
   }
+
+  show_button(button: NavbarButtonContructorProperties) {
+    this.icon_name = button.icon_name;
+    this.label = button.label;
+  }
+}
+
+export interface NavbarButtonContructorProperties {
+  icon_name: string;
+  link: string;
+  requires_login?: boolean;
+  label: string;
+  title?: string;
+  pinned?: boolean;
 }

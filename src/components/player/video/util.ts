@@ -4,7 +4,7 @@ import GLib from "gi://GLib";
 
 import { Song } from "src/muse";
 import { languages } from "./languages";
-import { format_has_video } from "src/player";
+import { VideoQualities, format_has_video } from "src/player";
 
 export function generate_subtitles_menu(
   song: Song,
@@ -112,18 +112,6 @@ export function generate_song_menu(
 
   return menu;
 }
-
-const VideoQualities: { name: string; value: string }[] = [
-  { name: "144p", value: "tiny" },
-  { name: "240p", value: "small" },
-  { name: "360p", value: "medium" },
-  { name: "480p", value: "large" },
-  { name: "720p", value: "hd720" },
-  { name: "1080p (HD)", value: "hd1080" },
-  { name: "1440p (HD)", value: "hd1440" },
-  { name: "2160p (4K)", value: "hd2160" },
-  { name: "High Resolution", value: "highres" },
-];
 
 function get_language_name(code: string) {
   const language = languages.find((lang) => lang.code === code);

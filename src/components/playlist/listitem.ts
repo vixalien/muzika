@@ -3,11 +3,9 @@ import GObject from "gi://GObject";
 import GLib from "gi://GLib";
 
 import { PlaylistItem } from "../../muse.js";
-import { DynamicImage, DynamicImageVisibleChild } from "../dynamic-image.js";
 import { pretty_subtitles } from "src/util/text.js";
-
-// first register the DynamicImage class
-DynamicImage;
+import { DynamicImage2, DynamicImage2StorageType } from "../dynamic-image-2.js";
+import { SignalListeners } from "src/util/signal-listener.js";
 
 export class PlaylistListItem extends Gtk.Box {
   static {
@@ -37,16 +35,14 @@ export class PlaylistListItem extends Gtk.Box {
         ),
       },
       Signals: {
-        "add": {
-          param_types: [GObject.TYPE_INT],
-        },
+        "add": {},
       },
     }, this);
   }
 
   item?: PlaylistItem;
 
-  dynamic_image!: DynamicImage;
+  dynamic_image!: DynamicImage2;
 
   private _title!: Gtk.Label;
   private _explicit!: Gtk.Image;
@@ -57,12 +53,13 @@ export class PlaylistListItem extends Gtk.Box {
   private _add!: Gtk.Button;
 
   playlistId?: string;
-  position = 0;
+
+  listeners = new SignalListeners();
 
   constructor() {
     super({});
 
-    this._subtitle.connect("activate-link", (_, uri) => {
+    this.listeners.connect(this._subtitle, "activate-link", (_, uri) => {
       if (uri && uri.startsWith("muzika:")) {
         this.activate_action(
           "navigator.visit",
@@ -84,7 +81,7 @@ export class PlaylistListItem extends Gtk.Box {
       this._subtitle.visible = true;
       const subtitles = pretty_subtitles(item.artists ?? []);
 
-      this._subtitle.label = subtitles.markup;
+      this._subtitle.set_markup(subtitles.markup);
       this._subtitle.tooltip_text = subtitles.plain;
     } else {
       this._subtitle.visible = false;
@@ -111,10 +108,9 @@ export class PlaylistListItem extends Gtk.Box {
     this._explicit.set_visible(item.isExplicit);
 
     if (
-      this.dynamic_image.visible_child != DynamicImageVisibleChild.NUMBER &&
-      item.thumbnails
+      this.dynamic_image.storage_type !== DynamicImage2StorageType.TRACK_NUMBER
     ) {
-      this.dynamic_image.load_thumbnails(item.thumbnails);
+      this.dynamic_image.cover_thumbnails = item.thumbnails;
     }
 
     this.dynamic_image.setup_video(item.videoId, playlistId);
@@ -131,6 +127,11 @@ export class PlaylistListItem extends Gtk.Box {
   }
 
   private add_cb() {
-    this.emit("add", this.position);
+    this.emit("add");
+  }
+
+  clear() {
+    this.dynamic_image.clear();
+    this.listeners.clear();
   }
 }

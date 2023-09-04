@@ -23,13 +23,14 @@ export class HomePage extends Adw.Bin
     GObject.registerClass({
       GTypeName: "HomePage",
       Template: "resource:///com/vixalien/muzika/ui/pages/home.ui",
-      InternalChildren: ["scrolled", "box", "paginator"],
+      InternalChildren: ["scrolled", "box", "paginator", "carousels"],
     }, this);
   }
 
   private _scrolled!: Gtk.ScrolledWindow;
   private _box!: Gtk.Box;
   private _paginator!: Paginator;
+  private _carousels!: Gtk.Box;
 
   home?: Home;
 
@@ -92,12 +93,9 @@ export class HomePage extends Adw.Bin
   append_contents(result: MixedContent[]) {
     for (const content of result) {
       const carousel = new Carousel();
-      carousel.show_content(content);
-      carousel.insert_before(this._box, this._paginator);
 
-      const spacer = new Gtk.Separator();
-      spacer.add_css_class("spacer");
-      spacer.insert_before(this._box, this._paginator);
+      carousel.show_content(content);
+      this._carousels.append(carousel);
     }
   }
 

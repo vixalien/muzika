@@ -45,7 +45,6 @@ export class PlaylistPage extends Adw.Bin
       GTypeName: "PlaylistPage",
       Template: "resource:///com/vixalien/muzika/ui/pages/playlist.ui",
       InternalChildren: [
-        "breakpoint",
         "trackCount",
         "separator",
         "duration",
@@ -67,7 +66,6 @@ export class PlaylistPage extends Adw.Bin
 
   playlist?: Playlist;
 
-  private _breakpoint!: Adw.Breakpoint;
   private _trackCount!: Gtk.Label;
   private _duration!: Gtk.Label;
   private _separator!: Gtk.Label;
@@ -103,22 +101,6 @@ export class PlaylistPage extends Adw.Bin
     this._suggestions_item_view.model = this.suggestions_model;
 
     this._suggestions_item_view.connect("add", this.add_cb.bind(this));
-
-    this._paginator.connect("activate", () => {
-      this.load_more();
-    });
-
-    this._breakpoint.connect("unapply", () => {
-      this._playlist_item_view.show_column = true;
-      this._suggestions_item_view.show_column = true;
-      this._header.show_large_header = true;
-    });
-
-    this._breakpoint.connect("apply", () => {
-      this._playlist_item_view.show_column = false;
-      this._suggestions_item_view.show_column = false;
-      this._header.show_large_header = false;
-    });
 
     this._select.connect("toggled", () => {
       this._playlist_item_view.selection_mode = this._select.active;

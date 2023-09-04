@@ -149,6 +149,7 @@ export class AbstractLibraryPage<PageOrder extends LibraryOrder | Order = Order>
       continuation: this.results.continuation,
     })
       .then((library) => {
+        this.results!.items.push(...library.items);
         this.results!.continuation = library.continuation;
 
         this.show_library(library);

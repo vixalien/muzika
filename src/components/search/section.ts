@@ -3,9 +3,11 @@ import GObject from "gi://GObject";
 import GLib from "gi://GLib";
 
 import { filters, search, SearchContent, SearchResults } from "../../muse.js";
-import { InlineCard } from "./inlinecard.js";
 import { search_args_to_url } from "../../pages/search.js";
-import { DynamicImageState } from "../dynamic-image.js";
+import { FlatListView } from "../carousel/view/flatlist.js";
+import { PlayableContainer } from "src/util/playablelist.js";
+
+FlatListView;
 
 export class SearchSection extends Gtk.Box {
   static {
@@ -13,13 +15,13 @@ export class SearchSection extends Gtk.Box {
       GTypeName: "SearchSection",
       Template:
         "resource:///com/vixalien/muzika/ui/components/search/section.ui",
-      InternalChildren: ["title", "more", "content"],
+      InternalChildren: ["title", "more", "card_view"],
     }, this);
   }
 
-  _title!: Gtk.Label;
-  _more!: Gtk.Button;
-  _content!: Gtk.Box;
+  private _title!: Gtk.Label;
+  private _more!: Gtk.Button;
+  private _card_view!: FlatListView;
 
   args: Parameters<typeof search>;
   show_more: boolean;
@@ -37,90 +39,6 @@ export class SearchSection extends Gtk.Box {
     this.args = options.args;
     this.show_more = options.show_more ?? false;
     this.show_type = options.show_type ?? true;
-
-    this._content.connect("row-activated", this.row_activated.bind(this));
-  }
-
-  row_activated(_: this, row: InlineCard) {
-    if (!row.content) return;
-
-    row.dynamic_image.state = DynamicImageState.LOADING;
-
-    let uri: string | null = null;
-
-    switch (row.content.type) {
-      case "playlist":
-        uri = `playlist:${row.content.browseId}`;
-        break;
-      case "artist":
-        uri = `artist:${row.content.browseId}`;
-        break;
-      case "profile":
-        uri = `channel:${row.content.browseId}`;
-        break;
-      case "album":
-        uri = `album:${row.content.browseId}`;
-        break;
-      case "radio":
-        this.activate_action(
-          "queue.play-playlist",
-          GLib.Variant.new_string(
-            `${row.content.playlistId}?video=${row.content.videoId}`,
-          ),
-        );
-        break;
-      case "song":
-      case "video":
-        this.activate_action(
-          "queue.play-song",
-          GLib.Variant.new_string(
-            row.content.videoId,
-          ),
-        );
-        break;
-    }
-
-    if (uri) {
-      this.activate_action(
-        "navigator.visit",
-        GLib.Variant.new_string("muzika:" + uri),
-      );
-    }
-  }
-
-  add_content(content: SearchContent) {
-    let card = new InlineCard();
-
-    if (!this.show_type) card.show_type = false;
-
-    switch (content.type) {
-      case "song":
-        card.set_song(content);
-        break;
-      case "video":
-        card.set_video(content);
-        break;
-      case "album":
-        card.set_album(content);
-        break;
-      case "artist":
-        card.set_artist(content);
-        break;
-      case "profile":
-        card.set_profile(content);
-        break;
-      case "playlist":
-        card.set_playlist(content);
-        break;
-      case "radio":
-        card.set_radio(content);
-        break;
-        // default:
-        //   console.error("Unknown search content type", content.type);
-        //   return;
-    }
-
-    this._content.append(card);
   }
 
   set_category(category: SearchResults["categories"][0]) {
@@ -146,8 +64,10 @@ export class SearchSection extends Gtk.Box {
       );
     }
 
-    category.results.forEach((result) => {
-      this.add_content(result);
-    });
+    this._card_view.items.splice(
+      0,
+      0,
+      category.results.map(PlayableContainer.new_from_search_content),
+    );
   }
 }

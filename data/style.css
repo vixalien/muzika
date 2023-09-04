@@ -163,18 +163,22 @@ label.bold-link link {
 
 .carousel-list-view,
 .carousel-grid-view,
-.carousel-flat-song-view {
+.carousel-flat-song-view,
+.playlist-list-view,
+.carousel-flat-list-view {
   border-spacing: 6px;
   padding-left: 6px;
   padding-right: 6px;
 }
 
-.carousel-list-view>row {
+.carousel-list-view>row,
+.playlist-list-view>row {
   border-radius: 12px;
   padding: 6px;
 }
 
-.carousel-grid-view>child {
+.carousel-grid-view>child,
+.carousel-flat-list-view>row {
   border-radius: 12px;
   padding: 3px;
 }
@@ -190,14 +194,18 @@ label.bold-link link {
   background-color: transparent;
 }
 
-.playlist-column-view listview,
-.playlist-list-view {
+.playlist-column-view listview {
   border-spacing: 6px;
 }
 
 .playlist-column-view listview>row,
 .playlist-list-view>row {
   border-radius: 9px;
+}
+
+.playlist-column-view {
+  padding-left: 6px;
+  padding-right: 6px;
 }
 
 .insights-clamp {
@@ -269,11 +277,16 @@ label.bold-link link {
   transition: .5s opacity;
 }
 
-.lyrics-line:hover, .lyric-line:active {
+.lyrics-line:hover,
+.lyric-line:active {
   opacity: 0.88;
   transition: .2s opacity;
 }
 
 .lyrics-line:selected {
   opacity: 1;
+}
+
+.navigation-sidebar>header {
+  padding: 0;
 }

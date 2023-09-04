@@ -1,10 +1,12 @@
 import Gtk from "gi://Gtk?version=4.0";
 import GObject from "gi://GObject";
 
-import { Grid } from "../../components/grid/index.js";
-import { MixedCard, MixedCardItem } from "./mixedcard.js";
+import { MixedCardItem } from "./mixedcard.js";
 import { Settings } from "../../application.js";
 import { Paginator } from "../paginator.js";
+import { FlatListView } from "../carousel/view/flatlist.js";
+import { CarouselGridView } from "../carousel/view/grid.js";
+import { PlayableContainer, PlayableList } from "src/util/playablelist.js";
 
 export interface LibraryViewOptions {
   filters?: string[];
@@ -22,6 +24,9 @@ export class LibraryView extends Gtk.Box {
         "stack",
         "tools",
         "box",
+        "list",
+        "grid",
+        "paginator",
       ],
       Children: ["scrolled"],
       Signals: {
@@ -55,68 +60,39 @@ export class LibraryView extends Gtk.Box {
   private _list_button!: Gtk.ToggleButton;
   private _tools!: Gtk.Box;
   private _box!: Gtk.Box;
+  private _list!: FlatListView;
+  private _grid!: CarouselGridView;
+  private _paginator!: Paginator;
+
+  get items() {
+    return this._list.items as PlayableList<MixedCardItem>;
+  }
+
+  set items(items: PlayableList<MixedCardItem>) {
+    this._list.items = this._grid.items = items;
+  }
 
   scrolled!: Gtk.ScrolledWindow;
 
-  grid: Grid;
-  list: Gtk.Box;
-  paginator: Paginator;
-
   get reveal_paginator() {
-    return this.paginator.child_revealed;
+    return this._paginator.child_revealed;
   }
 
   set reveal_paginator(value: boolean) {
-    this.paginator.reveal_child = value;
+    this._paginator.reveal_child = value;
   }
 
   get paginator_loading() {
-    return this.paginator.loading;
+    return this._paginator.loading;
   }
 
   set paginator_loading(value: boolean) {
-    this.paginator.loading = value;
+    this._paginator.loading = value;
   }
 
   constructor(props: LibraryViewOptions = {}) {
     super({
       vexpand: true,
-    });
-
-    this.grid = new Grid();
-    this.grid.margin_start = 6;
-    this.grid.margin_end = 12;
-
-    this.list = new Gtk.Box({
-      margin_start: 12,
-      margin_end: 12,
-      orientation: Gtk.Orientation.VERTICAL,
-    });
-    this.list.add_css_class("background");
-
-    this._stack.add_named(this.grid, "grid");
-    this._stack.add_named(this.list, "list");
-
-    this.paginator = new Paginator();
-
-    this.paginator.connect("activate", () => {
-      this.emit("paginate");
-    });
-
-    this._box.append(this.paginator);
-
-    this._grid_button.connect("toggled", (button) => {
-      if (button.active) {
-        this._stack.visible_child_name = "grid";
-        Settings.set_boolean("prefer-list", false);
-      }
-    });
-
-    this._list_button.connect("toggled", (button) => {
-      if (button.active) {
-        this._stack.visible_child_name = "list";
-        Settings.set_boolean("prefer-list", true);
-      }
     });
 
     if (Settings.get_boolean("prefer-list")) {
@@ -138,6 +114,8 @@ export class LibraryView extends Gtk.Box {
     } else {
       this._drop_down.hide();
     }
+
+    this.items = new PlayableList<MixedCardItem>();
   }
 
   set_selected_filter(filter: string) {
@@ -162,16 +140,24 @@ export class LibraryView extends Gtk.Box {
   }
 
   show_items(items: MixedCardItem[]) {
-    this.grid.show_items(items);
+    this.items.splice(
+      this.items.get_n_items(),
+      0,
+      items.map(PlayableContainer.new_from_mixed_card_item),
+    );
+  }
 
-    items.forEach((item) => {
-      if (!item) return;
+  private on_list_button_toggled_cb(button: Gtk.ToggleButton) {
+    Settings.set_boolean("prefer-list", button.active);
 
-      const card = new MixedCard();
+    if (button.active) {
+      this._stack.visible_child = this._list;
+    } else {
+      this._stack.visible_child = this._grid;
+    }
+  }
 
-      card.set_item(item);
-
-      this.list.append(card);
-    });
+  private paginated_cb() {
+    this.emit("paginate");
   }
 }

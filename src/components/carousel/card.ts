@@ -1,6 +1,5 @@
 import Gtk from "gi://Gtk?version=4.0";
 import GObject from "gi://GObject";
-import Adw from "gi://Adw";
 import GLib from "gi://GLib";
 
 import {
@@ -13,16 +12,14 @@ import {
   Thumbnail,
   WatchPlaylist,
 } from "../../muse.js";
-import { load_thumbnails } from "../webimage.js";
+import { get_thumbnail_with_size } from "../webimage.js";
 import { ParsedLibraryArtist } from "libmuse/types/parsers/library.js";
-import {
-  DynamicImage,
-  DynamicImageState,
-  DynamicImageVisibleChild,
-} from "../dynamic-image.js";
-import { PlaylistImage, PlaylistImageState } from "../playlist-image.js";
+import { DynamicImageState } from "../dynamic-image.js";
+import { PlaylistImage } from "../playlist-image.js";
 import { pretty_subtitles } from "src/util/text.js";
 import { MixedCardItem } from "../library/mixedcard.js";
+import { DynamicImage2 } from "../dynamic-image-2.js";
+import { SignalListeners } from "src/util/signal-listener.js";
 
 enum CarouselImageType {
   AVATAR,
@@ -40,10 +37,7 @@ export class CarouselCard extends Gtk.Box {
       Template:
         "resource:///com/vixalien/muzika/ui/components/carousel/card.ui",
       InternalChildren: [
-        "image_stack",
-        "avatar",
         "dynamic_image",
-        "playlist_image",
         "title",
         "subtitles",
         "explicit",
@@ -52,10 +46,7 @@ export class CarouselCard extends Gtk.Box {
     }, this);
   }
 
-  private _image_stack!: Gtk.Stack;
-  private _avatar!: Adw.Avatar;
-  private _dynamic_image!: DynamicImage;
-  private _playlist_image!: PlaylistImage;
+  private _dynamic_image!: DynamicImage2;
   private _title!: Gtk.Label;
   private _subtitles!: Gtk.Box;
   private _explicit!: Gtk.Image;
@@ -63,106 +54,82 @@ export class CarouselCard extends Gtk.Box {
 
   private content?: MixedCardItem;
 
+  private listeners = new SignalListeners();
+  private hover = new Gtk.EventControllerMotion();
+
   constructor() {
     super();
 
-    const hover = new Gtk.EventControllerMotion();
-
-    hover.connect("enter", () => {
+    this.listeners.connect(this.hover, "enter", () => {
       this._subtitle.add_css_class("hover");
     });
 
-    hover.connect("leave", () => {
+    this.listeners.connect(this.hover, "leave", () => {
       this._subtitle.remove_css_class("hover");
     });
 
-    this._subtitles.add_controller(hover);
+    this._subtitles.add_controller(this.hover);
 
-    this._subtitle.connect("activate-link", (_, uri) => {
-      if (uri && uri.startsWith("muzika:")) {
-        this.activate_action(
-          "navigator.visit",
-          GLib.Variant.new_string(uri),
-        );
+    this.listeners.connect(
+      this._subtitle,
+      "activate-link",
+      (_: Gtk.Label, uri: string) => {
+        if (uri && uri.startsWith("muzika:")) {
+          this.activate_action(
+            "navigator.visit",
+            GLib.Variant.new_string(uri),
+          );
 
-        return true;
-      }
-    });
+          return true;
+        }
+      },
+    );
   }
 
-  clear() {
+  reset() {
+    this.set_align(Gtk.Align.FILL);
+
     this._title.label = "";
     this._subtitle.label = "";
     this._explicit.visible = false;
     this.subtitle_authors = [];
     this.content = undefined;
-    this.set_align(Gtk.Align.FILL);
+
     this._dynamic_image.clear();
   }
 
-  get fill_space() {
-    return this._dynamic_image.picture.fill_space;
-  }
+  clear() {
+    this._dynamic_image.clear();
 
-  set fill_space(fill_space: boolean) {
-    this._dynamic_image.picture.fill_space = fill_space;
-    this._playlist_image.picture.fill_space = fill_space;
-  }
+    this.listeners.clear();
 
-  // utils
-
-  private show_image(image_type: CarouselImageType) {
-    switch (image_type) {
-      case CarouselImageType.AVATAR:
-        this._image_stack.visible_child = this._avatar;
-        break;
-      case CarouselImageType.DYNAMIC_IMAGE:
-        this._image_stack.visible_child = this._dynamic_image;
-        this._dynamic_image.visible_child = DynamicImageVisibleChild.IMAGE;
-        break;
-      case CarouselImageType.DYNAMIC_PICTURE:
-        this._image_stack.visible_child = this._dynamic_image;
-        this._dynamic_image.visible_child = DynamicImageVisibleChild.PICTURE;
-        break;
-      case CarouselImageType.PLAYLIST_IMAGE:
-        this._image_stack.visible_child = this._playlist_image;
-        break;
-    }
-  }
-
-  private load_thumbnails(
-    thumbnails: Thumbnail[],
-    options: Parameters<typeof load_thumbnails>[2] = 60,
-  ) {
-    let image: Gtk.Image | Gtk.Picture | Adw.Avatar | null = null;
-
-    switch (this._image_stack.visible_child) {
-      case this._avatar:
-        image = this._avatar;
-        break;
-      case this._dynamic_image:
-        this._dynamic_image.load_thumbnails(thumbnails, options);
-        break;
-      case this._playlist_image:
-        this._playlist_image.load_thumbnails(thumbnails, options);
-        break;
-      default:
-        null;
-        break;
-    }
-
-    if (image) {
-      return load_thumbnails(image, thumbnails, options);
+    if (this.hover.widget != null) {
+      this._subtitles.remove_controller(this.hover);
     }
   }
 
   private setup_image(
     image_type: CarouselImageType,
     thumbnails: Thumbnail[],
-    options?: Parameters<typeof load_thumbnails>[2],
   ) {
-    this.show_image(image_type);
-    this.load_thumbnails(thumbnails, options);
+    switch (image_type) {
+      case CarouselImageType.AVATAR:
+        this._dynamic_image.avatar_thumbnails = thumbnails;
+        break;
+      case CarouselImageType.DYNAMIC_IMAGE:
+        this._dynamic_image.persistent_play_button = true;
+        this._dynamic_image.cover_thumbnails = thumbnails;
+        break;
+        // TODO: fix
+      case CarouselImageType.PLAYLIST_IMAGE:
+        this._dynamic_image.playlist = true;
+        this._dynamic_image.cover_thumbnails = thumbnails;
+        break;
+      case CarouselImageType.DYNAMIC_PICTURE:
+        this._dynamic_image.persistent_play_button = true;
+        this._dynamic_image.video_thumbnails = thumbnails;
+        break;
+    }
   }
 
   private subtitle_authors: (string | ArtistRun)[] = [];
@@ -180,7 +147,7 @@ export class CarouselCard extends Gtk.Box {
 
   private set_title(title: string) {
     this._title.tooltip_text = this._title.label = title;
-    this._avatar.text = title;
+    // this._avatar.text = title;
   }
 
   private set_subtitle(
@@ -214,19 +181,8 @@ export class CarouselCard extends Gtk.Box {
   }
 
   private setup_playlist(playlistId: string | null) {
-    switch (this._image_stack.visible_child) {
-      case this._playlist_image: {
-        if (playlistId) {
-          this._playlist_image.setup_playlist(playlistId);
-        }
-        break;
-      }
-      case this._dynamic_image: {
-        if (playlistId) {
-          this._dynamic_image.setup_playlist(playlistId);
-        }
-        break;
-      }
+    if (playlistId) {
+      this._dynamic_image.setup_playlist(playlistId);
     }
   }
 
@@ -263,10 +219,10 @@ export class CarouselCard extends Gtk.Box {
     this.set_title(artist.name);
     this.set_subtitle(artist.subscribers ?? artist.songs ?? "");
 
-    this.setup_image(CarouselImageType.AVATAR, artist.thumbnails, {
-      width: 160,
-      upscale: true,
-    });
+    this.setup_image(CarouselImageType.AVATAR, [
+      ...artist.thumbnails,
+      get_thumbnail_with_size(artist.thumbnails[0], 160),
+    ]);
   }
 
   show_video(video: ParsedVideo) {
@@ -326,6 +282,7 @@ export class CarouselCard extends Gtk.Box {
         this.show_song(content);
         break;
       case "artist":
+      case "channel":
         this.show_artist(content);
         break;
       case "library-artist":
@@ -353,24 +310,5 @@ export class CarouselCard extends Gtk.Box {
 
   set_state(state: DynamicImageState) {
     this._dynamic_image.state = state;
-
-    let playlist_image_state: PlaylistImageState;
-
-    switch (state) {
-      case DynamicImageState.DEFAULT:
-        playlist_image_state = PlaylistImageState.DEFAULT;
-        break;
-      case DynamicImageState.LOADING:
-        playlist_image_state = PlaylistImageState.LOADING;
-        break;
-      case DynamicImageState.PAUSED:
-        playlist_image_state = PlaylistImageState.PAUSED;
-        break;
-      case DynamicImageState.PLAYING:
-        playlist_image_state = PlaylistImageState.PLAYING;
-        break;
-    }
-
-    this._playlist_image.state = playlist_image_state;
   }
 }

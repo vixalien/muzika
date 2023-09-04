@@ -22,7 +22,7 @@ DynamicImage;
 export class TopResultCard extends Adw.Bin {
   static {
     GObject.registerClass({
-      GTypeName: "TopResult",
+      GTypeName: "TopResultCard",
       Template:
         "resource:///com/vixalien/muzika/ui/components/search/topresult.ui",
       InternalChildren: [
@@ -77,7 +77,10 @@ export class TopResultCard extends Adw.Bin {
       }
     });
 
-    const controller = Gtk.GestureClick.new();
+    const controller = new Gtk.GestureClick({
+      propagation_phase: Gtk.PropagationPhase.TARGET,
+    });
+
     controller.connect("pressed", () => {
       this.activate_cb();
     });
@@ -196,19 +199,19 @@ export class TopResultCard extends Adw.Bin {
     this._secondary_content.icon_name = "list-add-symbolic";
   }
 
-  set_song(song: TopResultSong) {
+  show_song(song: TopResultSong) {
     this.set_song_or_video(song);
 
     this.set_subtitle("Song", song.artists, [song.duration]);
   }
 
-  set_video(video: TopResultVideo) {
+  show_video(video: TopResultVideo) {
     this.set_song_or_video(video);
 
     this.set_subtitle("Video", video.artists, [video.duration]);
   }
 
-  set_album(album: TopResultAlbum) {
+  show_album(album: TopResultAlbum) {
     this.result = album;
 
     this.dynamic_image.load_thumbnails(album.thumbnails);
@@ -222,7 +225,7 @@ export class TopResultCard extends Adw.Bin {
     this._secondary.sensitive = false;
   }
 
-  set_artist(artist: TopResultArtist) {
+  show_artist(artist: TopResultArtist) {
     this.result = artist;
 
     this.show_avatar(true);
@@ -255,7 +258,7 @@ export class TopResultCard extends Adw.Bin {
     }
   }
 
-  set_playlist(playlist: TopResultPlaylist) {
+  show_playlist(playlist: TopResultPlaylist) {
     this.result = playlist;
 
     this.dynamic_image.load_thumbnails(playlist.thumbnails);
@@ -281,6 +284,29 @@ export class TopResultCard extends Adw.Bin {
       );
     } else {
       this._secondary.sensitive = false;
+    }
+  }
+
+  show_top_result(top_result: TopResult) {
+    switch (top_result.type) {
+      case "song":
+        this.show_song(top_result);
+        break;
+      case "video":
+        this.show_video(top_result);
+        break;
+      case "album":
+        this.show_album(top_result);
+        break;
+      case "artist":
+        this.show_artist(top_result);
+        break;
+      case "playlist":
+        this.show_playlist(top_result);
+        break;
+      default:
+        console.error("Unknown top result type", (top_result as any).type);
+        return;
     }
   }
 }

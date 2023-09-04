@@ -4,17 +4,15 @@ import Gtk from "gi://Gtk?version=4.0";
 
 import { get_history, History, PlaylistItem } from "../../muse.js";
 
-import { PlaylistItemCard } from "src/components/playlist/item.js";
 import { EndpointContext, MuzikaComponent } from "src/navigation.js";
-import { InlineSongListView } from "src/components/carousel/view/inlinesonglist.js";
-import { PlayableContainer } from "src/util/playablelist.js";
-
-interface PlaylistItemWithCategory extends PlaylistItem {
-  category?: string;
-}
+import { PlaylistItemView } from "src/components/playlist/itemview.js";
+import {
+  SectionedPlayableContainer,
+  SectionedPlayableList,
+} from "src/util/playablelist.js";
 
 interface HistoryTitleOptions {
-  title: string;
+  title?: string;
 }
 
 interface HistoryState {
@@ -27,25 +25,38 @@ class HistoryTitle extends Gtk.Box {
       GTypeName: "HistoryTitle",
     }, this);
   }
-  constructor({ title }: HistoryTitleOptions) {
+
+  private label_widget: Gtk.Label;
+
+  get label() {
+    return this.label_widget.label;
+  }
+
+  set label(label: string) {
+    this.label_widget.label = label;
+  }
+
+  constructor(props: HistoryTitleOptions = {}) {
     super({
       margin_top: 12,
       margin_bottom: 12,
     });
 
-    const label = new Gtk.Label({
-      label: title,
+    this.label_widget = new Gtk.Label({
+      label: props.title ?? null as unknown as string,
       hexpand: true,
       xalign: 0,
     });
 
-    label.add_css_class("title-1");
+    this.label_widget.add_css_class("title-1");
 
-    this.append(label);
+    this.append(this.label_widget);
   }
 }
 
-InlineSongListView;
+interface CategoryMeta {
+  title: string;
+}
 
 export class HistoryPage extends Adw.Bin
   implements MuzikaComponent<History, HistoryState> {
@@ -54,28 +65,50 @@ export class HistoryPage extends Adw.Bin
       GTypeName: "HistoryPage",
       Template:
         "resource:///com/vixalien/muzika/ui/components/library/history.ui",
-      InternalChildren: ["list_view"],
+      InternalChildren: ["item_view"],
     }, this);
   }
 
-  private _list_view!: InlineSongListView;
+  private _item_view!: PlaylistItemView;
 
   results?: History;
+
+  model = new SectionedPlayableList<PlaylistItem>();
 
   constructor() {
     super();
 
-    // this._list.set_header_func((row) => {
-    //   const card = row as PlaylistItemCard;
-    //   const item = card.item as PlaylistItemWithCategory;
-    //   const category = item?.category;
+    this._item_view.model = this.model;
 
-    //   if (category) {
-    //     const title = new HistoryTitle({ title: category });
+    // TODO: see https://gitlab.gnome.org/GNOME/gjs/-/issues/570
+    const factory = new Gtk.SignalListItemFactory();
+    factory.connect("setup", this._header_setup_cb.bind(this));
+    factory.connect("bind", this._header_bind_cb.bind(this));
 
-    //     row.set_header(title);
-    //   }
-    // });
+    this._item_view.header_factory = factory;
+  }
+
+  private _header_setup_cb(
+    _factory: Gtk.SignalListItemFactory,
+    list_item: Gtk.ListItem,
+  ) {
+    const title = new HistoryTitle();
+    list_item.set_child(title);
+  }
+
+  private _header_bind_cb(
+    _factory: Gtk.SignalListItemFactory,
+    list_item: Gtk.ListHeader,
+  ) {
+    const title = list_item.child as HistoryTitle;
+    const container = list_item.item as SectionedPlayableContainer<
+      PlaylistItem,
+      CategoryMeta
+    >;
+
+    const label = container.section?.object.title;
+
+    title.label = label ?? "";
   }
 
   loading = false;
@@ -87,29 +120,19 @@ export class HistoryPage extends Adw.Bin
   }
 
   private show_library(library: History) {
-    const items_with_category = library.categories.reduce(
-      (acc, category) => {
-        return [
-          ...acc,
-          ...category.items.map((item, index) => {
-            if (index === 0) {
-              return {
-                ...item,
-                category: category.title,
-              } as PlaylistItemWithCategory;
-            } else {
-              return item;
-            }
-          }),
-        ];
-      },
-      [] as PlaylistItemWithCategory[],
-    );
+    const items = library.categories.reduce((acc, category) => {
+      return acc.concat(category.items.map((item, index) => {
+        return SectionedPlayableContainer.new_from_playlist_item<CategoryMeta>(
+          item,
+          index === 0 ? { title: category.title } : undefined,
+        );
+      }));
+    }, [] as SectionedPlayableContainer[]);
 
-    this._list_view.items.splice(
+    this.model.splice(
+      this.model.n_items,
       0,
-      0,
-      items_with_category.map(PlayableContainer.new_from_playlist_item),
+      items,
     );
   }
 

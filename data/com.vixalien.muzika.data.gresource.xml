@@ -4,21 +4,19 @@
     <!-- style -->
     <file>style.css</file>
     <!-- components -->
-    <file preprocess="xml-stripblanks">ui/components/album/item.ui</file>
     <file preprocess="xml-stripblanks">ui/components/carousel/card.ui</file>
     <file preprocess="xml-stripblanks">ui/components/carousel/carousel.ui</file>
-    <file preprocess="xml-stripblanks">ui/components/carousel/flatsong.ui</file>
+    <file preprocess="xml-stripblanks">ui/components/carousel/flatcard.ui</file>
     <file preprocess="xml-stripblanks">ui/components/carousel/moodbox.ui</file>
+    <file preprocess="xml-stripblanks">ui/components/dynamic-action.ui</file>
     <file preprocess="xml-stripblanks">ui/components/dynamic-image.ui</file>
     <file preprocess="xml-stripblanks">ui/components/library/history.ui</file>
-    <file preprocess="xml-stripblanks">ui/components/library/mixedcard.ui</file>
     <file preprocess="xml-stripblanks">ui/components/library/songs.ui</file>
     <file preprocess="xml-stripblanks">ui/components/library/view.ui</file>
     <file preprocess="xml-stripblanks">ui/components/loading.ui</file>
     <file preprocess="xml-stripblanks">ui/components/nav/page.ui</file>
     <file preprocess="xml-stripblanks">ui/components/navbar/button.ui</file>
     <file preprocess="xml-stripblanks">ui/components/navbar/index.ui</file>
-    <file preprocess="xml-stripblanks">ui/components/navbar/section.ui</file>
     <file preprocess="xml-stripblanks">ui/components/navbar/title.ui</file>
     <file preprocess="xml-stripblanks">ui/components/paginator.ui</file>
     <file preprocess="xml-stripblanks">ui/components/player/video/controls.ui</file>
@@ -36,13 +34,10 @@
     <file preprocess="xml-stripblanks">ui/components/playlist-image.ui</file>
     <file preprocess="xml-stripblanks">ui/components/playlist/bar.ui</file>
     <file preprocess="xml-stripblanks">ui/components/playlist/edit.ui</file>
-    <file preprocess="xml-stripblanks">ui/components/playlist/item.ui</file>
     <file preprocess="xml-stripblanks">ui/components/playlist/largeheader.ui</file>
     <file preprocess="xml-stripblanks">ui/components/playlist/listitem.ui</file>
     <file preprocess="xml-stripblanks">ui/components/playlist/miniheader.ui</file>
-    <file preprocess="xml-stripblanks">ui/components/search/inlinecard.ui</file>
     <file preprocess="xml-stripblanks">ui/components/search/section.ui</file>
-    <file preprocess="xml-stripblanks">ui/components/search/songcard.ui</file>
     <file preprocess="xml-stripblanks">ui/components/search/topresult.ui</file>
     <file preprocess="xml-stripblanks">ui/components/search/topresultsection.ui</file>
     <!-- pages -->
@@ -61,6 +56,7 @@
     <file preprocess="xml-stripblanks">ui/pages/moods.ui</file>
     <file preprocess="xml-stripblanks">ui/pages/new-releases.ui</file>
     <file preprocess="xml-stripblanks">ui/pages/playlist.ui</file>
+    <file preprocess="xml-stripblanks">ui/pages/preferences.ui</file>
     <file preprocess="xml-stripblanks">ui/pages/search.ui</file>
     <!-- window -->
     <file preprocess="xml-stripblanks">ui/window.ui</file>

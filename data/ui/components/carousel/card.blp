@@ -3,26 +3,13 @@ using Adw 1;
 
 template $CarouselCard : Box {
   valign: start;
+  halign: center;
   orientation: vertical;
   hexpand: false;
   spacing: 6;
 
-  Stack image_stack {
-    Adw.Avatar avatar {
-      size: 160;
-      text: "Avatar";
-      overflow: hidden;
-
-      styles ["rounded"]
-    }
-
-    $DynamicImage dynamic_image {
-      image-size: 160;
-    }
-
-    $PlaylistImage playlist_image {
-      image-size: 160;
-    }
+  $DynamicImage2 dynamic_image {
+    size: 160;
   }
 
   Box meta {
