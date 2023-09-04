@@ -12,12 +12,17 @@ template $MuzikaPreferencesWindow : Adw.PreferencesWindow {
     icon-name: "multimedia-volume-control-symbolic";
 
     Adw.PreferencesGroup {
-      title: _("Quality");
-      description: _("Change the preferred quality of video and audio.");
+      title: _("Preffered Video Quality");
+      description: _("The selected quality will be played if available.");
 
       Adw.ComboRow video_quality {
         title: _("Video Quality");
       }
+    }
+
+    Adw.PreferencesGroup {
+      title: _("Preffered Audio Quality");
+      description: _("Higher audio qualities are not available for music videos and can only be played by logged in YouTube Premium users.");
       
       Adw.ComboRow audio_quality {
         title: _("Audio Quality");
