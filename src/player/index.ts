@@ -618,8 +618,8 @@ export class MuzikaPlayer extends MuzikaMediaStream {
   get duration() {
     // normalise duration when the media-info is not available
     if (super.duration <= 0) {
-      const duration_seconds =
-        this.now_playing?.object.song.videoDetails.lengthSeconds;
+      const duration_seconds = this.now_playing?.object.song.videoDetails
+        .lengthSeconds;
 
       if (duration_seconds) {
         // to microsecond
@@ -1199,7 +1199,20 @@ function get_song_uri(song: Song) {
   }`;
 }
 
-enum VideoQuality {
+export const VideoQualities: { name: string; value: string }[] = [
+  { name: _("Auto"), value: "auto" },
+  { name: "144p", value: "tiny" },
+  { name: "240p", value: "small" },
+  { name: "360p", value: "medium" },
+  { name: "480p", value: "large" },
+  { name: "720p", value: "hd720" },
+  { name: "1080p (HD)", value: "hd1080" },
+  { name: "1440p (HD)", value: "hd1440" },
+  { name: "2160p (4K)", value: "hd2160" },
+  { name: _("High Resolution"), value: "highres" },
+];
+
+export enum VideoQuality {
   auto = 0,
   tiny = 1,
   small = 2,
@@ -1212,7 +1225,15 @@ enum VideoQuality {
   highres = 9,
 }
 
-enum AudioQuality {
+export const AudioQualities: { name: string; value: string }[] = [
+  { name: _("Auto"), value: "auto" },
+  { name: _("Very Low"), value: "tiny" },
+  { name: _("Low"), value: "low" },
+  { name: _("Medium"), value: "medium" },
+  { name: _("High"), value: "high" },
+];
+
+export enum AudioQuality {
   auto = 0,
   tiny = 1,
   low = 2,

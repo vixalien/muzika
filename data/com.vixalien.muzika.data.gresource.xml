@@ -56,6 +56,7 @@
     <file preprocess="xml-stripblanks">ui/pages/moods.ui</file>
     <file preprocess="xml-stripblanks">ui/pages/new-releases.ui</file>
     <file preprocess="xml-stripblanks">ui/pages/playlist.ui</file>
+    <file preprocess="xml-stripblanks">ui/pages/preferences.ui</file>
     <file preprocess="xml-stripblanks">ui/pages/search.ui</file>
     <!-- window -->
     <file preprocess="xml-stripblanks">ui/window.ui</file>

@@ -10,6 +10,7 @@ import { AddActionEntries } from "./util/action.js";
 import { MuzikaPlayer } from "./player/index.js";
 import { MPRIS } from "./mpris.js";
 import { get_option } from "src/muse";
+import { MuzikaPreferencesWindow } from "./pages/preferences.js";
 
 export const Settings = new Gio.Settings({ schema: pkg.name });
 
@@ -20,7 +21,7 @@ export class Application extends Adw.Application {
     GObject.registerClass(this);
   }
 
-  init_actions() {
+  private init_actions() {
     (this.add_action_entries as AddActionEntries)([
       {
         name: "quit",
@@ -28,9 +29,25 @@ export class Application extends Adw.Application {
           this.quit();
         },
       },
+      {
+        name: "preferences",
+        activate: this.show_preferences.bind(this),
+      },
     ]);
 
     this.set_accels_for_action("app.quit", ["<primary>q"]);
+    this.set_accels_for_action("app.preferences", ["<control>comma"]);
+  }
+
+  private preferences_window!: MuzikaPreferencesWindow;
+
+  private show_preferences() {
+    if (!this.preferences_window) {
+      this.preferences_window = new MuzikaPreferencesWindow();
+      this.preferences_window.set_transient_for(this.get_active_window());
+    }
+
+    this.preferences_window.present();
   }
 
   argv: string[] = [];
