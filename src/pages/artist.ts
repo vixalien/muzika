@@ -53,6 +53,9 @@ export class ArtistPage extends Adw.Bin
 
   show_top_songs(songs: Artist["songs"]) {
     this._playlist_item_view.playlistId = songs.browseId ?? undefined;
+    this._playlist_item_view.show_artists = songs.results.some((track) =>
+      track.artists.length > 0
+    );
 
     if (songs.results && songs.results.length > 0) {
       this._top_songs.visible = true;

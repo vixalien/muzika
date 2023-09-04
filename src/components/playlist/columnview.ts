@@ -212,7 +212,7 @@ class TitleColumn extends Gtk.ColumnViewColumn {
   constructor() {
     super({
       title: _("Song"),
-      // expand: true,
+      expand: true,
     });
 
     const factory = Gtk.SignalListItemFactory.new();
@@ -453,6 +453,13 @@ export class PlaylistColumnView extends Gtk.ColumnView {
           false,
           GObject.ParamFlags.READWRITE,
         ),
+        "show-artists": GObject.ParamSpec.boolean(
+          "show-artists",
+          "Show Artists",
+          "Whether to show the artists of each track",
+          GObject.ParamFlags.READWRITE,
+          true,
+        ),
         playlistId: GObject.param_spec_string(
           "playlist-id",
           "Playlist ID",
@@ -528,6 +535,16 @@ export class PlaylistColumnView extends Gtk.ColumnView {
     this._rank_column.visible = value;
   }
 
+  // property: show-artists
+
+  get show_artists() {
+    return this._artist_column.visible;
+  }
+
+  set show_artists(value: boolean) {
+    this._artist_column.visible = value;
+  }
+
   // property: playlistId
 
   private _playlistId?: string;
@@ -556,9 +573,10 @@ export class PlaylistColumnView extends Gtk.ColumnView {
   }
 
   constructor(
-    { selection_mode, show_rank, show_add, album, ...options }: Partial<
-      PlaylistColumnViewOptions
-    > = {},
+    { selection_mode, show_rank, show_add, show_artists, album, ...options }:
+      Partial<
+        PlaylistColumnViewOptions
+      > = {},
   ) {
     super(options);
 
@@ -568,6 +586,10 @@ export class PlaylistColumnView extends Gtk.ColumnView {
 
     if (show_rank != null) {
       this.show_rank = show_rank;
+    }
+
+    if (show_artists != null) {
+      this.show_artists = show_artists;
     }
 
     if (show_add != null) {

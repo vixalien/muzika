@@ -98,7 +98,11 @@ export class AlbumPage extends Adw.Bin
 
     this.track = track ?? null;
     this.album = album;
+
     this._playlist_item_view.playlistId = album.audioPlaylistId ?? undefined;
+    this._playlist_item_view.show_artists = album.tracks.some((track) =>
+      track.artists.length > 0
+    );
 
     this._header.load_thumbnails(album.thumbnails);
     this._header.set_description(album.description);

@@ -28,6 +28,13 @@ export class PlaylistItemView extends Adw.Bin {
           GObject.ParamFlags.READWRITE,
           false,
         ),
+        "show-artists": GObject.ParamSpec.boolean(
+          "show-artists",
+          "Show Artists",
+          "Whether to show the artists of each track",
+          GObject.ParamFlags.READWRITE,
+          true,
+        ),
         "show-column": GObject.ParamSpec.boolean(
           "show-column",
           "Show Column",
@@ -167,6 +174,24 @@ export class PlaylistItemView extends Adw.Bin {
     }
   }
 
+  // property: show-rank
+
+  private _show_artists = true;
+
+  get show_artists() {
+    return this._show_artists;
+  }
+
+  set show_artists(show: boolean) {
+    this._show_artists = show;
+
+    const child = this.child as CurrentChild;
+
+    if (child instanceof PlaylistColumnView) {
+      child.show_artists = show;
+    }
+  }
+
   // property: show-column
 
   get show_column() {
@@ -190,6 +215,7 @@ export class PlaylistItemView extends Adw.Bin {
       this.child = new PlaylistColumnView({
         ...props,
         show_rank: this.show_rank,
+        show_artists: this.show_artists,
       });
     } else {
       this.child = new PlaylistListView(
