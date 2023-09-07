@@ -90,7 +90,7 @@
         {
           "type": "git",
           "url": "https://gitlab.gnome.org/GNOME/libadwaita.git",
-          "commit": "86e0f55e5beb2786767326766cd55246ad4a9266"
+          "commit": "ff0accc8a43f18d27a95abde0167a8c2cdacb1cc"
         }
       ],
       "modules": [
@@ -189,7 +189,7 @@
             {
               "type": "git",
               "url": "https://gitlab.gnome.org/GNOME/gtk.git",
-              "commit": "ae2c10996a8b01cbc4034bb9bb86722b2a7cee03"
+              "commit": "21277a37d60500e3ccaf1a50d8c59e9f091de7b0"
             }
           ]
         }
