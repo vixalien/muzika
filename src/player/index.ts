@@ -425,15 +425,40 @@ export class MuzikaMediaStream extends Gtk.MediaStream {
 
   // property: seekable
 
+  // first try to refresh URI when an error occurs
+
+  protected refreshed_uri = false;
+
+  protected async refresh_uri(): Promise<void> {
+    this.refreshed_uri = true;
+  }
+
   // FUNCTIONS
 
   // error functions
 
   gerror(error: GLib.Error): void {
+    if (this.refreshed_uri === false) {
+      this.refresh_uri();
+
+      return;
+    }
+
     this._error = error;
     this.notify("error");
 
-    console.error("error during playback", error.toString());
+    console.error(
+      "error during playback",
+      error.toString(),
+      error.code,
+      error.domain,
+      error.message,
+    );
+
+    console.error(
+      "error name",
+      GstPlay.play_error_get_name(error as GstPlay.PlayError),
+    );
 
     // TODO: cancel pending seeks
     this._play.stop();
@@ -533,6 +558,8 @@ export class MuzikaMediaStream extends Gtk.MediaStream {
     info: GstPlay.PlayMediaInfo,
   ): void {
     this._media_info = info;
+
+    this.refreshed_uri = false;
 
     if (!this.prepared) {
       this.stream_prepared(
@@ -868,6 +895,50 @@ export class MuzikaPlayer extends MuzikaMediaStream {
         }
 
         this.add_history = true;
+      })
+      .catch((error) => {
+        if (error instanceof DOMException && error.name == "AbortError") return;
+
+        console.log(error);
+      });
+  }
+
+  async refresh_uri() {
+    const track = this.now_playing?.object.track;
+
+    if (!track?.videoId) {
+      return;
+    }
+
+    if (this.loading_controller != null) {
+      this.loading_controller.abort();
+      this.loading_controller = null;
+    }
+
+    this.initial_seek_to = this.timestamp;
+
+    this.loading_controller = new AbortController();
+
+    return get_song(track.videoId, { signal: this.loading_controller!.signal })
+      .then((song) => {
+        this.refreshed_uri = true;
+
+        this._now_playing = new ObjectContainer<TrackMetadata>({
+          ...this.now_playing?.object!,
+          song,
+        });
+
+        this.notify("now-playing");
+
+        const uri = get_song_uri(song);
+
+        this.set_uri(uri);
+
+        if (this.playing) {
+          this._play.play();
+        } else {
+          this._play.pause();
+        }
       })
       .catch((error) => {
         if (error instanceof DOMException && error.name == "AbortError") return;
