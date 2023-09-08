@@ -220,6 +220,7 @@ export class PlaylistPage extends Adw.Bin
     }
 
     this.update_header_buttons();
+    this.setup_menu();
 
     if (playlist.trackCount) {
       this._trackCount.set_label(playlist.trackCount.toString());
@@ -316,21 +317,34 @@ export class PlaylistPage extends Adw.Bin
         icon_name: "list-add-symbolic",
       });
     }
+  }
 
+  private setup_menu() {
     const menu = Gio.Menu.new();
 
     menu.append(
       _("Start Radio"),
-      `queue.play-playlist("${this.playlist.id}?radio=true")`,
+      `queue.play-playlist("${this.playlist!.id}?radio=true")`,
     );
     menu.append(
       _("Play Next"),
-      `queue.add-playlist("${this.playlist.id}?next=true")`,
+      `queue.add-playlist("${this.playlist!.id}?next=true")`,
     );
     menu.append(
       _("Add to queue"),
-      `queue.add-playlist("${this.playlist.id}")`,
+      `queue.add-playlist("${this.playlist!.id}")`,
     );
+
+    const share_section = Gio.Menu.new();
+
+    share_section.append(
+      _("Copy Link"),
+      `win.copy-url("https://music.youtube.com/playlist?list=${
+        this.playlist!.id
+      }")`,
+    );
+
+    menu.append_section(null, share_section);
 
     this._menu.set_menu_model(menu);
   }
