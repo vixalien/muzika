@@ -64,10 +64,14 @@ export class SearchSection extends Gtk.Box {
       );
     }
 
+    this.add_search_contents(category.results);
+  }
+
+  add_search_contents(search_contents: SearchContent[]) {
     this._card_view.items.splice(
+      this._card_view.items.n_items,
       0,
-      0,
-      category.results.map(PlayableContainer.new_from_search_content),
+      search_contents.map(PlayableContainer.new_from_search_content),
     );
   }
 }

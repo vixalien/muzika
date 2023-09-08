@@ -14,7 +14,7 @@ template $SearchPage : Adw.Bin {
         condition ("max-width: 800sp")
       }
       
-      ScrolledWindow scrolled {
+      ScrolledWindow {
         vexpand: true;
         hscrollbar-policy: never;
 
@@ -22,7 +22,7 @@ template $SearchPage : Adw.Bin {
           tightening-threshold: 1200;
           maximum-size: 1400;
 
-          Box content {
+          Box {
             orientation: vertical;
 
             Box details {
@@ -50,6 +50,10 @@ template $SearchPage : Adw.Bin {
                 icon-name: "system-search-symbolic";
                 description: _("Try a different search");
               }
+            }
+
+            $Paginator paginator {
+              activate => $search_more();
             }
           }
         }
