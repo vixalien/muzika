@@ -35,6 +35,13 @@ export class PlaylistItemView extends Adw.Bin {
           GObject.ParamFlags.READWRITE,
           true,
         ),
+        "show-time": GObject.ParamSpec.boolean(
+          "show-time",
+          "Show Time",
+          "Whether to show the duration of each track",
+          GObject.ParamFlags.READWRITE,
+          true,
+        ),
         "show-column": GObject.ParamSpec.boolean(
           "show-column",
           "Show Column",
@@ -174,7 +181,7 @@ export class PlaylistItemView extends Adw.Bin {
     }
   }
 
-  // property: show-rank
+  // property: show-artists
 
   private _show_artists = true;
 
@@ -189,6 +196,24 @@ export class PlaylistItemView extends Adw.Bin {
 
     if (child instanceof PlaylistColumnView) {
       child.show_artists = show;
+    }
+  }
+
+  // property: show-time
+
+  private _show_time = true;
+
+  get show_time() {
+    return this._show_time;
+  }
+
+  set show_time(show: boolean) {
+    this._show_time = show;
+
+    const child = this.child as CurrentChild;
+
+    if (child instanceof PlaylistColumnView) {
+      child.show_time = show;
     }
   }
 

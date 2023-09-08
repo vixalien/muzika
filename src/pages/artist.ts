@@ -56,6 +56,9 @@ export class ArtistPage extends Adw.Bin
     this._playlist_item_view.show_artists = songs.results.some((track) =>
       track.artists.length > 0
     );
+    this._playlist_item_view.show_time = songs.results.some((track) =>
+      track.duration != null
+    );
 
     if (songs.results && songs.results.length > 0) {
       this._top_songs.visible = true;

@@ -460,6 +460,13 @@ export class PlaylistColumnView extends Gtk.ColumnView {
           GObject.ParamFlags.READWRITE,
           true,
         ),
+        "show-time": GObject.ParamSpec.boolean(
+          "show-time",
+          "Show Time",
+          "Whether to show the duration of each track",
+          GObject.ParamFlags.READWRITE,
+          true,
+        ),
         playlistId: GObject.param_spec_string(
           "playlist-id",
           "Playlist ID",
@@ -543,6 +550,16 @@ export class PlaylistColumnView extends Gtk.ColumnView {
 
   set show_artists(value: boolean) {
     this._artist_column.visible = value;
+  }
+
+  // property: show-times
+
+  get show_time() {
+    return this._duration_column.visible;
+  }
+
+  set show_time(value: boolean) {
+    this._duration_column.visible = value;
   }
 
   // property: playlistId
