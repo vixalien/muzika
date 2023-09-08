@@ -9,6 +9,7 @@ template $TopResultSection : Box {
     margin-start: 12;
     margin-end: 12;
     margin-bottom: 6;
+    height-request: 32;
 
     Label {
       label: _("Top Result");
@@ -20,6 +21,8 @@ template $TopResultSection : Box {
   }
 
   Box box {
+    spacing: 6;
+
     $TopResultCard card {}
 
     $FlatListView list_view {
