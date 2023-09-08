@@ -42,6 +42,15 @@ template $MuzikaWindow : Adw.ApplicationWindow {
                 [start]
                 MenuButton account {
                   icon-name: "avatar-default-symbolic";
+                  tooltip-text: _("Account");
+                  visible: false;
+                }
+
+                [start]
+                Button login {
+                  icon-name: "contact-new-symbolic";
+                  action-name: "win.login";
+                  tooltip-text: _("Log In");
                 }
 
                 [end]
@@ -103,11 +112,6 @@ template $MuzikaWindow : Adw.ApplicationWindow {
 
 menu primary_menu {
   section {
-    item {
-      label: _("Log In");
-      action: "win.login";
-    }
-
     item {
       label: _("_Preferences");
       action: "app.preferences";

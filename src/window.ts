@@ -59,6 +59,7 @@ export class Window extends Adw.ApplicationWindow {
           "navbar_window",
           "split_view",
           "account",
+          "login",
           "main_stack",
           "video_player_view",
         ],
@@ -85,6 +86,7 @@ export class Window extends Adw.ApplicationWindow {
   private _navbar_window!: Gtk.ScrolledWindow;
   private _split_view!: Adw.NavigationSplitView;
   private _account!: Gtk.MenuButton;
+  private _login!: Gtk.Button;
   private _main_stack!: Gtk.Stack;
   private _video_player_view!: VideoPlayerView;
 
@@ -242,11 +244,13 @@ export class Window extends Adw.ApplicationWindow {
   }
 
   async token_changed() {
-    if (!get_option("auth").has_token()) {
-      this._account.sensitive = false;
+    const has_token = get_option("auth").has_token();
+
+    this._account.visible = has_token;
+    this._login.visible = !has_token;
+
+    if (!has_token) {
       return;
-    } else {
-      this._account.sensitive = true;
     }
 
     const account = await get_current_user();
