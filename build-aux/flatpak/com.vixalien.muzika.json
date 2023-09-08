@@ -177,6 +177,7 @@
           "name": "gtk",
           "buildsystem": "meson",
           "config-opts": [
+            "-Dintrospection=enabled",
             "-Ddemos=false",
             "-Dbuild-testsuite=false",
             "-Dbuild-examples=false",
