@@ -36,6 +36,7 @@
     "/share/gtk-doc",
     "/share/man",
     "/share/pkgconfig",
+    "/share/installed-tests",
     "*.la",
     "*.a",
     "/yarn-mirror"
@@ -82,15 +83,21 @@
       "name": "libadwaita",
       "buildsystem": "meson",
       "config-opts": [
+        "-Dintrospection=enabled",
         "-Dvapi=false",
         "-Dtests=false",
         "-Dexamples=false"
       ],
       "sources": [
         {
-          "type": "git",
-          "url": "https://gitlab.gnome.org/GNOME/libadwaita.git",
-          "commit": "ff0accc8a43f18d27a95abde0167a8c2cdacb1cc"
+          "type": "archive",
+          "url": "https://download.gnome.org/sources/libadwaita/1.4/libadwaita-1.4.rc.tar.xz",
+          "sha256": "c9ebf05d16954a4b4d1c26ea87e52f662346d8fa90b70f8165bead0721a1ed10",
+          "x-checker-data": {
+            "type": "gnome",
+            "name": "libadwaita",
+            "stable-only": false
+          }
         }
       ],
       "modules": [
@@ -111,7 +118,12 @@
             {
               "type": "git",
               "url": "https://github.com/ximion/appstream.git",
-              "commit": "97ef3461be9027fddca1af8c6ee4c1266a0ca185"
+              "commit": "50026949a9a9559d9fedbf577e60073b38ebee6d",
+              "tag": "v0.16.3",
+              "x-checker-data": {
+                "type": "git",
+                "tag-pattern": "^v([\\d.]+)$"
+              }
             }
           ],
           "modules": [
@@ -121,7 +133,7 @@
                 {
                   "type": "git",
                   "url": "https://github.com/yaml/libyaml.git",
-                  "commit": "f8f760f7387d2cc56a2fc7b1be313a3bf3f7f58c"
+                  "commit": "2c891fc7a770e8ba2fec34fc6b545c672beb37e6"
                 }
               ]
             },
@@ -139,7 +151,7 @@
                 {
                   "type": "git",
                   "url": "https://github.com/hughsie/libxmlb.git",
-                  "commit": "a6cac6a715d57c393bbddee4d0381ad943341af9"
+                  "commit": "aa577b276adc66564f5777f9a522ca3bf0bfa65e"
                 }
               ]
             }
@@ -188,9 +200,14 @@
           ],
           "sources": [
             {
-              "type": "git",
-              "url": "https://gitlab.gnome.org/GNOME/gtk.git",
-              "commit": "01b99975900e9cde8a4a0ddb7291fa3bd3d0e981"
+              "type": "archive",
+              "url": "https://download.gnome.org/sources/gtk/4.13/gtk-4.13.0.tar.xz",
+              "sha256": "0e2e928a271ac5ef9c95d891a2b9a8c46df9598d12efd9ccfa31695e88cab6aa",
+              "x-checker-data": {
+                "type": "gnome",
+                "name": "gtk",
+                "stable-only": true
+              }
             }
           ]
         }
