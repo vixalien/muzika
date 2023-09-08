@@ -77,15 +77,14 @@ export class TopResultCard extends Adw.Bin {
       }
     });
 
-    const controller = new Gtk.GestureClick({
-      propagation_phase: Gtk.PropagationPhase.TARGET,
-    });
+    const click = new Gtk.GestureClick();
 
-    controller.connect("pressed", () => {
+    click.connect("pressed", (click) => {
+      click.set_state(Gtk.EventSequenceState.CLAIMED);
       this.activate_cb();
     });
 
-    this.add_controller(controller);
+    this.add_controller(click);
   }
 
   private activate_cb() {
