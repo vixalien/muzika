@@ -193,6 +193,15 @@ export class AlbumPage extends Adw.Bin
       menu.append_section(_("Artists"), section);
     }
 
+    const share_section = Gio.Menu.new();
+
+    share_section.append(
+      _("Copy Link"),
+      `win.copy-url("https://music.youtube.com/playlist?list=${this.album.audioPlaylistId}")`,
+    );
+
+    menu.append_section(null, share_section);
+
     this._menu.menu_model = menu;
   }
 

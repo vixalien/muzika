@@ -188,6 +188,22 @@ export class Window extends Adw.ApplicationWindow {
         },
       },
       {
+        name: "copy-url",
+        parameter_type: "s",
+        activate: (__, parameter) => {
+          if (!parameter) return;
+
+          // @ts-expect-error value doesn't require a type
+          const value = new GObject.Value();
+          value.init(GObject.TYPE_STRING);
+          value.set_string(parameter.get_string()[0]);
+
+          this.get_clipboard().set(value);
+
+          this.add_toast(_("Copied URL to clipboard"));
+        },
+      },
+      {
         name: "show-video",
         parameter_type: "b",
         activate: (_, parameter) => {
