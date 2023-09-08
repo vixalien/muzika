@@ -32,7 +32,7 @@ template $MuzikaWindow : Adw.ApplicationWindow {
           show-content: true;
           sidebar: 
           Adw.NavigationPage {
-            title: _("Navigation");
+            title: "Muzika";
 
             Adw.ToolbarView {
               hexpand: false;
@@ -43,16 +43,6 @@ template $MuzikaWindow : Adw.ApplicationWindow {
                 MenuButton account {
                   icon-name: "avatar-default-symbolic";
                 }
-                title-widget: 
-                Label {
-                  label: "Muzika";
-
-                  styles [
-                    "heading",
-                  ]
-                }
-
-                ;
 
                 [end]
                 MenuButton {
