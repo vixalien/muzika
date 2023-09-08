@@ -113,15 +113,15 @@ export class ArtistPage extends Adw.Bin
   }
 
   private setup_menu() {
+    if (!this.artist) return;
+
     const menu = Gio.Menu.new();
 
     const share_section = Gio.Menu.new();
 
     share_section.append(
       _("Copy Link"),
-      `win.copy-url("https://music.youtube.com/channel/${
-        this.artist!.channelId
-      }")`,
+      `win.copy-url("https://music.youtube.com/channel/${this.artist.channelId}")`,
     );
 
     menu.append_section(null, share_section);

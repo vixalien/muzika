@@ -110,7 +110,9 @@ export class AlbumPage extends Adw.Bin
     this._header.set_explicit(album.isExplicit);
     this._header.set_genre(album.album_type);
     this._header.set_year(album.year ?? _("Unknown year"));
+
     this.update_header_buttons();
+    this.setup_menu();
 
     if (album.artists && album.artists.length > 0) {
       this._header.set_subtitle(album.artists);
@@ -159,6 +161,10 @@ export class AlbumPage extends Adw.Bin
         `${this.album.shuffleId}`,
       ),
     });
+  }
+
+  private setup_menu() {
+    if (!this.album) return;
 
     const menu = Gio.Menu.new();
 
