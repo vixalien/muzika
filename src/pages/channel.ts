@@ -1,6 +1,7 @@
 import Gtk from "gi://Gtk?version=4.0";
 import GObject from "gi://GObject";
 import Adw from "gi://Adw";
+import Gio from "gi://Gio";
 
 import {
   Category,
@@ -35,6 +36,7 @@ export class ChannelPage extends Adw.Bin
         "playlist_item_view",
         "header",
         "carousels",
+        "menu",
       ],
     }, this);
   }
@@ -45,6 +47,7 @@ export class ChannelPage extends Adw.Bin
   private _playlist_item_view!: PlaylistItemView;
   private _header!: ArtistHeader;
   private _carousels!: Gtk.Box;
+  private _menu!: Gtk.MenuButton;
 
   model = new PlayableList();
 
@@ -101,6 +104,25 @@ export class ChannelPage extends Adw.Bin
       channel.playlists_on_repeat,
     );
     this.add_carousel(_("Playlists"), null, channel.playlists, true);
+
+    this.setup_menu();
+  }
+
+  private setup_menu() {
+    if (!this.channel) return;
+
+    const menu = Gio.Menu.new();
+
+    const share_section = Gio.Menu.new();
+
+    share_section.append(
+      _("Copy Link"),
+      `win.copy-url("https://music.youtube.com/channel/${this.channel.channelId}")`,
+    );
+
+    menu.append_section(null, share_section);
+
+    this._menu.menu_model = menu;
   }
 
   add_carousel(
