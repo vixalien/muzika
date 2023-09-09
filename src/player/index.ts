@@ -680,6 +680,9 @@ export class MuzikaPlayer extends MuzikaMediaStream {
       ) {
         this.initial_seek_to = (this.timestamp / this.duration) *
           (current.duration_seconds * Gst.MSECOND);
+      } else {
+        // reset seek
+        this.initial_seek_to = null;
       }
 
       this.load(current ?? null)
