@@ -234,6 +234,7 @@ export class PlaylistItemView extends Adw.Bin {
       selection_mode: this.selection_mode,
       album: this.album,
       show_add: this.show_add,
+      playlistId: this.playlistId ?? null as any,
     };
 
     if (column) {

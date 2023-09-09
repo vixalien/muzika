@@ -590,12 +590,23 @@ export class PlaylistColumnView extends Gtk.ColumnView {
   }
 
   constructor(
-    { selection_mode, show_rank, show_add, show_artists, album, ...options }:
-      Partial<
-        PlaylistColumnViewOptions
-      > = {},
+    {
+      selection_mode,
+      show_rank,
+      show_add,
+      show_artists,
+      album,
+      playlistId,
+      ...options
+    }: Partial<
+      PlaylistColumnViewOptions
+    > = {},
   ) {
     super(options);
+
+    if (playlistId != null) {
+      this.playlistId = playlistId;
+    }
 
     if (selection_mode != null) {
       this.selection_mode = selection_mode;
