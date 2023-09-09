@@ -36,7 +36,7 @@ export function get_square_thumbnails(thumbnails: Thumbnail[]) {
 
   for (const thumbnail of thumbnails) {
     const regex =
-      /https:\/\/lh3.googleusercontent.com\/\S+=w(\d+)-h(\d+)-p-l90-rj(-(\S+))?/;
+      /https:\/\/lh3.googleusercontent.com\/\S+=w(\d+)-h(\d+)-(\S+)/;
     const match = regex.exec(thumbnail.url);
 
     if (match) {

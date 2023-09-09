@@ -12,6 +12,7 @@ import { EndpointContext, MuzikaComponent } from "src/navigation.js";
 import { PlaylistListView } from "src/components/playlist/listview.js";
 import { PlaylistItemView } from "src/components/playlist/itemview.js";
 import { PlayableContainer, PlayableList } from "src/util/playablelist.js";
+import { get_square_thumbnails } from "src/components/webimage.js";
 
 interface ArtistState {
   artist: Artist;
@@ -93,7 +94,9 @@ export class ArtistPage extends Adw.Bin
 
     this.artist = artist;
 
-    if (artist.thumbnails) this._header.load_thumbnails(artist.thumbnails);
+    if (artist.thumbnails) {
+      this._header.load_thumbnails(get_square_thumbnails(artist.thumbnails));
+    }
 
     this._header.set_title(artist.name);
     this._header.set_description(artist.description);
