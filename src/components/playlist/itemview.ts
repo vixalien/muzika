@@ -242,6 +242,7 @@ export class PlaylistItemView extends Adw.Bin {
         ...props,
         show_rank: this.show_rank,
         show_artists: this.show_artists,
+        show_time: this.show_time,
       });
     } else {
       this.child = new PlaylistListView(
