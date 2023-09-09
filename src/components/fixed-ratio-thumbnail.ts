@@ -5,9 +5,14 @@ import GLib from "gi://GLib";
 
 export interface FixedRatioThumbnailProps
   extends Gtk.Widget.ConstructorProperties {
-  paintable?: Gdk.Paintable | null;
-  // aspect_ratio?: number;
-  min_width?: number;
+  paintable: Gdk.Paintable | null;
+  min_width: number;
+  max_width: number;
+  min_height: number;
+  max_height: number;
+  orientation: Gtk.Orientation;
+  can_expand: boolean;
+  aspect_ratio: number;
 }
 
 export class FixedRatioThumbnail extends Gtk.Widget implements Gtk.Orientable {
@@ -22,15 +27,6 @@ export class FixedRatioThumbnail extends Gtk.Widget implements Gtk.Orientable {
           GObject.ParamFlags.READWRITE,
           Gdk.Paintable,
         ),
-        // aspect_ratio: GObject.ParamSpec.int(
-        //   "aspect-ratio",
-        //   "Aspect Ratio",
-        //   "The aspect ratio of the displayed image",
-        //   GObject.ParamFlags.READWRITE,
-        //   0,
-        //   100,
-        //   0,
-        // ),
         min_width: GObject.ParamSpec.int(
           "min-width",
           "Minimum Width",
@@ -82,15 +78,22 @@ export class FixedRatioThumbnail extends Gtk.Widget implements Gtk.Orientable {
           GObject.ParamFlags.READWRITE,
           false,
         ),
+        aspect_ratio: GObject.ParamSpec.float(
+          "aspect-ratio",
+          "Aspect Ratio",
+          "The preferred aspect ratio. If this is -1, the aspect ratio is inferred",
+          GObject.ParamFlags.READWRITE,
+          -1,
+          GLib.MAXINT32,
+          -1,
+        ),
       },
       Implements: [Gtk.Orientable],
     }, this);
   }
 
   constructor(props?: Partial<FixedRatioThumbnailProps>) {
-    super({
-      ...props,
-    });
+    super(props);
   }
 
   // property: orientation
@@ -240,7 +243,28 @@ export class FixedRatioThumbnail extends Gtk.Widget implements Gtk.Orientable {
     this.queue_resize();
   }
 
-  get aspect_ratio() {
+  // property: max-height
+
+  private _aspect_ratio = -1;
+
+  get aspect_ratio(): number {
+    return this._aspect_ratio;
+  }
+
+  set aspect_ratio(aspect_ratio: number) {
+    if (this._aspect_ratio == aspect_ratio) return;
+
+    this._aspect_ratio = aspect_ratio;
+
+    this.notify("aspect-ratio");
+    this.queue_resize();
+  }
+
+  private get inferred_aspect_ratio() {
+    if (this.aspect_ratio > 0) {
+      return this.aspect_ratio;
+    }
+
     return Math.min(
       this.paintable?.get_intrinsic_aspect_ratio() || 16 / 9,
       16 / 9,
@@ -260,12 +284,12 @@ export class FixedRatioThumbnail extends Gtk.Widget implements Gtk.Orientable {
     size = orientation === Gtk.Orientation.HORIZONTAL
       ? min_if_present(
         (expand ? Math.max(for_size, this.min_height) : this.min_height) *
-          this.aspect_ratio,
+          this.inferred_aspect_ratio,
         this.max_height,
       )
       : min_if_present(
         (expand ? Math.max(for_size, this.min_width) : this.min_width) /
-          this.aspect_ratio,
+          this.inferred_aspect_ratio,
         this.max_width,
       );
 

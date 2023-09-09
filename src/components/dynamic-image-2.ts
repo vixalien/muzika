@@ -6,6 +6,7 @@ import { load_thumbnails } from "./webimage";
 import { DynamicAction, DynamicActionState } from "./dynamic-action";
 import { SignalListeners } from "src/util/signal-listener";
 import { get_player } from "src/application";
+import { FixedRatioThumbnail } from "./fixed-ratio-thumbnail";
 
 export enum DynamicImage2StorageType {
   EMPTY = 0,
@@ -97,6 +98,13 @@ export class DynamicImage2 extends Gtk.Overlay {
           GObject.ParamFlags.READWRITE,
           false,
         ),
+        can_expand: GObject.ParamSpec.boolean(
+          "can-expand",
+          "Can Expand",
+          "Whether to expand the image to fill the available space",
+          GObject.ParamFlags.READWRITE,
+          false,
+        ),
       },
       Signals: {
         play: {},
@@ -178,29 +186,55 @@ export class DynamicImage2 extends Gtk.Overlay {
     if (!child) return;
 
     switch (this.storage_type) {
-      case DynamicImage2StorageType.EMPTY:
+      case DynamicImage2StorageType.EMPTY: {
         const bin = child as Adw.Bin;
         bin.width_request = bin.height_request = this.size;
         break;
-      case DynamicImage2StorageType.COVER_THUMBNAIL:
-        const image = child as Gtk.Image;
-        image.pixel_size = this.size;
+      }
+      case DynamicImage2StorageType.COVER_THUMBNAIL: {
+        const image = child as FixedRatioThumbnail;
+        image.min_width = image.min_height = this.size;
         this.update_image_class();
         break;
-      case DynamicImage2StorageType.AVATAR:
+      }
+      case DynamicImage2StorageType.AVATAR: {
         const avatar = child as Adw.Avatar;
         avatar.size = this.size;
         break;
-      case DynamicImage2StorageType.VIDEO_THUMBNAIL:
-        const picture = child as Gtk.Picture;
-        picture.width_request = (16 / 9) * this.size;
-        picture.height_request = this.size;
+      }
+      case DynamicImage2StorageType.VIDEO_THUMBNAIL: {
+        const image = child as FixedRatioThumbnail;
+        image.min_width = (16 / 9) * this.size;
+        image.min_height = this.size;
         this.update_image_class();
         break;
-      case DynamicImage2StorageType.TRACK_NUMBER:
+      }
+      case DynamicImage2StorageType.TRACK_NUMBER: {
         const label = child as Gtk.Label;
         label.width_request = label.height_request = this.size;
         break;
+      }
+    }
+  }
+
+  // property: can-expand
+
+  private _can_expand = false;
+
+  get can_expand() {
+    return this._can_expand;
+  }
+
+  set can_expand(value: boolean) {
+    if (this._can_expand === value) return;
+
+    this._can_expand = value;
+    this.notify("can-expand");
+
+    const child = this.get_child();
+
+    if (child instanceof FixedRatioThumbnail) {
+      child.can_expand = this.can_expand;
     }
   }
 
@@ -217,10 +251,18 @@ export class DynamicImage2 extends Gtk.Overlay {
         child = Adw.Bin.new();
         break;
       case DynamicImage2StorageType.COVER_THUMBNAIL:
-        child = new Gtk.Image({
+        child = new FixedRatioThumbnail({
           overflow: Gtk.Overflow.HIDDEN,
-          icon_name: "image-missing-symbolic",
         });
+        (child as FixedRatioThumbnail).aspect_ratio = 1;
+        (child as FixedRatioThumbnail).can_expand = this.can_expand;
+        break;
+      case DynamicImage2StorageType.VIDEO_THUMBNAIL:
+        child = new FixedRatioThumbnail({
+          overflow: Gtk.Overflow.HIDDEN,
+        });
+        (child as FixedRatioThumbnail).aspect_ratio = 16 / 9;
+        (child as FixedRatioThumbnail).can_expand = this.can_expand;
         break;
       case DynamicImage2StorageType.AVATAR:
         this.action.locked = true;
@@ -232,11 +274,6 @@ export class DynamicImage2 extends Gtk.Overlay {
         // TODO: get rid of this
         // see https://gitlab.gnome.org/GNOME/gtk/-/issues/5960
         child.add_css_class("card");
-        break;
-      case DynamicImage2StorageType.VIDEO_THUMBNAIL:
-        child = new Gtk.Picture({
-          overflow: Gtk.Overflow.HIDDEN,
-        });
         break;
       case DynamicImage2StorageType.TRACK_NUMBER:
         child = new Gtk.Label();

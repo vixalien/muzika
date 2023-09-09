@@ -60,6 +60,8 @@ export class CarouselGridView extends Gtk.GridView {
     const card = list_item.child as CarouselCard;
     const container = list_item.item as PlayableContainer<MixedCardItem>;
 
+    card.dynamic_image.hexpand = card.dynamic_image.vexpand = card.dynamic_image.can_expand = true;
+
     if (container.object) {
       card.show_item(container.object);
 

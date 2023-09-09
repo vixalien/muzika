@@ -36,8 +36,10 @@ export class CarouselCard extends Gtk.Box {
       GTypeName: "CarouselCard",
       Template:
         "resource:///com/vixalien/muzika/ui/components/carousel/card.ui",
-      InternalChildren: [
+      Children: [
         "dynamic_image",
+      ],
+      InternalChildren: [
         "title",
         "subtitles",
         "explicit",
@@ -46,7 +48,8 @@ export class CarouselCard extends Gtk.Box {
     }, this);
   }
 
-  private _dynamic_image!: DynamicImage2;
+  dynamic_image!: DynamicImage2;
+
   private _title!: Gtk.Label;
   private _subtitles!: Gtk.Box;
   private _explicit!: Gtk.Image;
@@ -95,11 +98,11 @@ export class CarouselCard extends Gtk.Box {
     this.subtitle_authors = [];
     this.content = undefined;
 
-    this._dynamic_image.clear();
+    this.dynamic_image.clear();
   }
 
   clear() {
-    this._dynamic_image.clear();
+    this.dynamic_image.clear();
 
     this.listeners.clear();
 
@@ -114,20 +117,20 @@ export class CarouselCard extends Gtk.Box {
   ) {
     switch (image_type) {
       case CarouselImageType.AVATAR:
-        this._dynamic_image.avatar_thumbnails = thumbnails;
+        this.dynamic_image.avatar_thumbnails = thumbnails;
         break;
       case CarouselImageType.DYNAMIC_IMAGE:
-        this._dynamic_image.persistent_play_button = true;
-        this._dynamic_image.cover_thumbnails = thumbnails;
+        this.dynamic_image.persistent_play_button = true;
+        this.dynamic_image.cover_thumbnails = thumbnails;
         break;
         // TODO: fix
       case CarouselImageType.PLAYLIST_IMAGE:
-        this._dynamic_image.playlist = true;
-        this._dynamic_image.cover_thumbnails = thumbnails;
+        this.dynamic_image.playlist = true;
+        this.dynamic_image.cover_thumbnails = thumbnails;
         break;
       case CarouselImageType.DYNAMIC_PICTURE:
-        this._dynamic_image.persistent_play_button = true;
-        this._dynamic_image.video_thumbnails = thumbnails;
+        this.dynamic_image.persistent_play_button = true;
+        this.dynamic_image.video_thumbnails = thumbnails;
         break;
     }
   }
@@ -176,13 +179,13 @@ export class CarouselCard extends Gtk.Box {
 
   private setup_video(videoId: string | null) {
     if (videoId) {
-      this._dynamic_image.setup_video(videoId);
+      this.dynamic_image.setup_video(videoId);
     }
   }
 
   private setup_playlist(playlistId: string | null) {
     if (playlistId) {
-      this._dynamic_image.setup_playlist(playlistId);
+      this.dynamic_image.setup_playlist(playlistId);
     }
   }
 
@@ -309,6 +312,6 @@ export class CarouselCard extends Gtk.Box {
   }
 
   set_state(state: DynamicImageState) {
-    this._dynamic_image.state = state;
+    this.dynamic_image.state = state;
   }
 }

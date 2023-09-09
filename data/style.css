@@ -171,13 +171,13 @@ label.bold-link link {
   padding-right: 6px;
 }
 
+.carousel-grid-view>child,
 .carousel-list-view>row,
 .playlist-list-view>row {
   border-radius: 12px;
   padding: 6px;
 }
 
-.carousel-grid-view>child,
 .carousel-flat-list-view>row {
   border-radius: 12px;
   padding: 3px;
