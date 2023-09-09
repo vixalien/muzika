@@ -597,6 +597,7 @@ export class PlaylistColumnView extends Gtk.ColumnView {
       show_artists,
       album,
       playlistId,
+      show_time,
       ...options
     }: Partial<
       PlaylistColumnViewOptions
@@ -626,6 +627,10 @@ export class PlaylistColumnView extends Gtk.ColumnView {
 
     if (album != null) {
       this.album = album;
+    }
+
+    if (show_time != null) {
+      this.show_time = show_time;
     }
 
     // this._image_column.connect(
@@ -687,4 +692,5 @@ export interface PlaylistColumnViewOptions
   show_rank: boolean;
   album: boolean;
   show_add: boolean;
+  show_time: boolean;
 }
