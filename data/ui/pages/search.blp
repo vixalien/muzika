@@ -30,18 +30,12 @@ template $SearchPage : Adw.Bin {
               orientation: vertical;
             }
 
-            Separator {
-              margin-top: 12;
-
-              styles [
-                "spacer",
-              ]
-            }
-
             Stack stack {
               Box sections {
                 orientation: vertical;
                 margin-bottom: 12;
+                margin-top: 12;
+                spacing: 24;
               }
 
               Adw.StatusPage no_results {
