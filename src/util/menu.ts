@@ -1,5 +1,7 @@
 import Gio from "gi://Gio";
 import GLib from "gi://GLib";
+import Gtk from "gi://Gtk?version=4.0";
+import Gdk from "gi://Gdk?version=4.0";
 
 export interface MenuItemPropsObject {
   label: string;
@@ -98,4 +100,79 @@ export function generate_menu(props: MenuProp[]) {
   });
 
   return menu;
+}
+
+export interface MenuHelperProps {
+  widget: Gtk.Widget;
+  setup_controllers?: boolean;
+}
+
+export class MenuHelper {
+  widget: Gtk.Widget;
+
+  constructor(props: MenuHelperProps) {
+    this.widget = props.widget;
+
+    if (props.setup_controllers !== false) {
+      this.setup_controllers();
+    }
+  }
+
+  static new(widget: Gtk.Widget, setup_controllers?: boolean) {
+    return new this({
+      widget,
+      setup_controllers,
+    });
+  }
+
+  private setup_controllers() {
+    const click = new Gtk.GestureClick({
+      button: 3,
+    });
+
+    click.connect("pressed", (click, _n, x, y) => {
+      if (!this.props) return;
+
+      click.set_state(Gtk.EventSequenceState.CLAIMED);
+
+      this.show_popover_menu(x, y);
+    });
+
+    this.widget.add_controller(click);
+
+    const long_press = new Gtk.GestureLongPress({
+      touch_only: true,
+    });
+
+    long_press.connect("pressed", (long_press, x, y) => {
+      if (!this.props) return;
+
+      long_press.set_state(Gtk.EventSequenceState.CLAIMED);
+
+      this.show_popover_menu(x, y);
+    });
+
+    this.widget.add_controller(long_press);
+  }
+
+  props: MenuProp[] | null = null;
+
+  private show_popover_menu(x: number, y: number) {
+    if (!this.props) return;
+
+    const popover = new Gtk.PopoverMenu({
+      has_arrow: false,
+      valign: Gtk.Align.START,
+      position: Gtk.PositionType.RIGHT,
+      menu_model: generate_menu(this.props),
+    });
+
+    popover.connect("closed", () => {
+      popover.unparent();
+    });
+
+    popover.set_parent(this.widget);
+    popover.set_pointing_to(new Gdk.Rectangle({ x, y }));
+    popover.popup();
+  }
 }

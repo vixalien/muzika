@@ -21,7 +21,7 @@ import { pretty_subtitles } from "src/util/text.js";
 import { MixedCardItem } from "../library/mixedcard.js";
 import { DynamicImage2 } from "../dynamic-image-2.js";
 import { SignalListeners } from "src/util/signal-listener.js";
-import { generate_menu, MenuProp } from "src/util/menu.js";
+import { generate_menu, MenuHelper, MenuProp } from "src/util/menu.js";
 
 enum CarouselImageType {
   AVATAR,
@@ -46,7 +46,6 @@ export class CarouselCard extends Gtk.Box {
         "subtitles",
         "explicit",
         "subtitle",
-        "popover",
       ],
     }, this);
   }
@@ -57,12 +56,13 @@ export class CarouselCard extends Gtk.Box {
   private _subtitles!: Gtk.Box;
   private _explicit!: Gtk.Image;
   private _subtitle!: Gtk.Label;
-  private _popover!: Gtk.PopoverMenu;
 
   private content?: MixedCardItem;
 
   private listeners = new SignalListeners();
   private hover = new Gtk.EventControllerMotion();
+
+  private menu_helper: MenuHelper;
 
   constructor() {
     super();
@@ -92,33 +92,7 @@ export class CarouselCard extends Gtk.Box {
       },
     );
 
-    const click = new Gtk.GestureClick({
-      button: 3,
-    });
-
-    click.connect("pressed", (click, _n, x, y) => {
-      if (!this._popover.menu_model) return;
-
-      click.set_state(Gtk.EventSequenceState.CLAIMED);
-
-      this.show_popover_menu(x, y);
-    });
-
-    this.add_controller(click);
-
-    const long_press = new Gtk.GestureLongPress({
-      touch_only: true,
-    });
-
-    long_press.connect("pressed", (long_press, x, y) => {
-      if (!this._popover.menu_model) return;
-
-      long_press.set_state(Gtk.EventSequenceState.CLAIMED);
-
-      this.show_popover_menu(x, y);
-    });
-
-    this.add_controller(long_press);
+    this.menu_helper = MenuHelper.new(this);
   }
 
   reset() {
@@ -221,19 +195,6 @@ export class CarouselCard extends Gtk.Box {
     }
   }
 
-  // menu
-
-  private set_menu_declaration(menu: MenuProp[] | null) {
-    this._popover.set_menu_model(menu ? generate_menu(menu) : null);
-  }
-
-  private show_popover_menu(x: number, y: number) {
-    if (!this._popover.menu_model) return;
-
-    this._popover.set_pointing_to(new Gdk.Rectangle({ x, y }));
-    this._popover.popup();
-  }
-
   private set_align(align: Gtk.Align) {
     this._subtitles.halign = align;
     this._title.halign = align;
@@ -249,7 +210,7 @@ export class CarouselCard extends Gtk.Box {
     this.setup_image(CarouselImageType.DYNAMIC_IMAGE, song.thumbnails);
     this.setup_video(song.videoId);
 
-    this.set_menu_declaration([
+    this.menu_helper.props = [
       [_("Start radio"), `queue.play-song("${song.videoId}")`],
       [_("Play next"), `queue.add-song("${song.videoId}?next=true")`],
       [_("Add to queue"), `queue.add-song("${song.videoId}")`],
@@ -266,7 +227,7 @@ export class CarouselCard extends Gtk.Box {
           `navigator.visit("muzika:artist:${song.artists[0].id}")`,
         ]
         : null,
-    ]);
+    ];
   }
 
   show_artist(artist: RelatedArtist) {
@@ -301,7 +262,7 @@ export class CarouselCard extends Gtk.Box {
     this.setup_image(CarouselImageType.DYNAMIC_PICTURE, video.thumbnails);
     this.setup_video(video.videoId);
 
-    this.set_menu_declaration([
+    this.menu_helper.props = [
       [_("Start radio"), `queue.play-song("${video.videoId}")`],
       [_("Play next"), `queue.add-song("${video.videoId}?next=true")`],
       [_("Add to queue"), `queue.add-song("${video.videoId}")`],
@@ -312,7 +273,7 @@ export class CarouselCard extends Gtk.Box {
           `navigator.visit("muzika:artist:${video.artists[0].id}")`,
         ]
         : null,
-    ]);
+    ];
   }
 
   show_inline_video(video: ParsedSong) {
@@ -324,7 +285,7 @@ export class CarouselCard extends Gtk.Box {
     this.setup_image(CarouselImageType.DYNAMIC_PICTURE, video.thumbnails);
     this.setup_video(video.videoId);
 
-    this.set_menu_declaration([
+    this.menu_helper.props = [
       [_("Start radio"), `queue.play-song("${video.videoId}")`],
       [_("Play next"), `queue.add-song("${video.videoId}?next=true")`],
       [_("Add to queue"), `queue.add-song("${video.videoId}")`],
@@ -341,7 +302,7 @@ export class CarouselCard extends Gtk.Box {
           `navigator.visit("muzika:artist:${video.artists[0].id}")`,
         ]
         : null,
-    ]);
+    ];
   }
 
   show_playlist(playlist: ParsedPlaylist) {
@@ -353,7 +314,7 @@ export class CarouselCard extends Gtk.Box {
     this.setup_image(CarouselImageType.PLAYLIST_IMAGE, playlist.thumbnails);
     this.setup_playlist(playlist.playlistId);
 
-    this.set_menu_declaration([
+    this.menu_helper.props = [
       [
         _("Play next"),
         `queue.add-playlist("${playlist.playlistId}?next=true")`,
@@ -363,7 +324,7 @@ export class CarouselCard extends Gtk.Box {
         _("Add to playlist"),
         `win.add-playlist-to-playlist("${playlist.playlistId}")`,
       ],
-    ]);
+    ];
   }
 
   show_watch_playlist(playlist: WatchPlaylist) {
@@ -375,7 +336,7 @@ export class CarouselCard extends Gtk.Box {
     this.setup_image(CarouselImageType.DYNAMIC_IMAGE, playlist.thumbnails);
     this.setup_playlist(playlist.playlistId);
 
-    this.set_menu_declaration([
+    this.menu_helper.props = [
       [
         _("Play next"),
         `queue.add-playlist("${playlist.playlistId}?next=true")`,
@@ -385,7 +346,7 @@ export class CarouselCard extends Gtk.Box {
         _("Add to playlist"),
         `win.add-playlist-to-playlist("${playlist.playlistId}")`,
       ],
-    ]);
+    ];
   }
 
   show_album(album: ParsedAlbum) {
@@ -398,7 +359,7 @@ export class CarouselCard extends Gtk.Box {
     this.setup_image(CarouselImageType.PLAYLIST_IMAGE, album.thumbnails);
     this.setup_playlist(album.audioPlaylistId);
 
-    this.set_menu_declaration([
+    this.menu_helper.props = [
       [
         _("Play next"),
         `queue.add-playlist("${album.audioPlaylistId}?next=true")`,
@@ -414,7 +375,7 @@ export class CarouselCard extends Gtk.Box {
           `navigator.visit("muzika:artist:${album.artists[0].id}")`,
         ]
         : null,
-    ]);
+    ];
   }
 
   show_item(content: MixedCardItem) {
