@@ -31,6 +31,7 @@ import {
 import { DynamicImage2, DynamicImage2StorageType } from "../dynamic-image-2.js";
 import { DynamicActionState } from "../dynamic-action.js";
 import { MixedCardItem } from "../library/mixedcard.js";
+import { MenuHelper } from "src/util/menu.js";
 
 DynamicImage2;
 
@@ -63,6 +64,8 @@ export class FlatCard extends Gtk.Box {
   private _subtitle!: Gtk.Label;
   private _dynamic_image!: DynamicImage2;
 
+  private menu_helper: MenuHelper;
+
   constructor() {
     super();
 
@@ -76,6 +79,8 @@ export class FlatCard extends Gtk.Box {
         return true;
       }
     });
+
+    this.menu_helper = MenuHelper.new(this);
   }
 
   // utils
@@ -166,6 +171,19 @@ export class FlatCard extends Gtk.Box {
 
     this.load_thumbnails(song.thumbnails);
     this.setup_video(song.videoId);
+
+    this.menu_helper.props = [
+      [_("Start radio"), `queue.play-song("${song.videoId}")`],
+      [_("Play next"), `queue.add-song("${song.videoId}?next=true")`],
+      [_("Add to queue"), `queue.add-song("${song.videoId}")`],
+      [_("Add to playlist"), `win.add-to-playlist("${song.videoId}")`],
+      song.album
+        ? [
+          _("Go to album"),
+          `navigator.visit("muzika:album:${song.album.id}")`,
+        ]
+        : null,
+    ];
   }
 
   show_song(song: Ranked<ParsedSong>) {
@@ -176,6 +194,25 @@ export class FlatCard extends Gtk.Box {
 
     this.load_thumbnails(song.thumbnails);
     this.setup_video(song.videoId);
+
+    this.menu_helper.props = [
+      [_("Start radio"), `queue.play-song("${song.videoId}")`],
+      [_("Play next"), `queue.add-song("${song.videoId}?next=true")`],
+      [_("Add to queue"), `queue.add-song("${song.videoId}")`],
+      [_("Add to playlist"), `win.add-to-playlist("${song.videoId}")`],
+      song.album
+        ? [
+          _("Go to album"),
+          `navigator.visit("muzika:album:${song.album.id}")`,
+        ]
+        : null,
+      song.artists.length > 1
+        ? [
+          _("Go to artist"),
+          `navigator.visit("muzika:artist:${song.artists[0].id}")`,
+        ]
+        : null,
+    ];
   }
 
   show_video(video: Ranked<ParsedVideo>) {
@@ -189,6 +226,19 @@ export class FlatCard extends Gtk.Box {
       // DynamicImage2StorageType.VIDEO_THUMBNAIL,
     );
     this.setup_video(video.videoId);
+
+    this.menu_helper.props = [
+      [_("Start radio"), `queue.play-song("${video.videoId}")`],
+      [_("Play next"), `queue.add-song("${video.videoId}?next=true")`],
+      [_("Add to queue"), `queue.add-song("${video.videoId}")`],
+      [_("Add to playlist"), `win.add-to-playlist("${video.videoId}")`],
+      video.artists && video.artists.length > 1
+        ? [
+          _("Go to artist"),
+          `navigator.visit("muzika:artist:${video.artists[0].id}")`,
+        ]
+        : null,
+    ];
   }
 
   show_search_song(song: SearchSong) {
@@ -199,6 +249,25 @@ export class FlatCard extends Gtk.Box {
 
     this.load_thumbnails(song.thumbnails);
     this.setup_video(song.videoId);
+
+    this.menu_helper.props = [
+      [_("Start radio"), `queue.play-song("${song.videoId}")`],
+      [_("Play next"), `queue.add-song("${song.videoId}?next=true")`],
+      [_("Add to queue"), `queue.add-song("${song.videoId}")`],
+      [_("Add to playlist"), `win.add-to-playlist("${song.videoId}")`],
+      song.album
+        ? [
+          _("Go to album"),
+          `navigator.visit("muzika:album:${song.album.id}")`,
+        ]
+        : null,
+      song.artists.length > 1
+        ? [
+          _("Go to artist"),
+          `navigator.visit("muzika:artist:${song.artists[0].id}")`,
+        ]
+        : null,
+    ];
   }
 
   show_search_video(video: SearchVideo) {
@@ -214,6 +283,19 @@ export class FlatCard extends Gtk.Box {
       // DynamicImage2StorageType.VIDEO_THUMBNAIL,
     );
     this.setup_video(video.videoId);
+
+    this.menu_helper.props = [
+      [_("Start radio"), `queue.play-song("${video.videoId}")`],
+      [_("Play next"), `queue.add-song("${video.videoId}?next=true")`],
+      [_("Add to queue"), `queue.add-song("${video.videoId}")`],
+      [_("Add to playlist"), `win.add-to-playlist("${video.videoId}")`],
+      video.artists && video.artists.length > 1
+        ? [
+          _("Go to artist"),
+          `navigator.visit("muzika:artist:${video.artists[0].id}")`,
+        ]
+        : null,
+    ];
   }
 
   show_search_album(album: SearchAlbum) {
@@ -224,6 +306,25 @@ export class FlatCard extends Gtk.Box {
     this.set_subtitle(album.album_type, album.artists);
 
     this.load_thumbnails(album.thumbnails);
+
+    this.menu_helper.props = [
+      // TODO: get album audioPlaylistId
+      // [
+      //   _("Play next"),
+      //   `queue.add-playlist("${album.audioPlaylistId}?next=true")`,
+      // ],
+      // [_("Add to queue"), `queue.add-playlist("${album.audioPlaylistId}")`],
+      // [
+      //   _("Add to playlist"),
+      //   `win.add-playlist-to-playlist("${album.audioPlaylistId}")`,
+      // ],
+      album.artists.length > 1
+        ? [
+          _("Go to artist"),
+          `navigator.visit("muzika:artist:${album.artists[0].id}")`,
+        ]
+        : null,
+    ];
   }
 
   show_search_playlist(playlist: SearchPlaylist) {
@@ -234,6 +335,18 @@ export class FlatCard extends Gtk.Box {
 
     this.load_thumbnails(playlist.thumbnails);
     this.setup_playlist(playlist.browseId);
+
+    this.menu_helper.props = [
+      [
+        _("Play next"),
+        `queue.add-playlist("${playlist.browseId}?next=true")`,
+      ],
+      [_("Add to queue"), `queue.add-playlist("${playlist.browseId}")`],
+      [
+        _("Add to playlist"),
+        `win.add-playlist-to-playlist("${playlist.browseId}")`,
+      ],
+    ];
   }
 
   show_search_artist(artist: SearchArtist) {
@@ -269,6 +382,18 @@ export class FlatCard extends Gtk.Box {
 
     this.load_thumbnails(radio.thumbnails);
     this.setup_playlist(radio.playlistId);
+
+    this.menu_helper.props = [
+      [
+        _("Play next"),
+        `queue.add-playlist("${radio.playlistId}?next=true")`,
+      ],
+      [_("Add to queue"), `queue.add-playlist("${radio.playlistId}")`],
+      [
+        _("Add to playlist"),
+        `win.add-playlist-to-playlist("${radio.playlistId}")`,
+      ],
+    ];
   }
 
   show_mixed_song(song: ParsedSong) {
@@ -280,6 +405,25 @@ export class FlatCard extends Gtk.Box {
 
     this.load_thumbnails(song.thumbnails);
     this.setup_video(song.videoId);
+
+    this.menu_helper.props = [
+      [_("Start radio"), `queue.play-song("${song.videoId}")`],
+      [_("Play next"), `queue.add-song("${song.videoId}?next=true")`],
+      [_("Add to queue"), `queue.add-song("${song.videoId}")`],
+      [_("Add to playlist"), `win.add-to-playlist("${song.videoId}")`],
+      song.album
+        ? [
+          _("Go to album"),
+          `navigator.visit("muzika:album:${song.album.id}")`,
+        ]
+        : null,
+      song.artists.length > 1
+        ? [
+          _("Go to artist"),
+          `navigator.visit("muzika:artist:${song.artists[0].id}")`,
+        ]
+        : null,
+    ];
   }
 
   show_mixed_artist(artist: RelatedArtist) {
@@ -314,6 +458,19 @@ export class FlatCard extends Gtk.Box {
       // DynamicImage2StorageType.VIDEO_THUMBNAIL,
     );
     this.setup_video(video.videoId);
+
+    this.menu_helper.props = [
+      [_("Start radio"), `queue.play-song("${video.videoId}")`],
+      [_("Play next"), `queue.add-song("${video.videoId}?next=true")`],
+      [_("Add to queue"), `queue.add-song("${video.videoId}")`],
+      [_("Add to playlist"), `win.add-to-playlist("${video.videoId}")`],
+      video.artists && video.artists.length > 1
+        ? [
+          _("Go to artist"),
+          `navigator.visit("muzika:artist:${video.artists[0].id}")`,
+        ]
+        : null,
+    ];
   }
 
   show_mixed_inline_video(video: ParsedSong) {
@@ -327,6 +484,19 @@ export class FlatCard extends Gtk.Box {
       // DynamicImage2StorageType.VIDEO_THUMBNAIL,
     );
     this.setup_video(video.videoId);
+
+    this.menu_helper.props = [
+      [_("Start radio"), `queue.play-song("${video.videoId}")`],
+      [_("Play next"), `queue.add-song("${video.videoId}?next=true")`],
+      [_("Add to queue"), `queue.add-song("${video.videoId}")`],
+      [_("Add to playlist"), `win.add-to-playlist("${video.videoId}")`],
+      video.artists && video.artists.length > 1
+        ? [
+          _("Go to artist"),
+          `navigator.visit("muzika:artist:${video.artists[0].id}")`,
+        ]
+        : null,
+    ];
   }
 
   show_mixed_playlist(playlist: ParsedPlaylist) {
@@ -340,6 +510,18 @@ export class FlatCard extends Gtk.Box {
 
     this.load_thumbnails(playlist.thumbnails);
     this.setup_playlist(playlist.playlistId);
+
+    this.menu_helper.props = [
+      [
+        _("Play next"),
+        `queue.add-playlist("${playlist.playlistId}?next=true")`,
+      ],
+      [_("Add to queue"), `queue.add-playlist("${playlist.playlistId}")`],
+      [
+        _("Add to playlist"),
+        `win.add-playlist-to-playlist("${playlist.playlistId}")`,
+      ],
+    ];
   }
 
   show_mixed_watch_playlist(playlist: WatchPlaylist) {
@@ -354,6 +536,18 @@ export class FlatCard extends Gtk.Box {
 
     this.load_thumbnails(playlist.thumbnails);
     this.setup_playlist(playlist.playlistId);
+
+    this.menu_helper.props = [
+      [
+        _("Play next"),
+        `queue.add-playlist("${playlist.playlistId}?next=true")`,
+      ],
+      [_("Add to queue"), `queue.add-playlist("${playlist.playlistId}")`],
+      [
+        _("Add to playlist"),
+        `win.add-playlist-to-playlist("${playlist.playlistId}")`,
+      ],
+    ];
   }
 
   show_mixed_album(album: ParsedAlbum) {
@@ -364,6 +558,24 @@ export class FlatCard extends Gtk.Box {
     this.set_subtitle(_("Album"), album.artists, [album.year]);
 
     this.load_thumbnails(album.thumbnails);
+
+    this.menu_helper.props = [
+      [
+        _("Play next"),
+        `queue.add-playlist("${album.audioPlaylistId}?next=true")`,
+      ],
+      [_("Add to queue"), `queue.add-playlist("${album.audioPlaylistId}")`],
+      [
+        _("Add to playlist"),
+        `win.add-playlist-to-playlist("${album.audioPlaylistId}")`,
+      ],
+      album.artists.length > 1
+        ? [
+          _("Go to artist"),
+          `navigator.visit("muzika:artist:${album.artists[0].id}")`,
+        ]
+        : null,
+    ];
   }
 
   show_inline_song(content: InlineSong) {
