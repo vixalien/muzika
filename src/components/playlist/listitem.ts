@@ -6,6 +6,7 @@ import { PlaylistItem } from "../../muse.js";
 import { pretty_subtitles } from "src/util/text.js";
 import { DynamicImage2, DynamicImage2StorageType } from "../dynamic-image-2.js";
 import { SignalListeners } from "src/util/signal-listener.js";
+import { MenuHelper } from "src/util/menu.js";
 
 export class PlaylistListItem extends Gtk.Box {
   static {
@@ -56,6 +57,8 @@ export class PlaylistListItem extends Gtk.Box {
 
   listeners = new SignalListeners();
 
+  private menu_helper: MenuHelper;
+
   constructor() {
     super({});
 
@@ -69,6 +72,8 @@ export class PlaylistListItem extends Gtk.Box {
         return true;
       }
     });
+
+    this.menu_helper = MenuHelper.new(this);
   }
 
   set_item(item: PlaylistItem, playlistId?: string) {
@@ -114,6 +119,25 @@ export class PlaylistListItem extends Gtk.Box {
     }
 
     this.dynamic_image.setup_video(item.videoId, playlistId);
+
+    this.menu_helper.props = [
+      [_("Start radio"), `queue.play-song("${item.videoId}")`],
+      [_("Play next"), `queue.add-song("${item.videoId}?next=true")`],
+      [_("Add to queue"), `queue.add-song("${item.videoId}")`],
+      [_("Add to playlist"), `win.add-to-playlist("${item.videoId}")`],
+      item.album
+        ? [
+          _("Go to album"),
+          `navigator.visit("muzika:album:${item.album.id}")`,
+        ]
+        : null,
+      item.artists.length > 1
+        ? [
+          _("Go to artist"),
+          `navigator.visit("muzika:artist:${item.artists[0].id}")`,
+        ]
+        : null,
+    ];
   }
 
   // property: show-add

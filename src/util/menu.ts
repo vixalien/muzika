@@ -160,19 +160,23 @@ export class MenuHelper {
   private show_popover_menu(x: number, y: number) {
     if (!this.props) return;
 
-    const popover = new Gtk.PopoverMenu({
-      has_arrow: false,
-      valign: Gtk.Align.START,
-      position: Gtk.PositionType.RIGHT,
-      menu_model: generate_menu(this.props),
-    });
+    let popover: Gtk.PopoverMenu = this.widget.get_data(MenuHelper.POPOVER_KEY);
 
-    popover.connect("closed", () => {
-      popover.unparent();
-    });
+    if (!popover) {
+      popover = new Gtk.PopoverMenu({
+        has_arrow: false,
+        valign: Gtk.Align.START,
+        position: Gtk.PositionType.RIGHT,
+        menu_model: generate_menu(this.props),
+      });
+
+      this.widget.set_data(MenuHelper.POPOVER_KEY, popover);
+    }
 
     popover.set_parent(this.widget);
     popover.set_pointing_to(new Gdk.Rectangle({ x, y }));
     popover.popup();
   }
+
+  private static POPOVER_KEY = "muzika-menu-helper-popover";
 }
