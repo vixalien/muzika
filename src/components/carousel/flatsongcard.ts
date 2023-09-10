@@ -14,6 +14,7 @@ import {
   ParsedVideo,
   Ranked,
 } from "libmuse/types/parsers/browsing.js";
+import { MenuHelper } from "src/util/menu.js";
 
 export type InlineSong =
   | FlatSong
@@ -43,6 +44,8 @@ export class FlatSongCard extends Gtk.Box {
   private _subtitle!: Gtk.Label;
   private _dynamic_image!: DynamicImage;
 
+  private menu_helper: MenuHelper;
+
   constructor() {
     super();
 
@@ -56,6 +59,8 @@ export class FlatSongCard extends Gtk.Box {
         return true;
       }
     });
+
+    this.menu_helper = MenuHelper.new(this);
   }
 
   // utils
@@ -123,6 +128,19 @@ export class FlatSongCard extends Gtk.Box {
 
     this.load_thumbnails(song.thumbnails);
     this.setup_video(song.videoId);
+
+    this.menu_helper.props = [
+      [_("Start radio"), `queue.play-song("${song.videoId}")`],
+      [_("Play next"), `queue.add-song("${song.videoId}?next=true")`],
+      [_("Add to queue"), `queue.add-song("${song.videoId}")`],
+      [_("Add to playlist"), `win.add-to-playlist("${song.videoId}")`],
+      song.album
+        ? [
+          _("Go to album"),
+          `navigator.visit("muzika:album:${song.album.id}")`,
+        ]
+        : null,
+    ];
   }
 
   show_song(song: Ranked<ParsedSong>) {
@@ -133,16 +151,48 @@ export class FlatSongCard extends Gtk.Box {
 
     this.load_thumbnails(song.thumbnails);
     this.setup_video(song.videoId);
+
+    this.menu_helper.props = [
+      [_("Start radio"), `queue.play-song("${song.videoId}")`],
+      [_("Play next"), `queue.add-song("${song.videoId}?next=true")`],
+      [_("Add to queue"), `queue.add-song("${song.videoId}")`],
+      [_("Add to playlist"), `win.add-to-playlist("${song.videoId}")`],
+      song.album
+        ? [
+          _("Go to album"),
+          `navigator.visit("muzika:album:${song.album.id}")`,
+        ]
+        : null,
+      song.artists.length > 1
+        ? [
+          _("Go to artist"),
+          `navigator.visit("muzika:artist:${song.artists[0].id}")`,
+        ]
+        : null,
+    ];
   }
 
-  show_video(song: Ranked<ParsedVideo>) {
-    this.song = song;
+  show_video(video: Ranked<ParsedVideo>) {
+    this.song = video;
 
-    this.set_title(song.title);
-    this.set_subtitle(song.artists ?? [], [song.views]);
+    this.set_title(video.title);
+    this.set_subtitle(video.artists ?? [], [video.views]);
 
-    this.load_thumbnails(song.thumbnails);
-    this.setup_video(song.videoId);
+    this.load_thumbnails(video.thumbnails);
+    this.setup_video(video.videoId);
+
+    this.menu_helper.props = [
+      [_("Start radio"), `queue.play-song("${video.videoId}")`],
+      [_("Play next"), `queue.add-song("${video.videoId}?next=true")`],
+      [_("Add to queue"), `queue.add-song("${video.videoId}")`],
+      [_("Add to playlist"), `win.add-to-playlist("${video.videoId}")`],
+      video.artists && video.artists.length > 1
+        ? [
+          _("Go to artist"),
+          `navigator.visit("muzika:artist:${video.artists[0].id}")`,
+        ]
+        : null,
+    ];
   }
 
   show_playlist_item(song: PlaylistItem) {
@@ -153,6 +203,25 @@ export class FlatSongCard extends Gtk.Box {
 
     this.load_thumbnails(song.thumbnails);
     this.setup_video(song.videoId);
+
+    this.menu_helper.props = [
+      [_("Start radio"), `queue.play-song("${song.videoId}")`],
+      [_("Play next"), `queue.add-song("${song.videoId}?next=true")`],
+      [_("Add to queue"), `queue.add-song("${song.videoId}")`],
+      [_("Add to playlist"), `win.add-to-playlist("${song.videoId}")`],
+      song.album
+        ? [
+          _("Go to album"),
+          `navigator.visit("muzika:album:${song.album.id}")`,
+        ]
+        : null,
+      song.artists.length > 1
+        ? [
+          _("Go to artist"),
+          `navigator.visit("muzika:artist:${song.artists[0].id}")`,
+        ]
+        : null,
+    ];
   }
 
   show_item(content: InlineSong) {
