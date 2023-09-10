@@ -80,28 +80,6 @@
       ]
     },
     {
-      "name": "gjs",
-      "buildsystem": "meson",
-      "config-opts": [
-        "-Dintrospection=enabled",
-        "-Dvapi=false",
-        "-Dtests=false",
-        "-Dexamples=false"
-      ],
-      "sources": [
-        {
-          "type": "archive",
-          "url": "https://download.gnome.org/sources/gjs/1.77/gjs-1.77.90.tar.xz",
-          "sha256": "c9ebf05d16954a4b4d1c26ea87e52f662346d8fa90b70f8165bead0721a1ed10",
-          "x-checker-data": {
-            "type": "gnome",
-            "name": "libadwaita",
-            "stable-only": false
-          }
-        }
-      ]
-    },
-    {
       "name": "libadwaita",
       "buildsystem": "meson",
       "config-opts": [
