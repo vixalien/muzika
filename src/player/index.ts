@@ -567,9 +567,8 @@ export class MuzikaMediaStream extends Gtk.MediaStream {
   }
 
   protected eos_cb(_play: GstPlay.Play): void {
-    this.stream_ended();
-
     if (this.prepared) {
+      this.stream_ended();
       this.stream_unprepared();
     }
   }
