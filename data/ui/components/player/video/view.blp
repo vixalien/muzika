@@ -35,11 +35,10 @@ template $VideoPlayerView : Adw.Bin {
               action-target: "false";
             }
 
-            [start]
+            [end]
             Button fullscreen {
               icon-name: "view-fullscreen-symbolic";
-
-              clicked => $on_fullscreen_clicked();
+              action-name: "win.fullscreen";
             }
 
             title-widget: Adw.WindowTitle window_title {
@@ -50,6 +49,30 @@ template $VideoPlayerView : Adw.Bin {
         [bottom]
         $VideoControls controls {}
       }
+    }
+  }
+
+  ShortcutController {
+    scope: managed;
+
+    Shortcut {
+      trigger: "p";
+      action: "action(player.play-pause)";
+    }
+
+    Shortcut {
+      trigger: "Escape";
+      action: "action(win.toggle-show-video)";
+    }
+
+    Shortcut {
+      trigger: "plus";
+      action: "action(player.volume-up)";
+    }
+
+    Shortcut {
+      trigger: "minus";
+      action: "action(player.volume-down)";
     }
   }
 }

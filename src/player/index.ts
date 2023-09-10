@@ -1142,6 +1142,24 @@ export class MuzikaPlayer extends MuzikaMediaStream {
           this.cubic_volume = Math.max(0, this.cubic_volume - 0.1);
         },
       },
+      {
+        name: "skip-backwards",
+        activate: () => {
+          this.seek(Math.max(this.timestamp - 10000000, 0));
+        },
+      },
+      {
+        name: "skip-forward",
+        activate: () => {
+          const new_timestamp = this.timestamp + 10000000;
+
+          if (new_timestamp < this.duration) {
+            this.seek(new_timestamp);
+          } else {
+            this.queue.next();
+          }
+        },
+      },
     ]);
 
     this.connect("notify::playing", () => {

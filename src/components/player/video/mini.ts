@@ -169,24 +169,6 @@ export class MiniVideoControls extends Adw.Bin {
     }
   }
 
-  private skip_backwards() {
-    const player = get_player();
-
-    player.seek(Math.max(player.timestamp - 10000000, 0));
-  }
-
-  private skip_forward() {
-    const player = get_player();
-
-    const new_timestamp = player.timestamp + 10000000;
-
-    if (new_timestamp < player.duration) {
-      player.seek(new_timestamp);
-    } else {
-      player.queue.next();
-    }
-  }
-
   clear_listeners() {
     this.inhibit_hide = false;
     this.listeners.clear();

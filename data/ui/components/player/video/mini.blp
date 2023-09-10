@@ -54,7 +54,7 @@ template $MiniVideoControls : Adw.Bin {
 
           Button {
             icon-name: "skip-backwards-10-symbolic";
-            clicked => $skip_backwards();
+            action-name: "player.skip-backwards";
 
             styles [
               "flat",
@@ -72,7 +72,7 @@ template $MiniVideoControls : Adw.Bin {
 
           Button {
             icon-name: "skip-forward-10-symbolic";
-            clicked => $skip_forward();
+            action-name: "player.skip-forward";
 
             styles [
               "flat",
