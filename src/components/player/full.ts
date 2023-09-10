@@ -1,7 +1,6 @@
 import Gtk from "gi://Gtk?version=4.0";
 import GObject from "gi://GObject";
 import GLib from "gi://GLib";
-import GstAudio from "gi://GstAudio";
 
 import { RepeatMode } from "../../player/queue.js";
 import { PlayerScale } from "./scale.js";
@@ -238,14 +237,14 @@ export class FullPlayerView extends Gtk.ActionBar {
 
     // setting up volume button
 
-    this.set_volume_slider_value(this.player.volume);
+    this._volume_button.adjustment.value = this.player.cubic_volume;
 
-    this.listeners.connect(this.player, "notify::volume", () => {
-      this.set_volume_slider_value(this.player.volume);
+    this.listeners.connect(this.player, "notify::cubic-volume", () => {
+      this._volume_button.adjustment.value = this.player.cubic_volume;
     });
 
     this.listeners.connect(this._volume_button, "value-changed", () => {
-      this.player.volume = this.get_volume_slider_value();
+      this.player.cubic_volume = this._volume_button.adjustment.value;
     });
 
     this.listeners.connect(this._volume_button, "query-tooltip", (
@@ -256,7 +255,7 @@ export class FullPlayerView extends Gtk.ActionBar {
       tooltip: Gtk.Tooltip,
     ) => {
       tooltip.set_text(
-        `${Math.round(this.get_volume_slider_value() * 100)}%`,
+        `${Math.round(this._volume_button.adjustment.value * 100)}%`,
       );
       return true;
     });
@@ -290,23 +289,6 @@ export class FullPlayerView extends Gtk.ActionBar {
     this.listeners.connect(this._player_preview, "activate", () => {
       this.activate_action("win.show-video", GLib.Variant.new_boolean(true));
     });
-  }
-
-  get_volume_slider_value() {
-    return GstAudio.stream_volume_convert_volume(
-      GstAudio.StreamVolumeFormat.CUBIC,
-      GstAudio.StreamVolumeFormat.LINEAR,
-      this._volume_button.adjustment.value,
-    );
-  }
-
-  set_volume_slider_value(value: number) {
-    this._volume_button.adjustment.value = GstAudio
-      .stream_volume_convert_volume(
-        GstAudio.StreamVolumeFormat.LINEAR,
-        GstAudio.StreamVolumeFormat.CUBIC,
-        value,
-      );
   }
 
   update_repeat_button() {

@@ -6,6 +6,7 @@ import GstPlay from "gi://GstPlay";
 import GstVideo from "gi://GstVideo";
 import Gtk from "gi://Gtk?version=4.0";
 import Gdk from "gi://Gdk?version=4.0";
+import GstAudio from "gi://GstAudio";
 
 import {
   Queue,
@@ -218,6 +219,15 @@ export class MuzikaMediaStream extends Gtk.MediaStream {
           GstPlay.PlayMediaInfo.$gtype,
           GObject.ParamFlags.READABLE,
         ),
+        cubic_volume: GObject.param_spec_double(
+          "cubic-volume",
+          "Cubic Volume",
+          "The volume that is suitable for display",
+          0.0,
+          1.0,
+          1.0,
+          GObject.ParamFlags.READABLE,
+        ),
       },
     }, this);
   }
@@ -281,6 +291,17 @@ export class MuzikaMediaStream extends Gtk.MediaStream {
   set volume(volume: number) {
     this._play.volume = volume;
     this.notify("volume");
+    this.notify("cubic-volume");
+  }
+
+  // cubic volume
+
+  get cubic_volume() {
+    return get_cubic_volume(this.volume);
+  }
+
+  set cubic_volume(value: number) {
+    this.volume = get_linear_volume(value);
   }
 
   get muted(): boolean {
@@ -575,6 +596,7 @@ export class MuzikaMediaStream extends Gtk.MediaStream {
 
   private volume_changed_cb(_play: GstPlay.Play): void {
     this.notify("volume");
+    this.notify("cubic-volume");
   }
 
   private mute_changed_cb(_play: GstPlay.Play): void {
@@ -1108,6 +1130,18 @@ export class MuzikaPlayer extends MuzikaMediaStream {
           action.set_state(value);
         },
       },
+      {
+        name: "volume-up",
+        activate: () => {
+          this.cubic_volume = Math.min(1, this.cubic_volume + 0.1);
+        },
+      },
+      {
+        name: "volume-down",
+        activate: () => {
+          this.cubic_volume = Math.max(0, this.cubic_volume - 0.1);
+        },
+      },
     ]);
 
     this.connect("notify::playing", () => {
@@ -1318,4 +1352,20 @@ export enum AudioQuality {
 // compare numbers of different precisions
 function compare_numbers(a: number, b: number): boolean {
   return Math.abs(Math.fround(a) - Math.fround(b)) < 0.00001;
+}
+
+export function get_linear_volume(value: number) {
+  return GstAudio.stream_volume_convert_volume(
+    GstAudio.StreamVolumeFormat.CUBIC,
+    GstAudio.StreamVolumeFormat.LINEAR,
+    value,
+  );
+}
+
+export function get_cubic_volume(value: number) {
+  return GstAudio.stream_volume_convert_volume(
+    GstAudio.StreamVolumeFormat.LINEAR,
+    GstAudio.StreamVolumeFormat.CUBIC,
+    value,
+  );
 }
