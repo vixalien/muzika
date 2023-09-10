@@ -37,6 +37,7 @@ export class Application extends Adw.Application {
 
     this.set_accels_for_action("app.quit", ["<primary>q"]);
     this.set_accels_for_action("app.preferences", ["<control>comma"]);
+    this.set_accels_for_action("win.fullscreen", ["F11"]);
   }
 
   private preferences_window!: MuzikaPreferencesWindow;

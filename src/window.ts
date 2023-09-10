@@ -215,7 +215,13 @@ export class Window extends Adw.ApplicationWindow {
         },
       },
       {
-        name: "fullscreen-video",
+        name: "toggle-show-video",
+        activate: (_) => {
+          this.toggle_show_video();
+        },
+      },
+      {
+        name: "fullscreen",
         activate: (_) => {
           this.fullscreen_video();
         },
@@ -345,11 +351,27 @@ export class Window extends Adw.ApplicationWindow {
       : this._toolbar_view;
   }
 
+  private toggle_show_video() {
+    const show = this._main_stack.visible_child === this._toolbar_view;
+
+    if (!show && this.is_fullscreen()) {
+      this.unfullscreen();
+    }
+
+    this._main_stack.visible_child = show
+      ? this._video_player_view
+      : this._toolbar_view;
+  }
+
   private fullscreen_video() {
     if (this._main_stack.visible_child != this._video_player_view) {
       return;
     }
 
-    this.fullscreen();
+    if (this.is_fullscreen()) {
+      this.unfullscreen();
+    } else {
+      this.fullscreen();
+    }
   }
 }

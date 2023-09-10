@@ -75,7 +75,7 @@ export class VideoPlayerView extends Adw.Bin {
         this.queue_toggle_ui();
       } else if (n == 2) {
         click.set_state(Gtk.EventSequenceState.CLAIMED);
-        this.on_fullscreen_clicked();
+        this.activate_action("win.fullscreen", null);
       }
     });
 
@@ -117,14 +117,6 @@ export class VideoPlayerView extends Adw.Bin {
     });
 
     super.vfunc_root();
-  }
-
-  private on_fullscreen_clicked(): void {
-    const window = this.get_root() as Gtk.Window;
-
-    if (!window) return;
-
-    window.fullscreened = !window.fullscreened;
   }
 
   private timeout_id: number | null = null;

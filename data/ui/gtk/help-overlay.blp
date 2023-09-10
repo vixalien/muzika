@@ -20,5 +20,29 @@ ShortcutsWindow help_overlay {
         action-name: "app.quit";
       }
     }
+
+    ShortcutsGroup {
+      title: C_("shortcut window", "Video Player");
+
+      ShortcutsShortcut {
+        title: C_("shortcut window", "Play/Pause");
+        accelerator: "p";
+      }
+
+      ShortcutsShortcut {
+        title: C_("shortcut window", "Close Video Player");
+        accelerator: "Escape";
+      }
+
+      ShortcutsShortcut {
+        title: C_("shortcut window", "Increase Volume");
+        accelerator: "plus";
+      }
+
+      ShortcutsShortcut {
+        title: C_("shortcut window", "Decrease Volume");
+        accelerator: "minus";
+      }
+    }
   }
 }
