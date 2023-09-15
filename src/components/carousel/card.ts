@@ -103,13 +103,9 @@ export class CarouselCard extends Gtk.Box {
     this._explicit.visible = false;
     this.subtitle_authors = [];
     this.content = undefined;
-
-    this.dynamic_image.clear();
   }
 
   clear() {
-    this.dynamic_image.clear();
-
     this.listeners.clear();
 
     if (this.hover.widget != null) {

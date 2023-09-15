@@ -129,6 +129,8 @@ export class PlaylistListView extends Gtk.ListView {
       }),
     );
 
+    item.dynamic_image.state = container.state;
+
     // item.signals.add(
     //   container,
     //   container.connect("notify", () => {

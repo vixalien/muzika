@@ -136,9 +136,6 @@ export class DynamicImage2 extends Gtk.Overlay {
 
     this.add_controller(this.controller);
 
-    this.listeners.connect(this.action, "play", this.play_cb.bind(this));
-    this.listeners.connect(this.action, "pause", this.pause_cb.bind(this));
-
     this.action.fill = props?.playlist ?? true;
 
     if (props.size) this.size = props.size;
@@ -504,7 +501,22 @@ export class DynamicImage2 extends Gtk.Overlay {
     }
   }
 
-  clear() {
+  private setup_listeners() {
+    this.listeners.connect(this.action, "play", this.play_cb.bind(this));
+    this.listeners.connect(this.action, "pause", this.pause_cb.bind(this));
+  }
+
+  private _clear() {
     this.listeners.clear();
+  }
+
+  vfunc_unmap(): void {
+    this._clear();
+    super.vfunc_unmap();
+  }
+
+  vfunc_map(): void {
+    super.vfunc_map();
+    this.setup_listeners();
   }
 }

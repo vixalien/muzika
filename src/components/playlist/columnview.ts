@@ -44,6 +44,8 @@ class ImageColumn extends Gtk.ColumnViewColumn {
       persistent_play_button: false,
     });
 
+    dynamic_image.add_css_class("br-6");
+
     list_item.set_child(dynamic_image);
   }
 
@@ -60,6 +62,8 @@ class ImageColumn extends Gtk.ColumnViewColumn {
     container.connect("notify::state", () => {
       dynamic_image.state = container.state;
     });
+
+    dynamic_image.state = container.state;
 
     if (this.album) {
       dynamic_image.track_number = list_item.position + 1;

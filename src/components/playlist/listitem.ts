@@ -155,7 +155,6 @@ export class PlaylistListItem extends Gtk.Box {
   }
 
   clear() {
-    this.dynamic_image.clear();
     this.listeners.clear();
   }
 }
