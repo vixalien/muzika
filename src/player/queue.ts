@@ -384,30 +384,26 @@ export class Queue extends GObject.Object {
             next: params.has("next"),
             shuffle: params.has("shuffle"),
           }).then((queue) => {
-            const win = this.app.active_window;
+            if (!queue.playlist) return;
 
-            if (win instanceof Window) {
-              if (!queue.playlist) return;
+            const normalized_title = GLib.markup_escape_text(
+              queue.playlist,
+              -1,
+            );
 
-              const normalized_title = GLib.markup_escape_text(
-                queue.playlist,
-                -1,
-              );
-
-              win.add_toast(
-                params.has("next")
-                  ? vprintf(_('Playing "%s" next'), [normalized_title])
-                  // Translators: %s is a playlist name
-                  : vprintf(_('Added "%s" to queue'), [normalized_title]),
-              );
-            }
+            this.add_toast(
+              params.has("next")
+                ? vprintf(_('Playing "%s" next'), [normalized_title])
+                // Translators: %s is a playlist name
+                : vprintf(_('Added "%s" to queue'), [normalized_title]),
+            );
           });
         },
       },
       {
         name: "play-song",
         parameter_type: "s",
-        activate: (_, param) => {
+        activate: (__, param) => {
           if (!param) return;
 
           const url = new URL(`muzika:${param.get_string()[0]}`);
@@ -416,6 +412,12 @@ export class Queue extends GObject.Object {
           const ids = url.pathname.split(",");
 
           if (ids.length == 1) {
+            // notify when starting radio, and the current track is playing already
+            if (
+              params.has("radio") && this.current?.object.videoId === ids[0]
+            ) {
+              this.add_toast(_("Starting Radio"));
+            }
             this.play_song(ids[0]);
           } else {
             this.play_songs(ids, {
@@ -437,30 +439,26 @@ export class Queue extends GObject.Object {
             next: params.has("next"),
             shuffle: params.has("shuffle"),
           }).then((tracks) => {
-            const win = this.app.active_window;
+            const normalized_title = GLib.markup_escape_text(
+              tracks[0].title,
+              -1,
+            );
 
-            if (win instanceof Window) {
-              const normalized_title = GLib.markup_escape_text(
-                tracks[0].title,
-                -1,
-              );
-
-              win.add_toast(
-                params.has("next")
-                  ? ngettext(
-                    // Translators: %s is a song's name
-                    vprintf(_('Playing "%s" next'), [normalized_title]),
-                    vprintf(_("Playing %d songs next"), [tracks.length]),
-                    tracks.length,
-                  )
-                  : ngettext(
-                    // Translators: %s is a song's name
-                    vprintf(_('Added "%s" to queue'), [normalized_title]),
-                    vprintf(_("Added %d songs to queue"), [tracks.length]),
-                    tracks.length,
-                  ),
-              );
-            }
+            this.add_toast(
+              params.has("next")
+                ? ngettext(
+                  // Translators: %s is a song's name
+                  vprintf(_('Playing "%s" next'), [normalized_title]),
+                  vprintf(_("Playing %d songs next"), [tracks.length]),
+                  tracks.length,
+                )
+                : ngettext(
+                  // Translators: %s is a song's name
+                  vprintf(_('Added "%s" to queue'), [normalized_title]),
+                  vprintf(_("Added %d songs to queue"), [tracks.length]),
+                  tracks.length,
+                ),
+            );
           });
         },
       },
@@ -502,6 +500,14 @@ export class Queue extends GObject.Object {
 
     this.notify("can-play-next");
     this.notify("can-play-previous");
+  }
+
+  private add_toast(text: string) {
+    const win = this.app.active_window;
+
+    if (win instanceof Window) {
+      win.add_toast(text);
+    }
   }
 
   // TODO:

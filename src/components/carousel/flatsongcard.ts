@@ -130,7 +130,7 @@ export class FlatSongCard extends Gtk.Box {
     this.setup_video(song.videoId);
 
     this.menu_helper.props = [
-      [_("Start radio"), `queue.play-song("${song.videoId}")`],
+      [_("Start radio"), `queue.play-song("${song.videoId}?radio=true")`],
       [_("Play next"), `queue.add-song("${song.videoId}?next=true")`],
       [_("Add to queue"), `queue.add-song("${song.videoId}")`],
       [_("Add to playlist"), `win.add-to-playlist("${song.videoId}")`],
@@ -153,7 +153,7 @@ export class FlatSongCard extends Gtk.Box {
     this.setup_video(song.videoId);
 
     this.menu_helper.props = [
-      [_("Start radio"), `queue.play-song("${song.videoId}")`],
+      [_("Start radio"), `queue.play-song("${song.videoId}?radio=true")`],
       [_("Play next"), `queue.add-song("${song.videoId}?next=true")`],
       [_("Add to queue"), `queue.add-song("${song.videoId}")`],
       [_("Add to playlist"), `win.add-to-playlist("${song.videoId}")`],
@@ -182,7 +182,7 @@ export class FlatSongCard extends Gtk.Box {
     this.setup_video(video.videoId);
 
     this.menu_helper.props = [
-      [_("Start radio"), `queue.play-song("${video.videoId}")`],
+      [_("Start radio"), `queue.play-song("${video.videoId}?radio=true")`],
       [_("Play next"), `queue.add-song("${video.videoId}?next=true")`],
       [_("Add to queue"), `queue.add-song("${video.videoId}")`],
       [_("Add to playlist"), `win.add-to-playlist("${video.videoId}")`],
@@ -205,7 +205,7 @@ export class FlatSongCard extends Gtk.Box {
     this.setup_video(song.videoId);
 
     this.menu_helper.props = [
-      [_("Start radio"), `queue.play-song("${song.videoId}")`],
+      [_("Start radio"), `queue.play-song("${song.videoId}?radio=true")`],
       [_("Play next"), `queue.add-song("${song.videoId}?next=true")`],
       [_("Add to queue"), `queue.add-song("${song.videoId}")`],
       [_("Add to playlist"), `win.add-to-playlist("${song.videoId}")`],

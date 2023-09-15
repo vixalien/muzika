@@ -716,6 +716,13 @@ export class MuzikaPlayer extends MuzikaMediaStream {
     });
 
     this.queue.connect("prepare-next", (_, next: string) => {
+      const now_playing_videoId = this.now_playing?.object.track.videoId;
+
+      // if trying to play the already-playing song, just play if paused
+      if (now_playing_videoId && now_playing_videoId === next) {
+        return;
+      }
+
       this.stop();
 
       this._playing = true;
@@ -868,9 +875,9 @@ export class MuzikaPlayer extends MuzikaMediaStream {
 
     const current = this.now_playing?.object.track.videoId;
 
-    // if the current track is already playing, just seek to it's start
+    // if the requested track is already playing, just resume playback
     if (current == track.videoId) {
-      this.seek(0);
+      this.play();
       return;
     }
 

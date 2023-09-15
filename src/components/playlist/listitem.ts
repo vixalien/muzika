@@ -121,7 +121,7 @@ export class PlaylistListItem extends Gtk.Box {
     this.dynamic_image.setup_video(item.videoId, playlistId);
 
     this.menu_helper.props = [
-      [_("Start radio"), `queue.play-song("${item.videoId}")`],
+      [_("Start radio"), `queue.play-song("${item.videoId}?radio=true")`],
       [_("Play next"), `queue.add-song("${item.videoId}?next=true")`],
       [_("Add to queue"), `queue.add-song("${item.videoId}")`],
       [_("Add to playlist"), `win.add-to-playlist("${item.videoId}")`],
