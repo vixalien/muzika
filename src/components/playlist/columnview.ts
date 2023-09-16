@@ -8,6 +8,7 @@ import { PlaylistItem } from "src/muse";
 import { escape_label, pretty_subtitles } from "src/util/text";
 import { PlayableContainer } from "src/util/playablelist";
 import { DynamicImage2, DynamicImage2StorageType } from "../dynamic-image-2";
+import { generate_menu } from "src/util/menu";
 
 class ImageColumn extends Gtk.ColumnViewColumn {
   static {
@@ -445,6 +446,65 @@ class AddColumn extends Gtk.ColumnViewColumn {
   }
 }
 
+class MenuColumn extends Gtk.ColumnViewColumn {
+  static {
+    GObject.registerClass({
+      GTypeName: "MenuColumn",
+    }, this);
+  }
+
+  constructor() {
+    super();
+
+    const factory = Gtk.SignalListItemFactory.new();
+    factory.connect("setup", this.setup_cb.bind(this));
+    factory.connect("bind", this.bind_cb.bind(this));
+    factory.connect("unbind", this.unbind_cb.bind(this));
+
+    this.factory = factory;
+  }
+
+  setup_cb(_factory: Gtk.SignalListItemFactory, list_item: Gtk.ListItem) {
+    const button = new Gtk.MenuButton({
+      icon_name: "view-more-symbolic",
+    });
+
+    button.add_css_class("flat");
+
+    list_item.set_child(button);
+  }
+
+  bind_cb(_factory: Gtk.SignalListItemFactory, list_item: Gtk.ListItem) {
+    const button = list_item.child as Gtk.MenuButton;
+    const item = (list_item.item as PlayableContainer).object;
+
+    button.menu_model = generate_menu([
+      [_("Start radio"), `queue.play-song("${item.videoId}?radio=true")`],
+      [_("Play next"), `queue.add-song("${item.videoId}?next=true")`],
+      [_("Add to queue"), `queue.add-song("${item.videoId}")`],
+      [_("Add to playlist"), `win.add-to-playlist("${item.videoId}")`],
+      item.album
+        ? [
+          _("Go to album"),
+          `navigator.visit("muzika:album:${item.album.id}")`,
+        ]
+        : null,
+      item.artists.length > 1
+        ? [
+          _("Go to artist"),
+          `navigator.visit("muzika:artist:${item.artists[0].id}")`,
+        ]
+        : null,
+    ]);
+  }
+
+  unbind_cb(_factory: Gtk.SignalListItemFactory, list_item: Gtk.ListItem) {
+    const button = list_item.child as Gtk.MenuButton;
+
+    button.set_menu_model(null);
+  }
+}
+
 export class PlaylistColumnView extends Gtk.ColumnView {
   static {
     GObject.registerClass({
@@ -515,6 +575,7 @@ export class PlaylistColumnView extends Gtk.ColumnView {
   private _album_column = new AlbumColumn();
   private _duration_column = new DurationColumn();
   private _add_column = new AddColumn();
+  private _menu_column = new MenuColumn();
 
   // property: show-add
 
@@ -659,6 +720,7 @@ export class PlaylistColumnView extends Gtk.ColumnView {
     this.append_column(this._album_column);
     this.append_column(this._duration_column);
     this.append_column(this._add_column);
+    this.append_column(this._menu_column);
 
     this._add_column.connect("add", (_, position: number) => {
       this.emit("add", position);
