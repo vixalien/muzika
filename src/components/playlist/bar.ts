@@ -230,6 +230,8 @@ export class PlaylistBar extends Adw.Bin {
 
       model.append(_("Play next"), `queue.add-song("${ids}?next=true")`);
       model.append(_("Add to queue"), `queue.add-song("${ids}")`);
+      model.append(_("Save to playlist"), `win.add-to-playlist("${ids}")`);
+
       this._more.set_menu_model(model);
     } else {
       this._more.set_menu_model(null);

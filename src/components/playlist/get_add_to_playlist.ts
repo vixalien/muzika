@@ -8,6 +8,7 @@ import {
   AddToPlaylist,
   AddToPlaylistItem,
   edit_playlist,
+  EditPlaylistOptions,
   get_add_to_playlist,
 } from "libmuse";
 import { ObjectContainer } from "src/util/objectcontainer";
@@ -170,70 +171,71 @@ export class GetAddToPlaylist extends Adw.Window {
 
     const window = get_window();
 
-    // Translators: %s is a playlist name
-    const success_toast = new Adw.Toast({
-      title: vprintf(_("Saved to %s"), [playlist.title]),
-      button_label: "View",
-      action_name: "navigator.visit",
-      action_target: GLib.Variant.new_string(
-        `muzika:playlist:${playlist.playlistId}`,
-      ),
-    });
-
-    const error_toast = new Adw.Toast({
-      title: this.playlistId
-        // Translators: %s is a playlist name
-        ? vprintf(_("Couldn't add playlist to %s"), [playlist.title])
-        // Translators: %s is a playlist name
-        : vprintf(
-          this.videoIds && this.videoIds.length > 1
-            ? _("Couldn't add songs to %s")
-            : _("Couldn't add song to %s"),
-          [playlist.title],
-        ),
-    });
-
     edit_playlist(playlist.playlistId, {
       add_videos: this.videoIds ?? undefined,
       add_source_playlists: this.playlistId ? [this.playlistId] : undefined,
-      dedupe: "check"
+      dedupe: "check",
     }).then((result) => {
       if (result.status === "STATUS_SUCCEEDED") {
-        window.add_toast_full(success_toast);
+        this.success_toast(playlist);
       } else {
-        // try to provide an option to dedupe
-        // this can only happen for songs
-        const toast = new Adw.Toast({
-          title: _("This song is already in the playlist"),
-          button_label: _("Add anyway"),
-        });
+        // try to provide an option to dedupe or add anyways
+        if (this.playlistId || this.videoIds && this.videoIds.length > 1) {
+          const dialog = Adw.MessageDialog.new(
+            window,
+            _("Duplicates"),
+            _("One or more of the songs are already in your playlist"),
+          );
 
-        toast.connect("button-clicked", (toast) => {
-          toast.dismiss();
+          dialog.add_response("drop_duplicate", _("Skip duplicates"));
+          dialog.add_response("skip", _("Add anyway"));
 
-          edit_playlist(playlist.playlistId, {
-            add_videos: this.videoIds ?? undefined,
-            add_source_playlists: this.playlistId
-              ? [this.playlistId]
-              : undefined,
-            dedupe: "skip",
-          }).then((result) => {
-            if (result.status === "STATUS_SUCCEEDED") {
-              window.add_toast_full(success_toast);
-            } else {
-              window.add_toast_full(error_toast);
-            }
-          }).catch(() => {
-            window.add_toast_full(error_toast);
+          dialog.connect("response", (_, response) => {
+            this.add_to_playlist_with_dedupe(
+              playlist,
+              response as EditPlaylistOptions["dedupe"],
+            );
           });
-        });
-        window.add_toast_full(toast);
+
+          dialog.present();
+        } else {
+          const toast = new Adw.Toast({
+            title: _("This song is already in the playlist"),
+            button_label: _("Add anyway"),
+          });
+
+          toast.connect("button-clicked", (toast) => {
+            toast.dismiss();
+            this.add_to_playlist_with_dedupe(playlist, "skip");
+          });
+
+          window.add_toast_full(toast);
+        }
       }
     }).catch(() => {
-      window.add_toast_full(error_toast);
+      this.error_toast(playlist);
     });
 
     this.close();
+  }
+
+  private add_to_playlist_with_dedupe(
+    playlist: AddToPlaylistItem,
+    dedupe: EditPlaylistOptions["dedupe"],
+  ) {
+    edit_playlist(playlist.playlistId, {
+      add_videos: this.videoIds ?? undefined,
+      add_source_playlists: this.playlistId ? [this.playlistId] : undefined,
+      dedupe,
+    }).then((result) => {
+      if (result.status === "STATUS_SUCCEEDED") {
+        this.success_toast(playlist);
+      } else {
+        this.error_toast(playlist);
+      }
+    }).catch(() => {
+      this.error_toast(playlist);
+    });
   }
 
   show_add_to_playlist(add: AddToPlaylist) {
@@ -253,6 +255,37 @@ export class GetAddToPlaylist extends Adw.Window {
 
   static new_playlist(playlistId: string) {
     return new this({ videoIds: null, playlistId });
+  }
+
+  private success_toast(playlist: AddToPlaylistItem) {
+    // Translators: %s is a playlist name
+    get_window().add_toast_full(
+      new Adw.Toast({
+        title: vprintf(_("Saved to %s"), [playlist.title]),
+        button_label: "View",
+        action_name: "navigator.visit",
+        action_target: GLib.Variant.new_string(
+          `muzika:playlist:${playlist.playlistId}`,
+        ),
+      }),
+    );
+  }
+
+  private error_toast(playlist: AddToPlaylistItem) {
+    get_window().add_toast_full(
+      new Adw.Toast({
+        title: this.playlistId
+          // Translators: %s is a playlist name
+          ? vprintf(_("Couldn't add playlist to %s"), [playlist.title])
+          // Translators: %s is a playlist name
+          : vprintf(
+            this.videoIds && this.videoIds.length > 1
+              ? _("Couldn't add songs to %s")
+              : _("Couldn't add song to %s"),
+            [playlist.title],
+          ),
+      }),
+    );
   }
 }
 
