@@ -124,7 +124,7 @@ export class PlaylistListItem extends Gtk.Box {
       [_("Start radio"), `queue.play-song("${item.videoId}?radio=true")`],
       [_("Play next"), `queue.add-song("${item.videoId}?next=true")`],
       [_("Add to queue"), `queue.add-song("${item.videoId}")`],
-      [_("Add to playlist"), `win.add-to-playlist("${item.videoId}")`],
+      [_("Save to playlist"), `win.add-to-playlist("${item.videoId}")`],
       item.album
         ? [
           _("Go to album"),

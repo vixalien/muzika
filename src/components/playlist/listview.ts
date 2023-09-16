@@ -38,7 +38,7 @@ export class PlaylistListView extends Gtk.ListView {
         show_add: GObject.param_spec_boolean(
           "show-add",
           "Show Add",
-          "Show the add to playlist button",
+          "Show the Save to playlist button",
           false,
           GObject.ParamFlags.READWRITE,
         ),

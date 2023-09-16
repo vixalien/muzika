@@ -482,7 +482,7 @@ class MenuColumn extends Gtk.ColumnViewColumn {
       [_("Start radio"), `queue.play-song("${item.videoId}?radio=true")`],
       [_("Play next"), `queue.add-song("${item.videoId}?next=true")`],
       [_("Add to queue"), `queue.add-song("${item.videoId}")`],
-      [_("Add to playlist"), `win.add-to-playlist("${item.videoId}")`],
+      [_("Save to playlist"), `win.add-to-playlist("${item.videoId}")`],
       item.album
         ? [
           _("Go to album"),
@@ -548,7 +548,7 @@ export class PlaylistColumnView extends Gtk.ColumnView {
         show_add: GObject.param_spec_boolean(
           "show-add",
           "Show Add",
-          "Show the add to playlist button",
+          "Show the Save to playlist button",
           false,
           GObject.ParamFlags.READWRITE,
         ),

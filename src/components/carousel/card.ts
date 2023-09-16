@@ -205,7 +205,7 @@ export class CarouselCard extends Gtk.Box {
       [_("Start radio"), `queue.play-song("${song.videoId}?radio=true")`],
       [_("Play next"), `queue.add-song("${song.videoId}?next=true")`],
       [_("Add to queue"), `queue.add-song("${song.videoId}")`],
-      [_("Add to playlist"), `win.add-to-playlist("${song.videoId}")`],
+      [_("Save to playlist"), `win.add-to-playlist("${song.videoId}")`],
       song.album
         ? [
           _("Go to album"),
@@ -272,7 +272,7 @@ export class CarouselCard extends Gtk.Box {
       [_("Start radio"), `queue.play-song("${video.videoId}?radio=true")`],
       [_("Play next"), `queue.add-song("${video.videoId}?next=true")`],
       [_("Add to queue"), `queue.add-song("${video.videoId}")`],
-      [_("Add to playlist"), `win.add-to-playlist("${video.videoId}")`],
+      [_("Save to playlist"), `win.add-to-playlist("${video.videoId}")`],
       video.artists && video.artists.length > 1
         ? [
           _("Go to artist"),
@@ -295,7 +295,7 @@ export class CarouselCard extends Gtk.Box {
       [_("Start radio"), `queue.play-song("${video.videoId}?radio=true")`],
       [_("Play next"), `queue.add-song("${video.videoId}?next=true")`],
       [_("Add to queue"), `queue.add-song("${video.videoId}")`],
-      [_("Add to playlist"), `win.add-to-playlist("${video.videoId}")`],
+      [_("Save to playlist"), `win.add-to-playlist("${video.videoId}")`],
       video.album
         ? [
           _("Go to album"),
@@ -339,7 +339,7 @@ export class CarouselCard extends Gtk.Box {
       ],
       [_("Add to queue"), `queue.add-playlist("${playlist.playlistId}")`],
       [
-        _("Add to playlist"),
+        _("Save to playlist"),
         `win.add-playlist-to-playlist("${playlist.playlistId}")`,
       ],
     ];
@@ -373,7 +373,7 @@ export class CarouselCard extends Gtk.Box {
       ],
       [_("Add to queue"), `queue.add-playlist("${playlist.playlistId}")`],
       [
-        _("Add to playlist"),
+        _("Save to playlist"),
         `win.add-playlist-to-playlist("${playlist.playlistId}")`,
       ],
     ];
@@ -408,7 +408,7 @@ export class CarouselCard extends Gtk.Box {
       ],
       [_("Add to queue"), `queue.add-playlist("${album.audioPlaylistId}")`],
       [
-        _("Add to playlist"),
+        _("Save to playlist"),
         `win.add-playlist-to-playlist("${album.audioPlaylistId}")`,
       ],
       album.artists.length > 1
