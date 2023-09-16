@@ -250,7 +250,9 @@ export class PlaylistItemView extends Adw.Bin {
       );
     }
 
-    this;
+    this.child.connect("add", (_list, index) => {
+      this.add_cb(index);
+    });
   }
 
   // property: editable
@@ -286,18 +288,7 @@ export class PlaylistItemView extends Adw.Bin {
   }
 
   constructor(options: Partial<PlaylistItemViewOptions> = {}) {
-    super({
-      // vhomogeneous: false,
-      // hhomogeneous: false,
-    });
-
-    // this._list_view.connect("add", (_list, index) => {
-    //   this.add_cb(index);
-    // });
-
-    // this._column_view.connect("add", (_list, index) => {
-    //   this.add_cb(index);
-    // });
+    super();
 
     this.show_column = options.show_column ?? false;
 

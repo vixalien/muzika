@@ -64,7 +64,7 @@ export class PlaylistListView extends Gtk.ListView {
   playlistId?: string;
 
   constructor(
-    { model, album, selection_mode, ...props }: Partial<
+    { model, album, selection_mode, show_add, ...props }: Partial<
       Gtk.ListView.ConstructorProperties
     > = {},
   ) {
@@ -75,6 +75,8 @@ export class PlaylistListView extends Gtk.ListView {
     if (model !== undefined) this.model = model!;
 
     if (selection_mode != null) this.selection_mode = selection_mode;
+
+    if (show_add != null) this.show_add = show_add;
 
     this.add_css_class("playlist-list-view");
 

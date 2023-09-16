@@ -432,9 +432,9 @@ class AddColumn extends Gtk.ColumnViewColumn {
   bind_cb(_factory: Gtk.SignalListItemFactory, list_item: Gtk.ListItem) {
     const button = list_item.child as AddColumnButton;
 
-    // button.listener = button.connect("clicked", () => {
-    //   this.emit("add", list_item.position);
-    // });
+    button.listener = button.connect("clicked", () => {
+      this.emit("add", list_item.position);
+    });
   }
 
   unbind_cb(_factory: Gtk.SignalListItemFactory, list_item: Gtk.ListItem) {
