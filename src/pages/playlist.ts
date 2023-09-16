@@ -177,7 +177,7 @@ export class PlaylistPage extends Adw.Bin
         delete_playlist(this.playlist!.id)
           .then(() => {
             this.get_window().add_toast(
-              _("Playlist delete"),
+              _("Playlist deleted"),
             );
             this.activate_action("navigator.back", null);
           }).catch(() => {
