@@ -31,8 +31,10 @@
     <file preprocess="xml-stripblanks">ui/components/player/queue.ui</file>
     <file preprocess="xml-stripblanks">ui/components/player/queueitem.ui</file>
     <file preprocess="xml-stripblanks">ui/components/player/related.ui</file>
+    <file preprocess="xml-stripblanks">ui/components/playlist/add-to-playlist-item.ui</file>
     <file preprocess="xml-stripblanks">ui/components/playlist/bar.ui</file>
     <file preprocess="xml-stripblanks">ui/components/playlist/edit.ui</file>
+    <file preprocess="xml-stripblanks">ui/components/playlist/get-add-to-playlist.ui</file>
     <file preprocess="xml-stripblanks">ui/components/playlist/largeheader.ui</file>
     <file preprocess="xml-stripblanks">ui/components/playlist/listitem.ui</file>
     <file preprocess="xml-stripblanks">ui/components/playlist/miniheader.ui</file>

@@ -295,3 +295,8 @@ label.bold-link link {
 .navigation-sidebar > header {
   padding: 0;
 }
+
+.padded-top-bottom {
+  padding-top: 6px;
+  padding-bottom: 6px;
+}

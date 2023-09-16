@@ -42,6 +42,7 @@ import { get_current_user, get_option } from "libmuse";
 import { PlayerView } from "./components/player/view.js";
 import "./components/player/video/view.js";
 import { VideoPlayerView } from "./components/player/video/view.js";
+import { GetAddToPlaylist } from "./components/playlist/get_add_to_playlist.js";
 
 // make sure to first register PlayerSidebar
 PlayerSidebar;
@@ -226,6 +227,24 @@ export class Window extends Adw.ApplicationWindow {
           this.fullscreen_video();
         },
       },
+      {
+        name: "add-to-playlist",
+        parameter_type: "s",
+        activate: (_, parameter) => {
+          if (!parameter) return;
+
+          GetAddToPlaylist.new_videos(parameter.get_string()[0].split(","));
+        },
+      },
+      {
+        name: "add-playlist-to-playlist",
+        parameter_type: "s",
+        activate: (_, parameter) => {
+          if (!parameter) return;
+
+          GetAddToPlaylist.new_playlist(parameter.get_string()[0].split(",")[0]);
+        },
+      },
     ]);
 
     const login_action = Gio.SimpleAction.new("login", null);
@@ -296,6 +315,10 @@ export class Window extends Adw.ApplicationWindow {
 
   add_toast(text: string) {
     this.toast_overlay.add_toast(Adw.Toast.new(text));
+  }
+
+  add_toast_full(toast: Adw.Toast) {
+    this.toast_overlay.add_toast(toast);
   }
 
   auth_flow() {

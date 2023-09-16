@@ -1,0 +1,50 @@
+using Gtk 4.0;
+
+template $AddToPlaylistItemCard : Box {
+  spacing: 12;
+  hexpand: false;
+  valign: center;
+  orientation: horizontal;
+
+  styles ["hover-parent"]
+
+  Image image {
+    pixel-size: 48;
+    icon-name: "image-missing-symbolic";
+    overflow: hidden;
+    
+    styles ["br-6", "card"]
+  }
+
+  Box meta {
+    orientation: vertical;
+    valign: center;
+    spacing: 3;
+
+    Label title {
+      ellipsize: end;
+      xalign: 0;
+
+      styles [
+        "heading",
+      ]
+    }
+
+    Box subtitles {
+      spacing: 6;
+
+      styles [
+        "dim-label",
+      ]
+
+      Label subtitle {
+        ellipsize: end;
+        xalign: 0;
+
+        styles [
+          "flat-links",
+        ]
+      }
+    }
+  }
+}

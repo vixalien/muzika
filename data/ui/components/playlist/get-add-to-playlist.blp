@@ -1,0 +1,30 @@
+using Gtk 4.0;
+using Adw 1;
+
+template $GetAddToPlaylist : Adw.Window {
+  title: _("Save to playlist");
+  default-width: 360;
+  default-height: 460;
+  modal: true;
+
+  Adw.ToolbarView {
+    [top]
+    Adw.HeaderBar {
+      [start]
+      Button {
+        // TODO
+        icon-name: "list-add-symbolic";
+        tooltip-text: _("New playlist");
+        visible: false;
+      }
+    }
+
+    ScrolledWindow {
+      ListView list_view {
+        single-click-activate: true;
+
+        styles ["transparent", "playlist-list-view", "padded-top-bottom"]
+      }
+    }
+  }
+}
