@@ -4,7 +4,12 @@ import Gio from "gi://Gio";
 import Adw from "gi://Adw";
 import GLib from "gi://GLib";
 
+import { ngettext } from "gettext";
+
+const vprintf = imports.format.vprintf;
+
 import {
+  delete_playlist,
   edit_playlist,
   get_more_playlist_tracks,
   get_playlist,
@@ -12,6 +17,7 @@ import {
   ParsedPlaylist,
   Playlist,
   PlaylistItem,
+  remove_playlist_items,
 } from "../muse.js";
 
 import { Carousel } from "../components/carousel/index.js";
@@ -28,6 +34,8 @@ import {
 } from "src/components/playlist/edit.js";
 import { Window } from "src/window.js";
 import { PlayableContainer, PlayableList } from "src/util/playablelist.js";
+import { AddActionEntries } from "src/util/action.js";
+import { generate_menu } from "src/util/menu.js";
 
 interface PlaylistState {
   playlist: Playlist;
@@ -108,6 +116,159 @@ export class PlaylistPage extends Adw.Bin
       this._bar.update_selection();
       this._playlist_item_view.update();
     });
+
+    this.add_actions();
+  }
+
+  private get_window() {
+    return this.root as Window;
+  }
+
+  add_actions() {
+    const group = new Gio.SimpleActionGroup();
+
+    (group.add_action_entries as AddActionEntries)([
+      {
+        name: "delete",
+        activate: (__) => {
+          this.delete_playlist();
+        },
+      },
+      {
+        name: "remove-tracks",
+        parameter_type: "ai",
+        activate: (_, parameter) => {
+          if (!parameter) return;
+
+          if (!this.playlist?.id) return;
+
+          const positions: number[] = [];
+
+          for (let i = 0; i < parameter.n_children(); i++) {
+            positions.push(parameter.get_child_value(i).get_int32());
+          }
+
+          this.remove_tracks(positions);
+        },
+      },
+    ]);
+
+    this.insert_action_group("playlist", group);
+  }
+
+  private delete_playlist() {
+    if (this.playlist?.editable !== true) return;
+
+    const dialog = Adw.MessageDialog.new(
+      this.get_window(),
+      _("Delete playlist"),
+      _("Are you sure you want to delete this playlist?"),
+    );
+
+    dialog.add_response("cancel", _("Cancel"));
+    dialog.add_response("delete", _("Delete"));
+    dialog.set_response_appearance(
+      "delete",
+      Adw.ResponseAppearance.DESTRUCTIVE,
+    );
+
+    dialog.connect("response", (__, response) => {
+      if (response === "delete") {
+        delete_playlist(this.playlist!.id)
+          .then(() => {
+            this.get_window().add_toast(
+              _("Playlist delete"),
+            );
+            this.activate_action("navigator.back", null);
+          }).catch(() => {
+            this.get_window().add_toast(
+              _("Couldn't delete playlist"),
+            );
+          });
+      }
+    });
+
+    dialog.present();
+  }
+
+  private remove_tracks(positions: number[]) {
+    if (!this.playlist || positions.length === 0) return;
+
+    const items: Parameters<typeof remove_playlist_items>[1] = [];
+
+    for (let i = 0; i < positions.length; i++) {
+      const id = this.model.get_item(positions[i])?.object;
+
+      if (!id) {
+        continue;
+      }
+
+      items.push({
+        videoId: id.videoId,
+        setVideoId: id.setVideoId!,
+      });
+    }
+
+    const error_toast = () => {
+      this.get_window().add_toast(
+        items.length > 1
+          ? _("Couldn't remove songs from playlist")
+          : _("Couldn't remove song from playlist"),
+      );
+    };
+
+    const success_toast = () => {
+      this.get_window().add_toast(
+        ngettext(
+          vprintf(_("%d song removed from playlist"), [items.length]),
+          vprintf(_("%d songs removed from playlist"), [items.length]),
+          items.length,
+        ),
+      );
+    };
+
+    const dialog = Adw.MessageDialog.new(
+      this.get_window(),
+      _("Remove from playlist"),
+      _(" Are you sure that you want to remove the selected content from the playlist? "),
+    );
+
+    dialog.add_response("cancel", _("Cancel"));
+    dialog.add_response("remove", _("Remove"));
+    dialog.set_response_appearance(
+      "remove",
+      Adw.ResponseAppearance.DESTRUCTIVE,
+    );
+
+    dialog.connect("response", (_, response) => {
+      if (response === "remove") {
+        remove_playlist_items(this.playlist!.id, items)
+          .then((message) => {
+            if (message.status === "STATUS_SUCCEEDED") {
+              success_toast();
+
+              positions
+                // order by position descending
+                .sort((a, b) => b - a)
+                .forEach((position) => {
+                  this.model.remove(position);
+                });
+
+              this._playlist_item_view.multi_selection_model!.unselect_all();
+            } else {
+              error_toast();
+            }
+          })
+          .catch((err) => {
+            error_toast();
+            console.error(err);
+          });
+      } else {
+        dialog.close();
+      }
+    });
+
+    dialog.present();
   }
 
   private add_cb(
@@ -203,7 +364,8 @@ export class PlaylistPage extends Adw.Bin
 
     this._playlist_item_view.playlistId = playlist.id;
     this._playlist_item_view.editable = this._bar.editable = playlist.editable;
-    this._playlist_item_view.show_rank = playlist.tracks[0].rank != null;
+    this._playlist_item_view.show_rank = playlist.tracks[0] &&
+      playlist.tracks[0].rank != null;
 
     this._bar.playlistId = this.playlist.id;
     this._suggestions.visible = this.playlist.editable;
@@ -322,31 +484,24 @@ export class PlaylistPage extends Adw.Bin
   private setup_menu() {
     if (!this.playlist) return;
 
-    const menu = Gio.Menu.new();
-
-    menu.append(
-      _("Start Radio"),
-      `queue.play-playlist("${this.playlist.id}?radio=true")`,
-    );
-    menu.append(
-      _("Play Next"),
-      `queue.add-playlist("${this.playlist.id}?next=true")`,
-    );
-    menu.append(
-      _("Add to queue"),
-      `queue.add-playlist("${this.playlist.id}")`,
-    );
-
-    const share_section = Gio.Menu.new();
-
-    share_section.append(
-      _("Copy Link"),
-      `win.copy-url("https://music.youtube.com/playlist?list=${this.playlist.id}")`,
-    );
-
-    menu.append_section(null, share_section);
-
-    this._menu.set_menu_model(menu);
+    this._menu.set_menu_model(generate_menu([
+      [
+        _("Start Radio"),
+        `queue.play-playlist("${this.playlist.id}?radio=true")`,
+      ],
+      [_("Play Next"), `queue.add-playlist("${this.playlist.id}?next=true")`],
+      [_("Add to queue"), `queue.add-playlist("${this.playlist.id}")`],
+      this.playlist.editable ? [_("Delete"), `playlist.delete`] : null,
+      {
+        section: null,
+        items: [
+          [
+            _("Copy Link"),
+            `win.copy-url("https://music.youtube.com/playlist?list=${this.playlist.id}")`,
+          ],
+        ],
+      },
+    ]));
   }
 
   no_more = false;

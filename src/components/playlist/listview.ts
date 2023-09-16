@@ -49,6 +49,13 @@ export class PlaylistListView extends Gtk.ListView {
           false,
           GObject.ParamFlags.READWRITE,
         ),
+        editable: GObject.param_spec_boolean(
+          "editable",
+          "Editable",
+          "Whether the playlist items can be edited",
+          false,
+          GObject.ParamFlags.READWRITE,
+        ),
       },
       Signals: {
         "add": {
@@ -61,9 +68,10 @@ export class PlaylistListView extends Gtk.ListView {
   album = false;
   selection_mode = false;
   playlistId?: string;
+  editable = false;
 
   constructor(
-    { model, album, selection_mode, show_add, ...props }: Partial<
+    { model, album, selection_mode, show_add, editable, ...props }: Partial<
       Gtk.ListView.ConstructorProperties
     > = {},
   ) {
@@ -76,6 +84,8 @@ export class PlaylistListView extends Gtk.ListView {
     if (selection_mode != null) this.selection_mode = selection_mode;
 
     if (show_add != null) this.show_add = show_add;
+
+    if (editable != null) this.editable = editable;
 
     this.add_css_class("playlist-list-view");
 
@@ -107,7 +117,12 @@ export class PlaylistListView extends Gtk.ListView {
     item.dynamic_image.selection_mode = this.selection_mode;
     item.dynamic_image.selected = list_item.selected;
 
-    item.set_item(playlist_item, this.playlistId);
+    item.set_item(
+      list_item.position,
+      playlist_item,
+      this.playlistId,
+      this.editable,
+    );
 
     if (this.album) {
       item.dynamic_image.track_number = list_item.position + 1;

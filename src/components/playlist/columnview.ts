@@ -453,6 +453,8 @@ class MenuColumn extends Gtk.ColumnViewColumn {
     }, this);
   }
 
+  editable = false;
+
   constructor() {
     super();
 
@@ -483,6 +485,12 @@ class MenuColumn extends Gtk.ColumnViewColumn {
       [_("Play next"), `queue.add-song("${item.videoId}?next=true")`],
       [_("Add to queue"), `queue.add-song("${item.videoId}")`],
       [_("Save to playlist"), `win.add-to-playlist("${item.videoId}")`],
+      this.editable
+        ? [
+          _("Remove from playlist"),
+          `playlist.remove-tracks([${list_item.position}])`,
+        ]
+        : null,
       item.album
         ? [
           _("Go to album"),
@@ -556,6 +564,13 @@ export class PlaylistColumnView extends Gtk.ColumnView {
           "selection-mode",
           "Selection Mode",
           "Whether the selection mode is toggled on",
+          false,
+          GObject.ParamFlags.READWRITE,
+        ),
+        editable: GObject.param_spec_boolean(
+          "editable",
+          "Editable",
+          "Whether the playlist items can be edited",
           false,
           GObject.ParamFlags.READWRITE,
         ),
@@ -654,6 +669,18 @@ export class PlaylistColumnView extends Gtk.ColumnView {
     this._image_column.album = value;
   }
 
+  // property: editable
+
+  private _editable = false;
+
+  get editable() {
+    return this._editable;
+  }
+
+  set editable(value: boolean) {
+    this._menu_column.editable = value;
+  }
+
   constructor(
     {
       selection_mode,
@@ -663,6 +690,7 @@ export class PlaylistColumnView extends Gtk.ColumnView {
       album,
       playlistId,
       show_time,
+      editable,
       ...options
     }: Partial<
       PlaylistColumnViewOptions
@@ -696,6 +724,10 @@ export class PlaylistColumnView extends Gtk.ColumnView {
 
     if (show_time != null) {
       this.show_time = show_time;
+    }
+
+    if (editable != null) {
+      this.editable = editable;
     }
 
     this._image_column.connect(

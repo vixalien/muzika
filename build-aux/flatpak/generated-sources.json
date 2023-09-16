@@ -853,9 +853,9 @@
     },
     {
         "type": "file",
-        "url": "https://registry.yarnpkg.com/libmuse/-/libmuse-0.0.81.tgz#807a6ac7d3c945178b771f859e2db166b3b7240a",
-        "sha512": "bd8932e1666e2b7f9966eb05c8c390d151f88871a0e69a2ef86d5d8271e32ba7489b3eb5b3de3c48943de3dd69bb1a13c96a3c1a78fae48bf73f9b8adb0ede83",
-        "dest-filename": "libmuse-0.0.81.tgz",
+        "url": "https://registry.yarnpkg.com/libmuse/-/libmuse-0.0.83.tgz#99e6877b165298bee04c7f38b003fb4997b7d145",
+        "sha512": "aad2ad3bed3b85b8510a0515fa08b2233a68bfe29f3bc83a9e82596667cdca02d4af4be62d872d3a72596a7f56c033e851a6f32511092555beed9897787b2cfe",
+        "dest-filename": "libmuse-0.0.83.tgz",
         "dest": "flatpak-node/yarn-mirror"
     },
     {

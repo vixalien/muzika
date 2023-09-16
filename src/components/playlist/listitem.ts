@@ -76,7 +76,7 @@ export class PlaylistListItem extends Gtk.Box {
     this.menu_helper = MenuHelper.new(this);
   }
 
-  set_item(item: PlaylistItem, playlistId?: string) {
+  set_item(position: number, item: PlaylistItem, playlistId?: string, editable = false) {
     this.item = item;
     this.playlistId = playlistId;
 
@@ -125,6 +125,7 @@ export class PlaylistListItem extends Gtk.Box {
       [_("Play next"), `queue.add-song("${item.videoId}?next=true")`],
       [_("Add to queue"), `queue.add-song("${item.videoId}")`],
       [_("Save to playlist"), `win.add-to-playlist("${item.videoId}")`],
+      editable ? [_("Remove from playlist"), `playlist.remove-tracks([${position}])`] : null,
       item.album
         ? [
           _("Go to album"),

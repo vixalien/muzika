@@ -10,12 +10,6 @@ export interface MenuItemPropsObject {
 
 export type MenuItemPropsArray = [label: string, detailed_action: string];
 
-/**
- * MenuItemProps can either be an array of label and action or a full blown
- * object of properties
- */
-export type MenuItemProps = MenuItemPropsObject | MenuItemPropsArray | null;
-
 function is_menu_item_props_array(
   item: MenuItemProps,
 ): item is MenuItemPropsArray {
@@ -32,7 +26,19 @@ interface MenuSection {
   items: MenuItemProps[];
 }
 
-export type MenuProp = MenuItemProps | MenuSubmenu | MenuSection;
+/**
+ * MenuItemProps can either be an array of label and action or a full blown
+ * object of properties
+ */
+export type MenuItemProps = MenuItemPropsObject | MenuItemPropsArray | null;
+
+export type MenuArraySection = MenuItemProps[];
+
+export type MenuProp =
+  | MenuItemProps
+  | MenuArraySection
+  | MenuSubmenu
+  | MenuSection;
 
 function is_submenu(
   item: NonNullable<MenuProp>,
@@ -44,6 +50,12 @@ function is_section(
   item: NonNullable<MenuProp>,
 ): item is MenuSection {
   return typeof item === "object" && Object.hasOwn(item, "section");
+}
+
+function is_array_section(
+  item: NonNullable<MenuProp>,
+): item is MenuArraySection {
+  return Array.isArray(item) && item.length > 0 && typeof item[0] != "string";
 }
 
 function generate_menu_item(props: NonNullable<MenuItemProps>) {
@@ -94,7 +106,15 @@ export function generate_menu(props: MenuProp[]) {
       });
 
       menu.append_section(item.section, section);
-    } else {
+    } else if (is_array_section(item)) {
+      const section = new Gio.Menu();
+
+      filter_null(item).forEach((item) => {
+        section.append_item(generate_menu_item(item));
+      });
+
+      menu.append_section(null, section);
+    } else if (Array.isArray(item) && item.length === 2) {
       menu.append_item(generate_menu_item(item));
     }
   });

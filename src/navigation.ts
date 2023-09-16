@@ -121,6 +121,12 @@ export class Navigator extends GObject.Object {
           }
         },
       },
+      {
+        name: "back",
+        activate: (_) => {
+          this.back();
+        },
+      },
     ]);
 
     return action_group;
@@ -205,7 +211,7 @@ export class Navigator extends GObject.Object {
   }
 
   back() {
-    this.go(-1);
+    this._view.pop();
   }
 
   // reload(navigate?: boolean) {

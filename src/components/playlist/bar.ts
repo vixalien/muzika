@@ -2,13 +2,13 @@ import Gtk from "gi://Gtk?version=4.0";
 import GObject from "gi://GObject";
 import Gio from "gi://Gio";
 import Adw from "gi://Adw";
+import GLib from "gi://GLib";
 
 import { ngettext } from "gettext";
 
-import { edit_playlist, PlaylistItem } from "src/muse";
+import { PlaylistItem } from "src/muse";
 import { ObjectContainer } from "src/util/objectcontainer";
 import { get_selected } from "src/util/list";
-import { Window } from "src/window";
 
 const vprintf = imports.format.vprintf;
 
@@ -68,9 +68,9 @@ export class PlaylistBar extends Adw.Bin {
       }
     });
 
-    this._delete.connect("clicked", () => {
-      this.delete_selected();
-    });
+    // this._delete.connect("clicked", () => {
+    //   this.delete_selected();
+    // });
   }
 
   playlistId: string | null = null;
@@ -124,108 +124,34 @@ export class PlaylistBar extends Adw.Bin {
 
   set model(value: Gtk.SelectionModel<ObjectContainer<PlaylistItem>>) {
     this._model = value;
+
+    this._model.connect("items-changed", () => {
+      this.update_selection();
+    });
+
     this._model.connect("selection-changed", () => {
       this.update_selection();
     });
   }
 
-  private get_window() {
-    return this.root as Window;
-  }
-
-  private deleted_items: { item: PlaylistItem; position: number }[] = [];
-
-  private async undo_deletion() {
-    const underlying_model = (this.model as Gtk.MultiSelection)
-      .model as Gio.ListStore<ObjectContainer<PlaylistItem>>;
-
-    this.deleted_items
-      // order by position ascending
-      .sort((a, b) => a.position - b.position)
-      .forEach(({ item, position }) => {
-        underlying_model.insert(position, new ObjectContainer(item));
-      });
-
-    this.update_selection();
-  }
-
-  private async delete_selected() {
-    if (!this.playlistId) return;
-
-    // if there are tracks pending to get deleted, wait till they are done
-    if (this.deleted_items.length > 0) {
-      const toast = new Adw.Toast({
-        title: _("Please wait until the current operation is finished"),
-        priority: Adw.ToastPriority.HIGH,
-      });
-
-      this.get_window().toast_overlay.add_toast(toast);
-
-      return;
-    }
-
-    const items = get_selected(this.model)
-      .map((position) => {
-        return {
-          item: this.model.get_item(position)?.object as PlaylistItem,
-          position,
-        };
-      })
-      .filter((item) => item.item !== null)
-      // order by position descending
-      .sort((a, b) => b.position - a.position);
-
-    this.deleted_items = items;
-
-    const underlying_model = (this.model as Gtk.MultiSelection)
-      .model as Gio.ListStore<ObjectContainer<PlaylistItem>>;
-
-    for (const { position } of items) {
-      underlying_model.remove(position);
-    }
-
-    this.update_selection();
-
-    const toast = new Adw.Toast({
-      title: ngettext(
-        vprintf(_("%d song removed from playlist"), [items.length]),
-        vprintf(_("%d songs removed from playlist"), [items.length]),
-        items.length,
-      ),
-      button_label: _("Undo"),
-    });
-
-    toast.connect("button-clicked", () => {
-      this.undo_deletion();
-    });
-
-    toast.connect("dismissed", () => {
-      this.deleted_items = [];
-
-      // remove the videos from the playlist on the server
-      edit_playlist(this.playlistId!, {
-        remove_videos: items.map((item) => {
-          return {
-            videoId: item.item.videoId,
-            setVideoId: item.item.setVideoId!,
-          };
-        }),
-      }).catch((err) => {
-        console.error(err);
-      });
-    });
-
-    this.get_window().toast_overlay.add_toast(toast);
-  }
-
   private update_model() {
-    const items = get_selected(this.model)
+    const positions = get_selected(this.model);
+
+    const items = positions
       .map((position) => this.model.get_item(position)?.object)
       .filter((item) => item != null) as PlaylistItem[];
 
     const ids = items.map((item) => item.videoId).join(",");
 
     if (items.length > 0) {
+      this._delete.sensitive = this.editable;
+      const variant = GLib.Variant.new_array(
+        GLib.VariantType.new("i"),
+        positions.map((pos) => GLib.Variant.new_int32(pos)),
+      );
+      this._delete.action_target = variant;
+      this._delete.action_name = `playlist.remove-tracks`;
+
       const model = Gio.Menu.new();
 
       model.append(_("Play next"), `queue.add-song("${ids}?next=true")`);
@@ -234,6 +160,7 @@ export class PlaylistBar extends Adw.Bin {
 
       this._more.set_menu_model(model);
     } else {
+      this._delete.sensitive = false;
       this._more.set_menu_model(null);
     }
   }

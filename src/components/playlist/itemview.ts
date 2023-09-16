@@ -235,6 +235,7 @@ export class PlaylistItemView extends Adw.Bin {
       album: this.album,
       show_add: this.show_add,
       playlistId: this.playlistId ?? null as any,
+      editable: this.editable,
     };
 
     if (column) {
@@ -257,7 +258,17 @@ export class PlaylistItemView extends Adw.Bin {
 
   // property: editable
 
-  editable = false;
+  private _editable = false;
+
+  get editable() {
+    return this._editable;
+  }
+
+  set editable(show: boolean) {
+    this._editable = show;
+
+    this.set_current_property("editable", show);
+  }
 
   // property: show-add
 
