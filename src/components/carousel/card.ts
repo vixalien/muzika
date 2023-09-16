@@ -14,7 +14,6 @@ import {
 } from "../../muse.js";
 import { get_thumbnail_with_size } from "../webimage.js";
 import { ParsedLibraryArtist } from "libmuse/types/parsers/library.js";
-import { PlaylistImage } from "../playlist-image.js";
 import { pretty_subtitles } from "src/util/text.js";
 import { MixedCardItem } from "../library/mixedcard.js";
 import { DynamicActionState, DynamicImage } from "../dynamic-image";
@@ -27,8 +26,6 @@ enum CarouselImageType {
   DYNAMIC_PICTURE,
   PLAYLIST_IMAGE,
 }
-
-PlaylistImage;
 
 export class CarouselCard extends Gtk.Box {
   static {

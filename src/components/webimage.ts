@@ -4,7 +4,6 @@ import Adw from "gi://Adw";
 
 import { fetch } from "../polyfills/fetch.js";
 import { Thumbnail } from "libmuse";
-import { AdaptivePicture } from "./adaptive-picture.js";
 import { FixedRatioThumbnail } from "./fixed-ratio-thumbnail.js";
 
 export function get_thumbnail_with_size(
@@ -109,7 +108,7 @@ export function get_best_thumbnail(
 }
 
 export function load_thumbnails(
-  image: Gtk.Image | Gtk.Picture | Adw.Avatar | AdaptivePicture,
+  image: Gtk.Image | Gtk.Picture | Adw.Avatar | FixedRatioThumbnail,
   thumbnails: Thumbnail[],
   options: number | LoadOptions,
 ) {
@@ -177,7 +176,6 @@ export async function load_image(
     | Gtk.Image
     | Gtk.Picture
     | Adw.Avatar
-    | AdaptivePicture
     | FixedRatioThumbnail,
   href: string,
   options: LoadOptions,
@@ -191,8 +189,6 @@ export async function load_image(
       image.set_from_paintable(texture);
     } else if (image instanceof Adw.Avatar) {
       image.set_custom_image(texture);
-    } else if (image instanceof AdaptivePicture) {
-      image.paintable = texture;
     } else if (image instanceof FixedRatioThumbnail) {
       image.paintable = texture;
     }
