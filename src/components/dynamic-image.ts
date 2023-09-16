@@ -1,23 +1,40 @@
 import Gtk from "gi://Gtk?version=4.0";
 import GObject from "gi://GObject";
+import Adw from "gi://Adw";
 
-import { get_player } from "src/application.js";
 import { Thumbnail } from "libmuse";
 import { load_thumbnails } from "./webimage";
+import { DynamicAction, DynamicActionState } from "./dynamic-action";
 import { SignalListeners } from "src/util/signal-listener";
-import { AdaptivePicture } from "./adaptive-picture";
+import { get_player } from "src/application";
+import { FixedRatioThumbnail } from "./fixed-ratio-thumbnail";
 
-export enum DynamicImageState {
-  DEFAULT,
-  LOADING,
-  PLAYING,
-  PAUSED,
+export { DynamicActionState };
+
+export enum DynamicImageStorageType {
+  EMPTY = 0,
+  TRACK_NUMBER,
+  COVER_THUMBNAIL,
+  VIDEO_THUMBNAIL,
+  AVATAR,
 }
 
-export enum DynamicImageVisibleChild {
-  IMAGE,
-  PICTURE,
-  NUMBER,
+export type DynamicImageInnerChild<Type extends DynamicImageStorageType> =
+  Type extends DynamicImageStorageType.EMPTY ? Adw.Bin
+    : Type extends DynamicImageStorageType.TRACK_NUMBER ? Gtk.Label
+    : Type extends DynamicImageStorageType.COVER_THUMBNAIL ? Gtk.Picture
+    : Type extends DynamicImageStorageType.AVATAR ? Adw.Avatar
+    : Type extends DynamicImageStorageType.VIDEO_THUMBNAIL ? Gtk.Image
+    : never;
+
+export interface DynamicImageConstructorProperties
+  extends Gtk.Overlay.ConstructorProperties {
+  size: number;
+  action_size: number;
+  storage_type: DynamicImageStorageType;
+  track_number: number;
+  playlist: boolean;
+  persistent_play_button: boolean;
 }
 
 export class DynamicImage extends Gtk.Overlay {
@@ -26,69 +43,73 @@ export class DynamicImage extends Gtk.Overlay {
       GTypeName: "DynamicImage",
       Template:
         "resource:///com/vixalien/muzika/ui/components/dynamic-image.ui",
-      InternalChildren: [
-        "stack",
-        "play",
-        "play_image",
-        "wave",
-        "loading",
-        "pause",
-        "pause_image",
-        "image_stack",
-        "number",
-        "check_button",
-      ],
-      Children: ["picture"],
+      InternalChildren: ["container", "action", "check"],
       Properties: {
-        "icon-size": GObject.ParamSpec.int(
-          "icon-size",
-          "Icon size",
-          "The size of the icons inside the image",
+        "size": GObject.ParamSpec.int(
+          "size",
+          "Size",
+          "The size of the dynamic image",
           GObject.ParamFlags.READWRITE,
           0,
           1000000,
           0,
         ),
-        "image-size": GObject.ParamSpec.int(
-          "image-size",
-          "Image size",
-          "The size of the image",
+        "action-size": GObject.ParamSpec.int(
+          "action-size",
+          "Action Size",
+          "The size of the inset dynamic action",
           GObject.ParamFlags.READWRITE,
           0,
           1000000,
           0,
         ),
-        "state": GObject.ParamSpec.int(
+        "state": GObject.ParamSpec.uint(
           "state",
           "State",
-          "The state of the image",
+          "The current state of the dynamic action",
           GObject.ParamFlags.READWRITE,
-          DynamicImageState.DEFAULT,
-          DynamicImageState.PAUSED,
-          DynamicImageState.DEFAULT,
+          DynamicActionState.DEFAULT,
+          DynamicActionState.PAUSED,
+          DynamicActionState.DEFAULT,
+        ),
+        "storage-type": GObject.ParamSpec.uint(
+          "storage-type",
+          "Storage Type",
+          "The current type of child being shown by this dynamic image",
+          GObject.ParamFlags.READABLE,
+          DynamicImageStorageType.EMPTY,
+          DynamicImageStorageType.AVATAR,
+          DynamicImageStorageType.EMPTY,
+        ),
+        "track-number": GObject.ParamSpec.int(
+          "track-number",
+          "Track Number",
+          "Track Number displayed by this dynamic image",
+          GObject.ParamFlags.READWRITE,
+          0,
+          1000000,
+          0,
+        ),
+        "playlist": GObject.ParamSpec.boolean(
+          "playlist",
+          "Playlist",
+          "Whether this dynamic image is showing a playlist",
+          GObject.ParamFlags.READWRITE,
+          false,
         ),
         "persistent-play-button": GObject.ParamSpec.boolean(
           "persistent-play-button",
-          "Persistent play button",
-          "Whether the play button should always show persistent",
+          "Persistent Play Button",
+          "Whether to always show the play button",
           GObject.ParamFlags.READWRITE,
-          true,
+          false,
         ),
-        "visible-child": GObject.ParamSpec.uint(
-          "visible-child",
-          "The visible child",
-          "Whether the image, picture or number should be visible",
+        can_expand: GObject.ParamSpec.boolean(
+          "can-expand",
+          "Can Expand",
+          "Whether to expand the image to fill the available space",
           GObject.ParamFlags.READWRITE,
-          DynamicImageVisibleChild.IMAGE,
-          DynamicImageVisibleChild.NUMBER,
-          DynamicImageVisibleChild.IMAGE,
-        ),
-        "track-number": GObject.ParamSpec.string(
-          "track-number",
-          "Track Number",
-          "The track number of the image",
-          GObject.ParamFlags.READWRITE,
-          "",
+          false,
         ),
         "selection-mode": GObject.ParamSpec.boolean(
           "selection-mode",
@@ -106,297 +127,403 @@ export class DynamicImage extends Gtk.Overlay {
         ),
       },
       Signals: {
-        pause: {},
         play: {},
-        "selection-mode-toggled": {
-          param_types: [GObject.TYPE_BOOLEAN],
-        },
+        pause: {},
       },
     }, this);
   }
 
-  private _stack!: Gtk.Stack;
-  private _play!: Gtk.Button;
-  private _play_image!: Gtk.Image;
-  private _wave!: Gtk.Image;
-  private _loading!: Gtk.Spinner;
-  private _pause!: Gtk.Button;
-  private _pause_image!: Gtk.Image;
-  private _image_stack!: Gtk.Stack;
-  private _number!: Gtk.Label;
-  private _check_button!: Gtk.CheckButton;
+  private _container!: Adw.Bin;
+  private _action!: DynamicAction;
+  private _check!: Gtk.CheckButton;
 
-  picture!: AdaptivePicture;
+  private listeners = new SignalListeners();
 
-  private _state: DynamicImageState = DynamicImageState.DEFAULT;
-
-  get state() {
-    return this._state;
-  }
-
-  set state(state: DynamicImageState) {
-    if (this._state === state) return;
-
-    this._state = state;
-    this.update_stack(this.controller.contains_pointer);
-  }
-
-  get icon_size() {
-    return this._wave.pixel_size;
-  }
-
-  set icon_size(size: number) {
-    this._loading.width_request = size;
-
-    const images = [this._play_image, this._wave, this._pause_image];
-
-    for (const image of images) {
-      image.remove_css_class("lowres-icon");
-      image.remove_css_class("icon-dropshadow");
-
-      image.add_css_class(size < 32 ? "lowres-icon" : "icon-dropshadow");
-
-      image.pixel_size = size;
-    }
-  }
-
-  get image_size() {
-    return this._image_stack.height_request;
-  }
-
-  set image_size(size: number) {
-    if (this.visible_child === DynamicImageVisibleChild.PICTURE) {
-      const width = Math.ceil(size * (16 / 9));
-      this._image_stack.width_request = width;
-      this._image_stack.height_request = size;
-      this.picture.min_width = width;
-      this.picture.min_height = size;
-    } else {
-      this._image_stack.width_request = this._image_stack.height_request = size;
-      this.picture.min_width = this.picture.min_height = size;
-    }
-
-    ["br-6", "br-9"].map((br_class) => {
-      this.remove_css_class(br_class);
-    });
-
-    if (size <= 48) {
-      this.add_css_class("br-6");
-    } else {
-      this.add_css_class("br-9");
-    }
-  }
-
-  private _persistent_play_button = true;
-
-  get persistent_play_button() {
-    return this._persistent_play_button;
-  }
-
-  set persistent_play_button(persistent: boolean) {
-    this._persistent_play_button = persistent;
-    this.update_stack(this.controller.contains_pointer);
-  }
-
-  get selected() {
-    return this._check_button.active;
-  }
-
-  set selected(selected: boolean) {
-    this._check_button.active = selected;
-  }
-
-  private _selection_mode = false;
-
-  get selection_mode() {
-    return this._selection_mode;
-  }
-
-  set selection_mode(selection_mode: boolean) {
-    this._selection_mode = selection_mode;
-
-    if (selection_mode) {
-      this._image_stack.visible_child = this._check_button;
-      this.remove_css_class("card");
-    } else {
-      this.visible_child = this._visible_child;
-    }
-
-    this.update_stack();
-  }
-
-  private _visible_child = DynamicImageVisibleChild.IMAGE;
-
-  get visible_child() {
-    if (!this.loaded) {
-      return this._visible_child;
-    }
-
-    switch (this._image_stack.visible_child) {
-      case this.picture:
-        return this._visible_child;
-      case this._number:
-        return DynamicImageVisibleChild.NUMBER;
-      default:
-        return this._visible_child;
-    }
-  }
-
-  set visible_child(child: DynamicImageVisibleChild) {
-    this._visible_child = child;
-
-    if (this.selection_mode) {
-      return;
-    }
-
-    if (child === DynamicImageVisibleChild.NUMBER) {
-      this._image_stack.visible_child = this._number;
-    } else if (this.loaded) {
-      switch (child) {
-        case DynamicImageVisibleChild.IMAGE:
-          this._image_stack.visible_child = this.picture;
-          break;
-        case DynamicImageVisibleChild.PICTURE:
-          this._image_stack.visible_child = this.picture;
-          break;
-      }
-    }
-
-    if (child === DynamicImageVisibleChild.NUMBER) {
-      this._play_image.icon_name = "play-white-symbolic";
-      this.remove_css_class("card");
-    } else {
-      this._play_image.icon_name = "play-white";
-      this.add_css_class("card");
-    }
-
-    // recalculate the image size (for picture)
-    this.image_size = this.image_size;
-  }
-
-  get track_number() {
-    return this._number.label;
-  }
-
-  set track_number(number: string) {
-    this._number.label = number;
-
-    this.visible_child = DynamicImageVisibleChild.NUMBER;
-  }
-
-  private controller: Gtk.EventControllerMotion;
-
-  constructor(props: DynamicImageProps = {}) {
+  constructor(props: Partial<DynamicImageConstructorProperties> = {}) {
     super();
 
-    this.controller = new Gtk.EventControllerMotion();
+    this._action.fill = props?.playlist ?? true;
 
-    this.controller.connect("enter", () => {
-      this.update_stack(true);
-    });
-
-    this.controller.connect("leave", () => {
-      this.update_stack(false);
-    });
-
-    this.add_controller(this.controller);
-
-    this.root_listeners.add(
-      this._check_button,
-      this._check_button.connect("toggled", () => {
-        this.emit("selection-mode-toggled", this._check_button.active);
-      }),
-    );
-
-    if (props.icon_size) this.icon_size = props.icon_size;
-    if (props.image_size) this.image_size = props.image_size;
-    if (props.visible_child) this.visible_child = props.visible_child;
+    if (props.size) this.size = props.size;
+    if (props.action_size) this.action_size = props.action_size;
+    if (props.storage_type) this.storage_type = props.storage_type;
+    if (props.track_number) this.track_number = props.track_number;
     if (props.persistent_play_button != null) {
       this.persistent_play_button = props.persistent_play_button;
     }
-    if (props.track_number) this.track_number = props.track_number.toString();
   }
 
-  private update_stack(hovering = false) {
-    let stop_spinning = true;
+  private hover_enter_cb() {
+    this._action.hovering = true;
+  }
 
-    let osd = false;
-    let visible = true;
+  private hover_leave_cb() {
+    this._action.hovering = false;
+  }
 
-    if (this.selection_mode) {
-      visible = false;
-    } else {
-      switch (this.state) {
-        case DynamicImageState.DEFAULT:
-          if (hovering) {
-            osd = true;
-            this._stack.visible_child = this._play;
-          } else {
-            if (this.persistent_play_button) {
-              this._stack.visible_child = this._play;
-            } else {
-              visible = false;
-            }
-          }
-          break;
-        case DynamicImageState.LOADING:
-          stop_spinning = false;
-          this._stack.visible_child = this._loading;
-          this._loading.spinning = true;
-          osd = true;
-          break;
-        case DynamicImageState.PLAYING:
-          if (hovering) {
-            this._stack.visible_child = this._pause;
-          } else {
-            this._stack.visible_child = this._wave;
-          }
-          osd = true;
-          break;
-        case DynamicImageState.PAUSED:
-          this._stack.visible_child = this._play;
-          osd = true;
-          break;
-      }
-    }
+  // child methods
 
-    this._stack.visible = visible;
-
-    if ((stop_spinning || !this._stack.visible) && this._loading.spinning) {
-      this._loading.spinning = false;
-    }
-
-    // for number, don't use osd, but instead hide the number label
+  private update_image_class() {
     if (
-      this._stack.visible &&
-      this.visible_child === DynamicImageVisibleChild.NUMBER
-    ) {
-      this._image_stack.opacity = osd ? 0 : 1;
+      this.storage_type !== DynamicImageStorageType.COVER_THUMBNAIL &&
+      this.storage_type !== DynamicImageStorageType.VIDEO_THUMBNAIL
+    ) return;
 
-      this._stack.remove_css_class("osd");
+    const all_classes = [
+      "icon-dropshadow",
+      "lowres-icon",
+      "br-6",
+      "br-9",
+      "card",
+    ];
+    const classes = this.selection_mode ? [] : ["card"];
+
+    if (this.size <= 48) {
+      classes.push("lowres-icon");
+      classes.push("br-6");
     } else {
-      this._image_stack.opacity = 1;
+      classes.push("icon-dropshadow");
+      classes.push("br-9");
+    }
 
-      if (osd) {
-        this._stack.add_css_class("osd");
-      } else {
-        this._stack.remove_css_class("osd");
+    all_classes.filter((c) => !classes.includes(c)).forEach((c) => {
+      this.remove_css_class(c);
+    });
+
+    classes.forEach((c) => {
+      this.add_css_class(c);
+    });
+  }
+
+  private update_size() {
+    const child = this.visible_child;
+
+    if (!child) return;
+
+    switch (this.storage_type) {
+      case DynamicImageStorageType.EMPTY: {
+        const bin = child as Adw.Bin;
+        bin.width_request = bin.height_request = this.size;
+        break;
+      }
+      case DynamicImageStorageType.COVER_THUMBNAIL: {
+        const image = child as FixedRatioThumbnail;
+        image.min_width = image.min_height = this.size;
+        this.update_image_class();
+        break;
+      }
+      case DynamicImageStorageType.AVATAR: {
+        const avatar = child as Adw.Avatar;
+        avatar.size = this.size;
+        break;
+      }
+      case DynamicImageStorageType.VIDEO_THUMBNAIL: {
+        const image = child as FixedRatioThumbnail;
+        image.min_width = (16 / 9) * this.size;
+        image.min_height = this.size;
+        this.update_image_class();
+        break;
+      }
+      case DynamicImageStorageType.TRACK_NUMBER: {
+        const label = child as Gtk.Label;
+        label.width_request = label.height_request = this.size;
+        break;
       }
     }
   }
 
-  private root_listeners = new SignalListeners();
+  // util property: visible-child
 
-  reset_root_listeners() {
-    this.root_listeners.clear();
+  public get visible_child(): Gtk.Widget {
+    return this._container.child;
   }
 
-  videoId: string | null = null;
-  playlistId: string | null = null;
-  mode_playlist = false;
+  public set visible_child(v: Gtk.Widget) {
+    this._container.child = v;
+  }
+
+  // property: can-expand
+
+  private _can_expand = false;
+
+  get can_expand() {
+    return this._can_expand;
+  }
+
+  set can_expand(value: boolean) {
+    if (this._can_expand === value) return;
+
+    this._can_expand = value;
+    this.notify("can-expand");
+
+    if (this.visible_child instanceof FixedRatioThumbnail) {
+      this.visible_child.can_expand = this.can_expand;
+    }
+  }
+
+  private check_toggled_cb() {
+    this.notify("selected");
+  }
+
+  private initialize_type(type: DynamicImageStorageType) {
+    if (this.storage_type === type) {
+      this.update_size();
+      return;
+    }
+
+    let child: Gtk.Widget;
+
+    switch (type) {
+      case DynamicImageStorageType.EMPTY:
+        child = Adw.Bin.new();
+        break;
+      case DynamicImageStorageType.COVER_THUMBNAIL:
+        child = new FixedRatioThumbnail({
+          overflow: Gtk.Overflow.HIDDEN,
+        });
+        (child as FixedRatioThumbnail).aspect_ratio = 1;
+        (child as FixedRatioThumbnail).can_expand = this.can_expand;
+        break;
+      case DynamicImageStorageType.VIDEO_THUMBNAIL:
+        child = new FixedRatioThumbnail({
+          overflow: Gtk.Overflow.HIDDEN,
+        });
+        (child as FixedRatioThumbnail).aspect_ratio = 16 / 9;
+        (child as FixedRatioThumbnail).can_expand = this.can_expand;
+        break;
+      case DynamicImageStorageType.AVATAR:
+        this._action.locked = true;
+
+        child = new Adw.Avatar({
+          overflow: Gtk.Overflow.HIDDEN,
+        });
+        child.add_css_class("rounded");
+        // TODO: get rid of this
+        // see https://gitlab.gnome.org/GNOME/gtk/-/issues/5960
+        child.add_css_class("card");
+        break;
+      case DynamicImageStorageType.TRACK_NUMBER:
+        child = new Gtk.Label();
+        child.add_css_class("heading");
+        child.add_css_class("dim-label");
+        break;
+    }
+
+    this._storage_type = type;
+    this.visible_child = child;
+
+    this.update_size();
+  }
+
+  // property: playlist
+
+  private _playlist = false;
+
+  get playlist() {
+    return this._playlist;
+  }
+
+  set playlist(playlist: boolean) {
+    if (playlist == this._playlist) return;
+
+    this._action.fill = !playlist;
+  }
+
+  // property: size
+
+  private _size = 0;
+
+  get size() {
+    return this._size;
+  }
+
+  set size(size: number) {
+    this._size = size;
+    this.update_size();
+  }
+
+  // property: dynamic-image
+
+  get persistent_play_button() {
+    return this._action.persistent_play_button;
+  }
+
+  set persistent_play_button(size: boolean) {
+    this._action.persistent_play_button = size;
+  }
+
+  // property: action-size
+
+  get action_size() {
+    return this._action.size;
+  }
+
+  set action_size(size: number) {
+    this._action.size = size;
+  }
+
+  // property: storage type
+
+  private _storage_type: DynamicImageStorageType =
+    DynamicImageStorageType.EMPTY;
+
+  get storage_type() {
+    return this._storage_type;
+  }
+
+  private set storage_type(type: DynamicImageStorageType) {
+    this.initialize_type(type);
+  }
+
+  // property: selected
+
+  get selected() {
+    return this._check.active;
+  }
+
+  set selected(selected: boolean) {
+    this._check.active = selected;
+  }
+
+  // property: selection-mode
+
+  get selection_mode() {
+    return this._check.visible;
+  }
+
+  set selection_mode(selection_mode: boolean) {
+    this._check.visible = selection_mode;
+    this._container.visible = this._action.visible = !selection_mode;
+
+    this.width_request = this.height_request = selection_mode ? this.size : -1;
+
+    this.update_image_class();
+  }
+
+  // setters for type
+
+  // setters: number
+
+  get track_number() {
+    const child = this.visible_child as Gtk.Label;
+
+    if (!child) return null;
+
+    if (
+      this.storage_type === DynamicImageStorageType.TRACK_NUMBER &&
+      this.visible_child
+    ) {
+      const number = +new Number(child.label);
+      return Number.isNaN(number) ? null : number;
+    } else {
+      return null;
+    }
+  }
+
+  set track_number(number: number | null) {
+    this.storage_type = DynamicImageStorageType.TRACK_NUMBER;
+
+    const child = this.visible_child as Gtk.Label;
+
+    if (!child) return;
+
+    if (number != null) {
+      child.set_label(number.toString());
+    } else {
+      child.set_label("");
+    }
+  }
+
+  // property: state
+
+  get state() {
+    return this._action.state;
+  }
+
+  set state(state: DynamicActionState) {
+    this._action.state = state;
+  }
+
+  private thumbnails: Thumbnail[] | null = null;
+
+  // setters: cover_thumbnails
+
+  set cover_thumbnails(thumbnails: Thumbnail[] | null) {
+    if (thumbnails === null) return;
+
+    this.storage_type = DynamicImageStorageType.COVER_THUMBNAIL;
+
+    const child = this.visible_child as Gtk.Image;
+
+    this.thumbnails = thumbnails;
+    // TODO: load the thumbnails on map
+
+    load_thumbnails(child, thumbnails, this.size);
+  }
+
+  get cover_thumbnails() {
+    if (this.storage_type === DynamicImageStorageType.COVER_THUMBNAIL) {
+      return this.thumbnails;
+    } else {
+      return null;
+    }
+  }
+
+  // setters: video_thumbnails
+
+  set video_thumbnails(thumbnails: Thumbnail[] | null) {
+    if (thumbnails === null) return;
+
+    this.storage_type = DynamicImageStorageType.VIDEO_THUMBNAIL;
+
+    const child = this.visible_child as Gtk.Picture;
+
+    this.thumbnails = thumbnails;
+    // TODO: load the thumbnails on map
+
+    load_thumbnails(child, thumbnails, this.size);
+  }
+
+  get video_thumbnails() {
+    if (this.storage_type === DynamicImageStorageType.VIDEO_THUMBNAIL) {
+      return this.thumbnails;
+    } else {
+      return null;
+    }
+  }
+
+  // setters: avatar_thumbnails
+
+  set avatar_thumbnails(thumbnails: Thumbnail[] | null) {
+    if (thumbnails === null) return;
+
+    this.storage_type = DynamicImageStorageType.AVATAR;
+
+    const child = this.visible_child as Adw.Avatar;
+
+    this.thumbnails = thumbnails;
+    // TODO: load the thumbnails on map
+
+    load_thumbnails(child, thumbnails, this.size);
+  }
+
+  get avatar_thumbnails() {
+    if (this.storage_type === DynamicImageStorageType.AVATAR) {
+      return this.thumbnails;
+    } else {
+      return null;
+    }
+  }
+
+  private videoId: string | null = null;
+  private playlistId: string | null = null;
 
   setup_video(videoId: string, playlistId: string | null = null) {
     this.videoId = videoId;
+    this.playlistId = playlistId;
+  }
+
+  setup_playlist(playlistId: string) {
     this.playlistId = playlistId;
   }
 
@@ -407,14 +534,12 @@ export class DynamicImage extends Gtk.Overlay {
 
     if (player.now_playing?.object.track.videoId === this.videoId) {
       player.play();
+    } else if (this.playlistId) {
+      this.state = DynamicActionState.LOADING;
+      player.queue.play_playlist(this.playlistId, this.videoId ?? undefined);
     } else if (this.videoId) {
-      this.state = DynamicImageState.LOADING;
-
-      if (this.playlistId) {
-        player.queue.play_playlist(this.playlistId, this.videoId);
-      } else {
-        player.queue.play_song(this.videoId);
-      }
+      this.state = DynamicActionState.LOADING;
+      player.queue.play_song(this.videoId);
     }
   }
 
@@ -432,47 +557,22 @@ export class DynamicImage extends Gtk.Overlay {
     }
   }
 
-  setup_playlist(playlistId: string) {
-    this.playlistId = playlistId;
-    this.mode_playlist = true;
+  private setup_listeners() {
+    this.listeners.connect(this._action, "play", this.play_cb.bind(this));
+    this.listeners.connect(this._action, "pause", this.pause_cb.bind(this));
   }
 
-  clear() {
-    this.reset_root_listeners();
+  private _clear() {
+    this.listeners.clear();
   }
 
-  vfunc_unroot(): void {
-    this.clear();
-    super.vfunc_unroot();
+  vfunc_unmap(): void {
+    this._clear();
+    super.vfunc_unmap();
   }
 
-  private loaded = false;
-
-  load_thumbnails(
-    thumbnails: Thumbnail[],
-    options: Parameters<typeof load_thumbnails>[2] = this.image_size,
-  ) {
-    if (this.visible_child === DynamicImageVisibleChild.NUMBER) {
-      return;
-    }
-
-    return load_thumbnails(
-      this.picture,
-      thumbnails,
-      options,
-    )
-      .then(() => {
-        this.loaded = true;
-        this.visible_child = this._visible_child;
-      });
+  vfunc_map(): void {
+    super.vfunc_map();
+    this.setup_listeners();
   }
-}
-
-export interface DynamicImageProps
-  extends Partial<Gtk.Overlay.ConstructorProperties> {
-  icon_size?: number;
-  image_size?: number;
-  persistent_play_button?: boolean;
-  visible_child?: DynamicImageVisibleChild;
-  track_number?: number | string;
 }

@@ -3,7 +3,7 @@ import GObject from "gi://GObject";
 import Gtk from "gi://Gtk?version=4.0";
 
 import { PlaylistItem, SearchContent } from "src/muse";
-import { DynamicImageState } from "src/components/dynamic-image";
+import { DynamicActionState } from "src/components/dynamic-image";
 import { SignalListeners } from "./signal-listener";
 import { get_player } from "src/application";
 import { MixedCardItem } from "src/components/library/mixedcard";
@@ -113,9 +113,9 @@ export class PlayableContainer<T extends Object = PlaylistItem>
           "State",
           "The state of the item",
           GObject.ParamFlags.READWRITE,
-          DynamicImageState.DEFAULT,
-          DynamicImageState.PLAYING,
-          DynamicImageState.DEFAULT,
+          DynamicActionState.DEFAULT,
+          DynamicActionState.PLAYING,
+          DynamicActionState.DEFAULT,
         ),
         video_id: GObject.ParamSpec.string(
           "video-id",
@@ -143,7 +143,7 @@ export class PlayableContainer<T extends Object = PlaylistItem>
   }
 
   object: T;
-  state: DynamicImageState;
+  state: DynamicActionState;
   video_id: string | null = null;
   playlist_id: string | null = null;
   is_playlist: boolean = false;
@@ -151,7 +151,7 @@ export class PlayableContainer<T extends Object = PlaylistItem>
   constructor(props: PlayableContainerProps<T>) {
     super();
 
-    this.state = DynamicImageState.DEFAULT;
+    this.state = DynamicActionState.DEFAULT;
     this.object = props.object;
 
     if (props.video_id) this.video_id = props.video_id;
@@ -214,7 +214,7 @@ export class SectionedPlayableContainer<
   constructor(props: SectionedPlayableContainerProps<T, Section>) {
     super(props);
 
-    this.state = DynamicImageState.DEFAULT;
+    this.state = DynamicActionState.DEFAULT;
     this.object = props.object;
 
     if (props.section != null) this.section = props.section;
@@ -416,20 +416,20 @@ export class PlayableList<
             player.now_playing?.object.settings.playlistId ==
               item.playlist_id)
           ? player.playing
-            ? DynamicImageState.PLAYING
-            : DynamicImageState.PAUSED
+            ? DynamicActionState.PLAYING
+            : DynamicActionState.PAUSED
           : item.video_id && player.loading_track == item.video_id
-          ? DynamicImageState.LOADING
-          : DynamicImageState.DEFAULT;
+          ? DynamicActionState.LOADING
+          : DynamicActionState.DEFAULT;
       } else {
         item.state = (item.video_id &&
             player.now_playing?.object.track.videoId == item.video_id)
           ? player.playing
-            ? DynamicImageState.PLAYING
-            : DynamicImageState.PAUSED
+            ? DynamicActionState.PLAYING
+            : DynamicActionState.PAUSED
           : player.loading_track == item.video_id
-          ? DynamicImageState.LOADING
-          : DynamicImageState.DEFAULT;
+          ? DynamicActionState.LOADING
+          : DynamicActionState.DEFAULT;
       }
     });
   }

@@ -2,7 +2,6 @@ import Gtk from "gi://Gtk?version=4.0";
 import GObject from "gi://GObject";
 
 import { PlaylistListItem } from "./listitem";
-import { DynamicImageVisibleChild } from "../dynamic-image";
 import { SignalListeners } from "src/util/signal-listener";
 import { PlayableContainer } from "src/util/playablelist";
 

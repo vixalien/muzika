@@ -14,7 +14,7 @@ import {
   TopResultPlaylist,
   TopResultVideo,
 } from "libmuse/types/parsers/search.js";
-import { DynamicImage, DynamicImageState } from "../dynamic-image.js";
+import { DynamicActionState, DynamicImage } from "../dynamic-image";
 import { pretty_subtitles } from "src/util/text.js";
 
 DynamicImage;
@@ -101,7 +101,7 @@ export class TopResultCard extends Adw.Bin {
         break;
       case "song":
       case "video":
-        this.dynamic_image.state = DynamicImageState.LOADING;
+        this.dynamic_image.state = DynamicActionState.LOADING;
         this.activate_action(
           "queue.play-song",
           GLib.Variant.new_string(
@@ -128,8 +128,8 @@ export class TopResultCard extends Adw.Bin {
   }
 
   small_layout() {
-    this.dynamic_image.image_size = 48;
-    this.dynamic_image.icon_size = 16;
+    this.dynamic_image.size = 48;
+    this.dynamic_image.action_size = 16;
     this._avatar.size = 48;
     this._primary.hexpand = true;
     this._secondary.hexpand = true;
@@ -145,8 +145,8 @@ export class TopResultCard extends Adw.Bin {
   }
 
   large_layout() {
-    this.dynamic_image.image_size = 100;
-    this.dynamic_image.icon_size = 32;
+    this.dynamic_image.size = 100;
+    this.dynamic_image.action_size = 32;
     this._avatar.size = 100;
     this._primary.hexpand = false;
     this._secondary.hexpand = false;
@@ -187,7 +187,6 @@ export class TopResultCard extends Adw.Bin {
     this._title.label = track.title;
     this._explicit.set_visible(track.isExplicit);
 
-    this.dynamic_image.load_thumbnails(track.thumbnails);
     this.dynamic_image.setup_video(track.videoId);
 
     this._primary.action_name = "queue.play-song";
@@ -201,19 +200,21 @@ export class TopResultCard extends Adw.Bin {
   show_song(song: TopResultSong) {
     this.set_song_or_video(song);
 
+    this.dynamic_image.cover_thumbnails = song.thumbnails;
     this.set_subtitle("Song", song.artists, [song.duration]);
   }
 
   show_video(video: TopResultVideo) {
     this.set_song_or_video(video);
 
+    this.dynamic_image.cover_thumbnails = video.thumbnails;
     this.set_subtitle("Video", video.artists, [video.duration]);
   }
 
   show_album(album: TopResultAlbum) {
     this.result = album;
 
-    this.dynamic_image.load_thumbnails(album.thumbnails);
+    this.dynamic_image.cover_thumbnails = album.thumbnails;
 
     this._title.label = album.title;
     this._explicit.set_visible(album.isExplicit);
@@ -260,7 +261,7 @@ export class TopResultCard extends Adw.Bin {
   show_playlist(playlist: TopResultPlaylist) {
     this.result = playlist;
 
-    this.dynamic_image.load_thumbnails(playlist.thumbnails);
+    this.dynamic_image.cover_thumbnails = playlist.thumbnails;
 
     this._title.label = playlist.title;
 

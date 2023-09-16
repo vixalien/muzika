@@ -4,7 +4,7 @@ import GLib from "gi://GLib";
 
 import { PlaylistItem } from "../../muse.js";
 import { pretty_subtitles } from "src/util/text.js";
-import { DynamicImage2, DynamicImage2StorageType } from "../dynamic-image-2.js";
+import { DynamicImage, DynamicImageStorageType } from "../dynamic-image";
 import { SignalListeners } from "src/util/signal-listener.js";
 import { MenuHelper } from "src/util/menu.js";
 
@@ -43,7 +43,7 @@ export class PlaylistListItem extends Gtk.Box {
 
   item?: PlaylistItem;
 
-  dynamic_image!: DynamicImage2;
+  dynamic_image!: DynamicImage;
 
   private _title!: Gtk.Label;
   private _explicit!: Gtk.Image;
@@ -113,7 +113,7 @@ export class PlaylistListItem extends Gtk.Box {
     this._explicit.set_visible(item.isExplicit);
 
     if (
-      this.dynamic_image.storage_type !== DynamicImage2StorageType.TRACK_NUMBER
+      this.dynamic_image.storage_type !== DynamicImageStorageType.TRACK_NUMBER
     ) {
       this.dynamic_image.cover_thumbnails = item.thumbnails;
     }

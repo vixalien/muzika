@@ -28,12 +28,12 @@ import {
   RelatedArtist,
   WatchPlaylist,
 } from "libmuse/types/parsers/browsing.js";
-import { DynamicImage2, DynamicImage2StorageType } from "../dynamic-image-2.js";
+import { DynamicImage, DynamicImageStorageType } from "../dynamic-image.js";
 import { DynamicActionState } from "../dynamic-action.js";
 import { MixedCardItem } from "../library/mixedcard.js";
 import { MenuHelper } from "src/util/menu.js";
 
-DynamicImage2;
+DynamicImage;
 
 export type FlatCardItem = MixedCardItem | InlineSong | SearchContent;
 
@@ -62,7 +62,7 @@ export class FlatCard extends Gtk.Box {
   private _title!: Gtk.Label;
   private _explicit!: Gtk.Image;
   private _subtitle!: Gtk.Label;
-  private _dynamic_image!: DynamicImage2;
+  private _dynamic_image!: DynamicImage;
 
   private menu_helper: MenuHelper;
 
@@ -87,14 +87,14 @@ export class FlatCard extends Gtk.Box {
 
   private load_thumbnails(
     thumbnails: Thumbnail[],
-    type?: DynamicImage2StorageType,
+    type?: DynamicImageStorageType,
     // options: Parameters<typeof load_thumbnails>[2] = 60,
   ) {
     switch (type) {
-      case DynamicImage2StorageType.AVATAR:
+      case DynamicImageStorageType.AVATAR:
         this._dynamic_image.avatar_thumbnails = thumbnails;
         break;
-      case DynamicImage2StorageType.VIDEO_THUMBNAIL:
+      case DynamicImageStorageType.VIDEO_THUMBNAIL:
         this._dynamic_image.video_thumbnails = thumbnails;
         break;
       default:
@@ -223,7 +223,7 @@ export class FlatCard extends Gtk.Box {
 
     this.load_thumbnails(
       video.thumbnails,
-      // DynamicImage2StorageType.VIDEO_THUMBNAIL,
+      // DynamicImageStorageType.VIDEO_THUMBNAIL,
     );
     this.setup_video(video.videoId);
 
@@ -280,7 +280,7 @@ export class FlatCard extends Gtk.Box {
 
     this.load_thumbnails(
       video.thumbnails,
-      // DynamicImage2StorageType.VIDEO_THUMBNAIL,
+      // DynamicImageStorageType.VIDEO_THUMBNAIL,
     );
     this.setup_video(video.videoId);
 
@@ -381,7 +381,7 @@ export class FlatCard extends Gtk.Box {
     this.show_type = false;
     this.set_subtitle(_("Playlist"), [artist.subscribers]);
 
-    this.load_thumbnails(artist.thumbnails, DynamicImage2StorageType.AVATAR);
+    this.load_thumbnails(artist.thumbnails, DynamicImageStorageType.AVATAR);
 
     this.menu_helper.props = [
       artist.shuffleId
@@ -407,7 +407,7 @@ export class FlatCard extends Gtk.Box {
     this.show_type = false;
     this.set_subtitle(_("Profile"), [profile.username]);
 
-    this.load_thumbnails(profile.thumbnails, DynamicImage2StorageType.AVATAR);
+    this.load_thumbnails(profile.thumbnails, DynamicImageStorageType.AVATAR);
     this.setup_playlist(profile.browseId);
   }
 
@@ -472,7 +472,7 @@ export class FlatCard extends Gtk.Box {
     this.set_title(artist.name);
     this.set_subtitle(_("Artist"), [artist.subscribers]);
 
-    this.load_thumbnails(artist.thumbnails, DynamicImage2StorageType.AVATAR);
+    this.load_thumbnails(artist.thumbnails, DynamicImageStorageType.AVATAR);
 
     this.menu_helper.props = [
       artist.shuffleId
@@ -498,7 +498,7 @@ export class FlatCard extends Gtk.Box {
     this.set_subtitle(_("Artist"), [artist.subscribers ?? artist.songs]);
 
     // TODO: upscale image
-    this.load_thumbnails(artist.thumbnails, DynamicImage2StorageType.AVATAR);
+    this.load_thumbnails(artist.thumbnails, DynamicImageStorageType.AVATAR);
 
     this.menu_helper.props = [
       artist.shuffleId
@@ -524,7 +524,7 @@ export class FlatCard extends Gtk.Box {
 
     this.load_thumbnails(
       video.thumbnails,
-      // DynamicImage2StorageType.VIDEO_THUMBNAIL,
+      // DynamicImageStorageType.VIDEO_THUMBNAIL,
     );
     this.setup_video(video.videoId);
 
@@ -550,7 +550,7 @@ export class FlatCard extends Gtk.Box {
 
     this.load_thumbnails(
       video.thumbnails,
-      // DynamicImage2StorageType.VIDEO_THUMBNAIL,
+      // DynamicImageStorageType.VIDEO_THUMBNAIL,
     );
     this.setup_video(video.videoId);
 

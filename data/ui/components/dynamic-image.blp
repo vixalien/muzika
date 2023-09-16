@@ -1,101 +1,28 @@
 using Gtk 4.0;
+using Adw 1;
 
 template $DynamicImage : Overlay {
   overflow: hidden;
-  valign: start;
 
-  styles [
-    "br-9",
-    "card",
-    "dynamic-image"
-  ]
+  styles ["dynamic-image"]
 
   [overlay]
-  Stack stack {
-    transition-type: crossfade;
-    visible-child: play;
+  $DynamicAction action {}
 
-    styles [
-      "background-transition",
-    ]
+  [overlay]
+  CheckButton check {
+    visible: false;
+    valign: center;
+    halign: center;
+    toggled => $check_toggled_cb();
 
-    Box blank {
-    }
-
-    Button play {
-      clicked => $play_cb();
-      cursor:       $GdkCursor {
-        name: "pointer";
-      }
-
-      ;
-
-      styles [
-        "flat",
-        "no-br",
-      ]
-
-      Image play_image {
-        icon-name: "play-white";
-        pixel-size: 48;
-
-        styles ["icon-dropshadow"]
-      }
-    }
-
-    Image wave {
-      icon-name: "sound-wave-symbolic";
-      pixel-size: 48;
-    }
-
-    Spinner loading {
-      halign: center;
-      width-request: 48;
-    }
-
-    Button pause {
-      clicked => $pause_cb();
-      cursor:       $GdkCursor {
-        name: "pointer";
-      }
-
-      ;
-
-      styles [
-        "flat",
-        "no-br",
-      ]
-
-      Image pause_image {
-        icon-name: "media-playback-pause-symbolic";
-        pixel-size: 48;
-      }
-    }
+    styles ["selection-mode"]
   }
 
-  Stack image_stack {
-    transition-type: crossfade;
-
-    $AdaptivePicture picture {
-      content-fit: contain;
-    }
-
-    Label number {
-      halign: center;
-      vexpand: true;
-      label: "1";
-
-      styles [
-        "heading",
-        "dim-label",
-      ]
-    }
-
-    CheckButton check_button {
-      valign: center;
-      halign: center;
-      
-      styles ["selection-mode"]
-    }
+  Adw.Bin container {}
+  
+  EventControllerMotion {
+    enter => $hover_enter_cb();
+    leave => $hover_leave_cb();
   }
 }

@@ -7,7 +7,7 @@ import { ObjectContainer } from "src/util/objectcontainer";
 import { PlaylistItem } from "src/muse";
 import { escape_label, pretty_subtitles } from "src/util/text";
 import { PlayableContainer } from "src/util/playablelist";
-import { DynamicImage2, DynamicImage2StorageType } from "../dynamic-image-2";
+import { DynamicImage, DynamicImageStorageType } from "../dynamic-image";
 import { generate_menu } from "src/util/menu";
 
 class ImageColumn extends Gtk.ColumnViewColumn {
@@ -36,12 +36,12 @@ class ImageColumn extends Gtk.ColumnViewColumn {
   }
 
   setup_cb(_factory: Gtk.SignalListItemFactory, list_item: Gtk.ListItem) {
-    const dynamic_image = new DynamicImage2({
+    const dynamic_image = new DynamicImage({
       size: 36,
       action_size: 16,
       storage_type: this.album
-        ? DynamicImage2StorageType.TRACK_NUMBER
-        : DynamicImage2StorageType.COVER_THUMBNAIL,
+        ? DynamicImageStorageType.TRACK_NUMBER
+        : DynamicImageStorageType.COVER_THUMBNAIL,
       persistent_play_button: false,
     });
 
@@ -51,7 +51,7 @@ class ImageColumn extends Gtk.ColumnViewColumn {
   }
 
   bind_cb(_factory: Gtk.SignalListItemFactory, list_item: Gtk.ListItem) {
-    const dynamic_image = list_item.child as DynamicImage2;
+    const dynamic_image = list_item.child as DynamicImage;
     const container = list_item.item as PlayableContainer;
 
     const playlist_item = container.object;

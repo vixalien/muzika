@@ -1,5 +1,4 @@
 import Gtk from "gi://Gtk?version=4.0";
-import Gdk from "gi://Gdk?version=4.0";
 import GObject from "gi://GObject";
 import GLib from "gi://GLib";
 
@@ -15,13 +14,12 @@ import {
 } from "../../muse.js";
 import { get_thumbnail_with_size } from "../webimage.js";
 import { ParsedLibraryArtist } from "libmuse/types/parsers/library.js";
-import { DynamicImageState } from "../dynamic-image.js";
 import { PlaylistImage } from "../playlist-image.js";
 import { pretty_subtitles } from "src/util/text.js";
 import { MixedCardItem } from "../library/mixedcard.js";
-import { DynamicImage2 } from "../dynamic-image-2.js";
+import { DynamicActionState, DynamicImage } from "../dynamic-image";
 import { SignalListeners } from "src/util/signal-listener.js";
-import { generate_menu, MenuHelper, MenuProp } from "src/util/menu.js";
+import { MenuHelper } from "src/util/menu.js";
 
 enum CarouselImageType {
   AVATAR,
@@ -50,7 +48,7 @@ export class CarouselCard extends Gtk.Box {
     }, this);
   }
 
-  dynamic_image!: DynamicImage2;
+  dynamic_image!: DynamicImage;
 
   private _title!: Gtk.Label;
   private _subtitles!: Gtk.Box;
@@ -457,7 +455,7 @@ export class CarouselCard extends Gtk.Box {
     }
   }
 
-  set_state(state: DynamicImageState) {
+  set_state(state: DynamicActionState) {
     this.dynamic_image.state = state;
   }
 }

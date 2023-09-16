@@ -79,7 +79,7 @@ export class TopResultSection extends Gtk.Box {
         uri = `album:${content.browseId}`;
         break;
       case "radio":
-        // row.dynamic_image.state = DynamicImageState.LOADING;
+        // row.dynamic_image.state = DynamicActionState.LOADING;
         this.activate_action(
           "queue.play-playlist",
           GLib.Variant.new_string(
@@ -89,7 +89,7 @@ export class TopResultSection extends Gtk.Box {
         break;
       case "song":
       case "video":
-        // row.dynamic_image.state = DynamicImageState.LOADING;
+        // row.dynamic_image.state = DynamicActionState.LOADING;
         this.activate_action(
           "queue.play-song",
           GLib.Variant.new_string(
