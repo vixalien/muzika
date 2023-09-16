@@ -766,9 +766,4 @@ export class FlatCard extends Gtk.Box {
   set_state(state: DynamicActionState) {
     this._dynamic_image.state = state;
   }
-
-  vfunc_unmap(): void {
-    this._dynamic_image.clear();
-    super.vfunc_unmap();
-  }
 }

@@ -55,9 +55,9 @@ class ImageColumn extends Gtk.ColumnViewColumn {
 
     const playlist_item = container.object;
 
-    // dynamic_image.connect("selection-mode-toggled", (_dynamic_image, value) => {
-    //   this.emit("selection-mode-toggled", list_item.position, value);
-    // });
+    dynamic_image.connect("notify::selected", (_dynamic_image, value) => {
+      this.emit("selection-mode-toggled", list_item.position, value);
+    });
 
     container.connect("notify::state", () => {
       dynamic_image.state = container.state;
@@ -71,14 +71,14 @@ class ImageColumn extends Gtk.ColumnViewColumn {
       dynamic_image.cover_thumbnails = playlist_item.thumbnails;
     }
 
-    // dynamic_image.selection_mode = this.selection_mode;
-    // dynamic_image.selected = list_item.selected;
+    dynamic_image.selection_mode = this.selection_mode;
+    dynamic_image.selected = list_item.selected;
 
     dynamic_image.setup_video(playlist_item.videoId, this.playlistId);
 
-    // container.connect("notify", () => {
-    //   dynamic_image.selection_mode = this.selection_mode;
-    // });
+    container.connect("notify", () => {
+      dynamic_image.selection_mode = this.selection_mode;
+    });
   }
 }
 
@@ -637,18 +637,18 @@ export class PlaylistColumnView extends Gtk.ColumnView {
       this.show_time = show_time;
     }
 
-    // this._image_column.connect(
-    //   "selection-mode-toggled",
-    //   (_, position: number, value: boolean) => {
-    //     const selection_model = this.model as Gtk.SelectionModel;
+    this._image_column.connect(
+      "selection-mode-toggled",
+      (_, position: number, value: boolean) => {
+        const selection_model = this.model as Gtk.SelectionModel;
 
-    //     if (value) {
-    //       selection_model.select_item(position, false);
-    //     } else {
-    //       selection_model.unselect_item(position);
-    //     }
-    //   },
-    // );
+        if (value) {
+          selection_model.select_item(position, false);
+        } else {
+          selection_model.unselect_item(position);
+        }
+      },
+    );
 
     this.add_css_class("playlist-column-view");
 

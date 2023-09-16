@@ -38,6 +38,9 @@ export class DynamicImage2 extends Gtk.Overlay {
   static {
     GObject.registerClass({
       GTypeName: "DynamicImage2",
+      Template:
+        "resource:///com/vixalien/muzika/ui/components/dynamic-image-2.ui",
+      InternalChildren: ["container", "action", "check"],
       Properties: {
         "size": GObject.ParamSpec.int(
           "size",
@@ -105,6 +108,20 @@ export class DynamicImage2 extends Gtk.Overlay {
           GObject.ParamFlags.READWRITE,
           false,
         ),
+        "selection-mode": GObject.ParamSpec.boolean(
+          "selection-mode",
+          "Selection mode",
+          "Whether the image is in selection mode",
+          GObject.ParamFlags.READWRITE,
+          false,
+        ),
+        selected: GObject.ParamSpec.boolean(
+          "selected",
+          "Selected",
+          "Whether the image is selected",
+          GObject.ParamFlags.READWRITE,
+          false,
+        ),
       },
       Signals: {
         play: {},
@@ -113,30 +130,16 @@ export class DynamicImage2 extends Gtk.Overlay {
     }, this);
   }
 
-  private action = new DynamicAction();
+  private _container!: Adw.Bin;
+  private _action!: DynamicAction;
+  private _check!: Gtk.CheckButton;
 
   private listeners = new SignalListeners();
 
   constructor(props: Partial<DynamicImage2ConstructorProperties> = {}) {
-    super({
-      overflow: Gtk.Overflow.HIDDEN,
-    });
+    super();
 
-    this.add_overlay(this.action);
-
-    this.controller = new Gtk.EventControllerMotion();
-
-    this.controller.connect("enter", () => {
-      this.action.hovering = true;
-    });
-
-    this.controller.connect("leave", () => {
-      this.action.hovering = false;
-    });
-
-    this.add_controller(this.controller);
-
-    this.action.fill = props?.playlist ?? true;
+    this._action.fill = props?.playlist ?? true;
 
     if (props.size) this.size = props.size;
     if (props.action_size) this.action_size = props.action_size;
@@ -147,7 +150,13 @@ export class DynamicImage2 extends Gtk.Overlay {
     }
   }
 
-  private controller: Gtk.EventControllerMotion;
+  private hover_enter_cb() {
+    this._action.hovering = true;
+  }
+
+  private hover_leave_cb() {
+    this._action.hovering = false;
+  }
 
   // child methods
 
@@ -157,8 +166,8 @@ export class DynamicImage2 extends Gtk.Overlay {
       this.storage_type !== DynamicImage2StorageType.VIDEO_THUMBNAIL
     ) return;
 
-    const all_classes = ["icon-dropshadow", "lowres-icon", "br-6", "br-9"];
-    const classes = ["card"];
+    const all_classes = ["icon-dropshadow", "lowres-icon", "br-6", "br-9", "card"];
+    const classes = this.selection_mode ? [] : ["card"];
 
     if (this.size <= 48) {
       classes.push("lowres-icon");
@@ -178,7 +187,7 @@ export class DynamicImage2 extends Gtk.Overlay {
   }
 
   private update_size() {
-    const child = this.get_child();
+    const child = this.visible_child;
 
     if (!child) return;
 
@@ -214,6 +223,16 @@ export class DynamicImage2 extends Gtk.Overlay {
     }
   }
 
+  // util property: visible-child
+
+  public get visible_child(): Gtk.Widget {
+    return this._container.child;
+  }
+
+  public set visible_child(v: Gtk.Widget) {
+    this._container.child = v;
+  }
+
   // property: can-expand
 
   private _can_expand = false;
@@ -228,11 +247,13 @@ export class DynamicImage2 extends Gtk.Overlay {
     this._can_expand = value;
     this.notify("can-expand");
 
-    const child = this.get_child();
-
-    if (child instanceof FixedRatioThumbnail) {
-      child.can_expand = this.can_expand;
+    if (this.visible_child instanceof FixedRatioThumbnail) {
+      this.visible_child.can_expand = this.can_expand;
     }
+  }
+
+  private check_toggled_cb() {
+    this.notify("selected");
   }
 
   private initialize_type(type: DynamicImage2StorageType) {
@@ -262,7 +283,7 @@ export class DynamicImage2 extends Gtk.Overlay {
         (child as FixedRatioThumbnail).can_expand = this.can_expand;
         break;
       case DynamicImage2StorageType.AVATAR:
-        this.action.locked = true;
+        this._action.locked = true;
 
         child = new Adw.Avatar({
           overflow: Gtk.Overflow.HIDDEN,
@@ -280,7 +301,7 @@ export class DynamicImage2 extends Gtk.Overlay {
     }
 
     this._storage_type = type;
-    this.child = child;
+    this.visible_child = child;
 
     this.update_size();
   }
@@ -296,7 +317,7 @@ export class DynamicImage2 extends Gtk.Overlay {
   set playlist(playlist: boolean) {
     if (playlist == this._playlist) return;
 
-    this.action.fill = !playlist;
+    this._action.fill = !playlist;
   }
 
   // property: size
@@ -315,21 +336,21 @@ export class DynamicImage2 extends Gtk.Overlay {
   // property: dynamic-image
 
   get persistent_play_button() {
-    return this.action.persistent_play_button;
+    return this._action.persistent_play_button;
   }
 
   set persistent_play_button(size: boolean) {
-    this.action.persistent_play_button = size;
+    this._action.persistent_play_button = size;
   }
 
   // property: action-size
 
   get action_size() {
-    return this.action.size;
+    return this._action.size;
   }
 
   set action_size(size: number) {
-    this.action.size = size;
+    this._action.size = size;
   }
 
   // property: storage type
@@ -345,17 +366,43 @@ export class DynamicImage2 extends Gtk.Overlay {
     this.initialize_type(type);
   }
 
+  // property: selected
+
+  get selected() {
+    return this._check.active;
+  }
+
+  set selected(selected: boolean) {
+    this._check.active = selected;
+  }
+
+  // property: selection-mode
+
+  get selection_mode() {
+    return this._check.visible;
+  }
+
+  set selection_mode(selection_mode: boolean) {
+    this._check.visible = selection_mode;
+    this._container.visible = this._action.visible = !selection_mode;
+
+    this.width_request = this.height_request = selection_mode ? this.size : -1;
+
+    this.update_image_class();
+  }
+
   // setters for type
 
   // setters: number
 
   get track_number() {
-    const child = this.child as Gtk.Label;
+    const child = this.visible_child as Gtk.Label;
 
     if (!child) return null;
 
     if (
-      this.storage_type === DynamicImage2StorageType.TRACK_NUMBER && this.child
+      this.storage_type === DynamicImage2StorageType.TRACK_NUMBER &&
+      this.visible_child
     ) {
       const number = +new Number(child.label);
       return Number.isNaN(number) ? null : number;
@@ -367,7 +414,7 @@ export class DynamicImage2 extends Gtk.Overlay {
   set track_number(number: number | null) {
     this.storage_type = DynamicImage2StorageType.TRACK_NUMBER;
 
-    const child = this.child as Gtk.Label;
+    const child = this.visible_child as Gtk.Label;
 
     if (!child) return;
 
@@ -381,11 +428,11 @@ export class DynamicImage2 extends Gtk.Overlay {
   // property: state
 
   get state() {
-    return this.action.state;
+    return this._action.state;
   }
 
   set state(state: DynamicActionState) {
-    this.action.state = state;
+    this._action.state = state;
   }
 
   private thumbnails: Thumbnail[] | null = null;
@@ -397,7 +444,7 @@ export class DynamicImage2 extends Gtk.Overlay {
 
     this.storage_type = DynamicImage2StorageType.COVER_THUMBNAIL;
 
-    const child = this.child as Gtk.Image;
+    const child = this.visible_child as Gtk.Image;
 
     this.thumbnails = thumbnails;
     // TODO: load the thumbnails on map
@@ -420,7 +467,7 @@ export class DynamicImage2 extends Gtk.Overlay {
 
     this.storage_type = DynamicImage2StorageType.VIDEO_THUMBNAIL;
 
-    const child = this.child as Gtk.Picture;
+    const child = this.visible_child as Gtk.Picture;
 
     this.thumbnails = thumbnails;
     // TODO: load the thumbnails on map
@@ -443,7 +490,7 @@ export class DynamicImage2 extends Gtk.Overlay {
 
     this.storage_type = DynamicImage2StorageType.AVATAR;
 
-    const child = this.child as Adw.Avatar;
+    const child = this.visible_child as Adw.Avatar;
 
     this.thumbnails = thumbnails;
     // TODO: load the thumbnails on map
@@ -502,8 +549,8 @@ export class DynamicImage2 extends Gtk.Overlay {
   }
 
   private setup_listeners() {
-    this.listeners.connect(this.action, "play", this.play_cb.bind(this));
-    this.listeners.connect(this.action, "pause", this.pause_cb.bind(this));
+    this.listeners.connect(this._action, "play", this.play_cb.bind(this));
+    this.listeners.connect(this._action, "pause", this.pause_cb.bind(this));
   }
 
   private _clear() {

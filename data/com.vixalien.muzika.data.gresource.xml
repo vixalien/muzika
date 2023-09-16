@@ -10,6 +10,7 @@
     <file preprocess="xml-stripblanks">ui/components/carousel/moodbox.ui</file>
     <file preprocess="xml-stripblanks">ui/components/dynamic-action.ui</file>
     <file preprocess="xml-stripblanks">ui/components/dynamic-image.ui</file>
+    <file preprocess="xml-stripblanks">ui/components/dynamic-image-2.ui</file>
     <file preprocess="xml-stripblanks">ui/components/library/history.ui</file>
     <file preprocess="xml-stripblanks">ui/components/library/songs.ui</file>
     <file preprocess="xml-stripblanks">ui/components/library/view.ui</file>

@@ -309,7 +309,7 @@ export class PlaylistItemView extends Adw.Bin {
 
     for (let i = 0; i < this._model.get_n_items(); i++) {
       const item = this._model.get_item(i);
-      if (item) item.notify("item");
+      if (item) item.notify("object");
     }
   }
 
