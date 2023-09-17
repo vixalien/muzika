@@ -166,7 +166,6 @@ label.bold-link link {
 
 .carousel-list-view,
 .carousel-grid-view,
-.carousel-flat-song-view,
 .playlist-list-view,
 .carousel-flat-list-view {
   border-spacing: 6px;
@@ -175,15 +174,11 @@ label.bold-link link {
 }
 
 .carousel-list-view > row,
-.playlist-list-view > row {
-  border-radius: 12px;
-  padding: 6px;
-}
-
+.playlist-list-view > row,
 .carousel-grid-view > child,
 .carousel-flat-list-view > row {
   border-radius: 12px;
-  padding: 3px;
+  padding: 6px;
 }
 
 .floating-button {
