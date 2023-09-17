@@ -197,7 +197,6 @@ export class Navigator extends GObject.Object {
   }
 
   go(n: number) {
-    console.log("calling go")
     if (n >= 0) {
       return;
     } else {
@@ -259,7 +258,6 @@ export class Navigator extends GObject.Object {
   }
 
   switch_stack(uri: string) {
-    console.log("switching stack")
     const stack = this._view.navigation_stack as Gio.ListModel<
       Page<unknown, unknown>
     >;
