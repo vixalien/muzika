@@ -179,7 +179,7 @@ export class PlaylistPage extends Adw.Bin
             this.get_window().add_toast(
               _("Playlist deleted"),
             );
-            this.activate_action("navigator.back", null);
+            this.activate_action("navigation.pop", null);
           }).catch(() => {
             this.get_window().add_toast(
               _("Couldn't delete playlist"),
