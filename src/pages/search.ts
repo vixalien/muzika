@@ -48,6 +48,7 @@ export class SearchPage extends Adw.Bin
         "details",
         "breakpoint",
         "paginator",
+        "scrolled",
       ],
     }, this);
   }
@@ -58,6 +59,7 @@ export class SearchPage extends Adw.Bin
   private _details!: Gtk.Box;
   private _breakpoint!: Adw.Breakpoint;
   private _paginator!: Paginator;
+  private _scrolled!: Gtk.ScrolledWindow;
 
   results?: SearchResults;
   args: Parameters<typeof search> = [""];
