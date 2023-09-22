@@ -72,22 +72,17 @@ export class Application extends Adw.Application {
 
     const show_about_action = new Gio.SimpleAction({ name: "about" });
     show_about_action.connect("activate", () => {
-      const aboutWindow = new Adw.AboutWindow({
-        transient_for: this.active_window,
-        application_name: "Muzika",
-        application_icon: "com.vixalien.muzika",
-        developer_name: "Angelo Verlain",
-        version: pkg.version,
-        developers: [
-          "Angelo Verlain <hey@vixalien.com>",
-          "Christopher Davis <christopherdavis@gnome.org>",
-          "Kian-Meng Ang <kianmeng@cpan.org>",
-        ],
-        copyright: "© 2023 Angelo Verlain",
-        license_type: Gtk.License.GPL_3_0,
-        debug_info: this.get_debug_info(),
-        website: "https://github.com/vixalien/muzika",
-      });
+      const aboutWindow = Adw.AboutWindow.new_from_appdata(
+        "/com/vixalien/muzika/com.vixalien.muzika.appdata.xml",
+        "0.1.0",
+      );
+
+      aboutWindow.set_developers([
+        "Angelo Verlain <hey@vixalien.com>",
+        "Christopher Davis <christopherdavis@gnome.org>",
+        "Kian-Meng Ang <kianmeng@cpan.org>",
+      ]);
+      aboutWindow.set_debug_info(this.get_debug_info());
 
       aboutWindow.present();
     });

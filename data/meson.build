@@ -1,9 +1,9 @@
 desktop_file = i18n.merge_file(
-        input: 'com.vixalien.muzika.desktop.in',
-       output: 'com.vixalien.muzika.desktop',
-         type: 'desktop',
-       po_dir: '../po',
-      install: true,
+  input: 'com.vixalien.muzika.desktop.in',
+  output: 'com.vixalien.muzika.desktop',
+  type: 'desktop',
+  po_dir: '../po',
+  install: true,
   install_dir: join_paths(get_option('datadir'), 'applications')
 )
 
@@ -16,15 +16,15 @@ appdata_conf = configuration_data()
 appdata_conf.set('app-id', 'com.vixalien.muzika')
 
 appstream_file = i18n.merge_file(
-        input: configure_file(
-                  input: 'com.vixalien.muzika.appdata.xml.in.in',
-                 output: 'com.vixalien.muzika.appdata.xml.in',
-          configuration: appdata_conf
-        ),
-       output: 'com.vixalien.muzika.appdata.xml',
-       po_dir: '../po',
-      install: true,
-  install_dir: join_paths(get_option('datadir'), 'appdata')
+  input: configure_file(
+    input: 'com.vixalien.muzika.appdata.xml.in.in',
+    output: 'com.vixalien.muzika.appdata.xml.in',
+    configuration: appdata_conf
+  ),
+  output: 'com.vixalien.muzika.appdata.xml',
+  po_dir: '../po',
+  install: true,
+  install_dir: join_paths(get_option('datadir'), 'appdata'),
 )
 
 appstream_util = find_program('appstream-util', required: false)
@@ -67,7 +67,7 @@ data_res = gnome.compile_resources(
   gresource_bundle: true,
   install: true,
   install_dir: pkgdatadir,
-  dependencies: blueprints,
+  dependencies: [blueprints, appstream_file],
 )
 
 subdir('icons')

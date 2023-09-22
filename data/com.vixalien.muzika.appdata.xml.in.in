@@ -2,7 +2,7 @@
 <component type="desktop-application">
 	<id>@app-id@.desktop</id>
 	<metadata_license>CC0-1.0</metadata_license>
-	<project_license>GPL-3.0+</project_license>
+	<project_license>GPL-3.0</project_license>
 	<name>Muzika</name>
 	<summary>Elegant music streaming application</summary>
 	<description>
@@ -25,6 +25,10 @@
 				https://raw.githubusercontent.com/vixalien/muzika/main/data/resources/screenshots/home.png</image>
 		</screenshot>
 	</screenshots>
+	<releases>
+    <release version="0.1.0" date="2023-09-22">
+    </release>
+  </releases>
 	<launchable type="desktop-id">@app-id@.desktop</launchable>
 	<url type="homepage">https://github.com/vixalien/muzika</url>
 	<url type="bugtracker">https://github.com/vixalien/muzika/issues</url>
