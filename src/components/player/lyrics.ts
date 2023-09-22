@@ -185,7 +185,7 @@ export class LyricsView extends Gtk.Stack {
     const [success, rect] = row.compute_bounds(this._timed_listbox);
 
     if (success) {
-      const scroll_to = rect.get_y() - 60;
+      const scroll_to = rect.get_y() - 180;
 
       // don't scroll if the scroll value is near the target (in one direction)
       if (
