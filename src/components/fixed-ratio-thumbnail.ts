@@ -2,6 +2,7 @@ import Gtk from "gi://Gtk?version=4.0";
 import Gdk from "gi://Gdk?version=4.0";
 import GObject from "gi://GObject";
 import GLib from "gi://GLib";
+import Graphene from "gi://Graphene";
 
 export interface FixedRatioThumbnailProps
   extends Gtk.Widget.ConstructorProperties {
@@ -296,15 +297,43 @@ export class FixedRatioThumbnail extends Gtk.Widget implements Gtk.Orientable {
     return [size, size, minimum_baseline, natural_baseline];
   }
 
+  // from https://gitlab.gnome.org/GNOME/gtk/-/blob/main/gtk/gtkpicture.c#L118
   vfunc_snapshot(snapshot: Gtk.Snapshot): void {
     if (this._paintable == null) {
       return;
     }
 
+    const ratio = this._paintable.get_intrinsic_aspect_ratio();
+
     const widget_width = this.get_width();
     const widget_height = this.get_height();
 
-    this._paintable.snapshot(snapshot, widget_width, widget_height);
+    if (ratio === 0) {
+      this._paintable.snapshot(snapshot, widget_width, widget_height);
+    } else {
+      const picture_ratio = widget_width / widget_height;
+      let w: number, h: number;
+
+      if (ratio > picture_ratio) {
+        {
+          w = widget_width;
+          h = widget_width / ratio;
+        }
+      } else {
+        {
+          w = widget_height * ratio;
+          h = widget_height;
+        }
+      }
+
+      const x = (widget_width - Math.ceil(w)) / 2;
+      const y = Math.floor(widget_height - Math.ceil(h)) / 2;
+
+      snapshot.save();
+      snapshot.translate(new Graphene.Point({ x, y }));
+      this._paintable.snapshot(snapshot, w, h);
+      snapshot.restore();
+    }
   }
 
   private clear_paintable() {

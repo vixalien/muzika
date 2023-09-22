@@ -218,9 +218,9 @@ export class DynamicImage extends Gtk.Overlay {
         break;
       }
       case DynamicImageStorageType.VIDEO_THUMBNAIL: {
-        const image = child as FixedRatioThumbnail;
-        image.min_width = (16 / 9) * this.size;
-        image.min_height = this.size;
+        const picture = child as Gtk.Picture;
+        picture.width_request = (16 / 9) * this.size;
+        picture.height_request = this.size;
         this.update_image_class();
         break;
       }
@@ -285,11 +285,10 @@ export class DynamicImage extends Gtk.Overlay {
         (child as FixedRatioThumbnail).can_expand = this.can_expand;
         break;
       case DynamicImageStorageType.VIDEO_THUMBNAIL:
-        child = new FixedRatioThumbnail({
+        child = new Gtk.Picture({
           overflow: Gtk.Overflow.HIDDEN,
+          content_fit: Gtk.ContentFit.FILL,
         });
-        (child as FixedRatioThumbnail).aspect_ratio = 16 / 9;
-        (child as FixedRatioThumbnail).can_expand = this.can_expand;
         break;
       case DynamicImageStorageType.AVATAR:
         this._action.locked = true;
