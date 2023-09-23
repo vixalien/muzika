@@ -39,6 +39,8 @@ export class ArtistPage extends Adw.Bin
         "carousels",
         "menu",
         "scrolled",
+        "shuffle_button",
+        "radio_button",
       ],
     }, this);
   }
@@ -52,6 +54,8 @@ export class ArtistPage extends Adw.Bin
   private _carousels!: Gtk.Box;
   private _menu!: Gtk.MenuButton;
   private _scrolled!: Gtk.ScrolledWindow;
+  private _shuffle_button!: Gtk.Button;
+  private _radio_button!: Gtk.Button;
 
   model = new PlayableList();
 
@@ -106,7 +110,20 @@ export class ArtistPage extends Adw.Bin
 
     this._header.set_title(artist.name);
     this._header.set_description(artist.description);
-    this.update_header_buttons();
+
+    this._shuffle_button.visible = artist.shuffleId != null;
+    if (artist.shuffleId) {
+      this._shuffle_button.action_target = GLib.Variant.new_string(
+        `${artist.shuffleId}`,
+      );
+    }
+
+    this._radio_button.visible = artist.radioId != null;
+    if (artist.radioId) {
+      this._radio_button.action_target = GLib.Variant.new_string(
+        `${artist.radioId}`,
+      );
+    }
 
     this.show_top_songs(artist.songs);
 
@@ -136,34 +153,6 @@ export class ArtistPage extends Adw.Bin
     menu.append_section(null, share_section);
 
     this._menu.menu_model = menu;
-  }
-
-  update_header_buttons() {
-    if (!this.artist) return;
-
-    this._header.clear_buttons();
-
-    if (this.artist.shuffleId) {
-      this._header.add_button({
-        label: _("Shuffle"),
-        icon_name: "media-playlist-shuffle-symbolic",
-        action_name: "queue.play-playlist",
-        action_target: GLib.Variant.new_string(
-          `${this.artist.shuffleId}`,
-        ),
-      });
-    }
-
-    if (this.artist.radioId) {
-      this._header.add_button({
-        label: _("Radio"),
-        icon_name: "sonar-symbolic",
-        action_name: "queue.play-playlist",
-        action_target: GLib.Variant.new_string(
-          `${this.artist.radioId}`,
-        ),
-      });
-    }
   }
 
   add_carousel(

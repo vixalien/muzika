@@ -43,6 +43,30 @@ template $ArtistPage : Adw.Bin {
               show-large-header: true;
               show-meta: false;
               show-avatar: true;
+
+              [button]
+              Button shuffle_button {
+                action-name: "queue.play-playlist";
+
+                styles ["suggested-action", "pill"]
+
+                Adw.ButtonContent {
+                  label: _("Shuffle");
+                  icon-name: "media-playlist-shuffle-symbolic";
+                }
+              }
+
+              [button]
+              Button radio_button {
+                action-name: "queue.play-playlist";
+
+                styles ["pill"]
+
+                Adw.ButtonContent {
+                  label: _("Radio");
+                  icon-name: "sonar-symbolic";
+                }
+              }
             }
 
             Box top_songs {

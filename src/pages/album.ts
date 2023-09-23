@@ -4,7 +4,13 @@ import Gio from "gi://Gio";
 import Adw from "gi://Adw";
 import GLib from "gi://GLib";
 
-import { AlbumResult, get_album, ParsedAlbum, Playlist, PlaylistItem } from "../muse.js";
+import {
+  AlbumResult,
+  get_album,
+  ParsedAlbum,
+  Playlist,
+  PlaylistItem,
+} from "../muse.js";
 
 import { Carousel } from "../components/carousel/index.js";
 import { EndpointContext, MuzikaComponent } from "src/navigation.js";
@@ -44,6 +50,8 @@ export class AlbumPage extends Adw.Bin
         "header",
         "menu",
         "scrolled",
+        "play_button",
+        "shuffle_button",
       ],
     }, this);
   }
@@ -58,6 +66,8 @@ export class AlbumPage extends Adw.Bin
   private _header!: PlaylistHeader;
   private _menu!: Gtk.MenuButton;
   private _scrolled!: Gtk.ScrolledWindow;
+  private _play_button!: Gtk.Button;
+  private _shuffle_button!: Gtk.Button;
 
   track: string | null = null;
 
@@ -117,7 +127,6 @@ export class AlbumPage extends Adw.Bin
     this._header.set_genre(album.album_type);
     this._header.set_year(album.year ?? _("Unknown year"));
 
-    this.update_header_buttons();
     this.setup_menu();
 
     if (album.artists && album.artists.length > 0) {
@@ -141,32 +150,21 @@ export class AlbumPage extends Adw.Bin
       this.show_other_versions(album.other_versions);
     }
 
+    this._play_button.visible = album.audioPlaylistId != null;
+    if (album.audioPlaylistId) {
+      this._play_button.action_target = GLib.Variant.new_string(
+        `${album.audioPlaylistId}`,
+      );
+    }
+
+    this._shuffle_button.visible = album.shuffleId != null;
+    if (album.shuffleId) {
+      this._shuffle_button.action_target = GLib.Variant.new_string(
+        `${album.shuffleId}`,
+      );
+    }
+
     this.append_tracks(album.tracks);
-  }
-
-  update_header_buttons() {
-    if (!this.album) return;
-
-    this._header.clear_buttons();
-
-    this._header.add_button({
-      label: _("Play"),
-      icon_name: "media-playback-start-symbolic",
-      action_name: "queue.play-playlist",
-      action_target: GLib.Variant.new_string(
-        `${this.album.audioPlaylistId}`,
-      ),
-      styles: ["suggested-action"],
-    });
-
-    this._header.add_button({
-      label: _("Shuffle"),
-      icon_name: "media-playlist-shuffle-symbolic",
-      action_name: "queue.play-playlist",
-      action_target: GLib.Variant.new_string(
-        `${this.album.shuffleId}`,
-      ),
-    });
   }
 
   private setup_menu() {

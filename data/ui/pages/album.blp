@@ -43,6 +43,30 @@ template $AlbumPage : Adw.Bin {
 
               $PlaylistHeader header {
                 show-large-header: true;
+
+                [button]
+                Button play_button {
+                  action-name: "queue.play-playlist";
+
+                  styles ["suggested-action", "pill"]
+
+                  Adw.ButtonContent {
+                    label: _("Play");
+                    icon-name: "media-playback-start-symbolic";
+                  }
+                }
+
+                [button]
+                Button shuffle_button {
+                  action-name: "queue.play-playlist";
+
+                  styles ["pill"]
+
+                  Adw.ButtonContent {
+                    label: _("Shuffle");
+                    icon-name: "media-playlist-shuffle-symbolic";
+                  }
+                }
               }
 
               Box {

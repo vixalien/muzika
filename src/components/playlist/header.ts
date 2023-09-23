@@ -23,6 +23,7 @@ export class PlaylistHeader extends Gtk.Box {
       GTypeName: "PlaylistHeader",
       Template:
         "resource:///com/vixalien/muzika/ui/components/playlist/header.ui",
+      Implements: [Gtk.Buildable],
       Properties: {
         "show-large-header": GObject.ParamSpec.boolean(
           "show-large-header",
@@ -164,15 +165,6 @@ export class PlaylistHeader extends Gtk.Box {
     }
   }
 
-  clear_buttons() {
-    let child = this._buttons.get_first_child();
-
-    while (child) {
-      this._buttons.remove(child);
-      child = this._buttons.get_first_child();
-    }
-  }
-
   set_year(year: string | null) {
     if (year) {
       this._year.set_label(year);
@@ -244,49 +236,15 @@ export class PlaylistHeader extends Gtk.Box {
     this._explicit.set_visible(explicit);
   }
 
-  private new_button(props: ButtonProps) {
-    const button = new Gtk.Button(omit(props, ["styles", "on_clicked"]));
-
-    if (props.icon_name && props.label) {
-      button.child = new Adw.ButtonContent({
-        icon_name: props.icon_name,
-        label: props.label,
-      });
+  vfunc_add_child(
+    _builder: Gtk.Builder,
+    child: GObject.Object,
+    type?: string | null | undefined,
+  ): void {
+    if (type === "button" && child instanceof Gtk.Widget) {
+      this._buttons.append(child);
+    } else {
+      super.vfunc_add_child(_builder, child, type);
     }
-
-    if (props.on_clicked) {
-      button.connect("clicked", props.on_clicked);
-    }
-
-    if (props.styles) {
-      props.styles.forEach((style) => {
-        button.add_css_class(style);
-      });
-    }
-
-    button.add_css_class("pill");
-
-    return button;
-  }
-
-  private new_menu_button(props: MenuButtonProps) {
-    const button = new Gtk.MenuButton({
-      icon_name: "view-more-symbolic",
-      ...props,
-    });
-
-    button.add_css_class("flat");
-    button.add_css_class("pill");
-    button.add_css_class("small-pill");
-
-    return button;
-  }
-
-  add_button(props: ButtonProps) {
-    this._buttons.append(this.new_button(props));
-  }
-
-  add_menu_button(props: MenuButtonProps) {
-    this._buttons.append(this.new_menu_button(props));
   }
 }

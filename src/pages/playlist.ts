@@ -72,6 +72,9 @@ export class PlaylistPage extends Adw.Bin
         "insights_clamp",
         "insights",
         "menu",
+        "shuffle_button",
+        "edit_playlist_button",
+        "add_to_library_button",
       ],
     }, this);
   }
@@ -93,6 +96,9 @@ export class PlaylistPage extends Adw.Bin
   private _insights_clamp!: Adw.Clamp;
   private _insights!: Gtk.Box;
   private _menu!: Gtk.PopoverMenu;
+  private _shuffle_button!: Gtk.Button;
+  private _edit_playlist_button!: Gtk.Button;
+  private _add_to_library_button!: Gtk.Button;
 
   model = new PlayableList();
 
@@ -385,7 +391,6 @@ export class PlaylistPage extends Adw.Bin
       this._header.set_subtitle(playlist.authors);
     }
 
-    this.update_header_buttons();
     this.setup_menu();
 
     if (playlist.trackCount) {
@@ -425,6 +430,13 @@ export class PlaylistPage extends Adw.Bin
     if (playlist.suggestions.length > 0 || playlist.related.length > 0) {
       this._insights_clamp.visible = true;
     }
+
+    this._shuffle_button.action_target = GLib.Variant.new_string(
+      `${this.playlist.id}?shuffle=true`,
+    );
+
+    this._edit_playlist_button.visible = playlist.editable;
+    this._add_to_library_button.visible = !playlist.editable;
   }
 
   private refresh_suggestions_cb() {
@@ -452,36 +464,6 @@ export class PlaylistPage extends Adw.Bin
     } else {
       this.suggestions_model.remove_all();
       this.playlist.suggestions = [];
-    }
-  }
-
-  update_header_buttons() {
-    if (!this.playlist) return;
-
-    this._header.clear_buttons();
-
-    this._header.add_button({
-      label: _("Shuffle"),
-      icon_name: "media-playlist-shuffle-symbolic",
-      action_name: "queue.play-playlist",
-      action_target: GLib.Variant.new_string(
-        `${this.playlist.id}?shuffle=true`,
-      ),
-    });
-
-    if (this.playlist.editable) {
-      this._header.add_button({
-        label: _("Edit Playlist"),
-        icon_name: "document-edit-symbolic",
-        on_clicked: () => {
-          this.edit_cb();
-        },
-      });
-    } else {
-      this._header.add_button({
-        label: _("Add to Library"),
-        icon_name: "list-add-symbolic",
-      });
     }
   }
 
