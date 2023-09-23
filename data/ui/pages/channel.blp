@@ -39,8 +39,10 @@ template $ChannelPage : Adw.Bin {
             spacing: 18;
             orientation: vertical;
 
-            $ArtistHeader header {
+            $PlaylistHeader header {
               show-large-header: true;
+              show-meta: false;
+              show-avatar: true;
             }
 
             Box songs_on_repeat {

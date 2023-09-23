@@ -1,5 +1,4 @@
 import Gtk from "gi://Gtk?version=4.0";
-import Gdk from "gi://Gdk?version=4.0";
 import GObject from "gi://GObject";
 import Adw from "gi://Adw";
 import GLib from "gi://GLib";
@@ -18,272 +17,12 @@ interface ButtonProps extends Partial<Gtk.Button.ConstructorProperties> {
 interface MenuButtonProps
   extends Partial<Gtk.MenuButton.ConstructorProperties> {}
 
-export class MiniPlaylistHeader extends Gtk.Box {
-  static {
-    GObject.registerClass({
-      GTypeName: "MiniPlaylistHeader",
-      Template:
-        "resource:///com/vixalien/muzika/ui/components/playlist/miniheader.ui",
-      Signals: {
-        "more-toggled": {
-          param_types: [GObject.TYPE_BOOLEAN],
-        },
-      },
-      InternalChildren: [
-        "image",
-        "title",
-        "explicit",
-        "genre",
-        "year",
-        "more",
-        "description",
-        "description_long",
-        "description_stack",
-        "submeta",
-        "avatar",
-        "subtitle_separator",
-        "buttons",
-        "subtitle",
-      ],
-    }, this);
-  }
-
-  _image!: Gtk.Image;
-  _title!: Gtk.Label;
-  _explicit!: Gtk.Image;
-  _year!: Gtk.Label;
-  _genre!: Gtk.Label;
-  _more!: Gtk.Expander;
-  _description!: Gtk.Label;
-  _description_long!: Gtk.Label;
-  _description_stack!: Gtk.Stack;
-  _submeta!: Gtk.Box;
-  _avatar!: Adw.Avatar;
-  _subtitle_separator!: Gtk.Label;
-  _buttons!: Gtk.Box;
-  _subtitle!: Gtk.Label;
-
-  toggled = false;
-
-  constructor() {
-    super();
-
-    this._more.connect("activate", () => {
-      this.toggle_more(!this.toggled);
-
-      this.emit("more-toggled", this.toggled);
-    });
-
-    const hover = new Gtk.EventControllerMotion();
-
-    hover.connect("enter", () => {
-      this._subtitle.add_css_class("hover");
-    });
-
-    hover.connect("leave", () => {
-      this._subtitle.remove_css_class("hover");
-    });
-
-    this._subtitle.add_controller(hover);
-
-    this._subtitle.connect("activate-link", (_, uri) => {
-      if (uri && uri.startsWith("muzika:")) {
-        this.activate_action(
-          "navigator.visit",
-          GLib.Variant.new_string(uri),
-        );
-
-        return true;
-      }
-    });
-  }
-
-  toggle_more(expanded = true, update_expander = false) {
-    this.toggled = expanded;
-
-    this._description_stack.set_visible_child(
-      expanded ? this._description_long : this._description,
-    );
-
-    if (update_expander) this._more.expanded = expanded;
-  }
-
-  set_description(description: string | null) {
-    if (description) {
-      const split = description.split("\n");
-
-      this._description.single_line_mode = true;
-
-      this._description.set_visible(true);
-      this._description.set_label(split[0].trim());
-
-      this._description_long.set_visible(true);
-      this._description_long.set_label(description);
-
-      // TODO: check if every line is ellispsized
-      // when this is fixed: https://gitlab.gnome.org/GNOME/gjs/-/issues/547
-      this._more.set_visible(
-        this._description.get_layout().is_ellipsized() || split.length > 1,
-      );
-    } else {
-      this._description_stack.set_visible(false);
-      this._more.set_visible(false);
-    }
-  }
-
-  set_year(year: string | null) {
-    if (year) {
-      this._year.set_label(year);
-    } else {
-      this._year.set_visible(false);
-      this._subtitle_separator.set_visible(false);
-    }
-  }
-
-  clear_buttons() {
-    let child = this._buttons.get_first_child();
-
-    while (child) {
-      this._buttons.remove(child);
-      child = this._buttons.get_first_child();
-    }
-  }
-}
-
-export class LargePlaylistHeader extends Gtk.Box {
-  static {
-    GObject.registerClass({
-      GTypeName: "LargePlaylistHeader",
-      Template:
-        "resource:///com/vixalien/muzika/ui/components/playlist/largeheader.ui",
-      Signals: {
-        "more-toggled": {
-          param_types: [GObject.TYPE_BOOLEAN],
-        },
-      },
-      InternalChildren: [
-        "image",
-        "title",
-        "explicit",
-        "genre",
-        "year",
-        "more",
-        "description",
-        "description_long",
-        "description_stack",
-        "submeta",
-        "avatar",
-        "subtitle_separator",
-        "buttons",
-        "subtitle",
-      ],
-    }, this);
-  }
-
-  _image!: Gtk.Image;
-  _title!: Gtk.Label;
-  _explicit!: Gtk.Image;
-  _year!: Gtk.Label;
-  _genre!: Gtk.Label;
-  _more!: Gtk.Expander;
-  _description!: Gtk.Label;
-  _description_long!: Gtk.Label;
-  _description_stack!: Gtk.Stack;
-  _submeta!: Gtk.Box;
-  _avatar!: Adw.Avatar;
-  _subtitle_separator!: Gtk.Label;
-  _buttons!: Gtk.Box;
-  _subtitle!: Gtk.Label;
-
-  toggled = false;
-
-  constructor() {
-    super();
-
-    this._more.connect("activate", () => {
-      this.toggle_more(!this.toggled);
-
-      this.emit("more-toggled", this.toggled);
-    });
-
-    const hover = new Gtk.EventControllerMotion();
-
-    hover.connect("enter", () => {
-      this._subtitle.add_css_class("hover");
-    });
-
-    hover.connect("leave", () => {
-      this._subtitle.remove_css_class("hover");
-    });
-
-    this._subtitle.add_controller(hover);
-
-    this._subtitle.connect("activate-link", (_, uri) => {
-      if (uri && uri.startsWith("muzika:")) {
-        this.activate_action(
-          "navigator.visit",
-          GLib.Variant.new_string(uri),
-        );
-
-        return true;
-      }
-    });
-  }
-
-  toggle_more(expanded = true, update_expander = false) {
-    this.toggled = expanded;
-
-    this._description_stack.set_visible_child(
-      expanded ? this._description_long : this._description,
-    );
-
-    if (update_expander) this._more.expanded = expanded;
-  }
-
-  set_description(description: string | null) {
-    if (description) {
-      const split = description.split("\n");
-
-      this._description.single_line_mode = true;
-
-      this._description.set_visible(true);
-      this._description.set_label(split[0].trim());
-
-      this._description_long.set_visible(true);
-      this._description_long.set_label(description);
-
-      this._more.set_visible(
-        this._description.get_layout().is_ellipsized() || split.length > 1,
-      );
-    } else {
-      this._description_stack.set_visible(false);
-      this._more.set_visible(false);
-    }
-  }
-
-  set_year(year: string | null) {
-    if (year) {
-      this._year.set_label(year);
-    } else {
-      this._year.set_visible(false);
-      this._subtitle_separator.set_visible(false);
-    }
-  }
-
-  clear_buttons() {
-    let child = this._buttons.get_first_child();
-
-    while (child) {
-      this._buttons.remove(child);
-      child = this._buttons.get_first_child();
-    }
-  }
-}
-
 export class PlaylistHeader extends Gtk.Box {
   static {
     GObject.registerClass({
       GTypeName: "PlaylistHeader",
+      Template:
+        "resource:///com/vixalien/muzika/ui/components/playlist/header.ui",
       Properties: {
         "show-large-header": GObject.ParamSpec.boolean(
           "show-large-header",
@@ -292,66 +31,187 @@ export class PlaylistHeader extends Gtk.Box {
           GObject.ParamFlags.READWRITE,
           true,
         ),
+        "show-avatar": GObject.ParamSpec.boolean(
+          "show-avatar",
+          "Show Avatar",
+          "Whether to show the avatar or image",
+          GObject.ParamFlags.READWRITE,
+          false,
+        ),
+        "show-meta": GObject.ParamSpec.boolean(
+          "show-meta",
+          "Show Meta",
+          "Whether to show the metadata like genre & year",
+          GObject.ParamFlags.READWRITE,
+          false,
+        ),
       },
+      InternalChildren: [
+        "stack",
+        "title",
+        "subtitle",
+        "submeta",
+        "description_stack",
+        "more",
+        "buttons",
+        "description",
+        "description_long",
+        "year",
+        "genre",
+        "subtitle_separator",
+        "image",
+        "explicit",
+        "avatar",
+      ],
     }, this);
   }
 
-  _large: LargePlaylistHeader;
-  _mini: MiniPlaylistHeader;
-  _stack: Gtk.Stack;
-
-  get show_large_header() {
-    return this._stack.visible_child_name === "large";
-  }
-
-  set show_large_header(value: boolean) {
-    this._stack.visible_child_name = value ? "large" : "mini";
-  }
+  private _stack!: Gtk.Stack;
+  private _title!: Gtk.Label;
+  private _subtitle!: Gtk.Label;
+  private _submeta!: Gtk.Box;
+  private _description_stack!: Gtk.Stack;
+  private _more!: Gtk.Expander;
+  private _buttons!: Gtk.Box;
+  private _description!: Gtk.Label;
+  private _description_long!: Gtk.Label;
+  private _year!: Gtk.Label;
+  private _genre!: Gtk.Label;
+  private _subtitle_separator!: Gtk.Label;
+  private _image!: Gtk.Image;
+  private _explicit!: Gtk.Image;
+  private _avatar!: Adw.Avatar;
 
   constructor() {
     super();
-    this._stack = new Gtk.Stack({
-      vhomogeneous: false,
-      hhomogeneous: false,
+
+    const hover = new Gtk.EventControllerMotion();
+
+    hover.connect("enter", () => {
+      this._subtitle.add_css_class("hover");
     });
 
-    this._large = new LargePlaylistHeader();
-    this._mini = new MiniPlaylistHeader();
+    hover.connect("leave", () => {
+      this._subtitle.remove_css_class("hover");
+    });
 
-    this._large.connect(
-      "more-toggled",
-      (_, value) => this._mini.toggle_more(value, true),
-    );
+    this._subtitle.add_controller(hover);
 
-    this._mini.connect(
-      "more-toggled",
-      (_, value) => this._large.toggle_more(value, true),
-    );
+    this._subtitle.connect("activate-link", (_, uri) => {
+      if (uri && uri.startsWith("muzika:")) {
+        this.activate_action(
+          "navigator.visit",
+          GLib.Variant.new_string(uri),
+        );
 
-    this._stack.add_named(this._large, "large");
-    this._stack.add_named(this._mini, "mini");
-
-    this.append(this._stack);
+        return true;
+      }
+    });
   }
 
-  load_thumbnails(thumbnails: Thumbnail[]) {
-    load_thumbnails(this._large._image, thumbnails, 240);
-    load_thumbnails(this._mini._image, thumbnails, 240);
+  get show_large_header() {
+    return this.orientation === Gtk.Orientation.HORIZONTAL;
+  }
+
+  set show_large_header(value: boolean) {
+    if (this.show_large_header === value) return;
+
+    this.orientation = value
+      ? Gtk.Orientation.HORIZONTAL
+      : Gtk.Orientation.VERTICAL;
+
+    this._stack.halign =
+      this._submeta.halign =
+      this._more.halign =
+      this._buttons.halign =
+        value ? Gtk.Align.FILL : Gtk.Align.CENTER;
+
+    this._title.justify =
+      this._subtitle.justify =
+      this._description.justify =
+      this._description_long.justify =
+        value
+          ? this.get_direction() === Gtk.TextDirection.RTL
+            ? Gtk.Justification.RIGHT
+            : Gtk.Justification.LEFT
+          : Gtk.Justification.CENTER;
+  }
+
+  private on_expander_activate() {
+    this._description_stack.set_visible_child(
+      this._more.expanded ? this._description : this._description_long,
+    );
   }
 
   set_description(description: string | null) {
-    this._large.set_description(description);
-    this._mini.set_description(description);
+    if (description) {
+      const split = description.split("\n");
+
+      this._description.single_line_mode = true;
+
+      this._description.set_visible(true);
+      this._description.set_label(split[0].trim());
+
+      this._description_long.set_visible(true);
+      this._description_long.set_label(description);
+
+      this._more.set_visible(
+        this._description.get_layout().is_ellipsized() || split.length > 1,
+      );
+    } else {
+      this._description_stack.set_visible(false);
+      this._more.set_visible(false);
+    }
+  }
+
+  clear_buttons() {
+    let child = this._buttons.get_first_child();
+
+    while (child) {
+      this._buttons.remove(child);
+      child = this._buttons.get_first_child();
+    }
+  }
+
+  set_year(year: string | null) {
+    if (year) {
+      this._year.set_label(year);
+    } else {
+      this._year.set_visible(false);
+      this._subtitle_separator.set_visible(false);
+    }
+  }
+
+  get show_avatar() {
+    return this._stack.visible_child === this._avatar;
+  }
+
+  set show_avatar(avatar: boolean) {
+    this._stack.visible_child = avatar ? this._avatar : this._image;
+  }
+
+  get show_meta() {
+    return this._submeta.visible;
+  }
+
+  set show_meta(avatar: boolean) {
+    this._submeta.visible = avatar;
+  }
+
+  load_thumbnails(thumbnails: Thumbnail[]) {
+    load_thumbnails(
+      this.show_avatar ? this._avatar : this._image,
+      thumbnails,
+      240,
+    );
   }
 
   set_title(title: string) {
-    this._large._title.set_label(title);
-    this._mini._title.set_label(title);
+    this._title.set_label(title);
   }
 
   set_genre(genre: string) {
-    this._large._genre.set_label(genre);
-    this._mini._genre.set_label(genre);
+    this._genre.set_label(genre);
   }
 
   set_subtitle(
@@ -376,21 +236,12 @@ export class PlaylistHeader extends Gtk.Box {
       subtitle_nodes,
     );
 
-    this._large._subtitle.label = subtitles.markup;
-    this._large._subtitle.tooltip_text = subtitles.plain;
-
-    this._mini._subtitle.label = subtitles.markup;
-    this._mini._subtitle.tooltip_text = subtitles.plain;
+    this._subtitle.label = subtitles.markup;
+    this._subtitle.tooltip_text = subtitles.plain;
   }
 
   set_explicit(explicit: boolean) {
-    this._large._explicit.set_visible(explicit);
-    this._mini._explicit.set_visible(explicit);
-  }
-
-  set_year(year: string | null) {
-    this._large.set_year(year);
-    this._mini.set_year(year);
+    this._explicit.set_visible(explicit);
   }
 
   private new_button(props: ButtonProps) {
@@ -431,18 +282,11 @@ export class PlaylistHeader extends Gtk.Box {
     return button;
   }
 
-  clear_buttons() {
-    this._mini.clear_buttons();
-    this._large.clear_buttons();
-  }
-
   add_button(props: ButtonProps) {
-    this._mini._buttons.append(this.new_button(props));
-    this._large._buttons.append(this.new_button(props));
+    this._buttons.append(this.new_button(props));
   }
 
   add_menu_button(props: MenuButtonProps) {
-    this._mini._buttons.append(this.new_menu_button(props));
-    this._large._buttons.append(this.new_menu_button(props));
+    this._buttons.append(this.new_menu_button(props));
   }
 }

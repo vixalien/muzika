@@ -4,10 +4,9 @@ import Gio from "gi://Gio";
 import Adw from "gi://Adw";
 import GLib from "gi://GLib";
 
-import { AlbumResult, get_album, ParsedAlbum, PlaylistItem } from "../muse.js";
+import { AlbumResult, get_album, ParsedAlbum, Playlist, PlaylistItem } from "../muse.js";
 
 import { Carousel } from "../components/carousel/index.js";
-import { AlbumHeader } from "../components/album/header.js";
 import { EndpointContext, MuzikaComponent } from "src/navigation.js";
 import { PlaylistItemView } from "src/components/playlist/itemview.js";
 import { PlayableContainer, PlayableList } from "src/util/playablelist.js";
@@ -15,13 +14,14 @@ import {
   set_scrolled_window_initial_vscroll,
   VScrollState,
 } from "src/util/scrolled.js";
+import { PlaylistHeader } from "src/components/playlist/header.js";
 
 interface AlbumState extends VScrollState {
   album: AlbumResult;
   track?: string;
 }
 
-AlbumHeader;
+PlaylistHeader;
 PlaylistItemView;
 
 interface AlbumProps {
@@ -55,7 +55,7 @@ export class AlbumPage extends Adw.Bin
   private _insights_clamp!: Adw.Clamp;
   private _insights!: Gtk.Box;
   private _playlist_item_view!: PlaylistItemView;
-  private _header!: AlbumHeader;
+  private _header!: PlaylistHeader;
   private _menu!: Gtk.MenuButton;
   private _scrolled!: Gtk.ScrolledWindow;
 

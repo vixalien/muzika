@@ -6,7 +6,6 @@ import Gio from "gi://Gio";
 
 import { Artist, Category, get_artist, MixedItem } from "../muse.js";
 
-import { ArtistHeader } from "../components/artistheader.js";
 import { Carousel } from "../components/carousel/index.js";
 import { EndpointContext, MuzikaComponent } from "src/navigation.js";
 import { PlaylistListView } from "src/components/playlist/listview.js";
@@ -17,12 +16,13 @@ import {
   set_scrolled_window_initial_vscroll,
   VScrollState,
 } from "src/util/scrolled.js";
+import { PlaylistHeader } from "src/components/playlist/header.js";
 
 interface ArtistState extends VScrollState {
   artist: Artist;
 }
 
-ArtistHeader;
+PlaylistHeader;
 PlaylistListView;
 
 export class ArtistPage extends Adw.Bin
@@ -48,7 +48,7 @@ export class ArtistPage extends Adw.Bin
   private _top_songs!: Gtk.Box;
   private _more_top_songs!: Gtk.Button;
   private _playlist_item_view!: PlaylistItemView;
-  private _header!: ArtistHeader;
+  private _header!: PlaylistHeader;
   private _carousels!: Gtk.Box;
   private _menu!: Gtk.MenuButton;
   private _scrolled!: Gtk.ScrolledWindow;

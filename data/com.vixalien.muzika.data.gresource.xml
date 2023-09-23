@@ -37,9 +37,8 @@
     <file preprocess="xml-stripblanks">ui/components/playlist/bar.ui</file>
     <file preprocess="xml-stripblanks">ui/components/playlist/edit.ui</file>
     <file preprocess="xml-stripblanks">ui/components/playlist/get-add-to-playlist.ui</file>
-    <file preprocess="xml-stripblanks">ui/components/playlist/largeheader.ui</file>
+    <file preprocess="xml-stripblanks">ui/components/playlist/header.ui</file>
     <file preprocess="xml-stripblanks">ui/components/playlist/listitem.ui</file>
-    <file preprocess="xml-stripblanks">ui/components/playlist/miniheader.ui</file>
     <file preprocess="xml-stripblanks">ui/components/search/section.ui</file>
     <file preprocess="xml-stripblanks">ui/components/search/topresult.ui</file>
     <file preprocess="xml-stripblanks">ui/components/search/topresultsection.ui</file>
