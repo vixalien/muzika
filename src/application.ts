@@ -123,6 +123,7 @@ export class Application extends Adw.Application {
     cache.dump();
 
     this.player.save_state();
+    this.player.stop();
 
     super.vfunc_shutdown();
   }
