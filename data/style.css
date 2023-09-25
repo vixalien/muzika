@@ -116,11 +116,20 @@ expander-widget.inverted expander:checked {
 }
 
 scale.buffering trough {
-  background-image: cross-fade(
-    40% -gtk-recolor(url("resource:///com/vixalien/muzika/icons/scalable/actions/progress-symbolic.svg")),
-    transparent
-  );
-  animation: moving linear 6s infinite both;
+  animation: 6s moving linear infinite both, 1s reveal_background .1s linear forwards;
+}
+
+@keyframes reveal_background {
+  from {
+    background-image: none;
+  }
+
+  to {
+    background-image: cross-fade(
+      40% -gtk-recolor(url("resource:///com/vixalien/muzika/icons/scalable/actions/progress-symbolic.svg")),
+      transparent
+    );
+  }
 }
 
 @keyframes moving {
