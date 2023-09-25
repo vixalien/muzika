@@ -262,12 +262,9 @@ export class MuzikaMediaStream extends Gtk.MediaStream {
     adapter.connect("volume-changed", this.volume_changed_cb.bind(this));
     adapter.connect("mute-changed", this.mute_changed_cb.bind(this));
     adapter.connect("seek-done", this.seek_done_cb.bind(this));
-    adapter.connect(
-      "warning",
-      (_object, error: GLib.Error) => {
-        console.warn("player warning", error.code, error.message);
-      },
-    );
+    adapter.connect("warning", (_object, error: GLib.Error) => {
+      console.warn("player warning", error.code, error.message);
+    });
 
     const sink = Gst.ElementFactory.make(
       "gtk4paintablesink",
@@ -284,16 +281,6 @@ export class MuzikaMediaStream extends Gtk.MediaStream {
     this._play.pipeline.set_property("video-sink", sink);
   }
 
-  get volume(): number {
-    return this._play.volume;
-  }
-
-  set volume(volume: number) {
-    this._play.volume = volume;
-    this.notify("volume");
-    this.notify("cubic-volume");
-  }
-
   // cubic volume
 
   get cubic_volume() {
@@ -302,15 +289,6 @@ export class MuzikaMediaStream extends Gtk.MediaStream {
 
   set cubic_volume(value: number) {
     this.volume = get_linear_volume(value);
-  }
-
-  get muted(): boolean {
-    return this._play.mute;
-  }
-
-  set muted(muted: boolean) {
-    this._play.mute = muted;
-    this.notify("muted");
   }
 
   // UTILS
@@ -498,6 +476,12 @@ export class MuzikaMediaStream extends Gtk.MediaStream {
     this._play.seek(Math.trunc(timestamp * Gst.USECOND));
   }
 
+  vfunc_update_audio(muted: boolean, volume: number): void {
+    this._play.mute = muted;
+    this._play.volume = volume;
+    this.notify("cubic-volume");
+  }
+
   // handlers
 
   private buffering_cb(_play: GstPlay.Play, percent: number): void {
@@ -603,9 +587,13 @@ export class MuzikaMediaStream extends Gtk.MediaStream {
   }
 
   private seek_done_cb(_play: GstPlay.Play, timestamp: number): void {
-    this.seek_success();
+    if (this.seeking) {
+      this.seek_success();
+    }
 
-    this.update(timestamp / Gst.USECOND);
+    if (this.prepared) {
+      this.update(timestamp / Gst.USECOND);
+    }
   }
 
   protected set_uri(uri: string): void {
