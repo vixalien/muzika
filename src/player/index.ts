@@ -243,6 +243,12 @@ export class MuzikaMediaStream extends Gtk.MediaStream {
 
     this._play = new GstPlay.Play();
 
+    const pipeline = this._play.get_pipeline() as Gst.Pipeline;
+    let flags = pipeline.flags;
+    // add download flag
+    flags |= 0x00000080;
+    pipeline.flags = flags;
+
     const play_config = this._play.get_config();
     GstPlay.Play.config_set_seek_accurate(play_config, true);
     this._play.set_config(play_config);
