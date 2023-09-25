@@ -189,6 +189,8 @@ export const cache = Soup.Cache.new(
   SOUP_CACHE_DIR.get_path()!,
   Soup.CacheType.SHARED,
 );
+// set max cache size to 16 megabytes
+cache.set_max_size(16e+6);
 
 cache.load();
 
