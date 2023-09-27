@@ -56,9 +56,16 @@ class ImageColumn extends Gtk.ColumnViewColumn {
 
     const playlist_item = container.object;
 
-    dynamic_image.connect("notify::selected", (_dynamic_image, value) => {
-      this.emit("selection-mode-toggled", list_item.position, value);
-    });
+    dynamic_image.connect(
+      "notify::selected",
+      (dynamic_image: DynamicImage) => {
+        this.emit(
+          "selection-mode-toggled",
+          list_item.position,
+          dynamic_image.selected,
+        );
+      },
+    );
 
     container.connect("notify::state", () => {
       dynamic_image.state = container.state;

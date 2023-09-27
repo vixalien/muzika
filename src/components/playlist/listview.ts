@@ -4,6 +4,7 @@ import GObject from "gi://GObject";
 import { PlaylistListItem } from "./listitem";
 import { SignalListeners } from "src/util/signal-listener";
 import { PlayableContainer } from "src/util/playablelist";
+import { DynamicImage } from "../dynamic-image";
 
 interface PlaylistListItemWithSignals extends PlaylistListItem {
   signals: SignalListeners;
@@ -131,8 +132,11 @@ export class PlaylistListView extends Gtk.ListView {
     item.signals.connect(
       item.dynamic_image,
       "notify::selected",
-      (_dynamic_image, value) => {
-        this.selection_mode_toggled(list_item.position, value);
+      (dynamic_image: DynamicImage) => {
+        this.selection_mode_toggled(
+          list_item.position,
+          dynamic_image.selected,
+        );
       },
     );
 

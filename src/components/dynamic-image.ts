@@ -262,7 +262,9 @@ export class DynamicImage extends Gtk.Overlay {
   }
 
   private check_toggled_cb() {
-    this.notify("selected");
+    if (this.selection_mode) {
+      this.notify("selected");
+    }
   }
 
   private initialize_type(type: DynamicImageStorageType) {
