@@ -1,10 +1,13 @@
 import Gtk from "gi://Gtk?version=4.0";
 import GObject from "gi://GObject";
+import GLib from "gi://GLib";
 
 import { PlaylistListItem } from "./listitem";
 import { SignalListeners } from "src/util/signal-listener";
 import { PlayableContainer } from "src/util/playablelist";
 import { DynamicImage } from "../dynamic-image";
+import { ObjectContainer } from "src/util/objectcontainer";
+import { PlaylistItem } from "src/muse";
 
 interface PlaylistListItemWithSignals extends PlaylistListItem {
   signals: SignalListeners;
@@ -76,7 +79,7 @@ export class PlaylistListView extends Gtk.ListView {
       Gtk.ListView.ConstructorProperties
     > = {},
   ) {
-    super(props);
+    super({ single_click_activate: true, ...props });
 
     if (album != null) this.album = album;
 
@@ -97,6 +100,26 @@ export class PlaylistListView extends Gtk.ListView {
     factory.connect("teardown", this.teardown_cb.bind(this));
 
     this.factory = factory;
+
+    this.connect("activate", (_, position) => {
+      const container = this.model.get_item(position) as ObjectContainer<
+        PlaylistItem
+      >;
+
+      if (this.playlistId) {
+        this.activate_action(
+          "queue.play-playlist",
+          GLib.Variant.new_string(
+            `${this.playlistId}?video=${container.object.videoId}`,
+          ),
+        );
+      } else {
+        this.activate_action(
+          "queue.play-song",
+          GLib.Variant.new_string(container.object.videoId),
+        );
+      }
+    });
   }
 
   setup_cb(_factory: Gtk.SignalListItemFactory, list_item: Gtk.ListItem) {
