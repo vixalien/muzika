@@ -58,7 +58,7 @@ export class PlayerProgressBar extends Gtk.ProgressBar {
   }
 
   set value(value: number) {
-    this.fraction = Math.min(value / this.duration, 1);
+    this.fraction = Math.max(Math.min(value / this.duration, 1), 0) || 0;
   }
 
   private _duration = 1;
