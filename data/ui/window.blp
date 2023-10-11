@@ -94,7 +94,16 @@ template $MuzikaWindow : Adw.ApplicationWindow {
             sidebar: Adw.NavigationPage {
               title: _("Now Playing");
 
-              Adw.Bin {
+              Adw.ToolbarView {
+                [top]
+                Adw.HeaderBar {
+                  Button {
+                    icon-name: "go-down-symbolic";
+                    action-name: "win.visible-view";
+                    action-target: "'main'";
+                  }
+                }
+
                 Label label {
                   label: "LMAO";
                 }
