@@ -157,7 +157,7 @@ export class NavbarView extends Gtk.Box {
   private init_buttons() {
     const buttons: NavbarButtonContructorProperties[] = [
       {
-        icon_name: "go-home-symbolic",
+        icon_name: "user-home-symbolic",
         label: _("Home"),
         link: "home",
       },
@@ -198,7 +198,7 @@ export class NavbarView extends Gtk.Box {
         requires_login: true,
       },
       {
-        icon_name: "preferences-system-time-symbolic",
+        icon_name: "clock-outline-symbolic",
         label: _("History"),
         link: "history",
         requires_login: true,

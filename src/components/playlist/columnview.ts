@@ -207,7 +207,7 @@ class TitleBox extends Gtk.Box {
 
     this.explicit = new Gtk.Image({
       valign: Gtk.Align.CENTER,
-      icon_name: "network-cellular-edge-symbolic",
+      icon_name: "explicit-symbolic",
       css_classes: ["dim-label"],
     });
 
