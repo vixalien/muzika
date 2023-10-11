@@ -4,17 +4,13 @@ import GLib from "gi://GLib";
 
 import { RepeatMode } from "../../player/queue.js";
 import { PlayerScale } from "./scale.js";
-import { PlayerSidebarView } from "./now-playing-details.js";
 import { QueueTrack } from "libmuse/types/parsers/queue.js";
 import { escape_label, pretty_subtitles } from "src/util/text.js";
 import { MuzikaPlayer } from "src/player";
 import { micro_to_string, seconds_to_string } from "src/util/time.js";
 import { PlayerPreview } from "./preview.js";
 import { SignalListeners } from "src/util/signal-listener.js";
-
-export interface FullPlayerViewOptions {
-  player: MuzikaPlayer;
-}
+import { get_player } from "src/application.js";
 
 PlayerPreview;
 
@@ -40,11 +36,6 @@ export class FullPlayerView extends Gtk.ActionBar {
         "music_counterpart",
         "video_counterpart",
       ],
-      Signals: {
-        "sidebar-button-clicked": {
-          param_types: [GObject.TYPE_UINT],
-        },
-      },
     }, this);
   }
 
@@ -68,10 +59,10 @@ export class FullPlayerView extends Gtk.ActionBar {
 
   scale: PlayerScale;
 
-  constructor(options: FullPlayerViewOptions) {
+  constructor() {
     super();
 
-    this.player = options.player;
+    this.player = get_player();
 
     this.scale = new PlayerScale();
     this.scale.insert_after(this._scale_and_timer, this._progress_label);

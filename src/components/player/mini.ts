@@ -8,10 +8,7 @@ import { QueueTrack } from "libmuse/types/parsers/queue.js";
 import { MuzikaPlayer } from "src/player";
 import { PlayerPreview } from "./preview.js";
 import { SignalListeners } from "src/util/signal-listener.js";
-
-export interface MiniPlayerViewOptions {
-  player: MuzikaPlayer;
-}
+import { get_player } from "src/application.js";
 
 export class MiniPlayerView extends Gtk.Overlay {
   static {
@@ -36,10 +33,10 @@ export class MiniPlayerView extends Gtk.Overlay {
 
   progress_bar: PlayerProgressBar;
 
-  constructor(options: MiniPlayerViewOptions) {
+  constructor() {
     super();
 
-    this.player = options.player;
+    this.player = get_player();
 
     this.progress_bar = new PlayerProgressBar();
     this.add_overlay(this.progress_bar);

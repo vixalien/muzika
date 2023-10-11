@@ -16,16 +16,12 @@ export class PlayerView extends Adw.Bin {
     }, this);
   }
 
-  player: MuzikaPlayer;
-
   squeezer: Adw.Squeezer;
   mini: MiniPlayerView;
   full: FullPlayerView;
 
-  constructor(options: PlayerViewOptions) {
+  constructor() {
     super();
-
-    this.player = options.player;
 
     this.squeezer = new Adw.Squeezer({
       homogeneous: false,
@@ -33,8 +29,8 @@ export class PlayerView extends Adw.Bin {
       transition_type: Adw.SqueezerTransitionType.CROSSFADE,
     });
 
-    this.full = new FullPlayerView(options);
-    this.mini = new MiniPlayerView(options);
+    this.full = new FullPlayerView();
+    this.mini = new MiniPlayerView();
 
     this.squeezer.add(this.full);
     this.squeezer.add(this.mini);

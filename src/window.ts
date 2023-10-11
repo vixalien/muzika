@@ -33,7 +33,6 @@ import { Navigator } from "./navigation.js";
 import { get_player, Settings } from "./application.js";
 import {
   PlayerNowPlayingDetails,
-  PlayerSidebarView,
 } from "./components/player/now-playing-details.js";
 import { LoginPage } from "./pages/login.js";
 import { AddActionEntries } from "./util/action.js";
@@ -46,6 +45,7 @@ import { GetAddToPlaylist } from "./components/playlist/get_add_to_playlist.js";
 
 // make sure to first register PlayerSidebar
 PlayerNowPlayingDetails;
+PlayerView;
 
 export class Window extends Adw.ApplicationWindow {
   static {
@@ -94,7 +94,6 @@ export class Window extends Adw.ApplicationWindow {
   private _now_playing_details!: PlayerNowPlayingDetails;
 
   navigator: Navigator;
-  player_view: PlayerView;
   toast_overlay!: Adw.ToastOverlay;
 
   constructor(params?: Partial<Adw.ApplicationWindow.ConstructorProperties>) {
@@ -128,20 +127,6 @@ export class Window extends Adw.ApplicationWindow {
       "queue",
       player.queue.get_action_group(),
     );
-
-    this.player_view = new PlayerView({
-      player: player,
-    });
-
-    // TODO: fix this
-    this._toolbar_view.add_bottom_bar(this.player_view);
-
-    this.player_view.full.connect("sidebar-button-clicked", (_, view) => {
-      if (view !== PlayerSidebarView.NONE) {
-        this._main_stack.set_visible_child(this._full_split_view);
-        this._now_playing_details.show_view(view);
-      }
-    });
 
     const navbar = new NavbarView(this, this._split_view);
 
