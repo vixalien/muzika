@@ -57,7 +57,10 @@ export class MiniPlayerView extends Gtk.Overlay {
     this.song_changed();
 
     this.listeners.connect(this._player_preview, "activate", () => {
-      this.activate_action("win.show-video", GLib.Variant.new_boolean(true));
+      this.activate_action(
+        "win.visible-view",
+        GLib.Variant.new_string("video"),
+      );
     });
 
     // update the player when the current song changes

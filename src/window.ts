@@ -175,15 +175,6 @@ export class Window extends Adw.ApplicationWindow {
         },
       },
       {
-        name: "show-video",
-        parameter_type: "b",
-        activate: (_, parameter) => {
-          if (!parameter) return;
-
-          this.show_video(parameter.get_boolean());
-        },
-      },
-      {
         name: "toggle-show-video",
         activate: (_) => {
           this.toggle_show_video();
@@ -387,26 +378,8 @@ export class Window extends Adw.ApplicationWindow {
       get_player().queue.current?.object != null;
   }
 
-  private show_video(show: boolean) {
-    if (!show && this.is_fullscreen()) {
-      this.unfullscreen();
-    }
-
-    this._main_stack.visible_child = show
-      ? this._video_player_view
-      : this._toolbar_view;
-  }
-
   private toggle_show_video() {
-    const show = this._main_stack.visible_child === this._toolbar_view;
-
-    if (!show && this.is_fullscreen()) {
-      this.unfullscreen();
-    }
-
-    this._main_stack.visible_child = show
-      ? this._video_player_view
-      : this._toolbar_view;
+    this.show_view(this.get_view_name() === "video" ? "main" : "video");
   }
 
   private fullscreen_video() {

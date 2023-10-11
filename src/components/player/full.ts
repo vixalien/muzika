@@ -193,7 +193,10 @@ export class FullPlayerView extends Gtk.ActionBar {
     });
 
     this.listeners.connect(this._player_preview, "activate", () => {
-      this.activate_action("win.show-video", GLib.Variant.new_boolean(true));
+      this.activate_action(
+        "win.visible-view",
+        GLib.Variant.new_string("video"),
+      );
     });
   }
 
