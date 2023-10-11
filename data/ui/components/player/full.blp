@@ -176,5 +176,11 @@ template $FullPlayerView : ActionBar {
     VolumeButton volume_button {
       tooltip-text: _("Adjust Volume");
     }
+
+    ToggleButton {
+      icon-name: "go-up-symbolic";
+      action-name: "win.visible-view";
+      action-target: "'now-playing'";
+    }
   }
 }

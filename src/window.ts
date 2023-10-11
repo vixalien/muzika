@@ -42,6 +42,7 @@ import { PlayerView } from "./components/player/view.js";
 import "./components/player/video/view.js";
 import { VideoPlayerView } from "./components/player/video/view.js";
 import { GetAddToPlaylist } from "./components/playlist/get_add_to_playlist.js";
+import { S } from "gi-types/ibus1.js";
 
 // make sure to first register PlayerSidebar
 PlayerNowPlayingDetails;
@@ -238,6 +239,32 @@ export class Window extends Adw.ApplicationWindow {
       logout_action.enabled = get_option("auth").has_token();
       this.token_changed();
     });
+
+    const visible_view = Gio.SimpleAction.new_stateful(
+      "visible-view",
+      GLib.VariantType.new("s"),
+      GLib.Variant.new("s", "main"),
+    );
+
+    visible_view.connect("activate", (action, param) => {
+      const string = param?.get_string()[0];
+      if (string && this.show_view(string)) {
+        action.set_state(GLib.Variant.new_string(string));
+      }
+    });
+
+    this._main_stack.connect("notify::visible-child", () => {
+      const visible_child = this._main_stack.get_visible_child_name();
+
+      if (
+        visible_child &&
+        visible_child != visible_view.get_state()?.get_string()[0]
+      ) {
+        visible_view.change_state(GLib.Variant.new_string(visible_child));
+      }
+    });
+
+    this.add_action(visible_view);
   }
 
   async token_changed() {
@@ -334,6 +361,20 @@ export class Window extends Adw.ApplicationWindow {
     Settings.set_value("last-window-size", window_size);
 
     return super.vfunc_close_request();
+  }
+
+  private allowed_views = ["main", "now-playing", "video"];
+
+  private show_view(view: string): boolean {
+    if (!this.allowed_views.includes(view)) return false;
+
+    this._main_stack.visible_child_name = view;
+
+    if (view !== "video" && this.is_fullscreen()) {
+      this.unfullscreen();
+    }
+
+    return true;
   }
 
   private show_video(show: boolean) {
