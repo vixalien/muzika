@@ -32,9 +32,9 @@ import Gio from "gi://Gio";
 import { Navigator } from "./navigation.js";
 import { get_player, Settings } from "./application.js";
 import {
-  PlayerSidebar,
+  PlayerNowPlayingDetails,
   PlayerSidebarView,
-} from "./components/player/sidebar.js";
+} from "./components/player/now-playing-details.js";
 import { LoginPage } from "./pages/login.js";
 import { AddActionEntries } from "./util/action.js";
 import { NavbarView } from "./components/navbar/index.js";
@@ -45,7 +45,7 @@ import { VideoPlayerView } from "./components/player/video/view.js";
 import { GetAddToPlaylist } from "./components/playlist/get_add_to_playlist.js";
 
 // make sure to first register PlayerSidebar
-PlayerSidebar;
+PlayerNowPlayingDetails;
 
 export class Window extends Adw.ApplicationWindow {
   static {
@@ -63,7 +63,7 @@ export class Window extends Adw.ApplicationWindow {
           "login",
           "main_stack",
           "video_player_view",
-          "sidebar",
+          "now_playing_details",
         ],
         Children: [
           "toast_overlay",
@@ -91,7 +91,7 @@ export class Window extends Adw.ApplicationWindow {
   private _login!: Gtk.Button;
   private _main_stack!: Gtk.Stack;
   private _video_player_view!: VideoPlayerView;
-  private _sidebar!: PlayerSidebar;
+  private _now_playing_details!: PlayerNowPlayingDetails;
 
   navigator: Navigator;
   player_view: PlayerView;
@@ -139,7 +139,7 @@ export class Window extends Adw.ApplicationWindow {
     this.player_view.full.connect("sidebar-button-clicked", (_, view) => {
       if (view !== PlayerSidebarView.NONE) {
         this._main_stack.set_visible_child(this._full_split_view);
-        this._sidebar.show_view(view);
+        this._now_playing_details.show_view(view);
       }
     });
 

@@ -4,7 +4,7 @@ import GLib from "gi://GLib";
 
 import { RepeatMode } from "../../player/queue.js";
 import { PlayerScale } from "./scale.js";
-import { PlayerSidebarView } from "./sidebar.js";
+import { PlayerSidebarView } from "./now-playing-details.js";
 import { QueueTrack } from "libmuse/types/parsers/queue.js";
 import { escape_label, pretty_subtitles } from "src/util/text.js";
 import { MuzikaPlayer } from "src/player";
@@ -36,9 +36,6 @@ export class FullPlayerView extends Gtk.ActionBar {
         "progress_label",
         "duration_label",
         "volume_button",
-        "queue_button",
-        "lyrics_button",
-        "related_button",
         "scale_and_timer",
         "music_counterpart",
         "video_counterpart",
@@ -63,9 +60,6 @@ export class FullPlayerView extends Gtk.ActionBar {
   _progress_label!: Gtk.Label;
   _duration_label!: Gtk.Label;
   _volume_button!: Gtk.VolumeButton;
-  _queue_button!: Gtk.ToggleButton;
-  _lyrics_button!: Gtk.ToggleButton;
-  _related_button!: Gtk.ToggleButton;
   _scale_and_timer!: Gtk.Box;
   _music_counterpart!: Gtk.ToggleButton;
   _video_counterpart!: Gtk.ToggleButton;
@@ -92,50 +86,6 @@ export class FullPlayerView extends Gtk.ActionBar {
     );
   }
 
-  private buttons_map = new Map<Gtk.ToggleButton, PlayerSidebarView>([
-    [this._related_button, PlayerSidebarView.RELATED],
-    [this._lyrics_button, PlayerSidebarView.LYRICS],
-    [this._queue_button, PlayerSidebarView.QUEUE],
-  ]);
-
-  private last_button: Gtk.ToggleButton | null = null;
-
-  deselect_buttons() {
-    if (this.last_button) {
-      this.last_button.set_active(false);
-      this.last_button = null;
-    }
-  }
-
-  select_button(view: PlayerSidebarView) {
-    for (const [button, view_] of this.buttons_map) {
-      if (view_ === view) {
-        button.set_active(true);
-        this.last_button = button;
-        break;
-      }
-    }
-  }
-
-  private handle_sidebar_button(toggled_button: Gtk.ToggleButton) {
-    if (toggled_button === this.last_button) {
-      this.deselect_buttons();
-      this.emit("sidebar-button-clicked", PlayerSidebarView.NONE);
-      return;
-    } else {
-      this.last_button = toggled_button;
-
-      if (toggled_button.active) {
-        this.emit(
-          "sidebar-button-clicked",
-          this.buttons_map.get(toggled_button)!,
-        );
-      } else {
-        this.emit("sidebar-button-clicked", PlayerSidebarView.NONE);
-      }
-    }
-  }
-
   song_changed() {
     this.scale.value = this.player.timestamp;
 
@@ -148,35 +98,16 @@ export class FullPlayerView extends Gtk.ActionBar {
     }
   }
 
-  song_meta_changed() {
-    // toggle buttons
-
-    this._lyrics_button.set_sensitive(
-      this.player.queue.settings?.lyrics != null,
-    );
-
-    this._related_button.set_sensitive(
-      this.player.queue.settings?.related != null,
-    );
-  }
-
   private listeners = new SignalListeners();
 
   setup_player() {
     this.song_changed();
-    this.song_meta_changed();
 
     // update the player when the current song changes
     this.listeners.connect(
       this.player.queue,
       "notify::current",
       this.song_changed.bind(this),
-    );
-
-    this.listeners.connect(
-      this.player,
-      "notify::now-playing",
-      this.song_meta_changed.bind(this),
     );
 
     this.listeners.connect(this.player, "notify::is-buffering", () => {
@@ -218,22 +149,6 @@ export class FullPlayerView extends Gtk.ActionBar {
     });
 
     this._shuffle_button.set_active(this.player.queue.shuffle);
-
-    this.listeners.connect(
-      this._lyrics_button,
-      "clicked",
-      this.handle_sidebar_button.bind(this) as any,
-    );
-    this.listeners.connect(
-      this._queue_button,
-      "clicked",
-      this.handle_sidebar_button.bind(this) as any,
-    );
-    this.listeners.connect(
-      this._related_button,
-      "clicked",
-      this.handle_sidebar_button.bind(this) as any,
-    );
 
     // setting up volume button
 

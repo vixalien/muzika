@@ -64,12 +64,12 @@ export class LyricsView extends Gtk.Stack {
 
   player: MuzikaPlayer;
 
-  constructor({ player }: LyricsViewOptions) {
+  constructor() {
     super({
       vhomogeneous: false,
     });
 
-    this.player = player;
+    this.player = get_player();
 
     this._view.remove_css_class("view");
   }
@@ -274,8 +274,4 @@ export class LyricsView extends Gtk.Stack {
   private clear() {
     this.listeners.clear();
   }
-}
-
-export interface LyricsViewOptions {
-  player: MuzikaPlayer;
 }

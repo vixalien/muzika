@@ -5,6 +5,7 @@ import Adw from "gi://Adw";
 import { get_song_related } from "src/muse";
 import { Carousel } from "../carousel";
 import { MuzikaPlayer } from "src/player";
+import { get_player } from "src/application";
 
 export interface RelatedViewOptions {
   player: MuzikaPlayer;
@@ -32,12 +33,12 @@ export class RelatedView extends Gtk.Stack {
 
   player: MuzikaPlayer;
 
-  constructor({ player }: RelatedViewOptions) {
+  constructor() {
     super({
       vhomogeneous: false,
     });
 
-    this.player = player;
+    this.player = get_player();
   }
 
   related: string | null = null;

@@ -8,6 +8,7 @@ import type { QueueTrack } from "libmuse/types/parsers/queue";
 import { QueueItem } from "./queueitem";
 import { MuzikaPlayer } from "src/player";
 import { escape_label } from "src/util/text";
+import { get_player } from "src/application";
 
 export class QueueView extends Gtk.Stack {
   static {
@@ -36,12 +37,12 @@ export class QueueView extends Gtk.Stack {
 
   params_map = new Map<string, Gtk.Widget>();
 
-  constructor({ player }: QueueViewOptions) {
+  constructor() {
     super();
 
     // set up the queue
 
-    this.player = player;
+    this.player = get_player();
 
     this.player.queue.connect("notify::settings", () => {
       this.update_settings();
@@ -65,7 +66,7 @@ export class QueueView extends Gtk.Stack {
     factory.connect("bind", this.bind_cb.bind(this));
     this._list_view.connect("activate", this.activate_cb.bind(this));
 
-    this._list_view.model = Gtk.SingleSelection.new(player.queue.list);
+    this._list_view.model = Gtk.SingleSelection.new(this.player.queue.list);
     this._list_view.factory = factory;
 
     this._list_view.remove_css_class("view");
@@ -179,8 +180,4 @@ export class QueueView extends Gtk.Stack {
   }
 
   activate_cb() {}
-}
-
-export interface QueueViewOptions {
-  player: MuzikaPlayer;
 }

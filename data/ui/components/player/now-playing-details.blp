@@ -1,0 +1,30 @@
+using Gtk 4.0;
+using Gdk 4.0;
+using Adw 1;
+
+template $PlayerNowPlayingDetails : Adw.Bin {
+  Adw.ToolbarView {
+    [top]
+    Adw.HeaderBar {}
+
+    Stack stack {
+      vhomogeneous: false;
+      transition-type: slide_left_right;
+
+      StackPage {
+        name: "queue";
+        child: $QueueView {};
+      }
+
+      StackPage {
+        name: "lyrics";
+        child: $LyricsView {};
+      }
+
+      StackPage {
+        name: "related";
+        child: $RelatedView {};
+      }
+    }
+  }
+}
