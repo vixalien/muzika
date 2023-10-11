@@ -56,13 +56,14 @@ export class Window extends Adw.ApplicationWindow {
         InternalChildren: [
           "navigation_view",
           "toolbar_view",
-          "overlay_split_view",
+          "full_split_view",
           "navbar_window",
           "split_view",
           "account",
           "login",
           "main_stack",
           "video_player_view",
+          "sidebar",
         ],
         Children: [
           "toast_overlay",
@@ -83,17 +84,17 @@ export class Window extends Adw.ApplicationWindow {
 
   private _navigation_view!: Adw.NavigationView;
   private _toolbar_view!: Adw.ToolbarView;
-  private _overlay_split_view!: Adw.OverlaySplitView;
+  private _full_split_view!: Adw.NavigationSplitView;
   private _navbar_window!: Gtk.ScrolledWindow;
   private _split_view!: Adw.NavigationSplitView;
   private _account!: Gtk.MenuButton;
   private _login!: Gtk.Button;
   private _main_stack!: Gtk.Stack;
   private _video_player_view!: VideoPlayerView;
+  private _sidebar!: PlayerSidebar;
 
   navigator: Navigator;
   player_view: PlayerView;
-  sidebar: PlayerSidebar;
   toast_overlay!: Adw.ToastOverlay;
 
   constructor(params?: Partial<Adw.ApplicationWindow.ConstructorProperties>) {
@@ -108,7 +109,6 @@ export class Window extends Adw.ApplicationWindow {
     if (height > 0) this.default_height = height;
 
     this.navigator = new Navigator(this._navigation_view);
-
 
     this.navigator.navigate("home");
 
@@ -136,24 +136,12 @@ export class Window extends Adw.ApplicationWindow {
     // TODO: fix this
     this._toolbar_view.add_bottom_bar(this.player_view);
 
-    this.sidebar = new PlayerSidebar({
-      player: player,
-    });
-
     this.player_view.full.connect("sidebar-button-clicked", (_, view) => {
-      this._overlay_split_view.show_sidebar = view !== PlayerSidebarView.NONE;
       if (view !== PlayerSidebarView.NONE) {
-        this.sidebar.show_view(view);
+        this._main_stack.set_visible_child(this._full_split_view);
+        this._sidebar.show_view(view);
       }
     });
-
-    this._overlay_split_view.connect("notify::show-sidebar", () => {
-      if (!this._overlay_split_view.show_sidebar) {
-        this.player_view.full.deselect_buttons();
-      }
-    });
-
-    this._overlay_split_view.sidebar = this.sidebar;
 
     const navbar = new NavbarView(this, this._split_view);
 
@@ -239,7 +227,9 @@ export class Window extends Adw.ApplicationWindow {
         activate: (_, parameter) => {
           if (!parameter) return;
 
-          GetAddToPlaylist.new_playlist(parameter.get_string()[0].split(",")[0]);
+          GetAddToPlaylist.new_playlist(
+            parameter.get_string()[0].split(",")[0],
+          );
         },
       },
     ]);

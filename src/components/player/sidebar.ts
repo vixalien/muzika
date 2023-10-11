@@ -7,6 +7,7 @@ import { MuzikaPlayer } from "src/player";
 import { LyricsView } from "./lyrics";
 import { QueueView } from "./queue";
 import { RelatedView } from "./related";
+import { get_player } from "src/application";
 
 export class PlayerSidebar extends Adw.Bin {
   static {
@@ -47,8 +48,10 @@ export class PlayerSidebar extends Adw.Bin {
   private _header = Adw.HeaderBar.new();
   private _toolbar_view = new Adw.ToolbarView({ content: this._stack });
 
-  constructor(options: PlayerSidebarOptions) {
+  constructor() {
     super();
+
+    const options = { player: get_player() };
 
     this._toolbar_view.add_top_bar(this._header);
     this.child = this._toolbar_view;
@@ -105,8 +108,4 @@ export enum PlayerSidebarView {
   QUEUE = 1,
   LYRICS,
   RELATED,
-}
-
-export interface PlayerSidebarOptions {
-  player: MuzikaPlayer;
 }

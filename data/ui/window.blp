@@ -16,6 +16,7 @@ template $MuzikaWindow : Adw.ApplicationWindow {
 
     setters {
       split_view.collapsed: true;
+      full_split_view.collapsed: true;
     }
   }
 
@@ -71,38 +72,36 @@ template $MuzikaWindow : Adw.ApplicationWindow {
           ;
           content: 
           Adw.NavigationPage {
-            Adw.BreakpointBin {
+            Adw.NavigationView navigation_view {
+              vexpand: true;
               width-request: 300;
-              height-request: 200;
-
-              Adw.Breakpoint {
-                condition ("max-width: 800sp")
-
-                setters {
-                  overlay_split_view.collapsed: true;
-                }
-              }
-
-              Adw.OverlaySplitView overlay_split_view {
-                sidebar-position: end;
-                sidebar-width-fraction: 0.4;
-                min-sidebar-width: 250;
-                max-sidebar-width: 350;
-                show-sidebar: false;
-                pin-sidebar: true;
-                content: 
-                Adw.NavigationView navigation_view {
-                  vexpand: true;
-                  width-request: 300;
-                }
-
-                ;
-              }
             }
           }
 
           ;
         }
+      };
+    }
+
+    Adw.NavigationSplitView full_split_view {
+      sidebar-width-fraction: 0.5;
+      min-sidebar-width: 0;
+      max-sidebar-width: 9999;
+
+      sidebar: Adw.NavigationPage {
+        title: _("Now Playing");
+
+        Adw.Bin {
+          Label label {
+            label: "LMAO";
+          }
+        }
+      };
+
+      content: Adw.NavigationPage {
+        title: " ";
+
+        $PlayerSidebar sidebar {}
       };
     }
 
