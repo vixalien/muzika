@@ -77,6 +77,7 @@ export class Application extends Adw.Application {
         "0.1.0",
       );
 
+      aboutWindow.set_transient_for(this.get_active_window());
       aboutWindow.set_developers([
         "Angelo Verlain <hey@vixalien.com>",
         "Christopher Davis <christopherdavis@gnome.org>",
