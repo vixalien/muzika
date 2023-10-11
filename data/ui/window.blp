@@ -20,16 +20,16 @@ template $MuzikaWindow : Adw.ApplicationWindow {
     }
   }
 
-  Stack main_stack {
-    transition-type: slide_up_down;
-    
-    StackPage {
-      name: "main";
-      child: Adw.ToolbarView toolbar_view {
-        reveal-bottom-bars: false;
-        bottom-bar-style: raised;
-        content: Adw.ToastOverlay toast_overlay {
-          Adw.NavigationSplitView split_view {
+  Adw.ToolbarView toolbar_view {
+    reveal-bottom-bars: false;
+    bottom-bar-style: raised;
+    content: Adw.ToastOverlay toast_overlay {
+      Stack main_stack {
+        transition-type: slide_up_down;
+        
+        StackPage {
+          name: "main";
+          child: Adw.NavigationSplitView split_view {
             min-sidebar-width: 250;
             max-sidebar-width: 350;
             show-content: true;
@@ -81,43 +81,43 @@ template $MuzikaWindow : Adw.ApplicationWindow {
             }
 
             ;
-          }
-        };
+          };
+        }
 
-        [bottom]
-        $PlayerView {}
-      };
-    }
+        StackPage {
+          name: "now-playing";
+          child: Adw.NavigationSplitView full_split_view {
+            sidebar-width-fraction: 0.5;
+            min-sidebar-width: 0;
+            max-sidebar-width: 9999;
 
-    StackPage {
-      name: "now-playing";
-      child: Adw.NavigationSplitView full_split_view {
-        sidebar-width-fraction: 0.5;
-        min-sidebar-width: 0;
-        max-sidebar-width: 9999;
+            sidebar: Adw.NavigationPage {
+              title: _("Now Playing");
 
-        sidebar: Adw.NavigationPage {
-          title: _("Now Playing");
+              Adw.Bin {
+                Label label {
+                  label: "LMAO";
+                }
+              }
+            };
 
-          Adw.Bin {
-            Label label {
-              label: "LMAO";
-            }
-          }
-        };
+            content: Adw.NavigationPage {
+              title: " ";
 
-        content: Adw.NavigationPage {
-          title: " ";
+              $PlayerNowPlayingDetails now_playing_details {}
+            };
+          };
+        }
 
-          $PlayerNowPlayingDetails now_playing_details {}
-        };
-      };
-    }
+        StackPage {
+          name: "video";
+          child: $VideoPlayerView video_player_view {};
+        }
+      }
+    };
 
-    StackPage {
-      name: "video";
-      child: $VideoPlayerView video_player_view {};
-    }
+    [bottom]
+    $PlayerView {}
   }
 }
 

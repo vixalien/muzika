@@ -116,10 +116,7 @@ export class Window extends Adw.ApplicationWindow {
 
     player.queue.connect(
       "notify::current",
-      () => {
-        this._toolbar_view.reveal_bottom_bars =
-          player.queue.current?.object != null;
-      },
+      this.update_show_player_controls.bind(this),
     );
 
     this.insert_action_group("navigator", this.navigator.get_action_group());
@@ -374,7 +371,20 @@ export class Window extends Adw.ApplicationWindow {
       this.unfullscreen();
     }
 
+    this.update_show_player_controls();
+
     return true;
+  }
+
+  private get_view_name() {
+    return this._main_stack.visible_child_name;
+  }
+
+  private update_show_player_controls() {
+    // hide the player bar when the view is video
+    this._toolbar_view.reveal_bottom_bars = this.get_view_name() != "video" &&
+      // also hide the player bar when there is no current track playing
+      get_player().queue.current?.object != null;
   }
 
   private show_video(show: boolean) {
