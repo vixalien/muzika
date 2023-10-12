@@ -12,7 +12,7 @@ GObject.type_ensure(LyricsView.$gtype);
 GObject.type_ensure(QueueView.$gtype);
 GObject.type_ensure(RelatedView.$gtype);
 
-export class PlayerNowPlayingDetails extends Adw.Bin {
+export class PlayerNowPlayingDetails extends Adw.NavigationPage {
   static {
     GObject.registerClass({
       GTypeName: "PlayerNowPlayingDetails",
@@ -48,6 +48,7 @@ export class PlayerNowPlayingDetails extends Adw.Bin {
     if (view === PlayerSidebarView.NONE) return;
 
     this._stack.set_visible_child_name(view);
+    this.set_title(get_view_title(view) ?? _("Queue"));
 
     if (view === PlayerSidebarView.LYRICS) {
       (this.get_view(PlayerSidebarView.LYRICS) as LyricsView)?.load_lyrics();
@@ -63,4 +64,17 @@ export enum PlayerSidebarView {
   QUEUE = "queue",
   LYRICS = "lyrics",
   RELATED = "related",
+}
+
+function get_view_title(view: PlayerSidebarView) {
+  switch (view) {
+    case PlayerSidebarView.NONE:
+      return null;
+    case PlayerSidebarView.QUEUE:
+      return _("Queue");
+    case PlayerSidebarView.LYRICS:
+      return _("Lyrics");
+    case PlayerSidebarView.RELATED:
+      return _("Related");
+  }
 }
