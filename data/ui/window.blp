@@ -18,6 +18,9 @@ template $MuzikaWindow : Adw.ApplicationWindow {
       split_view.collapsed: true;
       full_split_view.collapsed: true;
     }
+    
+    apply => $on_breakpoint_apply();
+    unapply => $on_breakpoint_unapply();
   }
 
   Adw.ToolbarView toolbar_view {
