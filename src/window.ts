@@ -378,10 +378,20 @@ export class Window extends Adw.ApplicationWindow {
   }
 
   private update_show_player_controls() {
-    // hide the player bar when the view is video
-    this._toolbar_view.reveal_bottom_bars = this.get_view_name() != "video" &&
+    let show_bottom_bars = true;
+
+    if (this.get_view_name() === "video") {
+      // hide the player bar when the view is video
+      show_bottom_bars = false;
+    } else if (this.get_view_name() === "now-playing" && this.large_viewport) {
+      // hide the bottom bar when showing the now playing screen on mobile
+      show_bottom_bars = false;
+    } else if (get_player().queue.current?.object == null) {
       // also hide the player bar when there is no current track playing
-      get_player().queue.current?.object != null;
+      show_bottom_bars = false;
+    }
+
+    this._toolbar_view.reveal_bottom_bars = show_bottom_bars;
   }
 
   private toggle_show_video() {
@@ -398,5 +408,17 @@ export class Window extends Adw.ApplicationWindow {
     } else {
       this.fullscreen();
     }
+  }
+
+  private large_viewport = false;
+
+  private on_breakpoint_apply() {
+    this.large_viewport = true;
+    this.update_show_player_controls();
+  }
+
+  private on_breakpoint_unapply() {
+    this.large_viewport = false;
+    this.update_show_player_controls();
   }
 }
