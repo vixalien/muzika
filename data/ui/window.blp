@@ -110,11 +110,7 @@ template $MuzikaWindow : Adw.ApplicationWindow {
               }
             };
 
-            content: Adw.NavigationPage {
-              title: " ";
-
-              $PlayerNowPlayingDetails now_playing_details {}
-            };
+            content: $PlayerNowPlayingDetails now_playing_details {};
           };
         }
 

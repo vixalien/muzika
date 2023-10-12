@@ -2,7 +2,9 @@ using Gtk 4.0;
 using Gdk 4.0;
 using Adw 1;
 
-template $PlayerNowPlayingDetails : Adw.Bin {
+template $PlayerNowPlayingDetails : Adw.NavigationPage {
+  title: _("Queue");
+
   Adw.ToolbarView {
     [top]
     Adw.HeaderBar {}
