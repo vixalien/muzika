@@ -63,6 +63,7 @@
     <file preprocess="xml-stripblanks">ui/pages/preferences.ui</file>
     <file preprocess="xml-stripblanks">ui/pages/search.ui</file>
     <!-- window -->
+    <file preprocess="xml-stripblanks">ui/sidebar.ui</file>
     <file preprocess="xml-stripblanks">ui/window.ui</file>
     <!-- help overlay -->
     <file preprocess="xml-stripblanks" alias="gtk/help-overlay.ui">ui/gtk/help-overlay.ui</file>

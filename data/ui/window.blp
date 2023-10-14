@@ -36,45 +36,8 @@ template $MuzikaWindow : Adw.ApplicationWindow {
             min-sidebar-width: 250;
             max-sidebar-width: 350;
             show-content: true;
-            sidebar: 
-            Adw.NavigationPage {
-              title: "Muzika";
+            sidebar: $WindowSidebar sidebar {};
 
-              Adw.ToolbarView {
-                hexpand: false;
-
-                [top]
-                Adw.HeaderBar nav_header_bar {
-                  [start]
-                  MenuButton account {
-                    icon-name: "avatar-default-symbolic";
-                    tooltip-text: _("Account");
-                    visible: false;
-                  }
-
-                  [start]
-                  Button login {
-                    icon-name: "contact-new-symbolic";
-                    action-name: "win.login";
-                    tooltip-text: _("Log In");
-                  }
-
-                  [end]
-                  MenuButton {
-                    icon-name: "open-menu-symbolic";
-                    menu-model: primary_menu;
-                  }
-                }
-                content: 
-                ScrolledWindow navbar_window {
-                  vexpand: true;
-                }
-
-                ;
-              }
-            }
-
-            ;
             content: 
             Adw.NavigationPage {
               Adw.NavigationView navigation_view {
@@ -109,24 +72,5 @@ template $MuzikaWindow : Adw.ApplicationWindow {
 
     [bottom]
     $PlayerView {}
-  }
-}
-
-menu primary_menu {
-  section {
-    item {
-      label: _("_Preferences");
-      action: "app.preferences";
-    }
-
-    item {
-      label: _("_Keyboard Shortcuts");
-      action: "win.show-help-overlay";
-    }
-
-    item {
-      label: _("_About Muzika");
-      action: "app.about";
-    }
   }
 }

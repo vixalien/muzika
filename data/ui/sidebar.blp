@@ -1,0 +1,63 @@
+using Gtk 4.0;
+using Adw 1;
+
+template $WindowSidebar : Adw.NavigationPage {
+  title: "Muzika";
+
+  Adw.ToolbarView {
+    hexpand: false;
+
+    [top]
+    Adw.HeaderBar {
+      [start]
+      MenuButton account {
+        icon-name: "avatar-default-symbolic";
+        tooltip-text: _("Account");
+        visible: false;
+      }
+
+      [start]
+      Button login {
+        icon-name: "contact-new-symbolic";
+        action-name: "win.login";
+        tooltip-text: _("Log In");
+      }
+
+      [end]
+      MenuButton {
+        icon-name: "open-menu-symbolic";
+        menu-model: primary_menu;
+      }
+    }
+    content: 
+    ScrolledWindow {
+      vexpand: true;
+
+      $NavbarView navbar {
+        searched => $navbar_searched_cb();
+        activated => $navbar_activated_cb();
+      }
+    }
+
+    ;
+  }
+}
+
+menu primary_menu {
+  section {
+    item {
+      label: _("_Preferences");
+      action: "app.preferences";
+    }
+
+    item {
+      label: _("_Keyboard Shortcuts");
+      action: "win.show-help-overlay";
+    }
+
+    item {
+      label: _("_About Muzika");
+      action: "app.about";
+    }
+  }
+}
