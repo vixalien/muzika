@@ -105,7 +105,7 @@ export class PlayerPreview extends Gtk.Stack {
       this.abort_thumbnail = new AbortController();
 
       load_thumbnails(this._image, song.thumbnails, {
-        width: 74,
+        width: this.size,
         signal: this.abort_thumbnail.signal,
       });
     }

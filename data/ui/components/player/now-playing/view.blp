@@ -1,0 +1,72 @@
+using Gtk 4.0;
+using Adw 1;
+
+template $PlayerNowPlayingView : Adw.NavigationPage {
+  title: _("Now Playing");
+
+  Adw.ToolbarView {
+    [top]
+    Adw.HeaderBar {
+      [start]
+      Button {
+        icon-name: "go-down-symbolic";
+        action-name: "win.visible-view";
+        action-target: "'main'";
+      }
+
+      title-widget: Box {
+        styles ["linked"]
+
+        ToggleButton music_counterpart {
+          label: _("Song");
+
+          clicked => $switch_counterpart();
+        }
+
+        ToggleButton video_counterpart {
+          label: _("Video");
+          group: music_counterpart;
+
+          clicked => $switch_counterpart();
+        }
+      };
+    }
+
+    Box {
+      orientation: vertical;
+      spacing: 12;
+      valign: center;
+      margin-top: 12;
+      margin-bottom: 12;
+      margin-start: 12;
+      margin-end: 12;
+
+      Adw.Clamp {
+        width-request: 200;
+
+        Picture picture {
+          styles ["card", "black-bg"]
+        }
+      }
+
+      Box {
+        orientation: vertical;
+        spacing: 3;
+
+        Label title {
+          justify: center;
+          wrap: true;
+
+          styles ["title-1", "flat-links"]
+        }
+
+        Label subtitle {
+          justify: center;
+          wrap: true;
+
+          styles ["title-2", "flat-links", "dim-label"]
+        }
+      }
+    }
+  }
+}
