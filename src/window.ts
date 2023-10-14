@@ -36,13 +36,13 @@ import {
 } from "./components/player/now-playing-details.js";
 import { LoginPage } from "./pages/login.js";
 import { AddActionEntries } from "./util/action.js";
-import { NavbarView } from "./components/navbar/index.js";
 import { get_current_user, get_option } from "libmuse";
 import { PlayerView } from "./components/player/view.js";
 import "./components/player/video/view.js";
 import { VideoPlayerView } from "./components/player/video/view.js";
 import { GetAddToPlaylist } from "./components/playlist/get_add_to_playlist.js";
 import { PlayerNowPlayingView } from "./components/player/now-playing/view.js";
+import { WindowSidebar } from "./sidebar.js";
 
 // make sure to first register PlayerSidebar
 GObject.type_ensure(PlayerNowPlayingDetails.$gtype);
@@ -58,13 +58,11 @@ export class Window extends Adw.ApplicationWindow {
           "navigation_view",
           "toolbar_view",
           "full_split_view",
-          "navbar_window",
           "split_view",
-          "account",
-          "login",
           "main_stack",
           "video_player_view",
           "now_playing_details",
+          "sidebar",
         ],
         Children: [
           "toast_overlay",
@@ -86,13 +84,11 @@ export class Window extends Adw.ApplicationWindow {
   private _navigation_view!: Adw.NavigationView;
   private _toolbar_view!: Adw.ToolbarView;
   private _full_split_view!: Adw.NavigationSplitView;
-  private _navbar_window!: Gtk.ScrolledWindow;
   private _split_view!: Adw.NavigationSplitView;
-  private _account!: Gtk.MenuButton;
-  private _login!: Gtk.Button;
   private _main_stack!: Gtk.Stack;
   private _video_player_view!: VideoPlayerView;
   private _now_playing_details!: PlayerNowPlayingDetails;
+  private _sidebar!: WindowSidebar;
 
   navigator: Navigator;
   toast_overlay!: Adw.ToastOverlay;
@@ -133,6 +129,10 @@ export class Window extends Adw.ApplicationWindow {
       this.show_view("main");
     });
 
+    this._sidebar.connect("show-content", () => {
+      this._split_view.show_content = true;
+    });
+
     const player = get_player();
 
     player.queue.connect(
@@ -147,25 +147,7 @@ export class Window extends Adw.ApplicationWindow {
       player.queue.get_action_group(),
     );
 
-    const navbar = new NavbarView(this, this._split_view);
-
-    navbar.connect("searched", () => {
-      this._split_view.show_content = true;
-    });
-
-    navbar.connect("activated", (_, uri: string) => {
-      this._split_view.show_content = true;
-      this.navigator.switch_stack(uri);
-    });
-
-    this._navbar_window.set_child(navbar);
-
-    this.navigator.connect("search-changed", (_, search: string) => {
-      navbar.set_search(search);
-    });
-
     this.add_actions();
-    this.token_changed();
   }
 
   add_actions() {
@@ -246,7 +228,7 @@ export class Window extends Adw.ApplicationWindow {
     get_option("auth").addEventListener("token-changed", () => {
       login_action.enabled = !get_option("auth").has_token();
       logout_action.enabled = get_option("auth").has_token();
-      this.token_changed();
+      this._sidebar.token_changed();
     });
 
     const visible_view = Gio.SimpleAction.new_stateful(
@@ -274,32 +256,6 @@ export class Window extends Adw.ApplicationWindow {
     });
 
     this.add_action(visible_view);
-  }
-
-  async token_changed() {
-    const has_token = get_option("auth").has_token();
-
-    this._account.visible = has_token;
-    this._login.visible = !has_token;
-
-    if (!has_token) {
-      return;
-    }
-
-    const account = await get_current_user();
-
-    const menu = Gio.Menu.new();
-
-    menu.append(
-      account.name,
-      `navigator.visit("muzika:channel:${account.channel_id}")`,
-    );
-    menu.append(
-      _("Logout"),
-      "win.logout",
-    );
-
-    this._account.menu_model = menu;
   }
 
   logout() {

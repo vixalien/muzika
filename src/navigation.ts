@@ -5,6 +5,7 @@ import Adw from "gi://Adw";
 
 import { match, MatchFunction, MatchResult } from "path-to-regexp";
 
+import { Window } from "./window.js";
 import { endpoints } from "./endpoints.js";
 import { AddActionEntries } from "./util/action.js";
 import { Page } from "./components/nav/page.js";
@@ -284,6 +285,14 @@ export class Navigator extends GObject.Object {
       this.navigate(uri);
     }
   }
+}
+
+export function get_navigator(widget?: Gtk.Widget) {
+  const window = ((widget?.root) ||
+    (Gtk.Application.get_default() as Gtk.Application)
+      .active_window) as Window;
+
+  return window.navigator;
 }
 
 export interface HistoryState {

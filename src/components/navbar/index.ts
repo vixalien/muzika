@@ -12,6 +12,7 @@ import { NavbarButton, NavbarButtonContructorProperties } from "./button";
 import { ObjectContainer } from "src/util/objectcontainer";
 import { ListView } from "gi-types/gtk4";
 import { NavbarTitle } from "./title";
+import { get_navigator } from "src/navigation";
 
 export class NavbarView extends Gtk.Box {
   static {
@@ -35,8 +36,6 @@ export class NavbarView extends Gtk.Box {
     );
   }
 
-  window: Window;
-
   private _list_view!: ListView;
   private _search!: Gtk.SearchEntry;
 
@@ -58,10 +57,8 @@ export class NavbarView extends Gtk.Box {
   );
   private selection_model = Gtk.SingleSelection.new(this.filter_model);
 
-  constructor(window: Window, view: Adw.NavigationSplitView) {
+  constructor() {
     super();
-
-    this.window = window;
 
     const factory = Gtk.SignalListItemFactory.new();
     factory.connect("setup", this.setup_cb.bind(this));
@@ -78,12 +75,6 @@ export class NavbarView extends Gtk.Box {
     this.selection_model.select_item(0, true);
 
     this._list_view.connect("activate", this.activate_cb.bind(this));
-
-    this.window.navigator.connect("notify::current-uri", () => {
-      const path = this.window.navigator.current_uri;
-
-      if (path) this.navigated(path);
-    });
 
     this._search.connect("activate", () => {
       this.search();
@@ -296,6 +287,16 @@ export class NavbarView extends Gtk.Box {
 
     // move cursor to end
     this._search.set_position(query.length);
+  }
+
+  vfunc_realize(): void {
+    super.vfunc_realize();
+
+    get_navigator(this).connect("notify::current-uri", () => {
+      const path = get_navigator().current_uri;
+
+      if (path) this.navigated(path);
+    });
   }
 }
 
