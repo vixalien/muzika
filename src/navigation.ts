@@ -254,6 +254,7 @@ export class Navigator extends GObject.Object {
 
     if (match) {
       this.show_page(uri, match.match, match.endpoint);
+      this.emit("navigate");
     }
   }
 

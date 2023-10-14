@@ -129,6 +129,10 @@ export class Window extends Adw.ApplicationWindow {
 
     this.navigator.navigate("home");
 
+    this.navigator.connect("navigate", () => {
+      this.show_view("main");
+    });
+
     const player = get_player();
 
     player.queue.connect(
