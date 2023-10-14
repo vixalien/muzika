@@ -33,8 +33,6 @@ export class FullPlayerView extends Gtk.ActionBar {
         "duration_label",
         "volume_button",
         "scale_and_timer",
-        "music_counterpart",
-        "video_counterpart",
       ],
     }, this);
   }
@@ -52,8 +50,6 @@ export class FullPlayerView extends Gtk.ActionBar {
   _duration_label!: Gtk.Label;
   _volume_button!: Gtk.VolumeButton;
   _scale_and_timer!: Gtk.Box;
-  _music_counterpart!: Gtk.ToggleButton;
-  _video_counterpart!: Gtk.ToggleButton;
 
   player: MuzikaPlayer;
 
@@ -234,18 +230,6 @@ export class FullPlayerView extends Gtk.ActionBar {
   }
 
   show_song(track: QueueTrack) {
-    // thumbnail
-
-    this._video_counterpart.sensitive =
-      this._music_counterpart.sensitive =
-        !!track.counterpart;
-
-    if (this.player.queue.current_is_video) {
-      this._video_counterpart.active = true;
-    } else {
-      this._music_counterpart.active = true;
-    }
-
     // labels
 
     if (track.album) {
@@ -269,10 +253,6 @@ export class FullPlayerView extends Gtk.ActionBar {
     this._duration_label.label = track.duration_seconds
       ? seconds_to_string(track.duration_seconds)
       : track.duration ?? "00:00";
-  }
-
-  private switch_counterpart() {
-    this.player.queue.switch_counterpart();
   }
 
   vfunc_map(): void {

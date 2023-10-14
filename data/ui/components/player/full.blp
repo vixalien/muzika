@@ -3,8 +3,8 @@ using Adw 1;
 
 template $FullPlayerView : ActionBar {
   // to make the thumbnail look aligned
-  margin-start: 3;
-  margin-end: 3;
+  margin-start: 6;
+  margin-end: 6;
 
   [start]
   Box song_info_box {
@@ -12,7 +12,7 @@ template $FullPlayerView : ActionBar {
 
     $PlayerPreview player_preview {
       valign: center;
-      size: 78;
+      size: 74;
     }
 
     Box now_playing_labels {
@@ -44,25 +44,6 @@ template $FullPlayerView : ActionBar {
         styles [
           "flat-links",
         ]
-      }
-
-      Box actions {
-        margin-top: 6;
-        
-        styles ["linked"]
-
-        ToggleButton music_counterpart {
-          icon-name: "emblem-music-symbolic";
-
-          clicked => $switch_counterpart();
-        }
-
-        ToggleButton video_counterpart {
-          icon-name: "emblem-videos-symbolic";
-          group: music_counterpart;
-
-          clicked => $switch_counterpart();
-        }
       }
     }
   }
