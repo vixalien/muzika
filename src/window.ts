@@ -42,7 +42,7 @@ import { PlayerView } from "./components/player/view.js";
 import "./components/player/video/view.js";
 import { VideoPlayerView } from "./components/player/video/view.js";
 import { GetAddToPlaylist } from "./components/playlist/get_add_to_playlist.js";
-import { S } from "gi-types/ibus1.js";
+import { PlayerNowPlayingView } from "./components/player/now-playing/view.js";
 
 // make sure to first register PlayerSidebar
 GObject.type_ensure(PlayerNowPlayingDetails.$gtype);

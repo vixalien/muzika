@@ -94,24 +94,7 @@ template $MuzikaWindow : Adw.ApplicationWindow {
             min-sidebar-width: 0;
             max-sidebar-width: 9999;
 
-            sidebar: Adw.NavigationPage {
-              title: _("Now Playing");
-
-              Adw.ToolbarView {
-                [top]
-                Adw.HeaderBar {
-                  Button {
-                    icon-name: "go-down-symbolic";
-                    action-name: "win.visible-view";
-                    action-target: "'main'";
-                  }
-                }
-
-                Label label {
-                  label: "LMAO";
-                }
-              }
-            };
+            sidebar: $PlayerNowPlayingView now_playing_view {};
 
             content: $PlayerNowPlayingDetails now_playing_details {};
           };
