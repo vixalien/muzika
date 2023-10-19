@@ -897,6 +897,7 @@ export class MuzikaPlayer extends MuzikaMediaStream {
           },
         });
         this.notify("now-playing");
+        this.notify("duration");
 
         const uri = get_song_uri(song);
 

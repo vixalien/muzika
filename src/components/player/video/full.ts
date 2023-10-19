@@ -4,7 +4,6 @@ import GLib from "gi://GLib";
 import Gtk from "gi://Gtk?version=4.0";
 
 import { get_player } from "src/application";
-import { PlayerScale } from "../scale";
 import { SignalListeners } from "src/util/signal-listener";
 import { micro_to_string, seconds_to_string } from "src/util/time";
 import { generate_song_menu } from "./util";
@@ -38,7 +37,6 @@ export class FullVideoControls extends Adw.Bin {
   private _play_button!: Gtk.Button;
   private _progress_label!: Gtk.Label;
   private _duration_label!: Gtk.Label;
-  private _scale!: PlayerScale;
   private _menu_button!: Gtk.MenuButton;
 
   inhibit_hide = false;
@@ -46,13 +44,11 @@ export class FullVideoControls extends Adw.Bin {
   song_changed() {
     const player = get_player();
 
-    this._scale.value = player.timestamp;
     this._progress_label.label = micro_to_string(player.timestamp);
 
     const track = player.queue.current?.object;
 
     if (track) {
-      this._scale.update_position(player.timestamp);
       this._progress_label.label = micro_to_string(player.timestamp);
 
       this._duration_label.label = track.duration_seconds
@@ -112,27 +108,14 @@ export class FullVideoControls extends Adw.Bin {
       },
     );
 
-    this._scale.set_duration(player.duration);
     this._duration_label.label = micro_to_string(player.duration);
 
     this.listeners.connect(
       player,
       "notify::duration",
       () => {
-        this._scale.set_duration(player.duration);
         this._duration_label.label = micro_to_string(player.duration);
       },
-    );
-
-    this.listeners.connect(
-      this._scale,
-      "user-changed-value",
-      ((_: any, value: number) => {
-        this.activate_action(
-          "player.seek",
-          GLib.Variant.new_double(this._scale.value),
-        );
-      }) as any,
     );
 
     // buttons
@@ -143,7 +126,6 @@ export class FullVideoControls extends Adw.Bin {
       player,
       "notify::timestamp",
       () => {
-        this._scale.update_position(player.timestamp);
         this._progress_label.label = micro_to_string(player.timestamp);
       },
     );
@@ -160,7 +142,6 @@ export class FullVideoControls extends Adw.Bin {
   private update_play_button() {
     const player = get_player();
 
-    this._scale.buffering = player.is_buffering && player.playing;
 
     if (player.playing) {
       this._play_button.icon_name = "media-playback-pause-symbolic";
