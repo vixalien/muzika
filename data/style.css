@@ -304,3 +304,8 @@ label.bold-link link {
   padding-top: 6px;
   padding-bottom: 6px;
 }
+
+button.large {
+  min-width: 48px;
+  min-height: 48px;
+}

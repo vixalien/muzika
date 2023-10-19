@@ -178,6 +178,12 @@ export class Window extends Adw.ApplicationWindow {
         },
       },
       {
+        name: "show-main-view",
+        activate: (_) => {
+          this.show_view("main");
+        },
+      },
+      {
         name: "toggle-show-video",
         activate: (_) => {
           this.toggle_show_video();
@@ -340,8 +346,8 @@ export class Window extends Adw.ApplicationWindow {
   private update_show_player_controls() {
     let show_bottom_bars = true;
 
-    if (this.get_view_name() === "video") {
-      // hide the player bar when the view is video
+    if (this.get_view_name() !== "main") {
+      // hide the player bar when the view is not the main view
       show_bottom_bars = false;
     } else if (this.get_view_name() === "now-playing" && this.large_viewport) {
       // hide the bottom bar when showing the now playing screen on mobile
