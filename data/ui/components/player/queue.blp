@@ -8,61 +8,62 @@ template $QueueView : Stack {
     description: _("Play some tracks to see the queue");
   }
 
-  ScrolledWindow queue_window {
-    hscrollbar-policy: never;
+  Box queue_box {
+    orientation: vertical;
 
-    Box {
-      orientation: vertical;
+    Box details {
+      margin-start: 9;
+      margin-end: 9;
+      margin-top: 9;
+      margin-bottom: 9;
 
-      Box details {
-        margin-start: 9;
-        margin-end: 9;
-        margin-top: 9;
-        margin-bottom: 9;
+      Box labels {
+        orientation: vertical;
 
-        Box labels {
-          orientation: vertical;
-
-          Label {
-            label: _("Playing From");
-            xalign: 0;
-
-            styles [
-              "caption",
-              "dim-label",
-            ]
-          }
-
-          Label playlist_label {
-            use-markup: true;
-            hexpand: true;
-            max-width-chars: 1;
-            ellipsize: end;
-            xalign: 0;
-            wrap: true;
-
-            styles [
-              "flat-links",
-            ]
-          }
-        }
-      }
-
-      ScrolledWindow params {
-        vscrollbar-policy: never;
-        hscrollbar-policy: external;
-
-        Box params_box {
-          valign: start;
-          margin-start: 9;
-          margin-end: 9;
-          margin-bottom: 9;
+        Label {
+          label: _("Playing From");
+          xalign: 0;
 
           styles [
-            "linked",
+            "caption",
+            "dim-label",
+          ]
+        }
+
+        Label playlist_label {
+          use-markup: true;
+          hexpand: true;
+          max-width-chars: 1;
+          ellipsize: end;
+          xalign: 0;
+          wrap: true;
+
+          styles [
+            "flat-links",
           ]
         }
       }
+    }
+
+    ScrolledWindow params {
+      vscrollbar-policy: never;
+      hscrollbar-policy: external;
+
+      Box params_box {
+        valign: start;
+        margin-start: 9;
+        margin-end: 9;
+        margin-bottom: 9;
+
+        styles [
+          "linked",
+        ]
+      }
+    }
+
+    ScrolledWindow queue_window {
+      hscrollbar-policy: never;
+      vexpand: true;
 
       ListView list_view {
         styles [
