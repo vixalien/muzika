@@ -74,8 +74,6 @@ export class FullPlayerView extends Gtk.ActionBar {
   }
 
   song_changed() {
-    this.scale.value = this.player.timestamp;
-
     this._progress_label.label = micro_to_string(this.player.timestamp);
 
     const song = this.player.queue.current?.object;
@@ -108,20 +106,8 @@ export class FullPlayerView extends Gtk.ActionBar {
     this.update_play_button();
 
     this.listeners.connect(this.player, "notify::duration", () => {
-      this.scale.set_duration(this.player.duration);
       this._duration_label.label = micro_to_string(this.player.duration);
     });
-
-    this.listeners.connect(
-      this.scale,
-      "user-changed-value",
-      (_: any) => {
-        this.activate_action(
-          "player.seek",
-          GLib.Variant.new_double(this.scale.value),
-        );
-      },
-    );
 
     // buttons
 
@@ -163,12 +149,11 @@ export class FullPlayerView extends Gtk.ActionBar {
     });
 
     this.listeners.connect(this.player, "notify::timestamp", () => {
-      this.scale.update_position(this.player.timestamp);
       this._progress_label.label = micro_to_string(this.player.timestamp);
     });
 
-    this.listeners.connect(this.scale, "notify::value", () => {
-      this._progress_label.label = micro_to_string(this.scale.value);
+    this.listeners.connect(this.scale, "notify::value", (_, value) => {
+      this._progress_label.label = micro_to_string(value);
     });
 
     [this._title, this._subtitle].forEach((label) => {
@@ -220,8 +205,6 @@ export class FullPlayerView extends Gtk.ActionBar {
   }
 
   update_play_button() {
-    this.scale.buffering = this.player.is_buffering && this.player.playing;
-
     if (this.player.playing) {
       this._play_image.icon_name = "media-playback-pause-symbolic";
     } else {

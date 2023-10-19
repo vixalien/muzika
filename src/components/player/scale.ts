@@ -1,31 +1,15 @@
 import Gtk from "gi://Gtk?version=4.0";
 import GObject from "gi://GObject";
 import Gst from "gi://Gst";
-import Adw from "gi://Adw";
+
+import { SignalListeners } from "src/util/signal-listener";
+import { get_player } from "src/application";
 
 export class PlayerScale extends Gtk.Scale {
   static {
     GObject.registerClass({
       GTypeName: "PlayerScale",
       Properties: {
-        duration: GObject.ParamSpec.double(
-          "duration",
-          "Duration",
-          "Duration in nanoseconds",
-          GObject.ParamFlags.READABLE,
-          0,
-          Number.MAX_SAFE_INTEGER,
-          0,
-        ),
-        value: GObject.ParamSpec.double(
-          "value",
-          "Value",
-          "Value in nanoseconds",
-          GObject.ParamFlags.READWRITE,
-          0,
-          Number.MAX_SAFE_INTEGER,
-          0,
-        ),
         buffering: GObject.ParamSpec.boolean(
           "buffering",
           "Buffering",
@@ -35,6 +19,7 @@ export class PlayerScale extends Gtk.Scale {
         ),
       },
       Signals: {
+        // this signal is deprecated
         "user-changed-value": {
           param_types: [GObject.TYPE_DOUBLE],
         },
@@ -58,31 +43,12 @@ export class PlayerScale extends Gtk.Scale {
     });
 
     this.connect("change-value", (_, _scroll, value: number) => {
-      this.user_changed_value();
+      get_player().seek(value);
     });
-  }
 
-  private user_changed_value() {
-    this.emit("user-changed-value", this.value);
-    this.notify("value");
-  }
-
-  get value() {
-    return this.adjustment.value;
-  }
-
-  set value(value: number) {
-    this.adjustment.value = value;
-  }
-
-  get duration() {
-    return this.adjustment.upper;
-  }
-
-  set_duration(value: number) {
-    if (value === this.duration) return;
-
-    this.adjustment.upper = value;
+    this.connect("value-changed", (_) => {
+      this.emit("user-changed-value", this.adjustment.value);
+    });
   }
 
   private _buffering: boolean = false;
@@ -100,8 +66,73 @@ export class PlayerScale extends Gtk.Scale {
       this.remove_css_class("buffering");
     }
   }
-  update_position(position: number) {
-    this.value = position;
-    this.notify("value");
+
+  private listeners = new SignalListeners();
+
+  private setup_player() {
+    const player = get_player();
+
+    this.listeners.add_bindings(
+      // @ts-expect-error incorrect types
+      player.bind_property_full(
+        "duration",
+        this.adjustment,
+        "upper",
+        GObject.BindingFlags.DEFAULT | GObject.BindingFlags.SYNC_CREATE,
+        (_, __) => {
+          // the `|| 10` is to prevent the scale being invisible when the upper
+          // adjustment value is set to 0
+          return [true, player.duration || 10];
+        },
+        null,
+      ),
+      // @ts-expect-error incorrect types
+      player.bind_property_full(
+        "timestamp",
+        this.adjustment,
+        "value",
+        GObject.BindingFlags.DEFAULT | GObject.BindingFlags.SYNC_CREATE,
+        (_, timestamp) => {
+          if ((this.get_state_flags() & Gtk.StateFlags.ACTIVE) != 0) {
+            return [false];
+          }
+          return [true, timestamp];
+        },
+        null,
+      ),
+      // @ts-expect-error incorrect types
+      player.bind_property_full(
+        "is-buffering",
+        this,
+        "buffering",
+        GObject.BindingFlags.DEFAULT | GObject.BindingFlags.SYNC_CREATE,
+        (_, buffering) => {
+          return [true, buffering && player.playing];
+        },
+        null,
+      ),
+      // @ts-expect-error incorrect types
+      player.bind_property_full(
+        "playing",
+        this,
+        "buffering",
+        GObject.BindingFlags.DEFAULT | GObject.BindingFlags.SYNC_CREATE,
+        (_, playing) => {
+          return [true, playing && player.is_buffering];
+        },
+        null,
+      ),
+    );
+  }
+
+  vfunc_map(): void {
+    this.listeners.clear();
+    this.setup_player();
+    super.vfunc_map();
+  }
+
+  vfunc_unmap(): void {
+    this.listeners.clear();
+    super.vfunc_unmap();
   }
 }

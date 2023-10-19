@@ -24,7 +24,6 @@ declare module imports {
   };
 }
 
-
 declare module "gettext" {
   export function gettext(id: string): string;
   export function ngettext(
