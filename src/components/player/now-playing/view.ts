@@ -9,6 +9,7 @@ import { MuzikaPlayer } from "src/player";
 import { escape_label, pretty_subtitles } from "src/util/text";
 import { SignalListeners } from "src/util/signal-listener";
 import { load_thumbnails } from "src/components/webimage";
+import { micro_to_string } from "src/util/time";
 
 export class PlayerNowPlayingView extends Adw.NavigationPage {
   static {
@@ -22,6 +23,9 @@ export class PlayerNowPlayingView extends Adw.NavigationPage {
         "title",
         "subtitle",
         "picture",
+        "timestamp",
+        "duration",
+        "play_button",
       ],
     }, this);
   }
@@ -33,6 +37,9 @@ export class PlayerNowPlayingView extends Adw.NavigationPage {
   private _title!: Gtk.Label;
   private _subtitle!: Gtk.Label;
   private _picture!: Gtk.Picture;
+  private _timestamp!: Gtk.Label;
+  private _duration!: Gtk.Label;
+  private _play_button!: Gtk.Button;
 
   constructor() {
     super();
@@ -61,6 +68,47 @@ export class PlayerNowPlayingView extends Adw.NavigationPage {
       this.player.queue,
       "notify::current",
       this.song_changed.bind(this),
+    );
+
+    this.listeners.add_bindings(
+      // @ts-expect-error incorrect types
+      this.player.bind_property_full(
+        "duration",
+        this._duration,
+        "label",
+        GObject.BindingFlags.DEFAULT | GObject.BindingFlags.SYNC_CREATE,
+        (_, __) => {
+          return [true, micro_to_string(this.player.duration)];
+        },
+        null,
+      ),
+      // @ts-expect-error incorrect types
+      this.player.bind_property_full(
+        "timestamp",
+        this._timestamp,
+        "label",
+        GObject.BindingFlags.DEFAULT | GObject.BindingFlags.SYNC_CREATE,
+        (_, __) => {
+          return [true, micro_to_string(this.player.timestamp)];
+        },
+        null,
+      ),
+      // @ts-expect-error incorrect types
+      this.player.bind_property_full(
+        "playing",
+        this._play_button,
+        "icon-name",
+        GObject.BindingFlags.DEFAULT | GObject.BindingFlags.SYNC_CREATE,
+        (_, __) => {
+          return [
+            true,
+            this.player.playing
+              ? "media-playback-pause-symbolic"
+              : "media-playback-start-symbolic",
+          ];
+        },
+        null,
+      ),
     );
   }
 

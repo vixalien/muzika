@@ -4,68 +4,167 @@ using Adw 1;
 template $PlayerNowPlayingView : Adw.NavigationPage {
   title: _("Now Playing");
 
-  Adw.ToolbarView {
-    [top]
-    Adw.HeaderBar {
-      [start]
-      Button {
-        icon-name: "go-down-symbolic";
-        action-name: "win.visible-view";
-        action-target: "'main'";
+  WindowHandle {
+    Adw.ToolbarView {
+      [top]
+      Adw.HeaderBar {
+        [start]
+        Button {
+          icon-name: "go-down-symbolic";
+          action-name: "win.visible-view";
+          action-target: "'main'";
+        }
+
+        title-widget: Box {
+          styles ["linked"]
+
+          ToggleButton music_counterpart {
+            label: _("Song");
+
+            clicked => $switch_counterpart();
+          }
+
+          ToggleButton video_counterpart {
+            label: _("Video");
+            group: music_counterpart;
+
+            clicked => $switch_counterpart();
+          }
+        };
       }
-
-      title-widget: Box {
-        styles ["linked"]
-
-        ToggleButton music_counterpart {
-          label: _("Song");
-
-          clicked => $switch_counterpart();
-        }
-
-        ToggleButton video_counterpart {
-          label: _("Video");
-          group: music_counterpart;
-
-          clicked => $switch_counterpart();
-        }
-      };
-    }
-
-    Box {
-      orientation: vertical;
-      spacing: 12;
-      valign: center;
-      margin-top: 12;
-      margin-bottom: 12;
-      margin-start: 12;
-      margin-end: 12;
 
       Adw.Clamp {
         width-request: 200;
 
-        Picture picture {
-          styles ["card", "black-bg"]
+        Box {
+          orientation: vertical;
+          spacing: 12;
+          valign: center;
+          margin-top: 48;
+          margin-bottom: 48;
+          margin-start: 12;
+          margin-end: 12;
+
+          Picture picture {
+            halign: center;
+
+            styles ["card", "black-bg"]
+          }
+
+          Box {
+            orientation: vertical;
+            spacing: 3;
+
+            Label title {
+              justify: center;
+              wrap: true;
+
+              styles ["title-1", "flat-links"]
+            }
+
+            Label subtitle {
+              justify: center;
+              wrap: true;
+
+              styles ["title-2", "flat-links", "dim-label"]
+            }
+          }
+
+          Box controls {
+            orientation: vertical;
+
+            $PlayerScale {}
+
+            Box labels {
+              margin-start: 12;
+              margin-end: 12;
+
+              Label timestamp {
+                styles ["caption", "numeric"]
+              }
+
+              Label duration {
+                hexpand: true;
+                halign: end;
+
+                styles ["caption", "numeric"]
+              }
+            }
+          }
+
+          Box {
+            spacing: 12;
+            halign: center;
+
+            ToggleButton shuffle_button {
+              icon-name: "media-playlist-shuffle-symbolic";
+              tooltip-text: _("Toggle Shuffle");
+              action-name: "queue.toggle-shuffle";
+              valign: center;
+
+              styles [
+                "circular",
+                "large",
+              ]
+            }
+
+            Button prev_button {
+              icon-name: "media-skip-backward-symbolic";
+              tooltip-text: _("Previous");
+              action-name: "queue.previous";
+              valign: center;
+
+              styles [
+                "circular",
+                "large",
+              ]
+            }
+
+            Button play_button {
+              tooltip-text: _("Play");
+              action-name: "player.play-pause";
+
+              styles [
+                "circular",
+                "large",
+                "suggested-action",
+              ]
+            }
+
+            Button next_button {
+              icon-name: "media-skip-forward-symbolic";
+              tooltip-text: _("Next");
+              action-name: "queue.next";
+              valign: center;
+
+              styles [
+                "circular",
+                "large",
+              ]
+            }
+
+            ToggleButton repeat_button {
+              icon-name: "media-playlist-consecutive-symbolic";
+              tooltip-text: _("Toggle Repeat State");
+              valign: center;
+              action-name: "queue.toggle-repeat";
+
+              styles [
+                "circular",
+                "large",
+              ]
+            }
+          }
         }
       }
+    }
 
-      Box {
-        orientation: vertical;
-        spacing: 3;
+    ShortcutController {
+      scope: managed;
 
-        Label title {
-          justify: center;
-          wrap: true;
-
-          styles ["title-1", "flat-links"]
-        }
-
-        Label subtitle {
-          justify: center;
-          wrap: true;
-
-          styles ["title-2", "flat-links", "dim-label"]
-        }
+      Shortcut {
+        trigger: "Escape";
+        action: "action(win.show-main-view)";
       }
     }
   }
