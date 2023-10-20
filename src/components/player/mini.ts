@@ -2,11 +2,9 @@ import Gtk from "gi://Gtk?version=4.0";
 import GObject from "gi://GObject";
 import GLib from "gi://GLib";
 
-import { load_thumbnails } from "../webimage.js";
 import { PlayerProgressBar } from "./progress.js";
 import { QueueTrack } from "libmuse/types/parsers/queue.js";
 import { MuzikaPlayer } from "src/player";
-import { PlayerPreview } from "./preview.js";
 import { SignalListeners } from "src/util/signal-listener.js";
 import { get_player } from "src/application.js";
 
@@ -16,7 +14,6 @@ export class MiniPlayerView extends Gtk.Overlay {
       GTypeName: "MiniPlayerView",
       Template: "resource:///com/vixalien/muzika/ui/components/player/mini.ui",
       InternalChildren: [
-        "player_preview",
         "title",
         "subtitle",
         "play_button",
@@ -24,7 +21,6 @@ export class MiniPlayerView extends Gtk.Overlay {
     }, this);
   }
 
-  private _player_preview!: PlayerPreview;
   private _title!: Gtk.Label;
   private _subtitle!: Gtk.Label;
   private _play_button!: Gtk.Button;
@@ -55,13 +51,6 @@ export class MiniPlayerView extends Gtk.Overlay {
 
   setup_player() {
     this.song_changed();
-
-    this.listeners.connect(this._player_preview, "activate", () => {
-      this.activate_action(
-        "win.visible-view",
-        GLib.Variant.new_string("video"),
-      );
-    });
 
     // update the player when the current song changes
     this.listeners.connect(

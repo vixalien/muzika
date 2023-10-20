@@ -20,7 +20,6 @@ export class FullPlayerView extends Gtk.ActionBar {
       GTypeName: "FullPlayerView",
       Template: "resource:///com/vixalien/muzika/ui/components/player/full.ui",
       InternalChildren: [
-        "player_preview",
         "title",
         "subtitle",
         "shuffle_button",
@@ -37,7 +36,6 @@ export class FullPlayerView extends Gtk.ActionBar {
     }, this);
   }
 
-  _player_preview!: PlayerPreview;
   _title!: Gtk.Label;
   _subtitle!: Gtk.Label;
   _shuffle_button!: Gtk.ToggleButton;
@@ -170,13 +168,6 @@ export class FullPlayerView extends Gtk.ActionBar {
             return true;
           }
         },
-      );
-    });
-
-    this.listeners.connect(this._player_preview, "activate", () => {
-      this.activate_action(
-        "win.visible-view",
-        GLib.Variant.new_string("video"),
       );
     });
   }
