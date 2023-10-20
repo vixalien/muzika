@@ -37,10 +37,17 @@
 			<summary>Muted</summary>
 			<description>Whether to mute all media</description>
 		</key>
-		<key name="last-window-size" type="(ii)">
-			<default>(-1,-1)</default>
-			<summary>Last width &amp; height of window</summary>
-			<description>The saved last size of the window (to be restored)</description>
+		<key name="width" type="i">
+			<default>1000</default>
+		</key>
+		<key name="height" type="i">
+			<default>800</default>
+		</key>
+		<key name="is-maximized" type="b">
+			<default>false</default>
+		</key>
+		<key name="is-fullscreen" type="b">
+			<default>false</default>
 		</key>
 		<key name="audio-quality" enum="com.vixalien.muzika.AudioQuality">
 			<default>'auto'</default>
