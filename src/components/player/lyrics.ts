@@ -78,7 +78,7 @@ export class LyricsView extends Gtk.Stack {
   controller: AbortController | null = null;
 
   async load_lyrics() {
-    const new_lyrics = this.player.queue.settings?.lyrics ?? null;
+    const new_lyrics = this.player.queue.settings.object?.lyrics ?? null;
 
     if (new_lyrics === this.loaded_lyrics) {
       return;

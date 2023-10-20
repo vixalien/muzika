@@ -5,6 +5,7 @@ import Adw from "gi://Adw";
 import { LyricsView } from "../lyrics";
 import { QueueView } from "../queue";
 import { RelatedView } from "../related";
+import { get_player } from "src/application";
 
 // make sure to first register these
 GObject.type_ensure(LyricsView.$gtype);
@@ -33,12 +34,14 @@ export class PlayerNowPlayingDetails extends Adw.NavigationPage {
           GObject.ParamFlags.READWRITE,
         ),
       },
-      InternalChildren: ["stack", "headerbar"],
+      InternalChildren: ["stack", "headerbar", "lyrics_page", "related_page"],
     }, this);
   }
 
   private _stack!: Adw.ViewStack;
   private _headerbar!: Gtk.HeaderBar;
+  private _lyrics_page!: Adw.ViewStackPage;
+  private _related_page!: Adw.ViewStackPage;
 
   get stack() {
     return this._stack;
@@ -54,6 +57,35 @@ export class PlayerNowPlayingDetails extends Adw.NavigationPage {
 
   constructor() {
     super();
+
+    const player = get_player();
+
+    // TODO: use `sensitive` instead
+    // blocked by:
+
+    // @ts-expect-error
+    player.queue.bind_property_full(
+      "settings",
+      this._lyrics_page,
+      "visible",
+      GObject.BindingFlags.DEFAULT | GObject.BindingFlags.SYNC_CREATE,
+      (_, __) => {
+        return [true, player.queue.settings.object?.lyrics != null];
+      },
+      null,
+    );
+
+    // @ts-expect-error
+    player.queue.bind_property_full(
+      "settings",
+      this._related_page,
+      "visible",
+      GObject.BindingFlags.DEFAULT | GObject.BindingFlags.SYNC_CREATE,
+      (_, __) => {
+        return [true, player.queue.settings.object?.related != null];
+      },
+      null,
+    );
 
     // @ts-expect-error
     this._stack.bind_property_full(
