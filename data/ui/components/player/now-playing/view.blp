@@ -45,10 +45,31 @@ template $PlayerNowPlayingView : Adw.NavigationPage {
           margin-start: 12;
           margin-end: 12;
 
-          Picture picture {
-            halign: center;
+          Overlay {
+            Picture picture {
+              halign: center;
 
-            styles ["card", "black-bg"]
+              styles ["card", "black-bg"]
+            }
+
+            [overlay]
+            Adw.Bin overlay_bin {
+              halign: end;
+              valign: end;
+              margin-end: 12;
+              margin-bottom: 12;
+
+              Button {
+                icon-name: "view-fullscreen-symbolic";
+                action-name: "win.visible-view";
+                action-target: "'video'";
+                visible: bind hover.contains-pointer;
+
+                styles ["osd", "circular"]
+              }
+            }
+            
+            EventControllerMotion hover {}
           }
 
           Box {
