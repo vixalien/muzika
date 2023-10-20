@@ -111,39 +111,13 @@ export class PlayerPreview extends Gtk.Stack {
     }
   }
 
-  private controller: Gtk.EventController | null = null;
-
-  private setup_controller() {
-    this.teardown_controller();
-
-    const click = new Gtk.GestureClick();
-
-    this.listeners.connect(click, "pressed", () => {
-      this.emit("activate");
-    });
-
-    this.add_controller(click);
-
-    this.controller = click;
-  }
-
-  private teardown_controller() {
-    if (this.controller != null) {
-      this.controller.widget.remove_controller(this.controller);
-
-      this.controller = null;
-    }
-  }
-
   vfunc_map(): void {
     super.vfunc_map();
     this.setup_player();
-    this.setup_controller();
   }
 
   vfunc_unmap(): void {
     this.teardown_player();
-    this.teardown_controller();
     this.listeners.clear();
     super.vfunc_unmap();
   }

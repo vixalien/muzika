@@ -1,5 +1,7 @@
 import GObject from "gi://GObject";
 import Adw from "gi://Adw";
+import GLib from "gi://GLib";
+import Gtk from "gi://Gtk?version=4.0";
 
 import { MiniPlayerView } from "./mini.js";
 import { FullPlayerView } from "./full.js";
@@ -36,5 +38,22 @@ export class PlayerView extends Adw.Bin {
     this.squeezer.add(this.mini);
 
     this.set_child(this.squeezer);
+
+    const gesture = new Gtk.GestureClick({
+      button: 1,
+    });
+
+    gesture.connect("pressed", this.gesture_pressed_cb.bind(this));
+
+    this.add_controller(gesture);
+  }
+
+  private gesture_pressed_cb(gesture: Gtk.Gesture) {
+    gesture.set_state(Gtk.EventSequenceState.CLAIMED);
+
+    this.activate_action(
+      "win.visible-view",
+      GLib.Variant.new_string("now-playing"),
+    );
   }
 }
