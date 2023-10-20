@@ -33,7 +33,7 @@ import { Navigator } from "./navigation.js";
 import { get_player, Settings } from "./application.js";
 import {
   PlayerNowPlayingDetails,
-} from "./components/player/now-playing-details.js";
+} from "./components/player/now-playing/details.js";
 import { LoginPage } from "./pages/login.js";
 import { AddActionEntries } from "./util/action.js";
 import { get_current_user, get_option } from "libmuse";
@@ -46,7 +46,9 @@ import { WindowSidebar } from "./sidebar.js";
 
 // make sure to first register PlayerSidebar
 GObject.type_ensure(PlayerNowPlayingDetails.$gtype);
+GObject.type_ensure(PlayerNowPlayingView.$gtype);
 GObject.type_ensure(PlayerView.$gtype);
+GObject.type_ensure(WindowSidebar.$gtype);
 
 export class Window extends Adw.ApplicationWindow {
   static {
