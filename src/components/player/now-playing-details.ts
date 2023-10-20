@@ -5,7 +5,6 @@ import Adw from "gi://Adw";
 import { LyricsView } from "./lyrics";
 import { QueueView } from "./queue";
 import { RelatedView } from "./related";
-import { get_player } from "src/application";
 
 // make sure to first register these
 GObject.type_ensure(LyricsView.$gtype);
@@ -18,63 +17,58 @@ export class PlayerNowPlayingDetails extends Adw.NavigationPage {
       GTypeName: "PlayerNowPlayingDetails",
       Template:
         "resource:///com/vixalien/muzika/ui/components/player/now-playing-details.ui",
-      InternalChildren: ["stack"],
+      Properties: {
+        stack: GObject.param_spec_object(
+          "stack",
+          "Stack",
+          "The View Stack",
+          Adw.ViewStack.$gtype,
+          GObject.ParamFlags.READABLE,
+        ),
+        header_title: GObject.param_spec_object(
+          "header-title",
+          "Header Title Widget",
+          "The widget to show as the header title",
+          Gtk.Widget.$gtype,
+          GObject.ParamFlags.READWRITE,
+        ),
+      },
+      InternalChildren: ["stack", "headerbar"],
     }, this);
   }
 
-  private _stack!: Gtk.Stack;
+  private _stack!: Adw.ViewStack;
+  private _headerbar!: Gtk.HeaderBar;
+
+  get stack() {
+    return this._stack;
+  }
+
+  get header_title() {
+    return this._headerbar.title_widget;
+  }
+
+  set header_title(value: Gtk.Widget) {
+    this._headerbar.title_widget = value;
+  }
 
   constructor() {
     super();
 
-    const player = get_player();
+    // @ts-expect-error
+    this._stack.bind_property_full(
+      "visible-child",
+      this,
+      "title",
+      GObject.BindingFlags.DEFAULT | GObject.BindingFlags.SYNC_CREATE,
+      (_, __) => {
+        const visible_child = this._stack.get_visible_child();
 
-    player.queue.connect("notify::settings", () => {
-      if (this._stack.visible_child_name === "lyrics") {
-        (this.get_view(PlayerSidebarView.LYRICS) as LyricsView)?.load_lyrics();
-      } else if (this._stack.visible_child_name === "related") {
-        (this.get_view(PlayerSidebarView.RELATED) as RelatedView)
-          ?.load_related();
-      }
-    });
-  }
+        if (!visible_child) return [false];
 
-  private get_view(view: PlayerSidebarView) {
-    if (view === PlayerSidebarView.NONE) return null;
-    return this._stack.get_child_by_name(view);
-  }
-
-  show_view(view: PlayerSidebarView) {
-    if (view === PlayerSidebarView.NONE) return;
-
-    this._stack.set_visible_child_name(view);
-    this.set_title(get_view_title(view) ?? _("Queue"));
-
-    if (view === PlayerSidebarView.LYRICS) {
-      (this.get_view(PlayerSidebarView.LYRICS) as LyricsView)?.load_lyrics();
-    } else if (view === PlayerSidebarView.RELATED) {
-      (this.get_view(PlayerSidebarView.RELATED) as RelatedView)
-        ?.load_related();
-    }
-  }
-}
-
-export enum PlayerSidebarView {
-  NONE = 0,
-  QUEUE = "queue",
-  LYRICS = "lyrics",
-  RELATED = "related",
-}
-
-function get_view_title(view: PlayerSidebarView) {
-  switch (view) {
-    case PlayerSidebarView.NONE:
-      return null;
-    case PlayerSidebarView.QUEUE:
-      return _("Queue");
-    case PlayerSidebarView.LYRICS:
-      return _("Lyrics");
-    case PlayerSidebarView.RELATED:
-      return _("Related");
+        return [true, this._stack.get_page(visible_child).title];
+      },
+      null,
+    );
   }
 }

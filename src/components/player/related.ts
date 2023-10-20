@@ -6,6 +6,7 @@ import { get_song_related } from "src/muse";
 import { Carousel } from "../carousel";
 import { MuzikaPlayer } from "src/player";
 import { get_player } from "src/application";
+import { SignalListeners } from "src/util/signal-listener";
 
 export interface RelatedViewOptions {
   player: MuzikaPlayer;
@@ -102,5 +103,27 @@ export class RelatedView extends Gtk.Stack {
       this.loaded = true;
       this.set_visible_child(this._no_lyrics);
     }
+  }
+
+  private listeners = new SignalListeners();
+
+  vfunc_map(): void {
+    super.vfunc_map();
+    this.listeners.connect(
+      this.player,
+      "notify::now-playing",
+      () => this.set_visible_child(this._loading),
+    );
+    this.listeners.connect(
+      this.player,
+      "notify::settings",
+      this.load_related.bind(this),
+    );
+    this.load_related();
+  }
+
+  vfunc_unmap(): void {
+    this.listeners.clear();
+    super.vfunc_unmap();
   }
 }

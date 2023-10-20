@@ -157,6 +157,14 @@ template $PlayerNowPlayingView : Adw.NavigationPage {
           }
         }
       }
+
+      [bottom]
+      Adw.ViewSwitcherBar switcher_bar {
+        GestureClick {
+          propagation-phase: capture;
+          pressed => $on_gestureclick_pressed();
+        }
+      }
     }
 
     ShortcutController {
