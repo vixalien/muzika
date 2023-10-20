@@ -84,17 +84,17 @@ export class PlayerNowPlayingView extends Adw.NavigationPage {
     super();
 
     this.player = get_player();
+  }
 
-    this._subtitle.connect("activate-link", (_, uri) => {
-      if (uri && uri.startsWith("muzika:")) {
-        this.activate_action(
-          "navigator.visit",
-          GLib.Variant.new_string(uri),
-        );
+  private activate_link_cb(_: Gtk.Label, uri: string) {
+    if (uri && uri.startsWith("muzika:")) {
+      this.activate_action(
+        "navigator.visit",
+        GLib.Variant.new_string(uri),
+      );
 
-        return true;
-      }
-    });
+      return true;
+    }
   }
 
   private listeners = new SignalListeners();
