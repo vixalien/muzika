@@ -46,7 +46,7 @@ export class RelatedView extends Gtk.Stack {
   controller: AbortController | null = null;
 
   async load_related() {
-    const new_related = this.player.queue.settings?.related ?? null;
+    const new_related = this.player.queue.settings.object?.related ?? null;
 
     if (new_related === this.loaded_related) {
       return;

@@ -115,7 +115,7 @@ export class Queue extends GObject.Object {
           "settings",
           "Settings",
           "The current queue settings",
-          GObject.TYPE_OBJECT,
+          ObjectContainer.$gtype,
           GObject.ParamFlags.READWRITE,
         ),
         "active-chip": GObject.param_spec_string(
@@ -237,15 +237,21 @@ export class Queue extends GObject.Object {
     this.change_position(this.position + n);
   }
 
-  private _settings?: QueueSettings;
+  private _settings: ObjectContainer<QueueSettings> = new ObjectContainer(
+    null as any,
+  );
 
   get settings() {
     return this._settings;
   }
 
-  set_settings(settings: QueueSettings) {
+  private set settings(settings: ObjectContainer<QueueSettings>) {
     this._settings = settings;
     this.notify("settings");
+  }
+
+  set_settings(settings: QueueSettings) {
+    this.settings = new ObjectContainer(settings);
   }
 
   private settings_abort_controller?: AbortController;
@@ -266,7 +272,7 @@ export class Queue extends GObject.Object {
         .then((settings) => {
           if (this.settings) {
             this.set_settings({
-              ...this.settings,
+              ...this.settings?.object,
               current: settings.current,
               lyrics: settings.lyrics,
               related: settings.related,
@@ -517,7 +523,9 @@ export class Queue extends GObject.Object {
    */
 
   async change_active_chip(chip: string | null) {
-    const found_chip = this.settings?.chips.find((c) => c.playlistId == chip);
+    const found_chip = this.settings?.object?.chips.find((c) =>
+      c.playlistId == chip
+    );
 
     if (chip && found_chip) {
       const local_settings = this.settings;
