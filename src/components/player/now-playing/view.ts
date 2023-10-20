@@ -27,6 +27,7 @@ export class PlayerNowPlayingView extends Adw.NavigationPage {
         "duration",
         "play_button",
         "switcher_bar",
+        "overlay_bin",
       ],
       Properties: {
         switcher_stack: GObject.param_spec_object(
@@ -61,6 +62,7 @@ export class PlayerNowPlayingView extends Adw.NavigationPage {
   private _duration!: Gtk.Label;
   private _play_button!: Gtk.Button;
   private _switcher_bar!: Adw.ViewSwitcherBar;
+  private _overlay_bin!: Adw.Bin;
 
   get switcher_stack() {
     return this._switcher_bar.stack;
@@ -168,6 +170,8 @@ export class PlayerNowPlayingView extends Adw.NavigationPage {
     this._video_counterpart.sensitive =
       this._music_counterpart.sensitive =
         !!track.counterpart;
+
+    this._overlay_bin.visible = this.player.queue.current_is_video;
 
     if (this.player.queue.current_is_video) {
       this._video_counterpart.active = true;
