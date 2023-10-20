@@ -1,4 +1,5 @@
 import Gtk from "gi://Gtk?version=4.0";
+import Gdk from "gi://Gdk?version=4.0";
 import GObject from "gi://GObject";
 import GLib from "gi://GLib";
 import Adw from "gi://Adw";
@@ -226,6 +227,18 @@ export class PlayerNowPlayingView extends Adw.NavigationPage {
       this._picture.set_paintable(this.player.paintable);
     } else {
       this.abort_thumbnail = new AbortController();
+
+      const theme = Gtk.IconTheme.get_for_display(Gdk.Display.get_default()!);
+      const icon = theme.lookup_icon(
+        "icon-missing-symbolic",
+        [],
+        400,
+        this.scale_factor,
+        this.get_direction(),
+        Gtk.IconLookupFlags.FORCE_SYMBOLIC,
+      );
+
+      this._picture.set_paintable(icon);
 
       load_thumbnails(this._picture, song.thumbnails, {
         width: 400,
