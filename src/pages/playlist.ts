@@ -45,10 +45,10 @@ interface PlaylistState extends VScrollState {
   playlist: Playlist;
 }
 
-Paginator;
-PlaylistHeader;
-PlaylistItemView;
-PlaylistBar;
+GObject.type_ensure(Paginator.$gtype);
+GObject.type_ensure(PlaylistHeader.$gtype);
+GObject.type_ensure(PlaylistItemView.$gtype);
+GObject.type_ensure(PlaylistBar.$gtype);
 
 export class PlaylistPage extends Adw.Bin
   implements MuzikaComponent<Playlist, PlaylistState> {

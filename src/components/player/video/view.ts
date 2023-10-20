@@ -6,7 +6,7 @@ import GLib from "gi://GLib";
 import { get_player } from "src/application";
 import { VideoControls } from "./controls";
 
-VideoControls;
+GObject.type_ensure(VideoControls.$gtype);
 
 export class VideoPlayerView extends Adw.Bin {
   static {

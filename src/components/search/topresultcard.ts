@@ -17,7 +17,7 @@ import {
 import { DynamicActionState, DynamicImage } from "../dynamic-image";
 import { pretty_subtitles } from "src/util/text.js";
 
-DynamicImage;
+GObject.type_ensure(DynamicImage.$gtype);
 
 export class TopResultCard extends Adw.Bin {
   static {

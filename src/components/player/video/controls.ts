@@ -6,8 +6,8 @@ import { MiniVideoControls } from "./mini";
 import { FullVideoControls } from "./full";
 import { SignalListeners } from "src/util/signal-listener";
 
-MiniVideoControls;
-FullVideoControls;
+GObject.type_ensure(MiniVideoControls.$gtype);
+GObject.type_ensure(FullVideoControls.$gtype);
 
 export class VideoControls extends Adw.Bin {
   static {

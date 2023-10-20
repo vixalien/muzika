@@ -8,9 +8,9 @@ import { RelatedView } from "./related";
 import { get_player } from "src/application";
 
 // make sure to first register these
-LyricsView;
-QueueView;
-RelatedView;
+GObject.type_ensure(LyricsView.$gtype);
+GObject.type_ensure(QueueView.$gtype);
+GObject.type_ensure(RelatedView.$gtype);
 
 export class PlayerNowPlayingDetails extends Adw.Bin {
   static {

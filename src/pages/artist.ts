@@ -22,8 +22,8 @@ interface ArtistState extends VScrollState {
   artist: Artist;
 }
 
-PlaylistHeader;
-PlaylistListView;
+GObject.type_ensure(PlaylistHeader.$gtype);
+GObject.type_ensure(PlaylistListView.$gtype);
 
 export class ArtistPage extends Adw.Bin
   implements MuzikaComponent<Artist, ArtistState> {

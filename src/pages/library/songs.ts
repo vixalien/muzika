@@ -17,7 +17,7 @@ import {
 } from "src/util/scrolled.js";
 
 // make sure paginator is registered before LibrarySongsPage
-Paginator;
+GObject.type_ensure(Paginator.$gtype);
 
 export class LibrarySongsPage extends Adw.Bin
   implements MuzikaComponent<LoadedSongs, LibrarySongsState> {

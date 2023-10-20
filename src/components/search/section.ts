@@ -7,7 +7,7 @@ import { search_args_to_url } from "../../pages/search.js";
 import { FlatListView } from "../carousel/view/flatlist.js";
 import { PlayableContainer } from "src/util/playablelist.js";
 
-FlatListView;
+GObject.type_ensure(FlatListView.$gtype);
 
 export class SearchSection extends Gtk.Box {
   static {

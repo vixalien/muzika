@@ -8,7 +8,7 @@ import { TopResultCard } from "./topresultcard.js";
 import { FlatListView } from "../carousel/view/flatlist.js";
 import { PlayableContainer } from "src/util/playablelist.js";
 
-TopResultCard;
+GObject.type_ensure(TopResultCard.$gtype);
 
 export class TopResultSection extends Gtk.Box {
   static {

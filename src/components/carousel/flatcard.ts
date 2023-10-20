@@ -33,7 +33,7 @@ import { DynamicActionState } from "../dynamic-action.js";
 import { MixedCardItem } from "../library/mixedcard.js";
 import { MenuHelper } from "src/util/menu.js";
 
-DynamicImage;
+GObject.type_ensure(DynamicImage.$gtype);
 
 export type FlatCardItem = MixedCardItem | InlineSong | SearchContent;
 

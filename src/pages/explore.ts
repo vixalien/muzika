@@ -18,7 +18,7 @@ import {
   VScrollState,
 } from "src/util/scrolled.js";
 
-Loading;
+GObject.type_ensure(Loading.$gtype);
 
 export interface ExplorePageState extends VScrollState {
   contents: ExploreContents;

@@ -14,8 +14,8 @@ import {
   VScrollState,
 } from "src/util/scrolled.js";
 
-Loading;
-Paginator;
+GObject.type_ensure(Loading.$gtype);
+GObject.type_ensure(Paginator.$gtype);
 
 export interface HomePageState extends VScrollState {
   home: Home;

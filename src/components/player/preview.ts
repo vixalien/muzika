@@ -12,7 +12,7 @@ export interface MiniPlayerViewOptions {
   player: MuzikaPlayer;
 }
 
-FixedRatioThumbnail;
+GObject.type_ensure(FixedRatioThumbnail.$gtype);
 
 export class PlayerPreview extends Gtk.Stack {
   static {

@@ -12,7 +12,7 @@ import { PlayerPreview } from "./preview.js";
 import { SignalListeners } from "src/util/signal-listener.js";
 import { get_player } from "src/application.js";
 
-PlayerPreview;
+GObject.type_ensure(PlayerPreview.$gtype);
 
 export class FullPlayerView extends Gtk.ActionBar {
   static {

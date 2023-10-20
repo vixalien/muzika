@@ -13,7 +13,7 @@ export interface PageState<State> {
 }
 
 // register Loading
-Loading;
+GObject.type_ensure(Loading.$gtype);
 
 export class Page<Data extends unknown, State extends unknown = null>
   extends Adw.NavigationPage {

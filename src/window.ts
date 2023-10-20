@@ -45,8 +45,8 @@ import { GetAddToPlaylist } from "./components/playlist/get_add_to_playlist.js";
 import { S } from "gi-types/ibus1.js";
 
 // make sure to first register PlayerSidebar
-PlayerNowPlayingDetails;
-PlayerView;
+GObject.type_ensure(PlayerNowPlayingDetails.$gtype);
+GObject.type_ensure(PlayerView.$gtype);
 
 export class Window extends Adw.ApplicationWindow {
   static {

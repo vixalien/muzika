@@ -18,7 +18,7 @@ interface ArtistAlbumsState extends VScrollState {
   contents: ArtistAlbums;
 }
 
-CarouselGridView;
+GObject.type_ensure(CarouselGridView.$gtype);
 
 export class ArtistAlbumsPage extends Adw.Bin
   implements MuzikaComponent<ArtistAlbums, ArtistAlbumsState> {

@@ -27,8 +27,8 @@ interface AlbumState extends VScrollState {
   track?: string;
 }
 
-PlaylistHeader;
-PlaylistItemView;
+GObject.type_ensure(PlaylistHeader.$gtype);
+GObject.type_ensure(PlaylistItemView.$gtype);
 
 interface AlbumProps {
   album: AlbumResult;

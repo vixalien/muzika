@@ -18,7 +18,7 @@ interface ChannelPlaylistsState extends VScrollState {
   contents: ChannelPlaylists;
 }
 
-CarouselGridView;
+GObject.type_ensure(CarouselGridView.$gtype);
 
 export class ChannelPlaylistsPage extends Adw.Bin
   implements MuzikaComponent<ChannelPlaylists, ChannelPlaylistsState> {

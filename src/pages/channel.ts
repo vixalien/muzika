@@ -26,8 +26,8 @@ interface ChannelState extends VScrollState {
   channel: Channel;
 }
 
-PlaylistHeader;
-PlaylistListView;
+GObject.type_ensure(PlaylistHeader.$gtype);
+GObject.type_ensure(PlaylistListView.$gtype);
 
 export class ChannelPage extends Adw.Bin
   implements MuzikaComponent<Channel, ChannelState> {

@@ -1,11 +1,8 @@
 import Gtk from "gi://Gtk?version=4.0";
 import GObject from "gi://GObject";
 
-import { VideoControls } from "./controls";
 import { SignalListeners } from "src/util/signal-listener";
 import { get_player } from "src/application";
-
-VideoControls;
 
 export class VolumeControls extends Gtk.Box {
   static {
