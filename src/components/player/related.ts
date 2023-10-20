@@ -27,7 +27,7 @@ export class RelatedView extends Gtk.Stack {
     }, this);
   }
 
-  _no_lyrics!: Adw.StatusPage;
+  _no_related!: Adw.StatusPage;
   _loading!: Gtk.Spinner;
   _related_window!: Gtk.ScrolledWindow;
   _box!: Gtk.Box;
@@ -42,33 +42,27 @@ export class RelatedView extends Gtk.Stack {
     this.player = get_player();
   }
 
-  related: string | null = null;
-  loaded = false;
+  loaded_related: string | null = null;
   controller: AbortController | null = null;
 
   async load_related() {
     const new_related = this.player.queue.settings?.related ?? null;
 
-    if (new_related !== this.related) {
-      this.related = new_related;
-      this.loaded = false;
+    if (new_related === this.loaded_related) {
+      return;
     }
 
     if (this.controller) {
       this.controller.abort();
     }
 
-    if (this.loaded) {
-      return;
-    }
-
     this.controller = new AbortController();
 
-    if (this.related) {
+    if (new_related) {
       this.set_visible_child(this._loading);
       this._loading.start();
 
-      await get_song_related(this.related, {
+      await get_song_related(new_related, {
         signal: this.controller.signal,
       }).then((result) => {
         let child: Gtk.Widget | null = null;
@@ -87,8 +81,7 @@ export class RelatedView extends Gtk.Stack {
           this._box.append(spacer);
         }
 
-        this.loaded = true;
-
+        this.loaded_related = new_related;
         this.set_visible_child(this._related_window);
       }).catch((err) => {
         if (err.name === "AbortError") {
@@ -100,8 +93,8 @@ export class RelatedView extends Gtk.Stack {
         this._loading.stop();
       });
     } else {
-      this.loaded = true;
-      this.set_visible_child(this._no_lyrics);
+      this.loaded_related = null;
+      this.set_visible_child(this._no_related);
     }
   }
 
@@ -109,16 +102,22 @@ export class RelatedView extends Gtk.Stack {
 
   vfunc_map(): void {
     super.vfunc_map();
+
     this.listeners.connect(
-      this.player,
-      "notify::now-playing",
-      () => this.set_visible_child(this._loading),
+      this.player.queue,
+      "notify::current",
+      () => {
+        this._loading.start();
+        this.set_visible_child(this._loading);
+      },
     );
+
     this.listeners.connect(
-      this.player,
+      this.player.queue,
       "notify::settings",
       this.load_related.bind(this),
     );
+
     this.load_related();
   }
 
