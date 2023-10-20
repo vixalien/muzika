@@ -2,9 +2,9 @@ import Gtk from "gi://Gtk?version=4.0";
 import GObject from "gi://GObject";
 import Adw from "gi://Adw";
 
-import { LyricsView } from "./lyrics";
-import { QueueView } from "./queue";
-import { RelatedView } from "./related";
+import { LyricsView } from "../lyrics";
+import { QueueView } from "../queue";
+import { RelatedView } from "../related";
 
 // make sure to first register these
 GObject.type_ensure(LyricsView.$gtype);
@@ -16,7 +16,7 @@ export class PlayerNowPlayingDetails extends Adw.NavigationPage {
     GObject.registerClass({
       GTypeName: "PlayerNowPlayingDetails",
       Template:
-        "resource:///com/vixalien/muzika/ui/components/player/now-playing-details.ui",
+        "resource:///com/vixalien/muzika/ui/components/player/now-playing/details.ui",
       Properties: {
         stack: GObject.param_spec_object(
           "stack",
