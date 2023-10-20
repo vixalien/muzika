@@ -106,8 +106,8 @@ export class PlayerScale extends Gtk.Scale {
         this,
         "buffering",
         GObject.BindingFlags.DEFAULT | GObject.BindingFlags.SYNC_CREATE,
-        (_, buffering) => {
-          return [true, buffering && player.playing];
+        (_, __) => {
+          return [true, player.is_buffering && player.playing];
         },
         null,
       ),
@@ -117,8 +117,8 @@ export class PlayerScale extends Gtk.Scale {
         this,
         "buffering",
         GObject.BindingFlags.DEFAULT | GObject.BindingFlags.SYNC_CREATE,
-        (_, playing) => {
-          return [true, playing && player.is_buffering];
+        (_, __) => {
+          return [true, player.playing && player.is_buffering];
         },
         null,
       ),
