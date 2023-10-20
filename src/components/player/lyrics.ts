@@ -74,38 +74,31 @@ export class LyricsView extends Gtk.Stack {
     this._view.remove_css_class("view");
   }
 
-  lyrics_browseId: string | null = null;
-  loaded = false;
+  loaded_lyrics: string | null = null;
   controller: AbortController | null = null;
 
   async load_lyrics() {
     const new_lyrics = this.player.queue.settings?.lyrics ?? null;
 
-    if (new_lyrics !== this.lyrics_browseId) {
-      this.lyrics_browseId = new_lyrics;
-      this.loaded = false;
+    if (new_lyrics === this.loaded_lyrics) {
+      return;
     }
 
     if (this.controller) {
       this.controller.abort();
     }
 
-    if (this.loaded) {
-      return;
-    }
-
     this.controller = new AbortController();
 
-    if (this.lyrics_browseId) {
+    if (new_lyrics) {
       this.set_visible_child(this._loading);
       this._loading.start();
 
-      await get_lyrics(this.lyrics_browseId, {
+      await get_lyrics(new_lyrics, {
         signal: this.controller.signal,
       }).then((lyrics) => {
+        this.loaded_lyrics = new_lyrics;
         this.show_lyrics(lyrics);
-
-        this.loaded = true;
       }).catch((err) => {
         if (err.name === "AbortError") {
           return;
@@ -116,7 +109,7 @@ export class LyricsView extends Gtk.Stack {
         this._loading.stop();
       });
     } else {
-      this.loaded = true;
+      this.loaded_lyrics = null;
       this.set_visible_child(this._no_lyrics);
     }
   }
@@ -280,16 +273,22 @@ export class LyricsView extends Gtk.Stack {
 
   vfunc_map(): void {
     super.vfunc_map();
+
     this.listeners.connect(
-      this.player,
-      "notify::now-playing",
-      () => this.set_visible_child(this._loading),
+      this.player.queue,
+      "notify::current",
+      () => {
+        this._loading.start();
+        this.set_visible_child(this._loading);
+      },
     );
+
     this.listeners.connect(
-      this.player,
+      this.player.queue,
       "notify::settings",
       this.load_lyrics.bind(this),
     );
+
     this.load_lyrics();
   }
 
