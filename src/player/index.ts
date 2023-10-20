@@ -452,18 +452,7 @@ export class MuzikaMediaStream extends Gtk.MediaStream {
     this._error = error;
     this.notify("error");
 
-    console.error(
-      "error during playback",
-      error.toString(),
-      error.code,
-      error.domain,
-      error.message,
-    );
-
-    console.error(
-      "error name",
-      GstPlay.play_error_get_name(error as GstPlay.PlayError),
-    );
+    console.error("error during playback", error.message);
 
     // TODO: cancel pending seeks
     this._play.stop();
