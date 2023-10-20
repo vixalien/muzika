@@ -79,6 +79,7 @@ template $PlayerNowPlayingView : Adw.NavigationPage {
             Label title {
               justify: center;
               wrap: true;
+              activate-link => $activate_link_cb();
 
               styles ["title-1", "flat-links"]
             }
@@ -86,6 +87,7 @@ template $PlayerNowPlayingView : Adw.NavigationPage {
             Label subtitle {
               justify: center;
               wrap: true;
+              activate-link => $activate_link_cb();
 
               styles ["title-2", "flat-links", "dim-label"]
             }
