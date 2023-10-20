@@ -57,11 +57,12 @@ export class Window extends Adw.ApplicationWindow {
         InternalChildren: [
           "navigation_view",
           "toolbar_view",
-          "full_split_view",
+          "now_playing_split_view",
           "split_view",
           "main_stack",
           "video_player_view",
           "now_playing_details",
+          "now_playing_view",
           "sidebar",
         ],
         Children: [
@@ -83,11 +84,12 @@ export class Window extends Adw.ApplicationWindow {
 
   private _navigation_view!: Adw.NavigationView;
   private _toolbar_view!: Adw.ToolbarView;
-  private _full_split_view!: Adw.NavigationSplitView;
+  private _now_playing_split_view!: Adw.NavigationSplitView;
   private _split_view!: Adw.NavigationSplitView;
   private _main_stack!: Gtk.Stack;
   private _video_player_view!: VideoPlayerView;
   private _now_playing_details!: PlayerNowPlayingDetails;
+  private _now_playing_view!: PlayerNowPlayingView;
   private _sidebar!: WindowSidebar;
 
   navigator: Navigator;
@@ -148,6 +150,14 @@ export class Window extends Adw.ApplicationWindow {
     );
 
     this.add_actions();
+
+    this._now_playing_view.connect("bottom-bar-clicked", () => {
+      // hide the flash of content before changing
+      GLib.timeout_add(GLib.PRIORITY_DEFAULT_IDLE, 150, () => {
+        this._now_playing_split_view.show_content = true;
+        return GLib.SOURCE_REMOVE;
+      });
+    });
   }
 
   add_actions() {

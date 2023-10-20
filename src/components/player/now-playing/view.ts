@@ -26,7 +26,27 @@ export class PlayerNowPlayingView extends Adw.NavigationPage {
         "timestamp",
         "duration",
         "play_button",
+        "switcher_bar",
       ],
+      Properties: {
+        switcher_stack: GObject.param_spec_object(
+          "switcher-stack",
+          "Switcher Stack",
+          "The Stack associated with the switcher",
+          Adw.ViewStack.$gtype,
+          GObject.ParamFlags.READWRITE,
+        ),
+        switcher_visible: GObject.param_spec_boolean(
+          "switcher-visible",
+          "Switcher Visible",
+          "Whether to show the switcher stack",
+          false,
+          GObject.ParamFlags.READWRITE,
+        ),
+      },
+      Signals: {
+        "bottom-bar-clicked": {},
+      },
     }, this);
   }
 
@@ -40,6 +60,23 @@ export class PlayerNowPlayingView extends Adw.NavigationPage {
   private _timestamp!: Gtk.Label;
   private _duration!: Gtk.Label;
   private _play_button!: Gtk.Button;
+  private _switcher_bar!: Adw.ViewSwitcherBar;
+
+  get switcher_stack() {
+    return this._switcher_bar.stack;
+  }
+
+  set switcher_stack(stack: Adw.ViewStack) {
+    this._switcher_bar.stack = stack;
+  }
+
+  get switcher_visible() {
+    return this._switcher_bar.reveal;
+  }
+
+  set switcher_visible(visible: boolean) {
+    this._switcher_bar.reveal = visible;
+  }
 
   constructor() {
     super();
@@ -207,5 +244,9 @@ export class PlayerNowPlayingView extends Adw.NavigationPage {
   vfunc_unmap(): void {
     this.listeners.clear();
     super.vfunc_unmap();
+  }
+
+  private on_gestureclick_pressed() {
+    this.emit("bottom-bar-clicked");
   }
 }

@@ -7,24 +7,34 @@ template $PlayerNowPlayingDetails : Adw.NavigationPage {
 
   Adw.ToolbarView {
     [top]
-    Adw.HeaderBar {}
+    Adw.HeaderBar headerbar {
+      title-widget: Adw.ViewSwitcher {
+        stack: stack;
+        policy: wide;
+      };
+    }
 
-    Stack stack {
+    Adw.ViewStack stack {
       vhomogeneous: false;
-      transition-type: slide_left_right;
 
-      StackPage {
+      Adw.ViewStackPage {
         name: "queue";
+        icon-name: "playlist2-symbolic";
+        title: _("Queue");
         child: $QueueView {};
       }
 
-      StackPage {
+      Adw.ViewStackPage {
         name: "lyrics";
+        icon-name: "subtitles-symbolic";
+        title: _("Lyrics");
         child: $LyricsView {};
       }
 
-      StackPage {
+      Adw.ViewStackPage {
         name: "related";
+        icon-name: "navigate-symbolic";
+        title: _("Related");
         child: $RelatedView {};
       }
     }

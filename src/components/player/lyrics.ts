@@ -207,8 +207,9 @@ export class LyricsView extends Gtk.Stack {
         property_target,
       );
 
-      animation.connect("done", () => {
+      let id = animation.connect("done", () => {
         this.pending_animation = null;
+        animation.disconnect(id);
       });
 
       animation.play();
@@ -228,11 +229,11 @@ export class LyricsView extends Gtk.Stack {
     this.scroll_to_row(this._timed_listbox, row, true);
   }
 
-  private listeners = new SignalListeners();
+  private timed_listeners = new SignalListeners();
 
   private setup_timed_lyrics() {
     // add some padding to the bottom
-    this.listeners.connect(
+    this.timed_listeners.connect(
       get_player(),
       "notify::timestamp",
       this.on_timestamp.bind(this),
@@ -271,7 +272,29 @@ export class LyricsView extends Gtk.Stack {
     }
   }
 
-  private clear() {
+  private clear_timed_lyrics() {
+    this.timed_listeners.clear();
+  }
+
+  private listeners = new SignalListeners();
+
+  vfunc_map(): void {
+    super.vfunc_map();
+    this.listeners.connect(
+      this.player,
+      "notify::now-playing",
+      () => this.set_visible_child(this._loading),
+    );
+    this.listeners.connect(
+      this.player,
+      "notify::settings",
+      this.load_lyrics.bind(this),
+    );
+    this.load_lyrics();
+  }
+
+  vfunc_unmap(): void {
     this.listeners.clear();
+    super.vfunc_unmap();
   }
 }
