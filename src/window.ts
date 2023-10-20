@@ -335,10 +335,31 @@ export class Window extends Adw.ApplicationWindow {
       });
   }
 
-  private allowed_views = ["main", "now-playing", "video"];
+  private allowed_views = [
+    "main",
+    "now-playing",
+    "video",
+    "down",
+    "fullscreen-video",
+  ];
+
+  private down_view = "main";
 
   private show_view(view: string): boolean {
     if (!this.allowed_views.includes(view)) return false;
+
+    if (view === "fullscreen-video") {
+      this.fullscreen_video();
+      return true;
+    }
+
+    // `down` pops down the view to show either the video or now_playing views
+    // depending on what was used last
+    if (view === "down") {
+      view = this.down_view;
+    } else if (view != "video" && view != this.down_view) {
+      this.down_view = view;
+    }
 
     this._main_stack.visible_child_name = view;
 
@@ -373,13 +394,11 @@ export class Window extends Adw.ApplicationWindow {
   }
 
   private toggle_show_video() {
-    this.show_view(this.get_view_name() === "video" ? "main" : "video");
+    this.show_view(this.get_view_name() === "video" ? "down" : "video");
   }
 
   private fullscreen_video() {
-    if (this._main_stack.visible_child != this._video_player_view) {
-      return;
-    }
+    this.show_view("video");
 
     if (this.is_fullscreen()) {
       this.unfullscreen();
