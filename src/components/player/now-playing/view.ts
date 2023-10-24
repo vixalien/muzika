@@ -12,6 +12,7 @@ import { SignalListeners } from "src/util/signal-listener";
 import { load_thumbnails } from "src/components/webimage";
 import { micro_to_string } from "src/util/time";
 import { FixedRatioThumbnail } from "src/components/fixed-ratio-thumbnail";
+import { bind_play_icon, bind_repeat_button } from "src/player/helpers";
 
 export class PlayerNowPlayingView extends Adw.NavigationPage {
   static {
@@ -30,6 +31,7 @@ export class PlayerNowPlayingView extends Adw.NavigationPage {
         "play_button",
         "switcher_bar",
         "overlay_bin",
+        "repeat_button",
       ],
       Properties: {
         switcher_stack: GObject.param_spec_object(
@@ -65,6 +67,7 @@ export class PlayerNowPlayingView extends Adw.NavigationPage {
   private _play_button!: Gtk.Button;
   private _switcher_bar!: Adw.ViewSwitcherBar;
   private _overlay_bin!: Adw.Bin;
+  private _repeat_button!: Gtk.ToggleButton;
 
   get switcher_stack() {
     return this._switcher_bar.stack;
@@ -134,22 +137,8 @@ export class PlayerNowPlayingView extends Adw.NavigationPage {
         },
         null,
       ),
-      // @ts-expect-error incorrect types
-      this.player.bind_property_full(
-        "playing",
-        this._play_button,
-        "icon-name",
-        GObject.BindingFlags.DEFAULT | GObject.BindingFlags.SYNC_CREATE,
-        (_, __) => {
-          return [
-            true,
-            this.player.playing
-              ? "media-playback-pause-symbolic"
-              : "media-playback-start-symbolic",
-          ];
-        },
-        null,
-      ),
+      bind_play_icon(this._play_button),
+      ...bind_repeat_button(this._repeat_button),
     );
   }
 

@@ -2,7 +2,6 @@ import Gtk from "gi://Gtk?version=4.0";
 import GObject from "gi://GObject";
 import GLib from "gi://GLib";
 
-import { RepeatMode } from "../../player/queue.js";
 import { PlayerScale } from "./scale.js";
 import { QueueTrack } from "libmuse/types/parsers/queue.js";
 import { escape_label, pretty_subtitles } from "src/util/text.js";
@@ -11,6 +10,7 @@ import { micro_to_string, seconds_to_string } from "src/util/time.js";
 import { PlayerPreview } from "./preview.js";
 import { SignalListeners } from "src/util/signal-listener.js";
 import { get_player } from "src/application.js";
+import { bind_play_icon, bind_repeat_button } from "src/player/helpers.js";
 
 GObject.type_ensure(PlayerPreview.$gtype);
 
@@ -38,11 +38,7 @@ export class FullPlayerView extends Gtk.ActionBar {
 
   _title!: Gtk.Label;
   _subtitle!: Gtk.Label;
-  _shuffle_button!: Gtk.ToggleButton;
-  _prev_button!: Gtk.Button;
-  _play_button!: Gtk.Button;
   _play_image!: Gtk.Image;
-  _next_button!: Gtk.Button;
   _repeat_button!: Gtk.ToggleButton;
   _progress_label!: Gtk.Label;
   _duration_label!: Gtk.Label;
@@ -93,15 +89,9 @@ export class FullPlayerView extends Gtk.ActionBar {
       this.song_changed.bind(this),
     );
 
-    this.listeners.connect(this.player, "notify::is-buffering", () => {
-      this.update_play_button();
-    });
-
-    this.listeners.connect(this.player, "notify::playing", () => {
-      this.update_play_button();
-    });
-
-    this.update_play_button();
+    this.listeners.add_bindings(
+      bind_play_icon(this._play_image),
+    );
 
     this.listeners.connect(this.player, "notify::duration", () => {
       this._duration_label.label = micro_to_string(this.player.duration);
@@ -109,17 +99,9 @@ export class FullPlayerView extends Gtk.ActionBar {
 
     // buttons
 
-    this.listeners.connect(this.player.queue, "notify::repeat", () => {
-      this.update_repeat_button();
-    });
-
-    this.update_repeat_button();
-
-    this.listeners.connect(this.player.queue, "notify::shuffle", () => {
-      this._shuffle_button.set_active(this.player.queue.shuffle);
-    });
-
-    this._shuffle_button.set_active(this.player.queue.shuffle);
+    this.listeners.add_bindings(
+      ...bind_repeat_button(this._repeat_button),
+    );
 
     // setting up volume button
 
@@ -170,37 +152,6 @@ export class FullPlayerView extends Gtk.ActionBar {
         },
       );
     });
-  }
-
-  update_repeat_button() {
-    const repeat_mode = this.player.queue.repeat;
-
-    this._repeat_button.set_active(
-      repeat_mode === RepeatMode.ALL || repeat_mode === RepeatMode.ONE,
-    );
-
-    switch (repeat_mode) {
-      case RepeatMode.ALL:
-        this._repeat_button.icon_name = "media-playlist-repeat-symbolic";
-        this._repeat_button.tooltip_text = _("Repeat All Songs");
-        break;
-      case RepeatMode.ONE:
-        this._repeat_button.icon_name = "media-playlist-repeat-song-symbolic";
-        this._repeat_button.tooltip_text = _("Repeat the Current Song");
-        break;
-      case RepeatMode.NONE:
-        this._repeat_button.icon_name = "media-playlist-consecutive-symbolic";
-        this._repeat_button.tooltip_text = _("Enable Repeat");
-        break;
-    }
-  }
-
-  update_play_button() {
-    if (this.player.playing) {
-      this._play_image.icon_name = "media-playback-pause-symbolic";
-    } else {
-      this._play_image.icon_name = "media-playback-start-symbolic";
-    }
   }
 
   show_song(track: QueueTrack) {

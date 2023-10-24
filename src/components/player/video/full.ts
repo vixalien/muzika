@@ -8,6 +8,7 @@ import { SignalListeners } from "src/util/signal-listener";
 import { micro_to_string, seconds_to_string } from "src/util/time";
 import { generate_song_menu } from "./util";
 import { VolumeControls } from "./volume-controls";
+import { bind_play_icon } from "src/player/helpers";
 
 export class FullVideoControls extends Adw.Bin {
   static {
@@ -94,18 +95,8 @@ export class FullVideoControls extends Adw.Bin {
       this.media_info_changed.bind(this),
     );
 
-    this.update_play_button();
-
-    this.listeners.connect(player, "notify::is-buffering", () => {
-      this.update_play_button();
-    });
-
-    this.listeners.connect(
-      player,
-      "notify::playing",
-      () => {
-        this.update_play_button();
-      },
+    this.listeners.add_bindings(
+      bind_play_icon(this._play_button),
     );
 
     this._duration_label.label = micro_to_string(player.duration);
@@ -137,17 +128,6 @@ export class FullVideoControls extends Adw.Bin {
         this.inhibit_hide = this._menu_button.active;
       },
     );
-  }
-
-  private update_play_button() {
-    const player = get_player();
-
-
-    if (player.playing) {
-      this._play_button.icon_name = "media-playback-pause-symbolic";
-    } else {
-      this._play_button.icon_name = "media-playback-start-symbolic";
-    }
   }
 
   clear_listeners() {
