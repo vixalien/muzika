@@ -1,8 +1,12 @@
+import GObject from "gi://GObject";
+import Gtk from "gi://Gtk?version=4.0";
+
 import { get_queue, get_queue_ids, QueueOptions } from "src/muse";
 import { omit } from "lodash-es";
 
-import { QueueSettings } from "./queue";
+import { QueueSettings, RepeatMode } from "./queue";
 import type { QueueTrack } from "libmuse/types/parsers/queue";
+import { get_player } from "src/application";
 
 function create_cache_map<T extends any>() {
   return new Map<string, T>();
@@ -80,4 +84,85 @@ export async function get_song(videoId: string) {
   }
 
   return cache_maps.songs.get(videoId)!;
+}
+
+export function bind_repeat_button(button: Gtk.ToggleButton) {
+  const queue = get_player().queue;
+
+  return [
+    // @ts-expect-error incorrect types
+    queue.bind_property_full(
+      "repeat",
+      button,
+      "icon-name",
+      GObject.BindingFlags.DEFAULT | GObject.BindingFlags.SYNC_CREATE,
+      () => {
+        let icon = "image-missing-symbolic";
+
+        switch (queue.repeat) {
+          case RepeatMode.ALL:
+            icon = "media-playlist-repeat-symbolic";
+            break;
+          case RepeatMode.ONE:
+            icon = "media-playlist-repeat-song-symbolic";
+            break;
+          case RepeatMode.NONE:
+            icon = "media-playlist-consecutive-symbolic";
+            break;
+        }
+
+        return [true, icon];
+      },
+      null,
+    ),
+
+    // @ts-expect-error incorrect types
+    queue.bind_property_full(
+      "repeat",
+      button,
+      "tooltip-text",
+      GObject.BindingFlags.DEFAULT | GObject.BindingFlags.SYNC_CREATE,
+      () => {
+        let text: string;
+
+        switch (queue.repeat) {
+          case RepeatMode.ALL:
+            text = _("Repeat All Songs");
+            break;
+          case RepeatMode.ONE:
+            text = _("Repeat the Current Song");
+            break;
+          case RepeatMode.NONE:
+            text = _("Enable Repeat");
+            break;
+        }
+
+        if (!text) return [false];
+
+        return [true, text];
+      },
+      null,
+    ),
+  ];
+}
+
+export function bind_play_icon(image: Gtk.Image | Gtk.Button) {
+  const player = get_player();
+
+  // @ts-expect-error incorrect types
+  return player.bind_property_full(
+    "playing",
+    image,
+    "icon-name",
+    GObject.BindingFlags.DEFAULT | GObject.BindingFlags.SYNC_CREATE,
+    () => {
+      return [
+        true,
+        player.playing
+          ? "media-playback-pause-symbolic"
+          : "media-playback-start-symbolic",
+      ];
+    },
+    null,
+  );
 }

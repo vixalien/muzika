@@ -5,7 +5,7 @@ import GLib from "gi://GLib";
 import { get_queue, Queue as MuseQueue } from "../muse.js";
 import { ObjectContainer } from "../util/objectcontainer.js";
 import { QueueTrack } from "libmuse/types/parsers/queue.js";
-import { AddActionEntries } from "src/util/action.js";
+import { AddActionEntries, build_action } from "src/util/action.js";
 import { Application } from "src/application.js";
 import { Window } from "src/window.js";
 import { list_model_to_array } from "src/util/list.js";
@@ -351,18 +351,6 @@ export class Queue extends GObject.Object {
 
     (action_group.add_action_entries as AddActionEntries)([
       {
-        name: "toggle-repeat",
-        activate: () => {
-          this.toggle_repeat();
-        },
-      },
-      {
-        name: "toggle-shuffle",
-        activate: () => {
-          this.shuffle = !this.shuffle;
-        },
-      },
-      {
         name: "play-playlist",
         parameter_type: "s",
         activate: (_, param) => {
@@ -481,6 +469,31 @@ export class Queue extends GObject.Object {
         },
       },
     ]);
+
+    action_group.add_action(build_action({
+      name: "toggle-repeat",
+      parameter_type: null,
+      state: GLib.Variant.new_boolean(false),
+      activate: this.toggle_repeat.bind(this),
+      bind_state_full: [this, "repeat", () => {
+        return [
+          true,
+          GLib.Variant.new_boolean(
+            this.repeat == RepeatMode.NONE ? false : true,
+          ),
+        ];
+      }],
+    }));
+
+    action_group.add_action(build_action({
+      name: "toggle-shuffle",
+      parameter_type: null,
+      state: GLib.Variant.new_boolean(false),
+      activate: () => this.shuffle = !this.shuffle,
+      bind_state_full: [this, "shuffle", () => {
+        return [true, GLib.Variant.new_boolean(this.shuffle)];
+      }],
+    }));
 
     this.connect("notify::can-play-previous", () => {
       action_group.action_enabled_changed("previous", this.can_play_previous);

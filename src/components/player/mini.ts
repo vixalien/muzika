@@ -7,6 +7,7 @@ import { QueueTrack } from "libmuse/types/parsers/queue.js";
 import { MuzikaPlayer } from "src/player";
 import { SignalListeners } from "src/util/signal-listener.js";
 import { get_player } from "src/application.js";
+import { bind_play_icon } from "src/player/helpers.js";
 
 export class MiniPlayerView extends Gtk.Overlay {
   static {
@@ -59,15 +60,9 @@ export class MiniPlayerView extends Gtk.Overlay {
       this.song_changed.bind(this),
     );
 
-    this.listeners.connect(this.player, "notify::buffering", () => {
-      this.update_play_button();
-    });
-
-    this.listeners.connect(this.player, "notify::playing", () => {
-      this.update_play_button();
-    });
-
-    this.update_play_button();
+    this.listeners.add_bindings(
+      bind_play_icon(this._play_button),
+    );
 
     this.listeners.connect(this.player, "notify::duration", () => {
       this.progress_bar.set_duration(this.player.duration);
@@ -80,17 +75,6 @@ export class MiniPlayerView extends Gtk.Overlay {
     });
 
     this.progress_bar.update_position(this.player.timestamp);
-  }
-
-  update_play_button() {
-    this.progress_bar.buffering = this.player.is_buffering &&
-      this.player.playing;
-
-    if (this.player.playing) {
-      this._play_button.icon_name = "media-playback-pause-symbolic";
-    } else {
-      this._play_button.icon_name = "media-playback-start-symbolic";
-    }
   }
 
   show_song(track: QueueTrack) {
