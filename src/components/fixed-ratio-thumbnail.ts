@@ -276,25 +276,38 @@ export class FixedRatioThumbnail extends Gtk.Widget implements Gtk.Orientable {
     orientation: Gtk.Orientation,
     for_size: number,
   ): [number, number, number, number] {
-    let size: number,
+    let minimal_size: number,
+      natural_size: number,
       minimum_baseline = -1,
       natural_baseline = -1;
 
     const expand = this.can_expand;
 
-    size = orientation === Gtk.Orientation.HORIZONTAL
-      ? min_if_present(
+    if (orientation === Gtk.Orientation.HORIZONTAL) {
+      minimal_size = max_if_present(
+        this.min_width,
+        this.min_height * this.inferred_aspect_ratio,
+      );
+
+      natural_size = max_if_present(
         (expand ? Math.max(for_size, this.min_height) : this.min_height) *
           this.inferred_aspect_ratio,
         this.max_height,
-      )
-      : min_if_present(
+      );
+    } else {
+      minimal_size = max_if_present(
+        this.min_height,
+        this.min_width / this.inferred_aspect_ratio,
+      );
+
+      natural_size = max_if_present(
         (expand ? Math.max(for_size, this.min_width) : this.min_width) /
           this.inferred_aspect_ratio,
         this.max_width,
       );
+    }
 
-    return [size, size, minimum_baseline, natural_baseline];
+    return [minimal_size, Math.max(minimal_size, natural_size), minimum_baseline, natural_baseline];
   }
 
   // from https://gitlab.gnome.org/GNOME/gtk/-/blob/main/gtk/gtkpicture.c#L118
@@ -379,10 +392,10 @@ export class FixedRatioThumbnail extends Gtk.Widget implements Gtk.Orientable {
     .paintable_invalidate_size.bind(this);
 }
 
-function max_if_present(...values: number[]) {
-  return Math.max(...values.filter((v) => v > 0));
+function min_if_present(...values: (number | null)[]) {
+  return Math.min(0, ...values.filter((v) => v && v > 0) as number[]);
 }
 
-function min_if_present(...values: number[]) {
-  return Math.max(...values.filter((v) => v > 0));
+function max_if_present(...values: (number | null)[]) {
+  return Math.max(...values.filter((v) => v && v > 0) as number[]);
 }
