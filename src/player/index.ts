@@ -893,7 +893,8 @@ export class MuzikaPlayer extends MuzikaMediaStream {
           track,
           settings: {
             ...settings,
-            playlistId: this.queue.settings?.playlistId ?? settings.playlistId,
+            playlistId: this.queue.settings.object?.playlistId ??
+              settings.playlistId,
           },
         });
         this.notify("now-playing");
@@ -987,7 +988,7 @@ export class MuzikaPlayer extends MuzikaMediaStream {
       tracks: get_tracks(this.queue.list),
       original: get_tracks(this.queue._original),
       seek: this.timestamp,
-      settings: this.queue.settings,
+      settings: this.queue.settings.object,
     };
   }
 
