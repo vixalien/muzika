@@ -166,6 +166,33 @@ export class PlayerNowPlayingView extends Adw.NavigationPage {
     }
   }
 
+  private _pending_animation: Adw.Animation | null = null;
+
+  private animate_aspect_ratio() {
+    if (this._pending_animation) {
+      this._pending_animation.skip();
+    }
+
+    const current_ratio = this._picture.aspect_ratio;
+    const new_ratio = this.player.queue.current_is_video ? 1.5 : 1;
+
+    if (new_ratio == current_ratio) return;
+
+    this._pending_animation = Adw.TimedAnimation.new(
+      this._picture,
+      current_ratio,
+      new_ratio,
+      400,
+      Adw.PropertyAnimationTarget.new(this._picture, "aspect-ratio"),
+    );
+
+    this._pending_animation.connect("done", () => {
+      this._pending_animation = null;
+    });
+
+    this._pending_animation.play();
+  }
+
   show_song(track: QueueTrack) {
     // thumbnail
 
@@ -180,6 +207,8 @@ export class PlayerNowPlayingView extends Adw.NavigationPage {
     } else {
       this._music_counterpart.active = true;
     }
+
+    this.animate_aspect_ratio();
 
     // labels
 
