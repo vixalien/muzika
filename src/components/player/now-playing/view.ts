@@ -11,6 +11,7 @@ import { escape_label, pretty_subtitles } from "src/util/text";
 import { SignalListeners } from "src/util/signal-listener";
 import { load_thumbnails } from "src/components/webimage";
 import { micro_to_string } from "src/util/time";
+import { FixedRatioThumbnail } from "src/components/fixed-ratio-thumbnail";
 
 export class PlayerNowPlayingView extends Adw.NavigationPage {
   static {
@@ -58,7 +59,7 @@ export class PlayerNowPlayingView extends Adw.NavigationPage {
   private _music_counterpart!: Gtk.ToggleButton;
   private _title!: Gtk.Label;
   private _subtitle!: Gtk.Label;
-  private _picture!: Gtk.Picture;
+  private _picture!: FixedRatioThumbnail;
   private _timestamp!: Gtk.Label;
   private _duration!: Gtk.Label;
   private _play_button!: Gtk.Button;
@@ -224,7 +225,7 @@ export class PlayerNowPlayingView extends Adw.NavigationPage {
     }
 
     if (player.queue.current_is_video) {
-      this._picture.set_paintable(this.player.paintable);
+      this._picture.paintable = this.player.paintable;
     } else {
       this.abort_thumbnail = new AbortController();
 
@@ -238,7 +239,7 @@ export class PlayerNowPlayingView extends Adw.NavigationPage {
         Gtk.IconLookupFlags.FORCE_SYMBOLIC,
       );
 
-      this._picture.set_paintable(icon);
+      this._picture.paintable = icon;
 
       load_thumbnails(this._picture, song.thumbnails, {
         width: 400,

@@ -46,10 +46,16 @@ template $PlayerNowPlayingView : Adw.NavigationPage {
           margin-end: 12;
 
           Overlay {
-            Picture picture {
-              halign: center;
+            halign: center;
 
-              styles ["card", "black-bg"]
+            Adw.Bin {
+              $FixedRatioThumbnail picture {
+                aspect-ratio: 1.00;
+                can-expand: true;
+                overflow: hidden;
+
+                styles ["card", "black-bg"]
+              }
             }
 
             [overlay]
