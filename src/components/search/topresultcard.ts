@@ -96,9 +96,7 @@ export class TopResultCard extends Adw.Bin {
       }
     });
 
-    const click = new Gtk.GestureClick({
-      propagation_phase: Gtk.PropagationPhase.NONE,
-    });
+    const click = new Gtk.GestureClick();
 
     click.connect("pressed", (click) => {
       click.set_state(Gtk.EventSequenceState.CLAIMED);
