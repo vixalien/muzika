@@ -125,6 +125,13 @@ export class DynamicImage extends Gtk.Overlay {
           GObject.ParamFlags.READWRITE,
           false,
         ),
+        "action-locked": GObject.ParamSpec.boolean(
+          "action-locked",
+          "Action Locked",
+          "Whether the action is locked",
+          GObject.ParamFlags.READWRITE,
+          false,
+        ),
       },
       Signals: {
         play: {},
@@ -565,6 +572,14 @@ export class DynamicImage extends Gtk.Overlay {
 
   private _clear() {
     this.listeners.clear();
+  }
+
+  public get action_locked(): boolean {
+    return this._action.locked;
+  }
+
+  public set action_locked(v: boolean) {
+    this._action.locked = v;
   }
 
   vfunc_unmap(): void {

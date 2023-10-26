@@ -16,6 +16,8 @@ import {
 } from "libmuse/types/parsers/search.js";
 import { DynamicActionState, DynamicImage } from "../dynamic-image";
 import { pretty_subtitles } from "src/util/text.js";
+import { get_player } from "src/application.js";
+import { SignalListeners } from "src/util/signal-listener.js";
 
 GObject.type_ensure(DynamicImage.$gtype);
 
@@ -61,7 +63,23 @@ export class TopResultCard extends Adw.Bin {
   image_size = 100;
   dynamic_image!: DynamicImage;
 
-  result?: TopResult;
+  _result?: TopResult;
+
+  get result() {
+    return this._result;
+  }
+
+  set result(result: TopResult | undefined) {
+    this._result = result;
+    this.setup_listeners();
+
+    this._result?.type;
+
+    // only show dynamic image
+    this.dynamic_image.action_locked = this._result
+      ? !["song", "video", "playlist"].includes(this._result.type)
+      : false;
+  }
 
   constructor() {
     super();
@@ -77,7 +95,9 @@ export class TopResultCard extends Adw.Bin {
       }
     });
 
-    const click = new Gtk.GestureClick();
+    const click = new Gtk.GestureClick({
+      propagation_phase: Gtk.PropagationPhase.NONE,
+    });
 
     click.connect("pressed", (click) => {
       click.set_state(Gtk.EventSequenceState.CLAIMED);
@@ -263,6 +283,8 @@ export class TopResultCard extends Adw.Bin {
 
     this.dynamic_image.cover_thumbnails = playlist.thumbnails;
 
+    this.dynamic_image.setup_playlist(playlist.browseId);
+
     this._title.label = playlist.title;
 
     this.set_subtitle(_("Playlist"), [], playlist.description);
@@ -308,5 +330,80 @@ export class TopResultCard extends Adw.Bin {
         console.error("Unknown top result type", (top_result as any).type);
         return;
     }
+  }
+
+  private listeners = new SignalListeners();
+
+  private reload_state() {
+    const player = get_player();
+
+    if (!this.result) return;
+
+    // TODO: get album audioPlayistId
+    const item = {
+      playlist_id: this.result.type == "playlist"
+        ? this.result.browseId
+        : undefined,
+      video_id: this.result.type == "song" || this.result.type == "video"
+        ? this.result.videoId
+        : undefined,
+      is_playlist: false,
+    };
+
+    item.is_playlist = item.playlist_id != null;
+
+    if (item.is_playlist) {
+      this.dynamic_image.state = (item.playlist_id &&
+          player.now_playing?.object.settings.playlistId ==
+            item.playlist_id)
+        ? player.playing
+          ? DynamicActionState.PLAYING
+          : DynamicActionState.PAUSED
+        : item.video_id && player.loading_track == item.video_id
+        ? DynamicActionState.LOADING
+        : DynamicActionState.DEFAULT;
+    } else {
+      this.dynamic_image.state = (item.video_id &&
+          player.now_playing?.object.track.videoId == item.video_id)
+        ? player.playing
+          ? DynamicActionState.PLAYING
+          : DynamicActionState.PAUSED
+        : player.loading_track == item.video_id
+        ? DynamicActionState.LOADING
+        : DynamicActionState.DEFAULT;
+    }
+  }
+
+  private setup_listeners() {
+    this.clear_listeners();
+
+    const player = get_player();
+
+    if (!this.result) return;
+
+    this.listeners.add(
+      player,
+      [
+        player.connect("notify::now-playing", this.reload_state.bind(this)),
+        player.connect("notify::playing", this.reload_state.bind(this)),
+        player.connect("notify::loading-track", this.reload_state.bind(this)),
+      ],
+    );
+
+    this.reload_state();
+  }
+
+  private clear_listeners() {
+    this.listeners.clear();
+  }
+
+  vfunc_map() {
+    super.vfunc_map();
+    this.setup_listeners();
+  }
+
+  vfunc_unmap() {
+    super.vfunc_unmap();
+    this.clear_listeners();
   }
 }
