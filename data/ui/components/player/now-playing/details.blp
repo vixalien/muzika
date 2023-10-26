@@ -5,7 +5,10 @@ using Adw 1;
 template $PlayerNowPlayingDetails : Adw.NavigationPage {
   title: _("Queue");
 
-  Adw.ToolbarView {
+  Adw.ToolbarView toolbar_view {
+    bottom-bar-style: raised;
+    reveal-bottom-bars: false;
+
     [top]
     Adw.HeaderBar headerbar {
       title-widget: Adw.ViewSwitcher {
@@ -38,5 +41,8 @@ template $PlayerNowPlayingDetails : Adw.NavigationPage {
         child: $RelatedView {};
       }
     }
+
+    [bottom]
+    $MiniPlayerView {}
   }
 }
