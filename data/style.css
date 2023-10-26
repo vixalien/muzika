@@ -306,11 +306,6 @@ label.bold-link link {
 }
 
 button.large {
-  min-width: 48px;
-  min-height: 48px;
-}
-
-button.larger {
-  min-height: 60px;
-  min-width: 60px;
+  min-width: 40px;
+  min-height: 40px;
 }
