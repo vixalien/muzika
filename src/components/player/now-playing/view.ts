@@ -28,7 +28,7 @@ export class PlayerNowPlayingView extends Adw.NavigationPage {
         "picture",
         "timestamp",
         "duration",
-        "play_button",
+        "play_image",
         "switcher_bar",
         "overlay_bin",
         "repeat_button",
@@ -65,7 +65,7 @@ export class PlayerNowPlayingView extends Adw.NavigationPage {
   private _picture!: FixedRatioThumbnail;
   private _timestamp!: Gtk.Label;
   private _duration!: Gtk.Label;
-  private _play_button!: Gtk.Button;
+  private _play_image!: Gtk.Image;
   private _switcher_bar!: Adw.ViewSwitcherBar;
   private _overlay_bin!: Adw.Bin;
   private _repeat_button!: Gtk.ToggleButton;
@@ -139,7 +139,7 @@ export class PlayerNowPlayingView extends Adw.NavigationPage {
         },
         null,
       ),
-      bind_play_icon(this._play_button),
+      bind_play_icon(this._play_image),
       ...bind_repeat_button(this._repeat_button),
     );
   }

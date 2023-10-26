@@ -24,7 +24,6 @@ export class FullPlayerView extends Gtk.ActionBar {
         "subtitle",
         "shuffle_button",
         "prev_button",
-        "play_button",
         "play_image",
         "next_button",
         "repeat_button",

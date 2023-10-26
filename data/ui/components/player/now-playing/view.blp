@@ -156,18 +156,22 @@ template $PlayerNowPlayingView : Adw.NavigationPage {
               styles [
                 "circular",
                 "large",
+                "flat",
               ]
             }
 
             Button play_button {
-              tooltip-text: _("Play");
+              tooltip-text: _("Toggle Play/Pause");
               action-name: "player.play-pause";
 
               styles [
-                "circular",
-                "larger",
+                "pill",
                 "suggested-action",
               ]
+
+              Image play_image {
+                pixel-size: 26;
+              }
             }
 
             Button next_button {
@@ -179,6 +183,7 @@ template $PlayerNowPlayingView : Adw.NavigationPage {
               styles [
                 "circular",
                 "large",
+                "flat",
               ]
             }
 
