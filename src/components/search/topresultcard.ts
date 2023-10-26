@@ -18,6 +18,7 @@ import { DynamicActionState, DynamicImage } from "../dynamic-image";
 import { pretty_subtitles } from "src/util/text.js";
 import { get_player } from "src/application.js";
 import { SignalListeners } from "src/util/signal-listener.js";
+import { MenuHelper } from "src/util/menu.js";
 
 GObject.type_ensure(DynamicImage.$gtype);
 
@@ -201,6 +202,8 @@ export class TopResultCard extends Adw.Bin {
     this._image_stack.visible_child = show ? this._avatar : this.dynamic_image;
   }
 
+  private menu_helper = MenuHelper.new(this);
+
   private set_song_or_video(track: TopResultSong | TopResultVideo) {
     this.result = track;
 
@@ -222,6 +225,25 @@ export class TopResultCard extends Adw.Bin {
 
     this.dynamic_image.cover_thumbnails = song.thumbnails;
     this.set_subtitle("Song", song.artists, [song.duration]);
+
+    this.menu_helper.props = [
+      [_("Start radio"), `queue.play-song("${song.videoId}?radio=true")`],
+      [_("Play next"), `queue.add-song("${song.videoId}?next=true")`],
+      [_("Add to queue"), `queue.add-song("${song.videoId}")`],
+      [_("Save to playlist"), `win.add-to-playlist("${song.videoId}")`],
+      song.album
+        ? [
+          _("Go to album"),
+          `navigator.visit("muzika:album:${song.album.id}")`,
+        ]
+        : null,
+      song.artists.length > 1
+        ? [
+          _("Go to artist"),
+          `navigator.visit("muzika:artist:${song.artists[0].id}")`,
+        ]
+        : null,
+    ];
   }
 
   show_video(video: TopResultVideo) {
@@ -229,6 +251,19 @@ export class TopResultCard extends Adw.Bin {
 
     this.dynamic_image.cover_thumbnails = video.thumbnails;
     this.set_subtitle("Video", video.artists, [video.duration]);
+
+    this.menu_helper.props = [
+      [_("Start radio"), `queue.play-song("${video.videoId}?radio=true")`],
+      [_("Play next"), `queue.add-song("${video.videoId}?next=true")`],
+      [_("Add to queue"), `queue.add-song("${video.videoId}")`],
+      [_("Save to playlist"), `win.add-to-playlist("${video.videoId}")`],
+      video.artists && video.artists.length > 1
+        ? [
+          _("Go to artist"),
+          `navigator.visit("muzika:artist:${video.artists[0].id}")`,
+        ]
+        : null,
+    ];
   }
 
   show_album(album: TopResultAlbum) {
@@ -243,6 +278,37 @@ export class TopResultCard extends Adw.Bin {
 
     this._primary.sensitive = false;
     this._secondary.sensitive = false;
+
+    this.menu_helper.props = [
+      album.shuffleId
+        ? [
+          _("Shuffle play"),
+          `queue.play-playlist("${album.shuffleId}?next=true")`,
+        ]
+        : null,
+      album.radioId
+        ? [
+          _("Start radio"),
+          `queue.play-playlist("${album.radioId}?next=true")`,
+        ]
+        : null,
+      // TODO: get album audioPlaylistId
+      // [
+      //   _("Play next"),
+      //   `queue.add-playlist("${album.audioPlaylistId}?next=true")`,
+      // ],
+      // [_("Add to queue"), `queue.add-playlist("${album.audioPlaylistId}")`],
+      // [
+      //   _("Save to playlist"),
+      //   `win.add-playlist-to-playlist("${album.audioPlaylistId}")`,
+      // ],
+      album.artists.length > 1
+        ? [
+          _("Go to artist"),
+          `navigator.visit("muzika:artist:${album.artists[0].id}")`,
+        ]
+        : null,
+    ];
   }
 
   show_artist(artist: TopResultArtist) {
@@ -276,6 +342,21 @@ export class TopResultCard extends Adw.Bin {
     } else {
       this._secondary.sensitive = false;
     }
+
+    this.menu_helper.props = [
+      artist.shuffleId
+        ? [
+          _("Shuffle play"),
+          `queue.play-playlist("${artist.shuffleId}?next=true")`,
+        ]
+        : null,
+      artist.radioId
+        ? [
+          _("Start radio"),
+          `queue.play-playlist("${artist.radioId}?next=true")`,
+        ]
+        : null,
+    ];
   }
 
   show_playlist(playlist: TopResultPlaylist) {
@@ -307,6 +388,30 @@ export class TopResultCard extends Adw.Bin {
     } else {
       this._secondary.sensitive = false;
     }
+
+    this.menu_helper.props = [
+      playlist.shuffleId
+        ? [
+          _("Shuffle play"),
+          `queue.play-playlist("${playlist.shuffleId}?next=true")`,
+        ]
+        : null,
+      playlist.radioId
+        ? [
+          _("Start radio"),
+          `queue.play-playlist("${playlist.radioId}?next=true")`,
+        ]
+        : null,
+      [
+        _("Play next"),
+        `queue.add-playlist("${playlist.browseId}?next=true")`,
+      ],
+      [_("Add to queue"), `queue.add-playlist("${playlist.browseId}")`],
+      [
+        _("Save to playlist"),
+        `win.add-playlist-to-playlist("${playlist.browseId}")`,
+      ],
+    ];
   }
 
   show_top_result(top_result: TopResult) {
