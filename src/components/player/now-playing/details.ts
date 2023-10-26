@@ -33,8 +33,21 @@ export class PlayerNowPlayingDetails extends Adw.NavigationPage {
           Gtk.Widget.$gtype,
           GObject.ParamFlags.READWRITE,
         ),
+        show_mini_player: GObject.param_spec_boolean(
+          "show-mini-player",
+          "Show Mini Player",
+          "Whether to show the mini player",
+          false,
+          GObject.ParamFlags.READWRITE,
+        ),
       },
-      InternalChildren: ["stack", "headerbar", "lyrics_page", "related_page"],
+      InternalChildren: [
+        "stack",
+        "headerbar",
+        "lyrics_page",
+        "related_page",
+        "toolbar_view",
+      ],
     }, this);
   }
 
@@ -42,6 +55,7 @@ export class PlayerNowPlayingDetails extends Adw.NavigationPage {
   private _headerbar!: Gtk.HeaderBar;
   private _lyrics_page!: Adw.ViewStackPage;
   private _related_page!: Adw.ViewStackPage;
+  private _toolbar_view!: Adw.ToolbarView;
 
   get stack() {
     return this._stack;
@@ -53,6 +67,14 @@ export class PlayerNowPlayingDetails extends Adw.NavigationPage {
 
   set header_title(value: Gtk.Widget) {
     this._headerbar.title_widget = value;
+  }
+
+  get show_mini_player() {
+    return this._toolbar_view.reveal_bottom_bars;
+  }
+
+  set show_mini_player(value: boolean) {
+    this._toolbar_view.reveal_bottom_bars = value;
   }
 
   constructor() {
