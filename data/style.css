@@ -309,3 +309,8 @@ button.large {
   min-width: 48px;
   min-height: 48px;
 }
+
+button.larger {
+  min-height: 60px;
+  min-width: 60px;
+}
