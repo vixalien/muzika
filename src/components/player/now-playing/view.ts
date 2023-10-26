@@ -32,6 +32,7 @@ export class PlayerNowPlayingView extends Adw.NavigationPage {
         "switcher_bar",
         "overlay_bin",
         "repeat_button",
+        "fullscreen_button",
       ],
       Properties: {
         switcher_stack: GObject.param_spec_object(
@@ -68,6 +69,7 @@ export class PlayerNowPlayingView extends Adw.NavigationPage {
   private _switcher_bar!: Adw.ViewSwitcherBar;
   private _overlay_bin!: Adw.Bin;
   private _repeat_button!: Gtk.ToggleButton;
+  private _fullscreen_button!: Gtk.Button;
 
   get switcher_stack() {
     return this._switcher_bar.stack;
@@ -284,5 +286,17 @@ export class PlayerNowPlayingView extends Adw.NavigationPage {
 
   private on_gestureclick_pressed() {
     this.emit("bottom-bar-clicked");
+  }
+
+  private show_fullscreen_button() {
+    this._fullscreen_button.visible = true;
+  }
+
+  private hide_fullscreen_button() {
+    this._fullscreen_button.visible = false;
+  }
+
+  private toggle_fullscreen_button() {
+    this._fullscreen_button.visible = !this._fullscreen_button.visible;
   }
 }

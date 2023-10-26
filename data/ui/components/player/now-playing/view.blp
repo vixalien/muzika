@@ -65,17 +65,26 @@ template $PlayerNowPlayingView : Adw.NavigationPage {
               margin-end: 12;
               margin-bottom: 12;
 
-              Button {
+              Button fullscreen_button {
                 icon-name: "view-fullscreen-symbolic";
                 action-name: "win.visible-view";
                 action-target: "'fullscreen-video'";
-                visible: bind hover.contains-pointer;
+                visible: false;
 
                 styles ["osd", "circular"]
               }
             }
             
-            EventControllerMotion hover {}
+            EventControllerMotion {
+              enter => $show_fullscreen_button();
+              leave => $hide_fullscreen_button();
+            }
+
+            // allow clicking on the view to show the fullscreen button
+            GestureClick {
+              touch-only: true;
+              pressed => $toggle_fullscreen_button();
+            }
           }
 
           Box {
