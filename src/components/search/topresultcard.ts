@@ -122,13 +122,19 @@ export class TopResultCard extends Adw.Bin {
         break;
       case "song":
       case "video":
-        this.dynamic_image.state = DynamicActionState.LOADING;
-        this.activate_action(
-          "queue.play-song",
-          GLib.Variant.new_string(
-            this.result.videoId,
-          ),
-        );
+        if (
+          get_player().now_playing?.object.track.videoId == this.result.videoId
+        ) {
+          get_player().play_pause();
+        } else {
+          this.dynamic_image.state = DynamicActionState.LOADING;
+          this.activate_action(
+            "queue.play-song",
+            GLib.Variant.new_string(
+              this.result.videoId,
+            ),
+          );
+        }
         break;
       case "playlist":
         uri = `playlist:${this.result.browseId}`;
