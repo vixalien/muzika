@@ -1292,7 +1292,17 @@ function get_song_uri(song: Song) {
     // ive never seen a video with a high audio quality, and using multiple
     // video & audio formats causes dashdemux2 issues
     is_video ? AudioQuality.medium : Settings.get_enum("audio-quality"),
-  );
+  )
+    // TODO: there's a GStreamer bug that causes weird problems with audio files.
+    // In this section, we only get one audio track unless audio quality
+    // is specifically set to `auto`
+    .slice(
+      0,
+      is_video || Settings.get_enum("audio-quality") != AudioQuality.auto
+        ? 1
+        : undefined,
+    );
+
   // for music videos, no video formats are necessary
   const video_formats = is_video
     ? get_best_formats(true, formats, Settings.get_enum("video-quality"))
