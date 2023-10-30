@@ -13,6 +13,7 @@ import { load_thumbnails } from "src/components/webimage";
 import { micro_to_string } from "src/util/time";
 import { FixedRatioThumbnail } from "src/components/fixed-ratio-thumbnail";
 import { bind_play_icon, bind_repeat_button } from "src/player/helpers";
+import { list_model_to_array } from "src/util/list";
 
 export class PlayerNowPlayingView extends Adw.NavigationPage {
   static {
@@ -29,10 +30,10 @@ export class PlayerNowPlayingView extends Adw.NavigationPage {
         "timestamp",
         "duration",
         "play_image",
-        "switcher_bar",
         "overlay_bin",
         "repeat_button",
         "fullscreen_button",
+        "switchers",
       ],
       Properties: {
         switcher_stack: GObject.param_spec_object(
@@ -66,25 +67,87 @@ export class PlayerNowPlayingView extends Adw.NavigationPage {
   private _timestamp!: Gtk.Label;
   private _duration!: Gtk.Label;
   private _play_image!: Gtk.Image;
-  private _switcher_bar!: Adw.ViewSwitcherBar;
   private _overlay_bin!: Adw.Bin;
   private _repeat_button!: Gtk.ToggleButton;
   private _fullscreen_button!: Gtk.Button;
+  private _switchers!: Gtk.Box;
 
-  get switcher_stack() {
-    return this._switcher_bar.stack;
+  private construct_switcher(
+    stack: Adw.ViewStack,
+    i: number,
+    page: Adw.ViewStackPage,
+  ) {
+    const label = new Gtk.Label({
+      label: page.title,
+      css_classes: ["caption-heading"],
+    });
+
+    const icon = new Gtk.Image({
+      icon_name: page.icon_name,
+    });
+
+    const container = new Gtk.Box({
+      orientation: Gtk.Orientation.VERTICAL,
+      css_classes: ["switcher-button"],
+    });
+
+    container.append(icon);
+    container.append(label);
+
+    const button = new Gtk.Button({ child: container, css_classes: ["flat"] });
+
+    page.bind_property(
+      "visible",
+      button,
+      "visible",
+      GObject.BindingFlags.DEFAULT | GObject.BindingFlags.SYNC_CREATE,
+    );
+
+    button.connect("clicked", () => {
+      stack.pages.select_item(i, true);
+      this.emit("bottom-bar-clicked");
+    });
+
+    return button;
   }
 
-  set switcher_stack(stack: Adw.ViewStack) {
-    this._switcher_bar.stack = stack;
+  private render_switchers(stack: Adw.ViewStack) {
+    let child = this._switchers.get_first_child();
+
+    while (child != null) {
+      const old_child = child;
+      child = child.get_next_sibling();
+      old_child.unparent();
+    }
+
+    (list_model_to_array(stack.pages) as Adw.ViewStackPage[])
+      .forEach((page, i) => {
+        this._switchers.append(this.construct_switcher(stack, i, page));
+      });
+  }
+
+  private _switcher_stack: Adw.ViewStack | null = null;
+
+  get switcher_stack() {
+    return this._switcher_stack;
+  }
+
+  set switcher_stack(stack: Adw.ViewStack | null) {
+    if (stack == null || stack === this._switcher_stack) return;
+
+    // connect switcher stack handler
+    this._switcher_stack = stack;
+    this.render_switchers(stack);
+
+    this.notify("switcher-stack");
   }
 
   get switcher_visible() {
-    return this._switcher_bar.reveal;
+    return this._switchers.visible;
   }
 
   set switcher_visible(visible: boolean) {
-    this._switcher_bar.reveal = visible;
+    this._switchers.visible = visible;
   }
 
   constructor() {
@@ -282,10 +345,6 @@ export class PlayerNowPlayingView extends Adw.NavigationPage {
   vfunc_unmap(): void {
     this.listeners.clear();
     super.vfunc_unmap();
-  }
-
-  private on_gestureclick_pressed() {
-    this.emit("bottom-bar-clicked");
   }
 
   private show_fullscreen_button() {
