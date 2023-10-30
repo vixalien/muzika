@@ -75,7 +75,6 @@ template $FullPlayerView : ActionBar {
 
         styles [
           "circular",
-          "dim-label",
         ]
       }
 
@@ -91,7 +90,7 @@ template $FullPlayerView : ActionBar {
       }
 
       Button play_button {
-        tooltip-text: _("Play");
+        tooltip-text: _("Toggle Play/Pause");
         action-name: "player.play-pause";
 
         styles [
@@ -99,9 +98,7 @@ template $FullPlayerView : ActionBar {
         ]
 
         Image play_image {
-          icon-name: "media-playback-start-symbolic";
-          icon-size: large;
-          tooltip-text: _("Toggle Play/Pause");
+          pixel-size: 26;
         }
       }
 
@@ -125,7 +122,6 @@ template $FullPlayerView : ActionBar {
 
         styles [
           "circular",
-          "dim-label",
         ]
       }
     }
