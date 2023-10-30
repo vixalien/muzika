@@ -21,7 +21,9 @@ Muzika is an elegant music streaming app.
 
 You can download a Flatpak bundle from the latest CI build.
 
-Visit [the CI build page](https://github.com/vixalien/muzika/actions/workflows/build.yml?query=branch%3Amain), select the latest build and download the `com.vixalien.muzika.flatpak` artifact.
+Visit
+[the CI build page](https://github.com/vixalien/muzika/actions/workflows/build-nightly.yml?query=branch%3Amain),
+select the latest build and download the `com.vixalien.muzika.flatpak` artifact.
 
 Install it with:
 
