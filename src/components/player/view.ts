@@ -38,22 +38,5 @@ export class PlayerView extends Adw.Bin {
     this.squeezer.add(this.mini);
 
     this.set_child(this.squeezer);
-
-    const gesture = new Gtk.GestureClick({
-      button: 1,
-    });
-
-    gesture.connect("pressed", this.gesture_pressed_cb.bind(this));
-
-    this.add_controller(gesture);
-  }
-
-  private gesture_pressed_cb(gesture: Gtk.Gesture) {
-    gesture.set_state(Gtk.EventSequenceState.CLAIMED);
-
-    this.activate_action(
-      "win.visible-view",
-      GLib.Variant.new_string("now-playing"),
-    );
   }
 }

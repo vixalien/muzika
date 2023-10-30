@@ -92,4 +92,13 @@ export class MiniPlayerView extends Gtk.Overlay {
     this.listeners.clear();
     super.vfunc_unmap();
   }
+
+  private gesture_pressed_cb(gesture: Gtk.Gesture) {
+    gesture.set_state(Gtk.EventSequenceState.CLAIMED);
+
+    this.activate_action(
+      "win.visible-view",
+      GLib.Variant.new_string("now-playing"),
+    );
+  }
 }

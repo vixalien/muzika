@@ -12,6 +12,7 @@ template $MiniPlayerView : Overlay {
       margin-top: 6;
       margin-start: 6;
       margin-end: 6;
+      hexpand: true;
 
       $PlayerPreview player_preview {
         valign: center;
@@ -39,6 +40,10 @@ template $MiniPlayerView : Overlay {
           halign: start;
           ellipsize: end;
         }
+      }
+
+      GestureClick {
+        pressed => $gesture_pressed_cb();
       }
     }
 

@@ -179,6 +179,15 @@ export class FullPlayerView extends Gtk.ActionBar {
       : track.duration ?? "00:00";
   }
 
+  private gesture_pressed_cb(gesture: Gtk.Gesture) {
+    gesture.set_state(Gtk.EventSequenceState.CLAIMED);
+
+    this.activate_action(
+      "win.visible-view",
+      GLib.Variant.new_string("now-playing"),
+    );
+  }
+
   vfunc_map(): void {
     this.listeners.clear();
     this.setup_player();
