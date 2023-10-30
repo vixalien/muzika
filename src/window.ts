@@ -154,11 +154,7 @@ export class Window extends Adw.ApplicationWindow {
     this.add_actions();
 
     this._now_playing_view.connect("bottom-bar-clicked", () => {
-      // hide the flash of content before changing
-      GLib.timeout_add(GLib.PRIORITY_DEFAULT_IDLE, 150, () => {
-        this._now_playing_split_view.show_content = true;
-        return GLib.SOURCE_REMOVE;
-      });
+      this._now_playing_split_view.show_content = true;
     });
   }
 

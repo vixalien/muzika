@@ -116,7 +116,8 @@ expander-widget.inverted expander:checked {
 }
 
 scale.buffering trough {
-  animation: 6s moving linear infinite both, 1s reveal_background .1s linear forwards;
+  animation: 6s moving linear infinite both,
+    1s reveal_background 0.1s linear forwards;
 }
 
 @keyframes reveal_background {
@@ -308,4 +309,8 @@ label.bold-link link {
 button.large {
   min-width: 40px;
   min-height: 40px;
+}
+
+.switcher-button {
+  min-width: 80px;
 }

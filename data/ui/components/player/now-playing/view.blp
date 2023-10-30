@@ -204,11 +204,13 @@ template $PlayerNowPlayingView : Adw.NavigationPage {
       }
 
       [bottom]
-      Adw.ViewSwitcherBar switcher_bar {
-        GestureClick {
-          propagation-phase: capture;
-          pressed => $on_gestureclick_pressed();
-        }
+      Box switchers {
+        visible: false;
+        homogeneous: true;
+        halign: center;
+        spacing: 3;
+        margin-bottom: 3;
+        margin-top: 3;
       }
     }
 
