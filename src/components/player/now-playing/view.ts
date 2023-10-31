@@ -314,7 +314,7 @@ export class PlayerNowPlayingView extends Adw.NavigationPage {
 
       const theme = Gtk.IconTheme.get_for_display(Gdk.Display.get_default()!);
       const icon = theme.lookup_icon(
-        "icon-missing-symbolic",
+        "image-missing-symbolic",
         [],
         400,
         this.scale_factor,
