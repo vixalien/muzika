@@ -72,6 +72,7 @@
     <file preprocess="xml-stripblanks" alias="compass2-symbolic.svg">icons/compass2-symbolic.svg</file>
     <file preprocess="xml-stripblanks" alias="explicit-symbolic.svg">icons/explicit-symbolic.svg</file>
     <file preprocess="xml-stripblanks" alias="heart-broken-symbolic.svg">icons/heart-broken-symbolic.svg</file>
+    <file preprocess="xml-stripblanks" alias="history-undo-symbolic.svg">icons/history-undo-symbolic.svg</file>
     <file preprocess="xml-stripblanks" alias="left-symbolic.svg">icons/left-symbolic.svg</file>
     <file preprocess="xml-stripblanks" alias="library-artists-symbolic.svg">icons/library-artists-symbolic.svg</file>
     <file preprocess="xml-stripblanks" alias="library-music-symbolic.svg">icons/library-music-symbolic.svg</file>

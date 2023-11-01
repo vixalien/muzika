@@ -189,7 +189,7 @@ export class NavbarView extends Gtk.Box {
         requires_login: true,
       },
       {
-        icon_name: "clock-outline-symbolic",
+        icon_name: "history-undo-symbolic",
         label: _("History"),
         link: "history",
         requires_login: true,
