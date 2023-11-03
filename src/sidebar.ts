@@ -58,7 +58,12 @@ export class WindowSidebar extends Adw.NavigationPage {
       return;
     }
 
-    const account = await get_current_user();
+    const account = await get_current_user()
+      .catch(() => {
+        console.error("Couldn't get logged in user");
+      });
+
+    if (!account) return;
 
     const menu = Gio.Menu.new();
 
