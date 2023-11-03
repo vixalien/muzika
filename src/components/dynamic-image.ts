@@ -292,6 +292,7 @@ export class DynamicImage extends Gtk.Overlay {
         });
         (child as FixedRatioThumbnail).aspect_ratio = 1;
         (child as FixedRatioThumbnail).can_expand = this.can_expand;
+        (child as FixedRatioThumbnail).orientation = Gtk.Orientation.VERTICAL;
         break;
       case DynamicImageStorageType.VIDEO_THUMBNAIL:
         child = new Gtk.Picture({

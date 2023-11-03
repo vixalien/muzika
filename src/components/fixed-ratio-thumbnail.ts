@@ -290,8 +290,7 @@ export class FixedRatioThumbnail extends Gtk.Widget implements Gtk.Orientable {
       );
 
       natural_size = min_if_present(
-        (expand ? Math.max(for_size, this.min_height) : this.min_height) *
-          this.inferred_aspect_ratio,
+        Math.max(for_size, this.min_height) * this.inferred_aspect_ratio,
         this.max_height,
       );
     } else {
@@ -301,13 +300,12 @@ export class FixedRatioThumbnail extends Gtk.Widget implements Gtk.Orientable {
       );
 
       natural_size = min_if_present(
-        (expand ? Math.max(for_size, this.min_width) : this.min_width) /
-          this.inferred_aspect_ratio,
+        Math.max(for_size, this.min_width) / this.inferred_aspect_ratio,
         this.max_width,
       );
     }
 
-    if (for_size > 0) {
+    if (expand) {
       return [natural_size, natural_size, minimum_baseline, natural_baseline];
     }
 
