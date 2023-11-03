@@ -356,6 +356,15 @@ export class PlayerNowPlayingView extends Adw.NavigationPage {
   }
 
   private toggle_fullscreen_button() {
-    this._fullscreen_button.visible = !this._fullscreen_button.visible;
+    // wait to hide the button so that it can be clicked
+    // see https://github.com/vixalien/muzika/issues/74
+    if (this._fullscreen_button.visible === false) {
+      this.show_fullscreen_button();
+    } else {
+      GLib.timeout_add(GLib.PRIORITY_DEFAULT, 100, () => {
+        this.hide_fullscreen_button();
+        return GLib.SOURCE_REMOVE;
+      });
+    }
   }
 }
