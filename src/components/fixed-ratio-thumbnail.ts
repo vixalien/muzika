@@ -289,7 +289,7 @@ export class FixedRatioThumbnail extends Gtk.Widget implements Gtk.Orientable {
         this.min_height * this.inferred_aspect_ratio,
       );
 
-      natural_size = max_if_present(
+      natural_size = min_if_present(
         (expand ? Math.max(for_size, this.min_height) : this.min_height) *
           this.inferred_aspect_ratio,
         this.max_height,
@@ -300,14 +300,23 @@ export class FixedRatioThumbnail extends Gtk.Widget implements Gtk.Orientable {
         this.min_width / this.inferred_aspect_ratio,
       );
 
-      natural_size = max_if_present(
+      natural_size = min_if_present(
         (expand ? Math.max(for_size, this.min_width) : this.min_width) /
           this.inferred_aspect_ratio,
         this.max_width,
       );
     }
 
-    return [minimal_size, Math.max(minimal_size, natural_size), minimum_baseline, natural_baseline];
+    if (for_size > 0) {
+      return [natural_size, natural_size, minimum_baseline, natural_baseline];
+    }
+
+    return [
+      minimal_size,
+      Math.max(minimal_size, natural_size),
+      minimum_baseline,
+      natural_baseline,
+    ];
   }
 
   // from https://gitlab.gnome.org/GNOME/gtk/-/blob/main/gtk/gtkpicture.c#L118
@@ -393,7 +402,7 @@ export class FixedRatioThumbnail extends Gtk.Widget implements Gtk.Orientable {
 }
 
 function min_if_present(...values: (number | null)[]) {
-  return Math.min(0, ...values.filter((v) => v && v > 0) as number[]);
+  return Math.min(...values.filter((v) => v && v > 0) as number[]);
 }
 
 function max_if_present(...values: (number | null)[]) {
