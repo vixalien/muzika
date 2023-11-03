@@ -187,7 +187,9 @@ export class SearchPage extends Adw.Bin
     if (!this.results?.did_you_mean) return;
 
     const link = `<a href="${
-      search_args_to_url(this.results.did_you_mean.query, this.args[1])
+      escape_label(
+        search_args_to_url(this.results.did_you_mean.query, this.args[1]),
+      )
     }">${search_runs_to_string(this.results.did_you_mean.search)}</a>`;
 
     const label = new Gtk.Label({
@@ -219,14 +221,21 @@ export class SearchPage extends Adw.Bin
     if (!this.results?.autocorrect) return;
 
     const original_link = `<a href="${
-      search_args_to_url(this.results.autocorrect.original.query, {
-        ...this.args[1],
-        autocorrect: false,
-      })
+      escape_label(
+        search_args_to_url(this.results.autocorrect.original.query, {
+          ...this.args[1],
+          autocorrect: false,
+        }),
+      )
     }">${search_runs_to_string(this.results.autocorrect.original.search)}</a>`;
 
     const corrected_link = `<a href="${
-      search_args_to_url(this.results.autocorrect.corrected.query, this.args[1])
+      escape_label(
+        search_args_to_url(
+          this.results.autocorrect.corrected.query,
+          this.args[1],
+        ),
+      )
     }">${search_runs_to_string(this.results.autocorrect.corrected.search)}</a>`;
 
     const label = new Gtk.Label({
