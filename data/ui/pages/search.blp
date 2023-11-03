@@ -5,7 +5,48 @@ template $SearchPage : Adw.Bin {
   Adw.ToolbarView {
     [top]
     Adw.HeaderBar {}
-  
+
+    [top]
+    Adw.Clamp {
+      tightening-threshold: 1200;
+      maximum-size: 1400;
+
+      Box {
+        orientation: vertical;
+        spacing: 6;
+
+        // only show the padding when the box has atleast one child
+        styles ["pad-last-child"]
+
+        ScrolledWindow scope_window {
+          visible: false;
+          vscrollbar-policy: never;
+          // don't show the scrollbar, but allow scrolling
+          hscrollbar-policy: external;
+
+          $InlineTabSwitcher scope_switcher {
+            halign: start;
+            margin-start: 12;
+            margin-end: 12;
+          }
+        }
+
+        ScrolledWindow filter_window {
+          visible: false;
+          vscrollbar-policy: never;
+          // don't show the scrollbar, but allow scrolling
+          hscrollbar-policy: external;
+
+          Box filter_box {
+            orientation: horizontal;
+            spacing: 12;
+            margin-start: 12;
+            margin-end: 12;
+          }
+        }
+      }
+    }
+
     content: Adw.BreakpointBin {
       width-request: 200;
       height-request: 200;
@@ -24,17 +65,22 @@ template $SearchPage : Adw.Bin {
 
           Box {
             orientation: vertical;
+            margin-top: 12;
+            margin-bottom: 12;
 
-            Box details {
-              spacing: 12;
-              orientation: vertical;
+            Label context_label {
+              use-markup: true;
+              xalign: 0;
+              margin-start: 12;
+              margin-end: 12;
+              visible: false;
+
+              styles ["flat-links", "dim-label"]
             }
 
             Stack stack {
               Box sections {
                 orientation: vertical;
-                margin-bottom: 12;
-                margin-top: 12;
                 spacing: 24;
               }
 

@@ -314,3 +314,7 @@ button.large {
 .switcher-button {
   min-width: 80px;
 }
+
+.pad-last-child > *:last-child {
+  padding-bottom: 6px;
+}

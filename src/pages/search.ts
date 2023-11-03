@@ -35,6 +35,8 @@ interface SearchData {
   args: Parameters<typeof search>;
 }
 
+GObject.type_ensure(InlineTabSwitcher.$gtype);
+
 export class SearchPage extends Adw.Bin
   implements MuzikaComponent<SearchData, SearchState> {
   static {
@@ -45,10 +47,14 @@ export class SearchPage extends Adw.Bin
         "sections",
         "stack",
         "no_results",
-        "details",
         "breakpoint",
         "paginator",
         "scrolled",
+        "context_label",
+        "scope_window",
+        "scope_switcher",
+        "filter_window",
+        "filter_box",
       ],
     }, this);
   }
@@ -56,16 +62,31 @@ export class SearchPage extends Adw.Bin
   private _sections!: Gtk.Box;
   private _stack!: Gtk.Stack;
   private _no_results!: Gtk.Label;
-  private _details!: Gtk.Box;
   private _breakpoint!: Adw.Breakpoint;
   private _paginator!: Paginator;
   private _scrolled!: Gtk.ScrolledWindow;
+  private _context_label!: Gtk.Label;
+  private _scope_window!: Gtk.ScrolledWindow;
+  private _scope_switcher!: InlineTabSwitcher;
+  private _filter_window!: Gtk.ScrolledWindow;
+  private _filter_box!: Gtk.Box;
 
   results?: SearchResults;
   args: Parameters<typeof search> = [""];
 
   constructor() {
     super();
+
+    this._context_label.connect("activate-link", (_, uri) => {
+      if (uri && uri.startsWith("muzika:")) {
+        this.activate_action(
+          "navigator.visit",
+          GLib.Variant.new_string(uri),
+        );
+
+        return true;
+      }
+    });
   }
 
   show_scope_tabs() {
@@ -73,11 +94,8 @@ export class SearchPage extends Adw.Bin
       return;
     }
 
-    const switcher = new InlineTabSwitcher({
-      halign: Gtk.Align.START,
-      margin_start: 12,
-      margin_end: 12,
-    });
+    this._scope_window.visible = true;
+    this._scope_switcher.model.remove_all();
 
     const scopes = [
       [_("Catalog"), undefined],
@@ -86,8 +104,6 @@ export class SearchPage extends Adw.Bin
     ] as const;
 
     scopes.forEach(([label, scope]) => {
-      const tab = new Tab(label.toLowerCase(), label);
-
       const selected = this.args[1]?.scope === scope;
 
       const url = search_args_to_url(
@@ -100,43 +116,28 @@ export class SearchPage extends Adw.Bin
         true,
       );
 
-      if (!selected) {
-        tab.navigate = url;
-      }
-
-      switcher.add_tab_full(tab);
+      this._scope_switcher.add_tab({
+        id: label.toLowerCase(),
+        title: label,
+        navigate: !selected ? url : undefined,
+      });
     });
 
     const search_options = this.args[1];
 
     if (search_options?.scope) {
       if (search_options.scope === "library") {
-        switcher.select("library");
+        this._scope_switcher.select("library");
       } else {
-        switcher.select("uploads");
+        this._scope_switcher.select("uploads");
       }
     }
-
-    const window = new Gtk.ScrolledWindow({
-      vscrollbar_policy: Gtk.PolicyType.NEVER,
-      // don't show the scrollbar, but allow scrolling
-      hscrollbar_policy: Gtk.PolicyType.EXTERNAL,
-    });
-
-    window.set_child(switcher);
-
-    this._details.append(window);
   }
 
   show_filter_tabs() {
-    if (!this.results?.filters && !this.results?.filters.length) return;
+    if (!this.results?.filters || this.results?.filters.length === 0) return;
 
-    const box = new Gtk.Box({
-      orientation: Gtk.Orientation.HORIZONTAL,
-      spacing: 12,
-      margin_start: 12,
-      margin_end: 12,
-    });
+    this._filter_window.visible = true;
 
     this.results.filters
       // sort selected first
@@ -146,12 +147,6 @@ export class SearchPage extends Adw.Bin
         return 0;
       })
       .forEach((filter) => {
-        const button = Gtk.ToggleButton.new_with_label(
-          filter_to_string(filter),
-        );
-
-        button.add_css_class("chip");
-
         const selected = this.args[1]?.filter === filter;
 
         const url = search_args_to_url(
@@ -163,24 +158,16 @@ export class SearchPage extends Adw.Bin
           true,
         );
 
-        button.action_name = "navigator.visit";
-        button.action_target = GLib.Variant.new("s", url);
-
-        if (selected) {
-          button.active = true;
-        }
-
-        box.append(button);
+        this._filter_box.append(
+          new Gtk.ToggleButton({
+            label: filter_to_string(filter),
+            css_classes: ["chip"],
+            action_name: "navigator.visit",
+            action_target: GLib.Variant.new("s", url),
+            active: selected,
+          }),
+        );
       });
-
-    const window = new Gtk.ScrolledWindow({
-      vscrollbar_policy: Gtk.PolicyType.NEVER,
-      // don't show the scrollbar, but allow scrolling
-      hscrollbar_policy: Gtk.PolicyType.EXTERNAL,
-    });
-    window.set_child(box);
-
-    this._details.append(window);
   }
 
   show_did_you_mean() {
@@ -192,29 +179,8 @@ export class SearchPage extends Adw.Bin
       )
     }">${search_runs_to_string(this.results.did_you_mean.search)}</a>`;
 
-    const label = new Gtk.Label({
-      label: vprintf(_("Did you mean: %s"), [link]),
-      use_markup: true,
-      xalign: 0,
-      margin_start: 12,
-      margin_end: 12,
-    });
-
-    label.connect("activate-link", (_, uri) => {
-      if (uri && uri.startsWith("muzika:")) {
-        this.activate_action(
-          "navigator.visit",
-          GLib.Variant.new_string(uri),
-        );
-
-        return true;
-      }
-    });
-
-    label.add_css_class("flat-links");
-    label.add_css_class("dim-label");
-
-    this._details.append(label);
+    this._context_label.visible = true;
+    this._context_label.label = vprintf(_("Did you mean: %s"), [link]);
   }
 
   show_autocorrect() {
@@ -238,30 +204,10 @@ export class SearchPage extends Adw.Bin
       )
     }">${search_runs_to_string(this.results.autocorrect.corrected.search)}</a>`;
 
-    const label = new Gtk.Label({
-      label: vprintf(_("Showing results for: %s"), [corrected_link]) + "\n" +
-        vprintf(_("Search instead for: %s"), [original_link]),
-      use_markup: true,
-      xalign: 0,
-      margin_start: 12,
-      margin_end: 12,
-    });
-
-    label.connect("activate-link", (_, uri) => {
-      if (uri && uri.startsWith("muzika:")) {
-        this.activate_action(
-          "navigator.visit",
-          GLib.Variant.new_string(uri),
-        );
-
-        return true;
-      }
-    });
-
-    label.add_css_class("flat-links");
-    label.add_css_class("dim-label");
-
-    this._details.append(label);
+    this._context_label.visible = true;
+    this._context_label.label =
+      vprintf(_("Showing results for: %s"), [corrected_link]) + "\n" +
+      vprintf(_("Search instead for: %s"), [original_link]);
   }
 
   present({ results, args }: SearchData) {

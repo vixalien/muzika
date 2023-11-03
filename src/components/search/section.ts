@@ -42,7 +42,7 @@ export class SearchSection extends Gtk.Box {
   }
 
   set_category(category: SearchResults["categories"][0]) {
-    this._title.label = category.title;
+    this._title.label = category.title || _("Results");
 
     if (
       category.results.length >= 0 && this.show_more && category.filter &&

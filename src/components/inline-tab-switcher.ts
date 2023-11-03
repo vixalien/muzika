@@ -3,6 +3,13 @@ import Gtk from "gi://Gtk?version=4.0";
 import GLib from "gi://GLib";
 import Gio from "gi://Gio";
 
+export interface TabProps {
+  id: string;
+  title?: string;
+  icon?: string;
+  navigate?: string;
+}
+
 export class Tab extends GObject.Object {
   static {
     GObject.registerClass(
@@ -49,11 +56,12 @@ export class Tab extends GObject.Object {
 
   navigate: string | null = null;
 
-  constructor(id: string, title?: string, icon?: string) {
+  constructor(options: TabProps) {
     super();
-    this.id = id;
-    this.title = title || null;
-    this.icon = icon || null;
+    this.id = options.id;
+    this.title = options.title || null;
+    this.icon = options.icon || null;
+    this.navigate = options.navigate || null;
   }
 }
 
@@ -106,8 +114,8 @@ export class InlineTabSwitcher extends Gtk.Widget {
     this.model.append(tab);
   }
 
-  add_tab(id: string, title?: string, icon?: string) {
-    this.add_tab_full(new Tab(id, title, icon));
+  add_tab(tab_props: TabProps) {
+    this.add_tab_full(new Tab(tab_props));
   }
 
   private find_tab(id: string) {
