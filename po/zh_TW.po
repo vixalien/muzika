@@ -1,0 +1,966 @@
+# Chinese translations for muzika package
+# Traditional Chinese translation for muzika.
+# Copyright (C) 2023 THE muzika'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the muzika package.
+# Peter Dave Hello <hsu@peterdavehello.org>, 2023.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: muzika\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2023-10-07 11:52+0300\n"
+"PO-Revision-Date: 2023-11-01 20:04+0800\n"
+"Last-Translator: Peter Dave Hello <hsu@peterdavehello.org>\n"
+"Language-Team: Chinese (traditional)\n"
+"Language: zh_TW\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: data/com.vixalien.muzika.desktop.in:3
+#: data/com.vixalien.muzika.appdata.xml.in.in:6
+msgid "Muzika"
+msgstr "Muzika"
+
+#: data/com.vixalien.muzika.appdata.xml.in.in:7
+msgid "Elegant music streaming application"
+msgstr "優雅的音樂串流應用程式"
+
+#: data/com.vixalien.muzika.appdata.xml.in.in:9
+msgid ""
+"Play music from millions of songs available on the internet for free. Search "
+"for songs, albums, artists, and more. Discover new music from playlists and "
+"get a personalized &amp; curated experience."
+msgstr ""
+"免費播放網路上數百萬首歌曲。搜尋歌曲、專輯、藝人等等。從播放清單中發現新的音樂，並獲得個人化且精心規劃的體驗。"
+
+#: data/com.vixalien.muzika.appdata.xml.in.in:14
+msgid "Current features:"
+msgstr "目前的功能："
+
+#: data/com.vixalien.muzika.appdata.xml.in.in:16
+msgid "play any music from YouTube Music"
+msgstr "播放來自 YouTube Music 的任何音樂"
+
+#: data/com.vixalien.muzika.appdata.xml.in.in:17
+msgid ""
+"allows sign in through OAuth with Google to play your playlists and more "
+"from your library or uploads"
+msgstr ""
+"允許透過 Google 的 OAuth 登入，從您的媒體櫃或上傳的內容中播放您的播放清單等等"
+
+#: data/com.vixalien.muzika.appdata.xml.in.in:18
+msgid ""
+"search for songs, albums, artists, radios, community &amp; featured "
+"playlists and more"
+msgstr ""
+"搜尋歌曲、專輯、藝人、電臺、社群以及精選播放清單等等"
+
+#: data/com.vixalien.muzika.appdata.xml.in.in:19
+msgid "access personalised music radios &amp; mixes"
+msgstr "存取個人化的音樂電臺和混音"
+
+#: data/com.vixalien.muzika.appdata.xml.in.in:35
+msgid "Angelo Verlain"
+msgstr "Angelo Verlain"
+
+#: data/com.vixalien.muzika.gschema.xml:26
+msgid "Whether lists are preferred to grids"
+msgstr "是否偏好清單而非網格"
+
+#: data/com.vixalien.muzika.gschema.xml:27
+msgid ""
+"If this option is enabled, the library view will show a list instead of the "
+"default grid."
+msgstr ""
+"如果啟用此選項，媒體櫃檢視將顯示清單，而非預設的網格。"
+
+#: data/com.vixalien.muzika.gschema.xml:32
+msgid "Volume"
+msgstr "音量"
+
+#: data/com.vixalien.muzika.gschema.xml:33
+msgid "The volume of the player"
+msgstr "播放器的音量"
+
+#: data/com.vixalien.muzika.gschema.xml:37
+#: src/components/player/video/volume-controls.ts:107
+msgid "Muted"
+msgstr "靜音"
+
+#: data/com.vixalien.muzika.gschema.xml:38
+msgid "Whether to mute all media"
+msgstr "是否將所有媒體靜音"
+
+#: data/com.vixalien.muzika.gschema.xml:42
+msgid "Last width & height of window"
+msgstr "視窗的最後寬度和高度"
+
+#: data/com.vixalien.muzika.gschema.xml:43
+msgid "The saved last size of the window (to be restored)"
+msgstr "已儲存的視窗最後大小（將被還原）"
+
+#: data/com.vixalien.muzika.gschema.xml:47 data/ui/pages/preferences.blp:29
+msgid "Audio Quality"
+msgstr "音質"
+
+#: data/com.vixalien.muzika.gschema.xml:48
+msgid "Preferred audio quality."
+msgstr "偏好的音質。"
+
+#: data/com.vixalien.muzika.gschema.xml:52 data/ui/pages/preferences.blp:20
+msgid "Video Quality"
+msgstr "畫質"
+
+#: data/com.vixalien.muzika.gschema.xml:53
+msgid "Preferred video quality."
+msgstr "偏好的畫質。"
+
+#: data/ui/components/carousel/carousel.blp:44
+#: data/ui/components/search/section.blp:24 data/ui/pages/artist.blp:95
+msgid "More"
+msgstr "更多"
+
+#: data/ui/components/navbar/index.blp:7
+msgid "Search…"
+msgstr "搜尋…"
+
+#: data/ui/components/paginator.blp:18
+msgid "Load More"
+msgstr "載入更多"
+
+#: data/ui/components/player/full.blp:82
+msgid "Toggle Shuffle"
+msgstr "切換隨機播放"
+
+#: data/ui/components/player/full.blp:95
+msgid "Previous"
+msgstr "上一首"
+
+#: data/ui/components/player/full.blp:105
+#: data/ui/components/search/topresult.blp:106 data/ui/pages/album.blp:54
+#: src/components/search/topresultcard.ts:270
+msgid "Play"
+msgstr "播放"
+
+#: data/ui/components/player/full.blp:115 data/ui/components/player/mini.blp:49
+#: data/ui/components/player/mini.blp:53
+msgid "Toggle Play/Pause"
+msgstr "切換播放/暫停"
+
+#: data/ui/components/player/full.blp:121
+msgid "Next"
+msgstr "下一首"
+
+#: data/ui/components/player/full.blp:132
+msgid "Toggle Repeat State"
+msgstr "切換重複狀態"
+
+#: data/ui/components/player/full.blp:177
+msgid "Adjust Volume"
+msgstr "調整音量"
+
+#: data/ui/components/player/full.blp:181
+msgid "Show Queue"
+msgstr "顯示佇列"
+
+#: data/ui/components/player/full.blp:187
+msgid "Show Lyrics"
+msgstr "顯示歌詞"
+
+#: data/ui/components/player/full.blp:193
+msgid "Show Related songs"
+msgstr "顯示相關歌曲"
+
+#: data/ui/components/player/lyrics.blp:7
+msgid "Lyrics are not available"
+msgstr "歌詞無法使用"
+
+#: data/ui/components/player/lyrics.blp:8
+msgid "If the song has lyrics, they'll appear here when they become available"
+msgstr "如果歌曲有歌詞，當歌詞可用時將在此處顯示"
+
+#: data/ui/components/player/mini.blp:59 data/ui/components/player/mini.blp:63
+#: src/pages/album.ts:180 src/pages/playlist.ts:478
+msgid "Play Next"
+msgstr "播放下一首"
+
+#: data/ui/components/player/queue.blp:7
+msgid "The Queue is empty"
+msgstr "佇列是空的"
+
+#: data/ui/components/player/queue.blp:8
+msgid "Play some tracks to see the queue"
+msgstr "播放一些曲目以檢視佇列"
+
+#: data/ui/components/player/queue.blp:27
+msgid "Playing From"
+msgstr "播放來源"
+
+#: data/ui/components/player/related.blp:7
+msgid "No related music"
+msgstr "無相關音樂"
+
+#: data/ui/components/player/related.blp:8
+msgid "We couldn't find any music related to this track."
+msgstr "我們找不到與此曲目相關的音樂。"
+
+#: data/ui/components/playlist/edit.blp:6
+#: data/ui/components/playlist/edit.blp:11 data/ui/pages/playlist.blp:74
+msgid "Edit Playlist"
+msgstr "編輯播放清單"
+
+#: data/ui/components/playlist/edit.blp:14
+msgid "General"
+msgstr "一般"
+
+#: data/ui/components/playlist/edit.blp:17
+msgid "Title"
+msgstr "標題"
+
+#: data/ui/components/playlist/edit.blp:21
+msgid "Description"
+msgstr "描述"
+
+#: data/ui/components/playlist/edit.blp:25
+msgid "Privacy"
+msgstr "隱私"
+
+#: data/ui/components/playlist/edit.blp:33
+msgid "Save"
+msgstr "儲存"
+
+#: src/components/playlist/listitem.ts:127
+msgid "Save to playlist"
+msgstr "儲存到播放清單"
+
+#: data/ui/components/playlist/get-add-to-playlist.blp:17
+msgid "New playlist"
+msgstr "新播放清單"
+
+#: data/ui/components/playlist/header.blp:120
+msgid "Read more"
+msgstr "閱讀更多"
+
+#: data/ui/components/search/topresult.blp:118 data/ui/pages/album.blp:66
+#: data/ui/pages/artist.blp:54 data/ui/pages/playlist.blp:62
+#: src/components/search/topresultcard.ts:238
+#: src/components/search/topresultcard.ts:276
+msgid "Shuffle"
+msgstr "隨機播放"
+
+#: data/ui/components/search/topresultsection.blp:15
+msgid "Top Result"
+msgstr "最佳結果"
+
+#: data/ui/gtk/help-overlay.blp:11
+msgctxt "shortcut window"
+msgid "General"
+msgstr "一般"
+
+#: data/ui/gtk/help-overlay.blp:14
+msgctxt "shortcut window"
+msgid "Show Shortcuts"
+msgstr "顯示快速鍵"
+
+#: data/ui/gtk/help-overlay.blp:19
+msgctxt "shortcut window"
+msgid "Quit"
+msgstr "退出"
+
+#: data/ui/gtk/help-overlay.blp:25
+msgctxt "shortcut window"
+msgid "Video Player"
+msgstr "影片播放器"
+
+#: data/ui/gtk/help-overlay.blp:28
+msgctxt "shortcut window"
+msgid "Play/Pause"
+msgstr "播放/暫停"
+
+#: data/ui/gtk/help-overlay.blp:33
+msgctxt "shortcut window"
+msgid "Close Video Player"
+msgstr "關閉影片播放器"
+
+#: data/ui/gtk/help-overlay.blp:38
+msgctxt "shortcut window"
+msgid "Increase Volume"
+msgstr "提高音量"
+
+#: data/ui/gtk/help-overlay.blp:43
+msgctxt "shortcut window"
+msgid "Decrease Volume"
+msgstr "降低音量"
+
+#: data/ui/pages/artist.blp:66 src/components/carousel/flatcard.ts:420
+#: src/components/carousel/flatcard.ts:614
+#: src/components/search/topresultcard.ts:249
+msgid "Radio"
+msgstr "電臺"
+
+#: data/ui/pages/artist.blp:82
+msgid "Top Songs"
+msgstr "熱門歌曲"
+
+#: data/ui/pages/authentication-error.blp:8
+msgid "Authentication is required"
+msgstr "需要驗證"
+
+#: data/ui/pages/authentication-error.blp:20
+msgid "Log in"
+msgstr "登入"
+
+#: data/ui/pages/authentication-error.blp:30
+msgid "Go to Home"
+msgstr "回到首頁"
+
+#: data/ui/pages/authentication-error.blp:39 data/ui/pages/error.blp:16
+msgid "Error Details"
+msgstr "錯誤詳情"
+
+#: data/ui/pages/channel.blp:64 src/pages/channel.ts:104
+#: src/pages/channel.ts:109
+msgid "Last 7 days"
+msgstr "最近 7 天"
+
+#: data/ui/pages/channel.blp:72
+msgid "Songs on Repeat"
+msgstr "重複播放的歌曲"
+
+#: data/ui/pages/error.blp:8
+msgid "An error occurred"
+msgstr "發生錯誤"
+
+#: data/ui/pages/explore.blp:40
+msgid "New releases"
+msgstr "新發行"
+
+#: data/ui/pages/explore.blp:52 src/endpoints.ts:123
+msgid "Charts"
+msgstr "排行榜"
+
+#: data/ui/pages/explore.blp:64 src/endpoints.ts:129 src/pages/explore.ts:52
+msgid "Moods and genres"
+msgstr "心情和類型"
+
+#: data/ui/pages/login.blp:14
+msgid "Login"
+msgstr "登入"
+
+#: data/ui/pages/login.blp:59
+msgid "Scan with phone or go to"
+msgstr "使用手機掃描或前往"
+
+#: data/ui/pages/login.blp:74
+msgid "Enter the code"
+msgstr "輸入代碼"
+
+#: data/ui/pages/login.blp:92
+msgid "Copy authentication code"
+msgstr "複製驗證碼"
+
+#: data/ui/pages/playlist.blp:84
+msgid "Add to Library"
+msgstr "加入到媒體櫃"
+
+#: data/ui/pages/playlist.blp:160
+msgid "Suggestions"
+msgstr "建議"
+
+#: data/ui/pages/playlist.blp:175
+msgid "Refresh"
+msgstr "重新整理"
+
+#: data/ui/pages/preferences.blp:9
+msgid "Preferences"
+msgstr "偏好設定"
+
+#: data/ui/pages/preferences.blp:12
+msgid "Sound"
+msgstr "聲音"
+
+#: data/ui/pages/preferences.blp:16
+msgid "Preffered Video Quality"
+msgstr "偏好的畫質"
+
+#: data/ui/pages/preferences.blp:17
+msgid "The selected quality will be played if available."
+msgstr "可用時將播放選擇的音質。"
+
+#: data/ui/pages/preferences.blp:25
+msgid "Preffered Audio Quality"
+msgstr "偏好的音質"
+
+#: data/ui/pages/preferences.blp:26
+msgid ""
+"Higher audio qualities are not available for music videos and can only be "
+"played by logged in YouTube Premium users."
+msgstr ""
+"MV 影片不提供較高的音質，只有登入 YouTube Premium 的使用者才能播放。"
+
+#: data/ui/pages/search.blp:42
+msgid "No Results"
+msgstr "無結果"
+
+#: data/ui/pages/search.blp:45
+msgid "Try a different search"
+msgstr "嘗試其他搜尋"
+
+#: data/ui/window.blp:45
+msgid "Account"
+msgstr "帳戶"
+
+#: data/ui/window.blp:53
+msgid "Log In"
+msgstr "登入"
+
+#: data/ui/window.blp:116
+msgid "_Preferences"
+msgstr "_偏好設定"
+
+#: data/ui/window.blp:121
+msgid "_Keyboard Shortcuts"
+msgstr "_鍵盤快速鍵"
+
+#: data/ui/window.blp:126
+msgid "_About Muzika"
+msgstr "_關於 Muzika"
+
+msgid "Start radio"
+msgstr "開始電臺"
+
+msgid "Play next"
+msgstr "播放下一首"
+
+msgid "Add to queue"
+msgstr "加入佇列"
+
+msgid "Go to album"
+msgstr "前往專輯"
+
+msgid "Go to artist"
+msgstr "前往藝人"
+
+msgid "Shuffle play"
+msgstr "隨機播放"
+
+#: src/components/carousel/card.ts:352 src/components/carousel/flatcard.ts:615
+#: src/pages/album.ts:176 src/pages/playlist.ts:475
+msgid "Start Radio"
+msgstr "開始電臺"
+
+#: src/components/playlist/columnview.ts:226
+msgid "Song"
+msgstr "歌曲"
+
+#: src/components/carousel/flatcard.ts:549
+msgid "Video"
+msgstr "影片"
+
+#: src/components/search/topresultcard.ts:268 src/endpoints.ts:33
+msgid "Playlist"
+msgstr "播放清單"
+
+#: src/components/carousel/flatcard.ts:408
+msgid "Profile"
+msgstr "個人資料"
+
+#: src/components/search/topresultcard.ts:236 src/endpoints.ts:45
+msgid "Artist"
+msgstr "藝人"
+
+#: src/components/carousel/flatcard.ts:651
+#: src/components/playlist/columnview.ts:311 src/endpoints.ts:39
+msgid "Album"
+msgstr "專輯"
+
+#: src/components/nav/page.ts:138
+msgid "Authentication Required"
+msgstr "需要驗證"
+
+#: src/components/nav/page.ts:141
+msgid "Error"
+msgstr "錯誤"
+
+#: src/components/navbar/index.ts:161 src/endpoints.ts:27
+msgid "Home"
+msgstr "首頁"
+
+#: src/components/navbar/index.ts:166 src/endpoints.ts:117
+msgid "Explore"
+msgstr "探索"
+
+#: src/endpoints.ts:57 src/pages/search.ts:84
+msgid "Library"
+msgstr "媒體櫃"
+
+#: src/components/navbar/index.ts:178 src/pages/album.ts:203
+#: src/pages/search.ts:373
+msgid "Artists"
+msgstr "藝人"
+
+#: src/components/navbar/index.ts:184
+msgid "Subscriptions"
+msgstr "訂閱"
+
+#: src/components/navbar/index.ts:190 src/pages/artist.ts:130
+#: src/pages/search.ts:371
+msgid "Albums"
+msgstr "專輯"
+
+#: src/components/navbar/index.ts:196 src/pages/search.ts:377
+msgid "Songs"
+msgstr "歌曲"
+
+#: src/components/navbar/index.ts:202 src/endpoints.ts:93
+msgid "History"
+msgstr "歷史紀錄"
+
+#: src/pages/channel.ts:112 src/pages/search.ts:375
+msgid "Playlists"
+msgstr "播放清單"
+
+#: src/components/navbar/index.ts:209
+msgid "All Playlists"
+msgstr "所有播放清單"
+
+#: src/components/player/full.ts:304
+msgid "Repeat All Songs"
+msgstr "重複所有歌曲"
+
+#: src/components/player/full.ts:308
+msgid "Repeat the Current Song"
+msgstr "重複目前播放的歌曲"
+
+#: src/components/player/full.ts:312
+msgid "Enable Repeat"
+msgstr "啟用重複播放"
+
+#: src/components/player/queue.ts:113 src/components/player/queue.ts:123
+msgid "Queue"
+msgstr "佇列"
+
+#: src/components/player/video/util.ts:25
+msgid "Off"
+msgstr "關閉"
+
+#: src/components/player/video/util.ts:49
+msgid "Auto-translate"
+msgstr "自動翻譯"
+
+#: src/components/player/video/util.ts:71 src/player/index.ts:1329
+#: src/player/index.ts:1355
+msgid "Auto"
+msgstr "自動"
+
+#: src/components/player/video/util.ts:103
+msgid "Subtitles"
+msgstr "字幕"
+
+#: src/components/player/video/util.ts:108
+msgid "Quality"
+msgstr "畫質"
+
+#: src/components/player/video/volume-controls.ts:109
+msgid "Full volume"
+msgstr "最高音量"
+
+#: src/components/playlist/bar.ts:174
+msgid "No song selected"
+msgstr "未選擇歌曲"
+
+#: src/components/playlist/bar.ts:175
+#, c-format
+msgid "%d song selected"
+msgstr "已選擇 %d 首歌曲"
+
+#: src/components/playlist/bar.ts:176
+#, c-format
+msgid "%d songs selected"
+msgstr "已選擇 %d 首歌曲"
+
+#: src/components/playlist/columnview.ts:373
+msgid "Time"
+msgstr "時間"
+
+#: src/components/playlist/columnview.ts:497
+#: src/components/playlist/listitem.ts:128 src/pages/playlist.ts:242
+msgid "Remove from playlist"
+msgstr "從播放清單中移除"
+
+#: src/components/playlist/edit.ts:67
+msgid "Public"
+msgstr "公開"
+
+#: src/components/playlist/edit.ts:68
+msgid "Anyone can search for and view"
+msgstr "任何人都可以搜尋和檢視"
+
+#: src/components/playlist/edit.ts:75
+msgid "Unlisted"
+msgstr "未列出"
+
+#: src/components/playlist/edit.ts:76
+msgid "Anyone with the link can view"
+msgstr "擁有連結的人都可以檢視"
+
+#: src/components/playlist/edit.ts:83
+msgid "Private"
+msgstr "私人"
+
+#: src/components/playlist/edit.ts:84
+msgid "Only you can view"
+msgstr "只有你可以檢視"
+
+#: src/components/playlist/edit.ts:205
+msgid "Playlist saved"
+msgstr "播放清單已儲存"
+
+#: src/components/playlist/get_add_to_playlist.ts:186
+msgid "Duplicates"
+msgstr "重複"
+
+#: src/components/playlist/get_add_to_playlist.ts:187
+msgid "One or more of the songs are already in your playlist"
+msgstr "一首或多首歌曲已在你的播放清單中"
+
+#: src/components/playlist/get_add_to_playlist.ts:190
+msgid "Skip duplicates"
+msgstr "跳過重複"
+
+#: src/components/playlist/get_add_to_playlist.ts:191
+#: src/components/playlist/get_add_to_playlist.ts:204
+msgid "Add anyway"
+msgstr "仍然加入"
+
+#: src/components/playlist/get_add_to_playlist.ts:203
+msgid "This song is already in the playlist"
+msgstr "這首歌曲已在播放清單中"
+
+#: src/components/playlist/get_add_to_playlist.ts:246
+msgid "Recents"
+msgstr "最近"
+
+#: src/components/playlist/get_add_to_playlist.ts:247
+msgid "All playlists"
+msgstr "所有播放清單"
+
+#: src/components/playlist/get_add_to_playlist.ts:264
+#, c-format
+msgid "Saved to %s"
+msgstr "已儲存到 %s"
+
+#. Translators: %s is a playlist name
+#: src/components/playlist/get_add_to_playlist.ts:279
+#, c-format
+msgid "Couldn't add playlist to %s"
+msgstr "無法將播放清單加入到 %s"
+
+#: src/components/playlist/get_add_to_playlist.ts:283
+#, c-format
+msgid "Couldn't add songs to %s"
+msgstr "無法將歌曲加入到 %s"
+
+#: src/components/playlist/get_add_to_playlist.ts:284
+#, c-format
+msgid "Couldn't add song to %s"
+msgstr "無法將歌曲加入到 %s"
+
+#: src/components/search/topresultcard.ts:196
+msgid "Add"
+msgstr "加入"
+
+#: src/endpoints.ts:51
+msgid "Search Results"
+msgstr "搜尋結果"
+
+#: src/endpoints.ts:63
+msgid "Library Playlists"
+msgstr "媒體櫃播放清單"
+
+#: src/endpoints.ts:69
+msgid "Library Albums"
+msgstr "媒體櫃專輯"
+
+#: src/endpoints.ts:75
+msgid "Library Artists"
+msgstr "媒體櫃藝人"
+
+#: src/endpoints.ts:81
+msgid "Library Subscriptions"
+msgstr "媒體櫃訂閱"
+
+#: src/endpoints.ts:87
+msgid "Library Songs"
+msgstr "媒體櫃歌曲"
+
+#: src/endpoints.ts:99
+msgid "Artist Albums"
+msgstr "藝人專輯"
+
+#: src/endpoints.ts:105
+msgid "Channel"
+msgstr "頻道"
+
+#: src/endpoints.ts:111
+msgid "Channel Playlists"
+msgstr "頻道播放清單"
+
+#: src/endpoints.ts:135
+msgid "Mood"
+msgstr "心情"
+
+#: src/endpoints.ts:141
+msgid "New Releases"
+msgstr "新發行"
+
+#: src/pages/album.ts:105
+msgid "Other versions"
+msgstr "其他版本"
+
+#: src/pages/album.ts:128
+msgid "Unknown year"
+msgstr "未知年份"
+
+#: src/pages/album.ts:209 src/pages/artist.ts:149 src/pages/channel.ts:125
+#: src/pages/playlist.ts:485
+msgid "Copy Link"
+msgstr "複製連結"
+
+#: src/pages/artist.ts:131
+msgid "Singles"
+msgstr "單曲"
+
+#: src/pages/artist.ts:132 src/pages/channel.ts:101 src/pages/search.ts:379
+msgid "Videos"
+msgstr "影片"
+
+#: src/pages/artist.ts:133
+msgid "From your library"
+msgstr "來自你的媒體櫃"
+
+#: src/pages/artist.ts:134
+msgid "Featured on"
+msgstr "精選於"
+
+#: src/pages/artist.ts:136
+msgid "Fans might also like"
+msgstr "粉絲可能也喜歡"
+
+#: src/pages/authentication-error.ts:71
+msgid ""
+"Your authentication details have expired. Please log in again or go to home."
+msgstr "你的驗證資訊已過期。請重新登入或回到首頁。"
+
+#: src/pages/authentication-error.ts:75
+msgid "The page you were trying to access requires you to log in."
+msgstr "你試圖存取的頁面需要登入。"
+
+#: src/pages/channel.ts:103
+msgid "Artists on repeat"
+msgstr "重複播放的藝人"
+
+#: src/pages/channel.ts:108
+msgid "Playlists on repeat"
+msgstr "重複播放的播放清單"
+
+#: src/pages/charts.ts:79 src/pages/explore.ts:51
+msgid "Top songs"
+msgstr "熱門歌曲"
+
+#: src/pages/charts.ts:81
+msgid "Top music videos"
+msgstr "熱門 MV"
+
+#. TODO: Top artists
+#. this.add_carousel(_("Top artists"), charts.results.artists, true);
+#: src/pages/charts.ts:88
+msgid "Genres"
+msgstr "類型"
+
+#: src/pages/charts.ts:89 src/pages/explore.ts:53
+msgid "Trending"
+msgstr "趨勢"
+
+#: src/pages/error.ts:68
+msgid "Unknown error"
+msgstr "未知錯誤"
+
+#. TODO: New albums & singles more
+#: src/pages/explore.ts:50
+msgid "New albums & singles"
+msgstr "新專輯和單曲"
+
+#: src/pages/library/base.ts:18
+msgid "Recent activity"
+msgstr "最近活動"
+
+#: src/pages/library/base.ts:19 src/pages/library/base.ts:24
+msgid "Recently added"
+msgstr "最近新增"
+
+#: src/pages/library/base.ts:20
+msgid "Recently played"
+msgstr "最近播放"
+
+#: src/pages/library/base.ts:25
+msgid "A to Z"
+msgstr "A 到 Z"
+
+#: src/pages/library/base.ts:26
+msgid "Z to A"
+msgstr "Z 到 A"
+
+#: src/pages/login.ts:73
+msgid "Copied to clipboard"
+msgstr "已複製到剪貼簿"
+
+#: src/pages/playlist.ts:174
+msgid "Delete playlist"
+msgstr "刪除播放清單"
+
+#: src/pages/playlist.ts:175
+msgid "Are you sure you want to delete this playlist?"
+msgstr "你確定要刪除這個播放清單嗎？"
+
+#: src/pages/playlist.ts:178 src/pages/playlist.ts:246 src/window.ts:296
+msgid "Cancel"
+msgstr "取消"
+
+#: src/pages/playlist.ts:179 src/pages/playlist.ts:480
+msgid "Delete"
+msgstr "刪除"
+
+#: src/pages/playlist.ts:190
+msgid "Playlist deleted"
+msgstr "播放清單已刪除"
+
+#: src/pages/playlist.ts:195
+msgid "Couldn't delete playlist"
+msgstr "無法刪除播放清單"
+
+#: src/pages/playlist.ts:225
+msgid "Couldn't remove songs from playlist"
+msgstr "無法從播放清單中移除歌曲"
+
+#: src/pages/playlist.ts:226
+msgid "Couldn't remove song from playlist"
+msgstr "無法從播放清單中移除歌曲"
+
+#: src/pages/playlist.ts:233
+#, c-format
+msgid "%d song removed from playlist"
+msgstr "已從播放清單中移除 %d 首歌曲"
+
+#: src/pages/playlist.ts:234
+#, c-format
+msgid "%d songs removed from playlist"
+msgstr "已從播放清單中移除 %d 首歌曲"
+
+#: src/pages/playlist.ts:243
+msgid ""
+" Are you sure that you want to remove the selected content from the "
+"playlist? "
+msgstr "你確定要從播放清單中移除選定的內容嗎？"
+
+#: src/pages/playlist.ts:247
+msgid "Remove"
+msgstr "移除"
+
+#: src/pages/playlist.ts:315
+msgid "Failed to add suggestion"
+msgstr "無法新增建議"
+
+#: src/pages/playlist.ts:363
+msgid "Related playlists"
+msgstr "相關播放清單"
+
+#: src/pages/search.ts:83
+msgid "Catalog"
+msgstr "目錄"
+
+#: src/pages/search.ts:85
+msgid "Uploads"
+msgstr "上傳"
+
+#: src/pages/search.ts:194
+#, c-format
+msgid "Did you mean: %s"
+msgstr "你是不是要找： %s"
+
+#: src/pages/search.ts:233
+#, c-format
+msgid "Showing results for: %s"
+msgstr "顯示結果為： %s"
+
+#: src/pages/search.ts:234
+#, c-format
+msgid "Search instead for: %s"
+msgstr "改為搜尋： %s"
+
+#: src/pages/search.ts:381
+msgid "Community Playlists"
+msgstr "社群播放清單"
+
+#: src/pages/search.ts:383
+msgid "Featured Playlists"
+msgstr "精選播放清單"
+
+#: src/pages/search.ts:385
+msgid "Profiles"
+msgstr "個人資料"
+
+#: src/player/index.ts:1338
+msgid "High Resolution"
+msgstr "高解析度"
+
+#: src/player/index.ts:1356
+msgid "Very Low"
+msgstr "非常低"
+
+#: src/player/index.ts:1357
+msgid "Low"
+msgstr "低"
+
+#: src/player/index.ts:1358
+msgid "Medium"
+msgstr "中"
+
+#: src/player/index.ts:1359
+msgid "High"
+msgstr "高"
+
+#: src/player/queue.ts:419
+msgid "Starting Radio"
+msgstr "啟動電臺"
+
+#: src/player/queue.ts:452
+#, c-format
+msgid "Playing %d songs next"
+msgstr "接下來播放 %d 首歌曲"
+
+#: src/player/queue.ts:458
+#, c-format
+msgid "Added %d songs to queue"
+msgstr "已加入 %d 首歌曲到佇列"
+
+#: src/window.ts:203
+msgid "Copied URL to clipboard"
+msgstr "已複製網址到剪貼簿"
+
+#: src/window.ts:287 src/window.ts:295 src/window.ts:297
+msgid "Logout"
+msgstr "登出"
+
+#: src/window.ts:295
+msgid "Are you sure?"
+msgstr "你確定嗎？"
+
+#: src/window.ts:336
+msgid "Successfully logged in!"
+msgstr "登入成功！"
+
+#: src/window.ts:344
+msgid "An error happened while logging in"
+msgstr "登入時發生錯誤"
