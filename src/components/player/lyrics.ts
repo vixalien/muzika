@@ -196,7 +196,7 @@ export class LyricsView extends Gtk.Stack {
         this._timed_window,
         this._timed_window.vadjustment.value,
         Math.min(Math.max(scroll_to, 0), this._timed_window.vadjustment.upper),
-        500,
+        LyricsView.ANIMATION_DURATION,
         property_target,
       );
 
@@ -247,7 +247,8 @@ export class LyricsView extends Gtk.Stack {
     }
 
     const line_id = this.lyrics.timed_lyrics.findIndex((line) => {
-      const timestamp_milli = player.timestamp / 1000;
+      const timestamp_milli = (player.timestamp / 1000) +
+        LyricsView.ANIMATION_DURATION;
       return timestamp_milli >= line.start && timestamp_milli <= line.end;
     });
 
@@ -296,4 +297,6 @@ export class LyricsView extends Gtk.Stack {
     this.listeners.clear();
     super.vfunc_unmap();
   }
+
+  static ANIMATION_DURATION = 500;
 }
