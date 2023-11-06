@@ -248,7 +248,7 @@ export class LyricsView extends Gtk.Stack {
 
     const line_id = this.lyrics.timed_lyrics.findIndex((line) => {
       const timestamp_milli = (player.timestamp / 1000) +
-        LyricsView.ANIMATION_DURATION;
+        LyricsView.ANIMATION_DURATION / 2;
       return timestamp_milli >= line.start && timestamp_milli <= line.end;
     });
 
