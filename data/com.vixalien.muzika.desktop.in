@@ -6,3 +6,6 @@ Terminal=false
 Type=Application
 Categories=GTK;
 StartupNotify=true
+Categories=GNOME;GTK;Music;Audio;Video;AudioVideo;Player;
+Keywords=music;player;media;audio;playlists;youtube;artists;
+X-Purism-FormFactor=Workstation;Mobile;
