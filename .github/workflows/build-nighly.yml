@@ -17,7 +17,7 @@ jobs:
         arch: [x86_64, aarch64]
       fail-fast: false
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Install Docker
         if: matrix.arch == 'aarch64'
         run: |
@@ -25,7 +25,7 @@ jobs:
       - name: Setup QEMU
         if: matrix.arch == 'aarch64'
         id: qemu
-        uses: docker/setup-qemu-action@v1
+        uses: docker/setup-qemu-action@v3
         with:
           platforms: arm64
       - name: Prepare Runtime
