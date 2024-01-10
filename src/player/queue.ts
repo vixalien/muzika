@@ -146,6 +146,7 @@ export class Queue extends GObject.Object {
         "prepare-next": {
           param_types: [GObject.TYPE_STRING],
         },
+        "play": {},
       },
     }, this);
   }
@@ -702,6 +703,7 @@ export class Queue extends GObject.Object {
     const [position, track] = this.peek_next();
 
     this.update_position(position);
+    this.emit("play");
 
     return track;
   }
@@ -722,6 +724,7 @@ export class Queue extends GObject.Object {
     const [position, track] = this.peek_repeat_or_next();
 
     this.update_position(position);
+    this.emit("play");
 
     return track;
   }
@@ -764,6 +767,7 @@ export class Queue extends GObject.Object {
     const [position, track] = this.peek_previous();
 
     this.update_position(position);
+    this.emit("play");
 
     return track;
   }

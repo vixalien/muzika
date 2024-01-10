@@ -74,6 +74,7 @@ export class QueueView extends Gtk.Stack {
 
     this._list_view.connect("activate", (_, position) => {
       this.player.queue.change_position(position);
+      this.player.queue.emit("play");
     });
 
     this.update_visible_child();
@@ -110,7 +111,7 @@ export class QueueView extends Gtk.Stack {
   }
 
   update_settings() {
-    const settings = this.player.queue.settings;
+    const settings = this.player.queue.settings.object;
     const playlist_name = escape_label(settings?.playlist ?? _("Queue"));
 
     // radio playlists can't be visited

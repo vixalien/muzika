@@ -514,7 +514,7 @@ export class MPRIS extends DBusInterface {
 
   /** Stop playback */
   _stop() {
-    this.player.stop();
+    this.player.unprepare();
   }
 
   /**

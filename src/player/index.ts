@@ -345,14 +345,6 @@ export class MuzikaMediaStream extends Gtk.MediaStream {
     this.notify("media-info");
   }
 
-  // property: state
-
-  private _state = GstPlay.PlayState.STOPPED;
-
-  get state() {
-    return this._state;
-  }
-
   // property: buffering
 
   protected _is_buffering = false;
@@ -395,29 +387,22 @@ export class MuzikaMediaStream extends Gtk.MediaStream {
 
   // property: playing
 
-  protected _playing = false;
-
-  get playing() {
-    return this._playing;
+  vfunc_play() {
+    this._play.play();
+    return true;
   }
 
-  set playing(value) {
-    if (value) {
+  vfunc_pause() {
+    this._play.pause();
+    return true;
+  }
+
+  resume() {
+    if (this.playing) {
       this._play.play();
     } else {
       this._play.pause();
     }
-
-    this._playing = value;
-    this.notify("playing");
-  }
-
-  play() {
-    this.playing = true;
-  }
-
-  pause() {
-    this.playing = false;
   }
 
   // property: playing
@@ -457,13 +442,9 @@ export class MuzikaMediaStream extends Gtk.MediaStream {
     console.error("error during playback", error.message);
 
     // TODO: cancel pending seeks
-    this._play.stop();
+    this.unprepare();
 
-    if (this.prepared) {
-      this.stream_unprepared();
-    }
-
-    this._playing = false;
+    // this._playing = false;
   }
 
   // seek
@@ -484,7 +465,7 @@ export class MuzikaMediaStream extends Gtk.MediaStream {
   private buffering_cb(_play: GstPlay.Play, percent: number): void {
     if (percent < 100) {
       if (!this.is_buffering && this.playing) {
-        this.pause();
+        this._play.pause();
 
         this._is_buffering = true;
         this.notify("is-buffering");
@@ -493,7 +474,7 @@ export class MuzikaMediaStream extends Gtk.MediaStream {
       this._is_buffering = false;
       this.notify("is-buffering");
 
-      if (this.playing) this.play();
+      if (this.playing) this._play.play();
     }
   }
 
@@ -502,7 +483,9 @@ export class MuzikaMediaStream extends Gtk.MediaStream {
       return;
     }
 
-    this.update(position / Gst.USECOND);
+    if (this.prepared) {
+      this.update(position / Gst.USECOND);
+    }
   }
 
   private duration_changed_cb(_play: GstPlay.Play): void {
@@ -513,8 +496,6 @@ export class MuzikaMediaStream extends Gtk.MediaStream {
     _play: GstPlay.Play,
     state: GstPlay.PlayState,
   ): void {
-    this._state = state;
-
     if (state == GstPlay.PlayState.BUFFERING) {
       this._is_buffering = true;
       this.notify("is-buffering");
@@ -522,36 +503,27 @@ export class MuzikaMediaStream extends Gtk.MediaStream {
       this._is_buffering = false;
       this.notify("is-buffering");
     }
-
-    if (state == GstPlay.PlayState.STOPPED) {
-      if (this.prepared) {
-        // can only prepare position if seeked
-        this.update(this.initial_seek_to ?? 0);
-        this.stream_unprepared();
-      }
-    } else {
-      if (!this.is_prepared) {
-        this.stream_prepared(
-          this.has_audio,
-          this.has_video,
-          this.seekable,
-          this.duration,
-        );
-
-        this.do_initial_seek();
-      }
-    }
   }
 
   private error_cb(_play: GstPlay.Play, error: GLib.Error): void {
     this.gerror(error);
   }
 
-  protected eos_cb(_play: GstPlay.Play): void {
+  protected eos_cb(_play: GstPlay.Play): boolean {
+    if (this._play.duration - this._play.position >= 1000) {
+      // this means an error occured, we might need to refresh the uri
+      if (!this.refreshed_uri) {
+        this.refresh_uri();
+        return false;
+      }
+    }
+
     if (this.prepared) {
       this.stream_ended();
       this.stream_unprepared();
     }
+
+    return true;
   }
 
   protected media_info_updated_cb(
@@ -598,9 +570,15 @@ export class MuzikaMediaStream extends Gtk.MediaStream {
   }
 
   stop() {
-    this._play.stop();
+    this._play.pipeline.set_state(Gst.State.NULL);
+  }
 
-    this.notify("timestamp");
+  unprepare() {
+    if (this.prepared) {
+      this.stream_unprepared();
+    }
+
+    this.stop();
   }
 }
 
@@ -710,8 +688,6 @@ export class MuzikaPlayer extends MuzikaMediaStream {
 
       this.stop();
 
-      this._playing = true;
-
       // this._loading_track = next;
       // this.emit("loading-track");
 
@@ -720,6 +696,10 @@ export class MuzikaPlayer extends MuzikaMediaStream {
 
       // this._is_buffering = true;
       // this.notify("is-buffering");
+    });
+
+    this.queue.connect("play", () => {
+      this.play();
     });
 
     // volume
@@ -847,11 +827,7 @@ export class MuzikaPlayer extends MuzikaMediaStream {
     this.initial_seek_to = this.get_timestamp();
     this.set_uri(get_song_uri(song));
 
-    if (this.playing) {
-      this._play.play();
-    } else {
-      this._play.pause();
-    }
+    this.resume();
   }
 
   async load(track: QueueMeta | null) {
@@ -903,14 +879,9 @@ export class MuzikaPlayer extends MuzikaMediaStream {
         this.notify("duration");
 
         const uri = get_song_uri(song);
-
         this.set_uri(uri);
 
-        if (this.playing) {
-          this._play.play();
-        } else {
-          this._play.pause();
-        }
+        this.resume();
 
         this.add_history = true;
       })
@@ -952,11 +923,7 @@ export class MuzikaPlayer extends MuzikaMediaStream {
 
         this.set_uri(uri);
 
-        if (this.playing) {
-          this._play.play();
-        } else {
-          this._play.pause();
-        }
+        this.resume();
       })
       .catch((error) => {
         if (error instanceof DOMException && error.name == "AbortError") return;
@@ -965,10 +932,12 @@ export class MuzikaPlayer extends MuzikaMediaStream {
       });
   }
 
-  protected eos_cb(_play: GstPlay.Play): void {
-    super.eos_cb(_play);
+  protected eos_cb(_play: GstPlay.Play) {
+    if (super.eos_cb(_play)) {
+      this.queue.repeat_or_next();
+    }
 
-    this.queue.repeat_or_next();
+    return true;
   }
 
   private get_state(): PlayerState | null {
