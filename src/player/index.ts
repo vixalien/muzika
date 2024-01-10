@@ -277,12 +277,14 @@ export class MuzikaMediaStream extends Gtk.MediaStream {
       "sink",
     )! as GstVideo.VideoSink;
 
+    if (!sink) {
+      throw new Error(
+        "Failed to create gtk4paintablesink, is that installed on your system?",
+      );
+    }
+
     this._paintable = (sink as any).paintable;
     this.notify("paintable");
-
-    if (!sink) {
-      throw new Error("Failed to create sink");
-    }
 
     this._play.pipeline.set_property("video-sink", sink);
   }
