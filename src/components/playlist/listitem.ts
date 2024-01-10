@@ -7,7 +7,7 @@ import type { PlaylistItem } from "libmuse";
 import { pretty_subtitles } from "src/util/text.js";
 import { DynamicImage, DynamicImageStorageType } from "../dynamic-image";
 import { SignalListeners } from "src/util/signal-listener.js";
-import { MenuHelper } from "src/util/menu.js";
+import { MenuHelper } from "src/util/menu/index.js";
 
 export class PlaylistListItem extends Gtk.Box {
   static {

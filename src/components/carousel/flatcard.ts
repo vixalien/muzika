@@ -28,7 +28,7 @@ import { pretty_subtitles } from "src/util/text.js";
 import { DynamicImage, DynamicImageStorageType } from "../dynamic-image.js";
 import { DynamicActionState } from "../dynamic-action.js";
 import { MixedCardItem } from "../library/mixedcard.js";
-import { MenuHelper } from "src/util/menu.js";
+import { MenuHelper } from "src/util/menu/index.js";
 
 GObject.type_ensure(DynamicImage.$gtype);
 

@@ -17,7 +17,7 @@ import { DynamicActionState, DynamicImage } from "../dynamic-image";
 import { pretty_subtitles } from "src/util/text.js";
 import { get_player } from "src/application.js";
 import { SignalListeners } from "src/util/signal-listener.js";
-import { MenuHelper } from "src/util/menu.js";
+import { MenuHelper } from "src/util/menu/index.js";
 
 GObject.type_ensure(DynamicImage.$gtype);
 
