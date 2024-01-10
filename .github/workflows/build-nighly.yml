@@ -38,5 +38,4 @@ jobs:
           repository-name: gnome-nightly
           repository-url: https://nightly.gnome.org/gnome-nightly.flatpakrepo
           manifest-path: build-aux/flatpak/com.vixalien.muzika.Devel.json
-          cache-key: flatpak-builder-${{ github.sha }}-nightly
           arch: ${{ matrix.arch }}
