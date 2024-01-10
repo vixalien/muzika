@@ -510,7 +510,7 @@ export class MuzikaMediaStream extends Gtk.MediaStream {
   }
 
   protected eos_cb(_play: GstPlay.Play): boolean {
-    if (this._play.duration - this._play.position >= 1000) {
+    if (this._play.duration - this._play.position >= Gst.SECOND) {
       // this means an error occured, we might need to refresh the uri
       if (!this.refreshed_uri) {
         this.refresh_uri();
