@@ -20,9 +20,8 @@
 		</ul>
 	</description>
 	<screenshots>
-		<screenshot>
-			<image>
-				https://raw.githubusercontent.com/vixalien/muzika/main/data/resources/screenshots/home.png</image>
+		<screenshot type="default">
+			<image>https://raw.githubusercontent.com/vixalien/muzika/main/data/resources/screenshots/home.png</image>
 		</screenshot>
 	</screenshots>
 	<releases>
@@ -32,11 +31,12 @@
 	<launchable type="desktop-id">@app-id@.desktop</launchable>
 	<url type="homepage">https://github.com/vixalien/muzika</url>
 	<url type="bugtracker">https://github.com/vixalien/muzika/issues</url>
-	<developer_name>Angelo Verlain</developer_name>
+	<url type="vcs-browser">https://github.com/vixalien/muzika</url>
+	<url type="translate">https://github.com/vixalien/muzika/tree/main/po</url>
+	<developer_name translatable="no">Angelo Verlain</developer_name>
 	<update_contact>hey_at_vixalien.com</update_contact>
 	<translation type="gettext">muzika</translation>
 	<custom>
-		<value key="Purism::form_factor">workstation</value>
 		<value key="Purism::form_factor">mobile</value>
 	</custom>
 	<requires>
@@ -53,5 +53,4 @@
 	</kudos>
 	<content_rating type="oars-1.1" />
 	<provides>@app-id@.desktop</provides>
-	<translation type="gettext">@app-id@</translation>
 </component>
