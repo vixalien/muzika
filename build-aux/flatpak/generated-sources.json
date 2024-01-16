@@ -1128,10 +1128,10 @@
     },
     {
         "type": "file",
-        "url": "https://registry.yarnpkg.com/web-streams-polyfill/-/web-streams-polyfill-3.2.1.tgz",
-        "sha1": "71c2718c52b45fd49dbeee88634b3a60ceab42a6",
+        "url": "https://registry.yarnpkg.com/web-streams-polyfill/-/web-streams-polyfill-3.3.2.tgz",
+        "sha1": "32e26522e05128203a7de59519be3c648004343b",
         "dest": "yarn-mirror",
-        "dest-filename": "web-streams-polyfill-3.2.1.tgz"
+        "dest-filename": "web-streams-polyfill-3.3.2.tgz"
     },
     {
         "type": "file",

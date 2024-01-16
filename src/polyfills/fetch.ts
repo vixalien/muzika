@@ -21,6 +21,12 @@ Gio._promisify(
   "read_bytes_finish",
 );
 
+Gio._promisify(
+  Gio.OutputStream.prototype,
+  "splice_async",
+  "splice_finish",
+);
+
 export interface FetchOptions {
   body?: string | Uint8Array;
   url?: string;
@@ -267,6 +273,18 @@ export async function fetch(url: string | URL, options: FetchOptions = {}) {
       return;
     }
 
+    inputStream[Symbol.asyncIterator] = async function* () {
+      const outputStream = Gio.MemoryOutputStream.new_resizable();
+      await outputStream.splice_async(
+        inputStream,
+        Gio.OutputStreamSpliceFlags.CLOSE_SOURCE | Gio.OutputStreamSpliceFlags.CLOSE_TARGET,
+        GLib.PRIORITY_DEFAULT,
+        null,
+      );
+
+      yield outputStream.steal_as_bytes().toArray();
+    };
+
     const response_headers = message.get_response_headers();
     const headers = new Headers();
 
@@ -274,22 +292,7 @@ export async function fetch(url: string | URL, options: FetchOptions = {}) {
       headers.append(name, value);
     });
 
-    const stream = new ReadableStream({
-      async pull(controller) {
-        return inputStream.read_bytes_async(
-          1024 * 256,
-          GLib.PRIORITY_DEFAULT,
-          null,
-        ).then((result) => {
-          if (result.get_size() === 0) {
-            controller.close();
-            return;
-          }
-
-          controller.enqueue(result.toArray());
-        });
-      },
-    });
+    const stream = new ReadableStream.from(inputStream);
 
     const response = new GResponse(stream, {
       status: message.status_code,
