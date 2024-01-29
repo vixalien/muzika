@@ -20,7 +20,7 @@
     "@types/lodash-es": "^4.17.7",
     "@typescript-eslint/eslint-plugin": "^5.60.1",
     "@typescript-eslint/parser": "^5.60.1",
-    "core-js": "^3.31.0",
+    "core-js": "^3.35.1",
     "esbuild": "^0.18.10",
     "eslint": "^8.43.0",
     "event-target-polyfill": "^0.0.3",
