@@ -19,7 +19,7 @@
     "@types/core-js": "^2.5.5",
     "@types/lodash-es": "^4.17.7",
     "@typescript-eslint/eslint-plugin": "^5.60.1",
-    "@typescript-eslint/parser": "^5.60.1",
+    "@typescript-eslint/parser": "^5.62.0",
     "core-js": "^3.31.0",
     "esbuild": "^0.18.10",
     "eslint": "^8.43.0",
