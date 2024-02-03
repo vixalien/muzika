@@ -34,7 +34,7 @@ import { get_player, Settings } from "./application.js";
 import {
   PlayerNowPlayingDetails,
 } from "./components/player/now-playing/details.js";
-import { LoginPage } from "./pages/login.js";
+import { LoginDialog } from "./pages/login.js";
 import { AddActionEntries } from "./util/action.js";
 import { get_current_user, get_option } from "libmuse";
 import { PlayerView } from "./components/player/view.js";
@@ -300,19 +300,19 @@ export class Window extends Adw.ApplicationWindow {
   }
 
   auth_flow() {
-    const page = new LoginPage();
+    const loginDialog = new LoginDialog();
 
-    page.set_modal(true);
-    page.set_transient_for(this);
-    page.present();
+    //page.set_modal(true);
+    //page.set_transient_for(this);
+    loginDialog.present(this);
 
     const controller = new AbortController();
 
-    page.connect("close-request", () => {
+    loginDialog.connect("closed", () => {
       controller.abort();
     });
 
-    page.auth_flow(controller.signal)
+    loginDialog.auth_flow(controller.signal)
       .then(() => {
         this.add_toast(_("Successfully logged in!"));
         this.navigator.reload();
@@ -327,7 +327,7 @@ export class Window extends Adw.ApplicationWindow {
         console.log("An error happened while logging in", error);
       })
       .finally(() => {
-        page.destroy();
+        loginDialog.close();
       });
   }
 

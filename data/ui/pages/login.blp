@@ -1,99 +1,85 @@
 using Gtk 4.0;
 using Adw 1;
 
-template $LoginPage : Adw.Window {
-  default-width: 400;
-  default-height: 680;
+template $LoginDialog : Adw.Dialog {
+  title: _("Login");
+  content-width: 360;
+  content-height: 480;
 
-  Adw.ToastOverlay toast_overlay {
-    Box {
-      orientation: vertical;
+  Adw.ToolbarView {
+    [top]
+    Adw.HeaderBar {}
 
-      HeaderBar {
-        title-widget:         Label {
-          label: _("Login");
-
-          styles [
-            "heading",
-          ]
-        }
-
-        ;
-
-        styles [
-          "flat",
-        ]
-      }
-
-      Stack stack {
-        vexpand: true;
-
-        Spinner spinner {
-          spinning: true;
-          halign: center;
-          width-request: 48;
-        }
-
-        Box flow {
-          margin-top: 24;
-          margin-bottom: 24;
-          margin-start: 24;
-          margin-end: 24;
-          spacing: 24;
+    ScrolledWindow {
+      Adw.ToastOverlay toast_overlay {
+        Box {
           orientation: vertical;
 
-          Picture qr {
-            halign: center;
+          Stack stack {
+            vexpand: true;
 
-            styles [
-              "br-9",
-            ]
-          }
-
-          Box title-1 {
-            halign: center;
-            orientation: vertical;
-            margin-start: 12;
-
-            Label {
-              label: _("Scan with phone or go to");
-            }
-
-            LinkButton link {
-              styles [
-                "title-3",
-              ]
-            }
-          }
-
-          Box title-2 {
-            halign: center;
-            orientation: vertical;
-
-            Label {
-              label: _("Enter the code");
-            }
-
-            Box {
-              spacing: 6;
+            Spinner spinner {
+              spinning: true;
               halign: center;
+              width-request: 48;
+            }
 
-              Label code {
-                selectable: true;
+            Box flow {
+              margin-top: 24;
+              margin-bottom: 24;
+              margin-start: 14;
+              margin-end: 14;
+              spacing: 24;
+              orientation: vertical;
 
-                styles [
-                  "title-3",
-                ]
+              Picture qr {
+                margin-top: 14;
+                width-request: 150;
+                height-request: 150;
+                halign: center;
+                styles ["br-9"]
               }
 
-              Button button {
+              Box title-1 {
                 halign: center;
-                icon-name: "edit-copy-symbolic";
-                tooltip-text: _("Copy authentication code");
+                orientation: vertical;
+                margin-start: 12;
 
-                styles [
-                  "flat",
-                ]
+                Label {
+                  label: _("Scan with phone or go to");
+                }
+
+                LinkButton link {
+                  styles ["title-3"]
+                }
+              }
+
+              Box title-2 {
+                halign: center;
+                orientation: vertical;
+
+                Label {
+                  label: _("Enter the code");
+                }
+
+                Box {
+                  spacing: 6;
+                  halign: center;
+
+                  Label code {
+                    selectable: true;
+
+                    styles ["title-3"]
+                  }
+
+                  Button button {
+                    halign: center;
+                    icon-name: "edit-copy-symbolic";
+                    tooltip-text: _("Copy authentication code");
+
+                    styles ["flat"]
+                  }
+                }
               }
             }
           }
