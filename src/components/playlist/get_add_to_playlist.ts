@@ -175,14 +175,13 @@ export class GetAddToPlaylist extends Adw.Window {
       add_videos: this.videoIds ?? undefined,
       add_source_playlists: this.playlistId ? [this.playlistId] : undefined,
       dedupe: "check",
-    }).then((result) => {
+    }).then(async (result) => {
       if (result.status === "STATUS_SUCCEEDED") {
         this.success_toast(playlist);
       } else {
         // try to provide an option to dedupe or add anyways
         if (this.playlistId || this.videoIds && this.videoIds.length > 1) {
-          const dialog = Adw.MessageDialog.new(
-            window,
+          const dialog = Adw.AlertDialog.new(
             _("Duplicates"),
             _("One or more of the songs are already in your playlist"),
           );
@@ -190,14 +189,13 @@ export class GetAddToPlaylist extends Adw.Window {
           dialog.add_response("drop_duplicate", _("Skip duplicates"));
           dialog.add_response("skip", _("Add anyway"));
 
-          dialog.connect("response", (_, response) => {
-            this.add_to_playlist_with_dedupe(
-              playlist,
-              response as EditPlaylistOptions["dedupe"],
-            );
-          });
+          const response = await dialog.choose(window, null)
+            .catch(console.error);
 
-          dialog.present();
+          this.add_to_playlist_with_dedupe(
+            playlist,
+            response as EditPlaylistOptions["dedupe"],
+          );
         } else {
           const toast = new Adw.Toast({
             title: _("This song is already in the playlist"),

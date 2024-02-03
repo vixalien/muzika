@@ -50,6 +50,8 @@ GObject.type_ensure(PlayerNowPlayingView.$gtype);
 GObject.type_ensure(PlayerView.$gtype);
 GObject.type_ensure(WindowSidebar.$gtype);
 
+Gio._promisify(Adw.AlertDialog.prototype, "choose", "choose_finish");
+
 export class Window extends Adw.ApplicationWindow {
   static {
     GObject.registerClass(
@@ -272,8 +274,8 @@ export class Window extends Adw.ApplicationWindow {
     this.add_action(visible_view);
   }
 
-  logout() {
-    const dialog = Adw.MessageDialog.new(this, _("Logout"), _("Are you sure?"));
+  async logout() {
+    const dialog = Adw.AlertDialog.new(_("Logout"), _("Are you sure?"));
     dialog.add_response("cancel", _("Cancel"));
     dialog.add_response("logout", _("Logout"));
     dialog.default_response = "cancel";
@@ -282,13 +284,13 @@ export class Window extends Adw.ApplicationWindow {
       Adw.ResponseAppearance.DESTRUCTIVE,
     );
 
-    dialog.connect("response", (_, response) => {
-      if (response === "logout") {
-        get_option("auth").token = null;
-      }
-    });
+    const response = await dialog.choose(this, null)
+      .catch(console.error);
 
-    dialog.present();
+    if (response === "logout") {
+      get_option("auth").token = null;
+      this.navigator.reload();
+    }
   }
 
   add_toast(text: string) {
