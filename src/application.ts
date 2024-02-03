@@ -72,20 +72,19 @@ export class Application extends Adw.Application {
 
     const show_about_action = new Gio.SimpleAction({ name: "about" });
     show_about_action.connect("activate", () => {
-      const aboutWindow = Adw.AboutWindow.new_from_appdata(
+      const aboutDialog = Adw.AboutDialog.new_from_appdata(
         "/com/vixalien/muzika/com.vixalien.muzika.appdata.xml",
         "0.1.0",
       );
 
-      aboutWindow.set_transient_for(this.get_active_window());
-      aboutWindow.set_developers([
+      aboutDialog.set_developers([
         "Angelo Verlain <hey@vixalien.com>",
         "Christopher Davis <christopherdavis@gnome.org>",
         "Kian-Meng Ang <kianmeng@cpan.org>",
       ]);
-      aboutWindow.set_debug_info(this.get_debug_info());
+      aboutDialog.set_debug_info(this.get_debug_info());
 
-      aboutWindow.present();
+      aboutDialog.present(this.get_active_window());
     });
     this.add_action(show_about_action);
 
