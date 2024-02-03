@@ -273,7 +273,7 @@ export class Window extends Adw.ApplicationWindow {
   }
 
   logout() {
-    const dialog = Adw.MessageDialog.new(this, _("Logout"), _("Are you sure?"));
+    const dialog = Adw.AlertDialog.new(_("Logout"), _("Are you sure?"));
     dialog.add_response("cancel", _("Cancel"));
     dialog.add_response("logout", _("Logout"));
     dialog.default_response = "cancel";
@@ -288,7 +288,7 @@ export class Window extends Adw.ApplicationWindow {
       }
     });
 
-    dialog.present();
+    dialog.present(this);
   }
 
   add_toast(text: string) {

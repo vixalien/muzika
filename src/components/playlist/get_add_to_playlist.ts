@@ -181,8 +181,7 @@ export class GetAddToPlaylist extends Adw.Window {
       } else {
         // try to provide an option to dedupe or add anyways
         if (this.playlistId || this.videoIds && this.videoIds.length > 1) {
-          const dialog = Adw.MessageDialog.new(
-            window,
+          const dialog = Adw.AlertDialog.new(
             _("Duplicates"),
             _("One or more of the songs are already in your playlist"),
           );
@@ -197,7 +196,7 @@ export class GetAddToPlaylist extends Adw.Window {
             );
           });
 
-          dialog.present();
+          dialog.present(window);
         } else {
           const toast = new Adw.Toast({
             title: _("This song is already in the playlist"),

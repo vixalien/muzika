@@ -170,7 +170,6 @@ export class PlaylistPage extends Adw.Bin
     if (this.playlist?.editable !== true) return;
 
     const dialog = Adw.MessageDialog.new(
-      this.get_window(),
       _("Delete playlist"),
       _("Are you sure you want to delete this playlist?"),
     );
@@ -198,7 +197,7 @@ export class PlaylistPage extends Adw.Bin
       }
     });
 
-    dialog.present();
+    dialog.present(this.get_window());
   }
 
   private remove_tracks(positions: number[]) {
@@ -237,8 +236,7 @@ export class PlaylistPage extends Adw.Bin
       );
     };
 
-    const dialog = Adw.MessageDialog.new(
-      this.get_window(),
+    const dialog = Adw.AlertDialog.new(
       _("Remove from playlist"),
       _(" Are you sure that you want to remove the selected content from the playlist? "),
     );
@@ -278,7 +276,7 @@ export class PlaylistPage extends Adw.Bin
       }
     });
 
-    dialog.present();
+    dialog.present(this.get_window());
   }
 
   private add_cb(
