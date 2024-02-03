@@ -85,7 +85,7 @@ privacy_model.append(
   ),
 );
 
-export class EditPlaylistDialog extends Adw.PreferencesWindow {
+export class EditPlaylistDialog extends Adw.PreferencesDialog {
   static {
     GObject.registerClass({
       GTypeName: "EditPlaylistDialog",
