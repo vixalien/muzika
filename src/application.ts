@@ -10,7 +10,7 @@ import { AddActionEntries } from "./util/action.js";
 import { MuzikaPlayer } from "./player/index.js";
 import { MPRIS } from "./mpris.js";
 import { get_option } from "src/muse";
-import { MuzikaPreferencesWindow } from "./pages/preferences.js";
+import { MuzikaPreferencesDialog } from "./pages/preferences.js";
 
 export const Settings = new Gio.Settings({ schema: pkg.name });
 
@@ -40,15 +40,14 @@ export class Application extends Adw.Application {
     this.set_accels_for_action("win.fullscreen", ["F11"]);
   }
 
-  private preferences_window!: MuzikaPreferencesWindow;
+  private preferences_dialog!: MuzikaPreferencesDialog;
 
   private show_preferences() {
-    if (!this.preferences_window) {
-      this.preferences_window = new MuzikaPreferencesWindow();
-      this.preferences_window.set_transient_for(this.get_active_window());
+    if (!this.preferences_dialog) {
+      this.preferences_dialog = new MuzikaPreferencesDialog();
     }
 
-    this.preferences_window.present();
+    this.preferences_dialog.present(this.get_active_window());
   }
 
   argv: string[] = [];

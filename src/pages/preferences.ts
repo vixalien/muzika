@@ -7,10 +7,10 @@ import { ObjectContainer } from "src/util/objectcontainer";
 import { AudioQualities, VideoQualities } from "src/player";
 import { Settings } from "src/application";
 
-export class MuzikaPreferencesWindow extends Adw.PreferencesWindow {
+export class MuzikaPreferencesDialog extends Adw.PreferencesDialog {
   static {
     GObject.registerClass({
-      GTypeName: "MuzikaPreferencesWindow",
+      GTypeName: "MuzikaPreferencesDialog",
       Template: "resource:///com/vixalien/muzika/ui/pages/preferences.ui",
       InternalChildren: [
         "audio_quality",
