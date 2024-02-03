@@ -316,13 +316,11 @@ export class PlaylistPage extends Adw.Bin
 
     const edit_dialog = new EditPlaylistDialog(this.playlist);
 
-    edit_dialog.set_transient_for(this.get_root() as Gtk.Window);
-
     edit_dialog.connect("saved", (_, values: ObjectContainer<EditedValues>) => {
       this.update_values(values.object);
     });
 
-    edit_dialog.present();
+    edit_dialog.present(this.get_root() as Gtk.Window);
   }
 
   update_values(values: EditedValues) {
