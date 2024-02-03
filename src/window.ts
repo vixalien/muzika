@@ -273,7 +273,7 @@ export class Window extends Adw.ApplicationWindow {
   }
 
   logout() {
-    const dialog = Adw.MessageDialog.new(this, _("Logout"), _("Are you sure?"));
+    const dialog = Adw.AlertDialog.new(_("Logout"), _("Are you sure?"));
     dialog.add_response("cancel", _("Cancel"));
     dialog.add_response("logout", _("Logout"));
     dialog.default_response = "cancel";
@@ -288,7 +288,7 @@ export class Window extends Adw.ApplicationWindow {
       }
     });
 
-    dialog.present();
+    dialog.present(this);
   }
 
   add_toast(text: string) {
@@ -302,13 +302,13 @@ export class Window extends Adw.ApplicationWindow {
   auth_flow() {
     const page = new LoginPage();
 
-    page.set_modal(true);
-    page.set_transient_for(this);
-    page.present();
+    //page.set_modal(true);
+    //page.set_transient_for(this);
+    page.present(this);
 
     const controller = new AbortController();
 
-    page.connect("close-request", () => {
+    page.connect("closed", () => {
       controller.abort();
     });
 
@@ -327,7 +327,7 @@ export class Window extends Adw.ApplicationWindow {
         console.log("An error happened while logging in", error);
       })
       .finally(() => {
-        page.destroy();
+        page.close();
       });
   }
 

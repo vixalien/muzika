@@ -9,7 +9,7 @@ import QRCode from "@lemaik/qrcode-svg";
 import { get_option } from "../muse.js";
 import type { LoginCode } from "libmuse/types/auth.js";
 
-export class LoginPage extends Adw.Window {
+export class LoginPage extends Adw.Dialog {
   static {
     GObject.registerClass({
       GTypeName: "LoginPage",

@@ -169,8 +169,7 @@ export class PlaylistPage extends Adw.Bin
   private delete_playlist() {
     if (this.playlist?.editable !== true) return;
 
-    const dialog = Adw.MessageDialog.new(
-      this.get_window(),
+    const dialog = Adw.AlertDialog.new(
       _("Delete playlist"),
       _("Are you sure you want to delete this playlist?"),
     );
@@ -198,7 +197,7 @@ export class PlaylistPage extends Adw.Bin
       }
     });
 
-    dialog.present();
+    dialog.present(this.get_window());
   }
 
   private remove_tracks(positions: number[]) {
@@ -237,8 +236,7 @@ export class PlaylistPage extends Adw.Bin
       );
     };
 
-    const dialog = Adw.MessageDialog.new(
-      this.get_window(),
+    const dialog = Adw.AlertDialog.new(
       _("Remove from playlist"),
       _(" Are you sure that you want to remove the selected content from the playlist? "),
     );
@@ -278,7 +276,7 @@ export class PlaylistPage extends Adw.Bin
       }
     });
 
-    dialog.present();
+    dialog.present(this.get_window());
   }
 
   private add_cb(
@@ -325,13 +323,13 @@ export class PlaylistPage extends Adw.Bin
 
     const edit_dialog = new EditPlaylistDialog(this.playlist);
 
-    edit_dialog.set_transient_for(this.get_root() as Gtk.Window);
+    //edit_dialog.set_transient_for(this.get_root() as Gtk.Window);
 
     edit_dialog.connect("saved", (_, values: ObjectContainer<EditedValues>) => {
       this.update_values(values.object);
     });
 
-    edit_dialog.present();
+    edit_dialog.present(this.get_root() as Gtk.Window);
   }
 
   update_values(values: EditedValues) {

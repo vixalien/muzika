@@ -1,11 +1,10 @@
 using Gtk 4.0;
 using Adw 1;
 
-template $EditPlaylistDialog : Adw.PreferencesWindow {
-  search-enabled: false;
+template $EditPlaylistDialog : Adw.PreferencesDialog {
   title: _("Edit Playlist");
-  default-width: 360;
-  default-height: 440;
+  //content-width: 360;
+  //content-height: 440;
 
   Adw.PreferencesPage {
     title: _("Edit Playlist");
