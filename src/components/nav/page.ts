@@ -7,6 +7,7 @@ import { MuzikaPageMeta, MuzikaPageWidget } from "src/navigation";
 import { ERROR_CODE, MuseError } from "src/muse";
 import { AuthenticationErrorPage } from "src/pages/authentication-error";
 import { ErrorPage } from "src/pages/error";
+import { MatchResult } from "path-to-regexp";
 
 export interface PageState<State> {
   state: State;
@@ -72,43 +73,29 @@ export class Page<Data extends unknown, State extends unknown = null>
     }
   }
 
-  page: MuzikaPageWidget<Data, State>;
+  page?: MuzikaPageWidget<Data, State>;
   meta: MuzikaPageMeta<Data, State>;
 
   private __state: PageState<State> | null = null;
   private __error: any;
 
   constructor(
-    uri: string,
     meta: MuzikaPageMeta<Data, State>,
-    page: MuzikaPageWidget<Data, State>,
   ) {
     super();
 
-    this.uri = uri;
+    this.uri = meta.uri;
 
     this.meta = meta;
-    this.page = page;
     this.title = meta.title;
 
     this.loading = true;
   }
 
-  loaded(data: Data) {
-    const page = this.meta.build();
-
-    page.present(data);
-
-    this.loading = false;
-
-    this.page = page;
-    this._content.child = page;
-  }
-
   vfunc_hidden(): void {
     if (this.__error) {
       this.page = this._content.child = null as any;
-    } else {
+    } else if (this.page) {
       this.__state = {
         state: this.page.get_state(),
       };
@@ -125,6 +112,9 @@ export class Page<Data extends unknown, State extends unknown = null>
       this.__state = null;
     } else if (this.__error) {
       this.show_error(this.__error);
+    } else {
+      // page never got to load
+      this.reload();
     }
   }
 
@@ -148,4 +138,47 @@ export class Page<Data extends unknown, State extends unknown = null>
     this.loading = false;
     this._content.child = toolbar_view;
   }
+
+  async load(
+    uri: string,
+    match: MatchResult<Record<string, string>>,
+    signal: AbortSignal,
+  ) {
+    this.loading = true;
+
+    this.uri = uri;
+
+    try {
+      const result = await this.meta.load({
+        match,
+        set_title: this.set_title.bind(this),
+        signal,
+        url: new URL("muzika:" + uri),
+      })?.catch((error) => {
+        throw error;
+      });
+
+      this.loading = false;
+
+      const page = this.meta.build();
+      page.present(result!);
+
+      this._content.child = this.page = page;
+    } catch (error) {
+      this._handle_error(error);
+    }
+  }
+
+  private _handle_error(error: unknown) {
+    if (error instanceof DOMException && error.name == "AbortError") {
+      // do nothing
+      // TODO: maybe
+      // this._view.remove(page);
+      return;
+    }
+
+    this.show_error(error);
+  }
+
+  reload() {}
 }

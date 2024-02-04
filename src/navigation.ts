@@ -127,53 +127,15 @@ export class Navigator extends GObject.Object {
     match: MatchResult<Record<string, string>>,
     meta: MuzikaPageMeta,
   ) {
-    const url = new URL("muzika:" + uri);
-    const component = meta.build();
-    const page = new Page(uri, meta, component);
-
     if (this.last_controller) {
       this.last_controller.abort();
     }
 
     this.last_controller = new AbortController();
 
-    const response = meta.load({
-      match,
-      url,
-      signal: this.last_controller.signal,
-      set_title(title) {
-        page.title = title;
-      },
-    });
-
-    this.loading = true;
-
+    const page = new Page(meta);
     this._view.push(page);
-
-    const handle_error = (error: any) => {
-      // TODO: handle this better
-
-      if (error instanceof DOMException && error.name == "AbortError") {
-        this._view.remove(page);
-        return;
-      }
-
-      this.loading = false;
-      this.last_controller = null;
-
-      page.show_error(error);
-    };
-
-    Promise.resolve(response).then(
-      (data) => {
-        this.loading = false;
-        this.last_controller = null;
-
-        if (data != null) {
-          page.loaded(data);
-        }
-      },
-    ).catch(handle_error);
+    page.load(uri, match, this.last_controller.signal);
   }
 
   get current_uri(): string | null {
