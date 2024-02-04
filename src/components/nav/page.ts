@@ -50,8 +50,6 @@ export class Page<Data extends unknown, State extends unknown = null>
   private _loading!: Loading;
   private _content!: Adw.Bin;
 
-  uri: string;
-
   get loading() {
     return this._stack.visible_child === this._loading;
   }
@@ -73,8 +71,10 @@ export class Page<Data extends unknown, State extends unknown = null>
     }
   }
 
+  uri: string;
   page?: MuzikaPageWidget<Data, State>;
   meta: MuzikaPageMeta<Data, State>;
+  last_match?: MatchResult<Record<string, string>>;
 
   private __state: PageState<State> | null = null;
   private __error: any;
@@ -112,7 +112,7 @@ export class Page<Data extends unknown, State extends unknown = null>
       this.__state = null;
     } else if (this.__error) {
       this.show_error(this.__error);
-    } else {
+    } else if (this.last_match) {
       // page never got to load
       this.reload();
     }
@@ -121,22 +121,16 @@ export class Page<Data extends unknown, State extends unknown = null>
   show_error(error: any) {
     this.__error = error;
 
-    let error_widget: Gtk.Widget;
+    let error_page: Gtk.Widget;
 
     if (error instanceof MuseError && error.code === ERROR_CODE.AUTH_REQUIRED) {
-      error_widget = new AuthenticationErrorPage({ error });
-      this.title = _("Authentication Required");
+      error_page = new AuthenticationErrorPage({ error });
     } else {
-      error_widget = new ErrorPage({ error });
-      this.title = _("Error");
+      error_page = new ErrorPage({ error });
     }
 
-    const toolbar_view = new Adw.ToolbarView();
-    toolbar_view.add_top_bar(Adw.HeaderBar.new());
-    toolbar_view.content = error_widget;
-
     this.loading = false;
-    this._content.child = toolbar_view;
+    this._content.child = error_page;
   }
 
   async load(
@@ -145,8 +139,8 @@ export class Page<Data extends unknown, State extends unknown = null>
     signal: AbortSignal,
   ) {
     this.loading = true;
-
     this.uri = uri;
+    this.last_match = match;
 
     try {
       const result = await this.meta.load({
@@ -159,6 +153,7 @@ export class Page<Data extends unknown, State extends unknown = null>
       });
 
       this.loading = false;
+      this.__error = null;
 
       const page = this.meta.build();
       page.present(result!);
@@ -180,5 +175,14 @@ export class Page<Data extends unknown, State extends unknown = null>
     this.show_error(error);
   }
 
-  reload() {}
+  reload(_signal?: AbortSignal) {
+    const signal = _signal ?? new AbortController().signal;
+
+    if (!this.last_match) {
+      console.error("trying to reload a page that never loaded");
+      return;
+    }
+
+    return this.load(this.uri, this.last_match, signal);
+  }
 }

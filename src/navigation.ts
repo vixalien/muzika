@@ -109,17 +109,42 @@ export class Navigator extends GObject.Object {
           this.back();
         },
       },
+      {
+        name: "reload",
+        activate: () => {
+          this.reload();
+        },
+      },
     ]);
 
     return action_group;
   }
 
-  last_controller: AbortController | null = null;
+  private abort_controller: AbortController | null = null;
 
-  private reload() {
+  private abort_current() {
+    if (this.abort_controller) {
+      this.abort_controller.abort();
+    }
+
+    this.abort_controller = new AbortController();
+  }
+
+  private reset_abort_controller() {
+    this.abort_controller = null;
+  }
+
+  reload() {
     const page = this._view.get_last_child() as Page<unknown> | null;
 
-    if (!page || !page.loading) return;
+    if (!page || page.loading || !(page instanceof Page)) return;
+
+    this.abort_current();
+
+    return page.reload(this.abort_controller!.signal)
+      ?.then(() => {
+        this.reset_abort_controller();
+      });
   }
 
   private show_page(
@@ -127,15 +152,14 @@ export class Navigator extends GObject.Object {
     match: MatchResult<Record<string, string>>,
     meta: MuzikaPageMeta,
   ) {
-    if (this.last_controller) {
-      this.last_controller.abort();
-    }
-
-    this.last_controller = new AbortController();
+    this.abort_current();
 
     const page = new Page(meta);
     this._view.push(page);
-    page.load(uri, match, this.last_controller.signal);
+    page.load(uri, match, this.abort_controller!.signal)
+      .then(() => {
+        this.reset_abort_controller();
+      });
   }
 
   get current_uri(): string | null {
