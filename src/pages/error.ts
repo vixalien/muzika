@@ -16,7 +16,7 @@ export interface ErrorPageOptions {
   error?: any;
 }
 
-export class ErrorPage extends Gtk.Box {
+export class ErrorPage extends Adw.Bin {
   static {
     GObject.registerClass({
       GTypeName: "ErrorPage",

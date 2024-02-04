@@ -6,7 +6,7 @@ import Adw from "gi://Adw";
 import { get_option } from "../muse.js";
 import { error_to_string, ErrorPageOptions } from "./error.js";
 
-export class AuthenticationErrorPage extends Gtk.Box {
+export class AuthenticationErrorPage extends Adw.Bin {
   static {
     GObject.registerClass({
       GTypeName: "AuthenticationErrorPage",

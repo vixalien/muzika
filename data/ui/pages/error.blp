@@ -1,51 +1,62 @@
 using Gtk 4.0;
 using Adw 1;
 
-template $ErrorPage : Box {
-  Adw.StatusPage status {
-    hexpand: true;
-    icon-name: "dialog-question-symbolic";
-    title: _("An error occurred");
-    description: "";
-
-    Box more {
-      orientation: vertical;
-      spacing: 6;
-
-      Expander expander {
-        label: _("Error Details");
-        halign: center;
+template $ErrorPage : Adw.Bin {
+  Adw.ToolbarView {
+    [top]
+    Adw.HeaderBar {
+      [start]
+      Button {
+        icon-name: "refresh";
+        action-name: "navigator.reload";
       }
+    }
 
-      Revealer {
-        reveal-child: bind expander.expanded;
+    Adw.StatusPage status {
+      hexpand: true;
+      icon-name: 'dialog-question-symbolic';
+      title: _('An error occurred');
+      description: '';
 
-        Adw.Clamp {
-          maximum-size: 1000;
-          tightening-threshold: 600;
+      Box more {
+        orientation: vertical;
+        spacing: 6;
 
-          Box {
-            margin-top: 6;
-            margin-bottom: 6;
-            margin-end: 6;
-            margin-start: 6;
+        Expander expander {
+          label: _('Error Details');
+          halign: center;
+        }
 
-            styles [
-              "card",
-            ]
+        Revealer {
+          reveal-child: bind expander.expanded;
 
-            TextView text_view {
-              hexpand: true;
-              top-margin: 12;
-              bottom-margin: 12;
-              left-margin: 12;
-              right-margin: 12;
-              wrap-mode: word_char;
-              editable: false;
+          Adw.Clamp {
+            maximum-size: 1000;
+            tightening-threshold: 600;
+
+            Box {
+              margin-top: 6;
+              margin-bottom: 6;
+              margin-end: 6;
+              margin-start: 6;
 
               styles [
-                "transparent",
+                "card",
               ]
+
+              TextView text_view {
+                hexpand: true;
+                top-margin: 12;
+                bottom-margin: 12;
+                left-margin: 12;
+                right-margin: 12;
+                wrap-mode: word_char;
+                editable: false;
+
+                styles [
+                  "transparent",
+                ]
+              }
             }
           }
         }
