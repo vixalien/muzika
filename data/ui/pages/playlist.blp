@@ -8,13 +8,19 @@ template $PlaylistPage : Adw.Bin {
     [top]
     Adw.HeaderBar {
       [start]
-      ToggleButton select {
-        icon-name: "selection-mode-symbolic";
+      Button {
+        icon-name: "refresh";
+        action-name: "navigator.reload";
       }
 
       [end]
       MenuButton menu {
         icon-name: "view-more-symbolic";
+      }
+
+      [end]
+      ToggleButton select {
+        icon-name: "selection-mode-symbolic";
       }
     }
   

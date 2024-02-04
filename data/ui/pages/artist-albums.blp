@@ -4,7 +4,13 @@ using Adw 1;
 template $ArtistAlbumsPage : Adw.Bin {
   Adw.ToolbarView {
     [top]
-    Adw.HeaderBar {}
+    Adw.HeaderBar {
+      [start]
+      Button {
+        icon-name: "refresh";
+        action-name: "navigator.reload";
+      }
+    }
   
     content: ScrolledWindow scrolled {
       hexpand: true;
