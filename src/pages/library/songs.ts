@@ -8,7 +8,7 @@ import { get_library_songs, LibrarySongs } from "../../muse.js";
 import { alphabetical_orders, order_id_to_name } from "./base.js";
 import { Paginator } from "src/components/paginator.js";
 import type { Order } from "libmuse/types/mixins/utils.js";
-import { EndpointContext, MuzikaComponent } from "src/navigation.js";
+import { PageLoadContext, MuzikaPageWidget } from "src/navigation.js";
 import { PlayableContainer, PlayableList } from "src/util/playablelist.js";
 import { PlaylistItemView } from "src/components/playlist/itemview.js";
 import {
@@ -20,7 +20,7 @@ import {
 GObject.type_ensure(Paginator.$gtype);
 
 export class LibrarySongsPage extends Adw.Bin
-  implements MuzikaComponent<LoadedSongs, LibrarySongsState> {
+  implements MuzikaPageWidget<LoadedSongs, LibrarySongsState> {
   static {
     GObject.registerClass({
       GTypeName: "LibrarySongsPage",
@@ -148,7 +148,7 @@ export class LibrarySongsPage extends Adw.Bin
     }
   }
 
-  static load(context: EndpointContext): Promise<LoadedSongs> {
+  static load(context: PageLoadContext): Promise<LoadedSongs> {
     return get_library_songs({
       signal: context.signal,
       order: context.url.searchParams.get("order") as Order ??

@@ -8,7 +8,7 @@ import { LibraryView } from "../../components/library/view.js";
 
 import type { LibraryOrder, Order } from "libmuse/types/mixins/utils.js";
 import { MixedCardItem } from "src/components/library/mixedcard.js";
-import { EndpointContext, MuzikaComponent } from "src/navigation.js";
+import { PageLoadContext, MuzikaPageWidget } from "src/navigation.js";
 import {
   set_scrolled_window_initial_vscroll,
   VScrollState,
@@ -56,7 +56,7 @@ interface LibraryState extends VScrollState {
 
 export class AbstractLibraryPage<PageOrder extends LibraryOrder | Order = Order>
   extends Adw.Bin
-  implements MuzikaComponent<LoadedLibrary, LibraryState> {
+  implements MuzikaPageWidget<LoadedLibrary, LibraryState> {
   static {
     GObject.registerClass({
       GTypeName: "AbstractLibraryPage",
@@ -170,7 +170,7 @@ export class AbstractLibraryPage<PageOrder extends LibraryOrder | Order = Order>
   static get_loader(
     loader: LibraryLoader<LibraryOrder> | LibraryLoader<Order>,
   ) {
-    return function (context: EndpointContext) {
+    return function (context: PageLoadContext) {
       return (loader as LibraryLoader<LibraryOrder>)({
         signal: context.signal,
         order: context.url.searchParams.get("order") as LibraryOrder ??
@@ -181,7 +181,7 @@ export class AbstractLibraryPage<PageOrder extends LibraryOrder | Order = Order>
           order: context.url.searchParams.get("order"),
         };
       });
-    } as (context: EndpointContext) => Promise<LoadedLibrary>;
+    } as (context: PageLoadContext) => Promise<LoadedLibrary>;
   }
 
   static load: ReturnType<typeof AbstractLibraryPage.get_loader>;

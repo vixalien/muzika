@@ -12,7 +12,7 @@ import {
 } from "src/muse.js";
 
 import { Carousel } from "../components/carousel/index.js";
-import { EndpointContext, MuzikaComponent } from "src/navigation.js";
+import { PageLoadContext, MuzikaPageWidget } from "src/navigation.js";
 import { PlaylistListView } from "src/components/playlist/listview.js";
 import { PlaylistItemView } from "src/components/playlist/itemview.js";
 import { PlayableContainer, PlayableList } from "src/util/playablelist.js";
@@ -30,7 +30,7 @@ GObject.type_ensure(PlaylistHeader.$gtype);
 GObject.type_ensure(PlaylistListView.$gtype);
 
 export class ChannelPage extends Adw.Bin
-  implements MuzikaComponent<Channel, ChannelState> {
+  implements MuzikaPageWidget<Channel, ChannelState> {
   static {
     GObject.registerClass({
       GTypeName: "ChannelPage",
@@ -156,7 +156,7 @@ export class ChannelPage extends Adw.Bin
     this._carousels.append(carousel);
   }
 
-  static async load(context: EndpointContext) {
+  static async load(context: PageLoadContext) {
     const artist = await get_channel(context.match.params.channelId, {
       signal: context.signal,
     });

@@ -16,7 +16,7 @@ import { SearchSection } from "../components/search/section.js";
 import { TopResultSection } from "../components/search/topresultsection.js";
 import { Paginator } from "../components/paginator.js";
 import { InlineTabSwitcher, Tab } from "../components/inline-tab-switcher.js";
-import { EndpointContext, MuzikaComponent } from "src/navigation.js";
+import { PageLoadContext, MuzikaPageWidget } from "src/navigation.js";
 import { escape_label } from "src/util/text.js";
 import {
   set_scrolled_window_initial_vscroll,
@@ -38,7 +38,7 @@ interface SearchData {
 GObject.type_ensure(InlineTabSwitcher.$gtype);
 
 export class SearchPage extends Adw.Bin
-  implements MuzikaComponent<SearchData, SearchState> {
+  implements MuzikaPageWidget<SearchData, SearchState> {
   static {
     GObject.registerClass({
       GTypeName: "SearchPage",
@@ -269,7 +269,7 @@ export class SearchPage extends Adw.Bin
       });
   }
 
-  static load(context: EndpointContext) {
+  static load(context: PageLoadContext) {
     const autocorrect = context.url.searchParams.get("autocorrect");
 
     const args = [decodeURIComponent(context.match.params.query), {

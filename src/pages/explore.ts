@@ -11,7 +11,7 @@ import type {
 
 import { Carousel } from "../components/carousel/index.js";
 import { Loading } from "../components/loading.js";
-import { EndpointContext, MuzikaComponent } from "src/navigation.js";
+import { PageLoadContext, MuzikaPageWidget } from "src/navigation.js";
 import { MixedCardItem } from "src/components/library/mixedcard.js";
 import {
   set_scrolled_window_initial_vscroll,
@@ -25,7 +25,7 @@ export interface ExplorePageState extends VScrollState {
 }
 
 export class ExplorePage extends Adw.Bin
-  implements MuzikaComponent<ExploreContents, ExplorePageState> {
+  implements MuzikaPageWidget<ExploreContents, ExplorePageState> {
   static {
     GObject.registerClass({
       GTypeName: "ExplorePage",
@@ -39,7 +39,7 @@ export class ExplorePage extends Adw.Bin
 
   contents?: ExploreContents;
 
-  static load(ctx: EndpointContext) {
+  static load(ctx: PageLoadContext) {
     return get_explore({
       signal: ctx.signal,
     });

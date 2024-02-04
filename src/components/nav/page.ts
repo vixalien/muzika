@@ -3,7 +3,7 @@ import Adw from "gi://Adw";
 import GObject from "gi://GObject";
 
 import { Loading } from "../loading";
-import { Endpoint, MuzikaComponent } from "src/navigation";
+import { MuzikaPageMeta, MuzikaPageWidget } from "src/navigation";
 import { ERROR_CODE, MuseError } from "src/muse";
 import { AuthenticationErrorPage } from "src/pages/authentication-error";
 import { ErrorPage } from "src/pages/error";
@@ -72,30 +72,30 @@ export class Page<Data extends unknown, State extends unknown = null>
     }
   }
 
-  page: MuzikaComponent<Data, State>;
-  endpoint: Endpoint<MuzikaComponent<Data, State>>;
+  page: MuzikaPageWidget<Data, State>;
+  meta: MuzikaPageMeta<Data, State>;
 
   private __state: PageState<State> | null = null;
   private __error: any;
 
   constructor(
     uri: string,
-    endpoint: Endpoint<MuzikaComponent<Data, State>>,
-    page: MuzikaComponent<Data, State>,
+    meta: MuzikaPageMeta<Data, State>,
+    page: MuzikaPageWidget<Data, State>,
   ) {
     super();
 
     this.uri = uri;
 
-    this.endpoint = endpoint;
+    this.meta = meta;
     this.page = page;
-    this.title = endpoint.title;
+    this.title = meta.title;
 
     this.loading = true;
   }
 
   loaded(data: Data) {
-    const page = this.endpoint.component();
+    const page = this.meta.build();
 
     page.present(data);
 
@@ -118,7 +118,7 @@ export class Page<Data extends unknown, State extends unknown = null>
 
   vfunc_showing(): void {
     if (this.__state) {
-      const page = this.endpoint.component();
+      const page = this.meta.build();
       page.restore_state(this.__state.state);
       this.page = page;
       this._content.child = page;

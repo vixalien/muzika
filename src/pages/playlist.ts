@@ -22,7 +22,7 @@ import {
 
 import { Carousel } from "../components/carousel/index.js";
 import { PlaylistHeader } from "../components/playlist/header.js";
-import { EndpointContext, MuzikaComponent } from "src/navigation.js";
+import { PageLoadContext, MuzikaPageWidget } from "src/navigation.js";
 import { ObjectContainer } from "src/util/objectcontainer.js";
 import { PlaylistItemView } from "src/components/playlist/itemview.js";
 import { Paginator } from "src/components/paginator.js";
@@ -51,7 +51,7 @@ GObject.type_ensure(PlaylistItemView.$gtype);
 GObject.type_ensure(PlaylistBar.$gtype);
 
 export class PlaylistPage extends Adw.Bin
-  implements MuzikaComponent<Playlist, PlaylistState> {
+  implements MuzikaPageWidget<Playlist, PlaylistState> {
   static {
     GObject.registerClass({
       GTypeName: "PlaylistPage",
@@ -528,7 +528,7 @@ export class PlaylistPage extends Adw.Bin
     }
   }
 
-  static async load(context: EndpointContext) {
+  static async load(context: PageLoadContext) {
     const data = await get_playlist(context.match.params.playlistId, {
       related: true,
       suggestions_limit: 6,

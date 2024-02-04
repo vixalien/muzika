@@ -6,56 +6,37 @@ import Adw from "gi://Adw";
 import { match, MatchFunction, MatchResult } from "path-to-regexp";
 
 import { Window } from "./window.js";
-import { endpoints } from "./endpoints.js";
+import { pageMetas } from "./pages.js";
 import { AddActionEntries } from "./util/action.js";
 import { Page } from "./components/nav/page.js";
 import { list_model_to_array } from "./util/list.js";
 
-export type EndpointResponse<Data> = {
-  title?: string;
-  data: Data;
-};
-
-export interface ShowPageOptions {
-  title: string;
-  page: Gtk.Widget;
-  endpoint: Endpoint<any>;
-  uri: string;
-}
-
-export interface MuzikaComponent<
-  Data extends any,
-  State extends any,
-> {
+export interface MuzikaPageWidget<Data = unknown, State = unknown>
+  extends Gtk.Widget {
   __page_state?: State;
   present(data: Data): void;
   get_state(): State;
   restore_state(state: State): void;
 }
 
-export interface EndpointContext {
+export interface PageLoadContext {
   match: MatchResult<Record<string, string>>;
   url: URL;
   signal: AbortSignal;
   set_title(title: string): void;
 }
 
-export type Endpoint<Page extends MuzikaComponent<unknown, unknown>> =
-  Page extends MuzikaComponent<infer Data, infer State> ? {
-      title: string;
-      uri: string;
-      component(): MuzikaComponent<Data, State> & Gtk.Widget;
-      load(context: EndpointContext): void | Promise<void | Data>;
-    }
-    : never;
+export type MuzikaPageMeta<Data = unknown, State = unknown> = {
+  title: string;
+  uri: string;
+  build(): MuzikaPageWidget<Data, State>;
+  load(context: PageLoadContext): void | Promise<void | Data>;
+};
 
 export class Navigator extends GObject.Object {
   private _view: Adw.NavigationView;
 
-  private match_map: Map<
-    MatchFunction,
-    Endpoint<MuzikaComponent<unknown, unknown>>
-  > = new Map();
+  private match_map: Map<MatchFunction, MuzikaPageMeta> = new Map();
 
   private stacks: Map<string, Adw.NavigationPage[]> = new Map();
 
@@ -97,9 +78,9 @@ export class Navigator extends GObject.Object {
 
     this.match_map = new Map();
 
-    for (const endpoint of endpoints) {
-      const fn = match(endpoint.uri, {});
-      this.match_map.set(fn, endpoint);
+    for (const page of pageMetas) {
+      const fn = match(page.uri, {});
+      this.match_map.set(fn, page);
     }
   }
 
@@ -135,14 +116,20 @@ export class Navigator extends GObject.Object {
 
   last_controller: AbortController | null = null;
 
+  private reload() {
+    const page = this._view.get_last_child() as Page<unknown> | null;
+
+    if (!page || !page.loading) return;
+  }
+
   private show_page(
     uri: string,
     match: MatchResult<Record<string, string>>,
-    endpoint: Endpoint<MuzikaComponent<unknown, unknown>>,
+    meta: MuzikaPageMeta,
   ) {
     const url = new URL("muzika:" + uri);
-    const component = endpoint.component();
-    const page = new Page(uri, endpoint, component);
+    const component = meta.build();
+    const page = new Page(uri, meta, component);
 
     if (this.last_controller) {
       this.last_controller.abort();
@@ -150,7 +137,7 @@ export class Navigator extends GObject.Object {
 
     this.last_controller = new AbortController();
 
-    const response = endpoint.load({
+    const response = meta.load({
       match,
       url,
       signal: this.last_controller.signal,
@@ -215,12 +202,6 @@ export class Navigator extends GObject.Object {
     this._view.pop();
   }
 
-  // reload(navigate?: boolean) {
-  //   this.go(0, navigate);
-  // }
-  reload() {
-  }
-
   private match_uri(uri: string) {
     // muzika:home to
     // muzika/home
@@ -238,13 +219,13 @@ export class Navigator extends GObject.Object {
       );
     }
 
-    for (const [fn, endpoint] of this.match_map) {
+    for (const [fn, page] of this.match_map) {
       const match = fn(path);
 
       if (match) {
         return {
           match: match as MatchResult<Record<string, string>>,
-          endpoint,
+          page,
         };
       }
     }
@@ -254,7 +235,7 @@ export class Navigator extends GObject.Object {
     const match = this.match_uri(uri);
 
     if (match) {
-      this.show_page(uri, match.match, match.endpoint);
+      this.show_page(uri, match.match, match.page);
       this.emit("navigate");
     }
   }

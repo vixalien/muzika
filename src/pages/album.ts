@@ -13,7 +13,7 @@ import {
 } from "../muse.js";
 
 import { Carousel } from "../components/carousel/index.js";
-import { EndpointContext, MuzikaComponent } from "src/navigation.js";
+import { MuzikaPageWidget, PageLoadContext } from "src/navigation.js";
 import { PlaylistItemView } from "src/components/playlist/itemview.js";
 import { PlayableContainer, PlayableList } from "src/util/playablelist.js";
 import {
@@ -21,11 +21,6 @@ import {
   VScrollState,
 } from "src/util/scrolled.js";
 import { PlaylistHeader } from "src/components/playlist/header.js";
-
-interface AlbumState extends VScrollState {
-  album: AlbumResult;
-  track?: string;
-}
 
 GObject.type_ensure(PlaylistHeader.$gtype);
 GObject.type_ensure(PlaylistItemView.$gtype);
@@ -35,8 +30,10 @@ interface AlbumProps {
   track?: string;
 }
 
+interface AlbumState extends VScrollState, AlbumProps {}
+
 export class AlbumPage extends Adw.Bin
-  implements MuzikaComponent<AlbumProps, AlbumState> {
+  implements MuzikaPageWidget<AlbumProps, AlbumState> {
   static {
     GObject.registerClass({
       GTypeName: "AlbumPage",
@@ -217,7 +214,7 @@ export class AlbumPage extends Adw.Bin
 
   no_more = false;
 
-  static async load(context: EndpointContext) {
+  static async load(context: PageLoadContext) {
     const album = await get_album(context.match.params.albumId, {
       signal: context.signal,
     });

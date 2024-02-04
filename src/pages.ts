@@ -1,4 +1,4 @@
-import { Endpoint, MuzikaComponent } from "./navigation.js";
+import { MuzikaPageMeta } from "./navigation.js";
 
 import { LibraryPage } from "./pages/library/index.js";
 import { HomePage } from "./pages/home.js";
@@ -21,125 +21,125 @@ import { MoodsPage } from "./pages/moods.js";
 import { MoodPlaylistsPage } from "./pages/mood-playlists.js";
 import { NewReleasesPage } from "./pages/new-releases.js";
 
-export const endpoints: Endpoint<MuzikaComponent<unknown, unknown>>[] = [
+export const pageMetas: MuzikaPageMeta[] = [
   {
     uri: "home",
     title: _("Home"),
-    component: () => new HomePage(),
+    build: () => new HomePage(),
     load: HomePage.load,
   },
   {
     uri: "playlist/:playlistId",
     title: _("Playlist"),
-    component: () => new PlaylistPage(),
+    build: () => new PlaylistPage(),
     load: PlaylistPage.load,
   },
   {
     uri: "album/:albumId",
     title: _("Album"),
-    component: () => new AlbumPage(),
+    build: () => new AlbumPage(),
     load: AlbumPage.load,
   },
   {
     uri: "artist/:channelId",
     title: _("Artist"),
-    component: () => new ArtistPage(),
+    build: () => new ArtistPage(),
     load: ArtistPage.load,
   },
   {
     uri: "search/:query",
     title: _("Search Results"),
-    component: () => new SearchPage(),
+    build: () => new SearchPage(),
     load: SearchPage.load,
   },
   {
     uri: "library",
     title: _("Library"),
-    component: () => new LibraryPage(),
+    build: () => new LibraryPage(),
     load: LibraryPage.load,
   },
   {
     uri: "library/playlists",
     title: _("Library Playlists"),
-    component: () => new LibraryPlaylistsPage(),
+    build: () => new LibraryPlaylistsPage(),
     load: LibraryPlaylistsPage.load,
   },
   {
     uri: "library/albums",
     title: _("Library Albums"),
-    component: () => new LibraryAlbumsPage(),
+    build: () => new LibraryAlbumsPage(),
     load: LibraryAlbumsPage.load,
   },
   {
     uri: "library/artists",
     title: _("Library Artists"),
-    component: () => new LibraryArtistsPage(),
+    build: () => new LibraryArtistsPage(),
     load: LibraryArtistsPage.load,
   },
   {
     uri: "library/subscriptions",
     title: _("Library Subscriptions"),
-    component: () => new LibrarySubscriptionsPage(),
+    build: () => new LibrarySubscriptionsPage(),
     load: LibrarySubscriptionsPage.load,
   },
   {
     uri: "library/songs",
     title: _("Library Songs"),
-    component: () => new LibrarySongsPage(),
+    build: () => new LibrarySongsPage(),
     load: LibrarySongsPage.load,
   },
   {
     uri: "history",
     title: _("History"),
-    component: () => new HistoryPage(),
+    build: () => new HistoryPage(),
     load: HistoryPage.load,
   },
   {
     uri: "artist-albums/:channelId/:params",
     title: _("Artist Albums"),
-    component: () => new ArtistAlbumsPage(),
+    build: () => new ArtistAlbumsPage(),
     load: ArtistAlbumsPage.load,
   },
   {
     uri: "channel/:channelId",
     title: _("Channel"),
-    component: () => new ChannelPage(),
+    build: () => new ChannelPage(),
     load: ChannelPage.load,
   },
   {
     uri: "channel-playlists/:channelId/:params",
     title: _("Channel Playlists"),
-    component: () => new ChannelPlaylistsPage(),
+    build: () => new ChannelPlaylistsPage(),
     load: ChannelPlaylistsPage.load,
   },
   {
     uri: "explore",
     title: _("Explore"),
-    component: () => new ExplorePage(),
+    build: () => new ExplorePage(),
     load: ExplorePage.load,
   },
   {
     uri: "charts",
     title: _("Charts"),
-    component: () => new ChartsPage(),
+    build: () => new ChartsPage(),
     load: ChartsPage.load,
   },
   {
     uri: "moods-and-genres",
     title: _("Moods and genres"),
-    component: () => new MoodsPage(),
+    build: () => new MoodsPage(),
     load: MoodsPage.load,
   },
   {
     uri: "mood-playlists/:params",
     title: _("Mood"),
-    component: () => new MoodPlaylistsPage(),
+    build: () => new MoodPlaylistsPage(),
     load: MoodPlaylistsPage.load,
   },
   {
     uri: "new-releases",
     title: _("New Releases"),
-    component: () => new NewReleasesPage(),
+    build: () => new NewReleasesPage(),
     load: NewReleasesPage.load,
   },
 ];

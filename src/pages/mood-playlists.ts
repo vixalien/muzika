@@ -6,7 +6,7 @@ import { get_mood_playlists, MoodPlaylists } from "../muse.js";
 
 import { Carousel } from "../components/carousel/index.js";
 import { Loading } from "../components/loading.js";
-import { EndpointContext, MuzikaComponent } from "src/navigation.js";
+import { PageLoadContext, MuzikaPageWidget } from "src/navigation.js";
 import {
   set_scrolled_window_initial_vscroll,
   VScrollState,
@@ -19,7 +19,7 @@ export interface MoodPlaylistsPageState extends VScrollState {
 }
 
 export class MoodPlaylistsPage extends Adw.Bin
-  implements MuzikaComponent<MoodPlaylists, MoodPlaylistsPageState> {
+  implements MuzikaPageWidget<MoodPlaylists, MoodPlaylistsPageState> {
   static {
     GObject.registerClass({
       GTypeName: "MoodPlaylistsPage",
@@ -33,7 +33,7 @@ export class MoodPlaylistsPage extends Adw.Bin
 
   contents?: MoodPlaylists;
 
-  static async load(ctx: EndpointContext) {
+  static async load(ctx: PageLoadContext) {
     const data = await get_mood_playlists(ctx.match.params.params, {
       signal: ctx.signal,
     });
