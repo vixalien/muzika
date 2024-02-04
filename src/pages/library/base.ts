@@ -8,7 +8,7 @@ import { LibraryView } from "../../components/library/view.js";
 
 import type { LibraryOrder, Order } from "libmuse/types/mixins/utils.js";
 import { MixedCardItem } from "src/components/library/mixedcard.js";
-import { PageLoadContext, MuzikaPageWidget } from "src/navigation.js";
+import { MuzikaPageWidget, PageLoadContext } from "src/navigation.js";
 import {
   set_scrolled_window_initial_vscroll,
   VScrollState,
@@ -79,15 +79,24 @@ export class AbstractLibraryPage<PageOrder extends LibraryOrder | Order = Order>
     this.uri = options.uri;
 
     this.view = new LibraryView({
-      filters: Array.from((this.orders).keys()),
+      filters: Array.from(this.orders.keys()),
     });
 
     this.view.connect("paginate", () => {
       this.load_more();
     });
 
+    const headerbar = new Adw.HeaderBar();
+
+    headerbar.pack_start(
+      new Gtk.Button({
+        icon_name: "refresh",
+        action_name: "navigator.reload",
+      }),
+    );
+
     this.toolbar_view = new Adw.ToolbarView();
-    this.toolbar_view.add_top_bar(Adw.HeaderBar.new());
+    this.toolbar_view.add_top_bar(headerbar);
     this.toolbar_view.content = this.view;
 
     this.child = this.toolbar_view;
