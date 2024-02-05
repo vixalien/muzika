@@ -104,6 +104,21 @@ export class Navigator extends GObject.Object {
         },
       },
       {
+        name: "replace",
+        parameter_type: "s",
+        activate: (_action, param) => {
+          if (!param) return;
+
+          const [url] = param.get_string();
+
+          if (url) {
+            if (url.startsWith("muzika:")) {
+              this.replace(url.slice(7));
+            }
+          }
+        },
+      },
+      {
         name: "back",
         activate: (_) => {
           this.back();
@@ -205,13 +220,13 @@ export class Navigator extends GObject.Object {
       );
     }
 
-    for (const [fn, page] of this.match_map) {
+    for (const [fn, meta] of this.match_map) {
       const match = fn(path);
 
       if (match) {
         return {
           match: match as MatchResult<Record<string, string>>,
-          page,
+          meta,
         };
       }
     }
@@ -221,8 +236,42 @@ export class Navigator extends GObject.Object {
     const match = this.match_uri(uri);
 
     if (match) {
-      this.show_page(uri, match.match, match.page);
+      this.show_page(uri, match.match, match.meta);
       this.emit("navigate");
+    }
+  }
+
+  replace(uri: string) {
+    const page = this._view.get_last_child() as Page<unknown> | null;
+
+    if (!page || !(page instanceof Page)) return;
+
+    const match = this.match_uri(uri);
+
+    if (!match) {
+      console.error(`Tried to replace a page with an invalid uri: ${uri}`);
+      return;
+    }
+
+    if (match.meta !== page.meta) {
+      console.error(
+        `Tried to replace a page with a uri that renders a different page. Expected: ${page.meta.uri}, got: ${match.meta.uri}`,
+      );
+      return;
+    }
+
+    this.abort_current();
+
+    if (match) {
+      page.load;
+      return page.load(
+        uri,
+        match.match,
+        this.abort_controller!.signal,
+      )
+        ?.then(() => {
+          this.reset_abort_controller();
+        });
     }
   }
 
