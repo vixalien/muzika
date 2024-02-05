@@ -827,10 +827,10 @@
     },
     {
         "type": "file",
-        "url": "https://registry.yarnpkg.com/libmuse/-/libmuse-0.0.87.tgz",
-        "sha1": "9332911784aaab2f027d932bbc390fd2af6e89f3",
+        "url": "https://registry.yarnpkg.com/libmuse/-/libmuse-0.0.88.tgz",
+        "sha1": "82d2a419ac709eb9f9f4e460a4f92c39cbb7d9b4",
         "dest": "yarn-mirror",
-        "dest-filename": "libmuse-0.0.87.tgz"
+        "dest-filename": "libmuse-0.0.88.tgz"
     },
     {
         "type": "file",
