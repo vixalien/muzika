@@ -74,14 +74,35 @@ export class LoginPage extends Adw.Window {
     });
   }
 
+  private _last_signal?: AbortSignal;
+
   async auth_flow(signal?: AbortSignal) {
     this._stack.visible_child = this._spinner;
     this._spinner.start();
+
+    this._last_signal = signal;
 
     const login_code = await get_option("auth").get_login_code();
 
     this.show_code(login_code);
 
-    await get_option("auth").load_token_with_code(login_code, signal);
+    await get_option("auth")
+      .load_token_with_code(login_code, signal)
+      .then(() => {
+        this._last_signal = undefined;
+      })
+      .catch((error) => {
+        if ((error instanceof DOMException) && error.name === "AbortError") {
+          return;
+        } else {
+          throw error;
+        }
+      });
+  }
+
+  private refresh_cb() {
+    const signal = this._last_signal;
+
+    this.auth_flow(signal);
   }
 }
