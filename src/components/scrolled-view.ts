@@ -64,24 +64,10 @@ export class ScrolledView extends Gtk.Widget {
         ),
       },
     }, this);
-
-    // this.set_layout_manager_type(Gtk.BoxLayout.$gtype);
   }
 
   constructor() {
     super();
-
-    // const mgr = this.get_layout_manager() as Gtk.BoxLayout;
-
-    // mgr.orientation = Gtk.Orientation.VERTICAL;
-
-    this.child_adjustment[Gtk.Orientation.HORIZONTAL].connect("changed", () => {
-      console.log("hchanged!");
-    });
-
-    this.child_adjustment[Gtk.Orientation.HORIZONTAL].connect("changed", () => {
-      console.log("vchanged!");
-    });
   }
 
   // property header
@@ -297,8 +283,33 @@ export class ScrolledView extends Gtk.Widget {
         allocation.x = -x;
         allocation.y = -y;
 
-        // x += allocation.width;
-        y -= allocation.height;
+        // scroll the child widget direct using it's scrollable interface
+        if (child === this._child && isScrollable(child)) {
+          const widget_height = allocation.height;
+          const y_offset = Math.max(0, y);
+
+          const visible_height = Math.min(
+            widget_height,
+            height + Math.max(y, 0),
+          );
+
+          // update adjust values
+          const child_adjustment = this.child_adjustment[1];
+          child_adjustment.freeze_notify();
+          child_adjustment.value = y_offset;
+          child_adjustment.page_size = visible_height;
+          child_adjustment.thaw_notify();
+
+          allocation.height = Math.min(
+            visible_height,
+            Math.max(0, widget_height - y),
+          );
+          allocation.y += y_offset;
+
+          y -= widget_height;
+        } else {
+          y -= allocation.height;
+        }
 
         child.size_allocate(allocation, -1);
       }
@@ -306,35 +317,7 @@ export class ScrolledView extends Gtk.Widget {
 
     this.adjustment[Gtk.Orientation.VERTICAL].thaw_notify();
     this.adjustment[Gtk.Orientation.HORIZONTAL].thaw_notify();
-
-    // for (
-    //   const orientation of [
-    //     Gtk.Orientation.VERTICAL,
-    //     Gtk.Orientation.HORIZONTAL,
-    //   ]
-    // ) {
-    //   const adjustment = this.adjustment[orientation];
-
-    //   this.child_adjustment[orientation].configure(
-    //     adjustment.value,
-    //     adjustment.lower,
-    //     adjustment.upper,
-    //     adjustment.step_increment,
-    //     adjustment.page_increment,
-    //     adjustment.page_size,
-    //   );
-    // }
-
-    // return super.vfunc_size_allocate(width, height, baseline);
   }
-
-  // vfunc_size_allocate(width: number, height: number, baseline: number): void {
-  //   const header_size = this.get_widget_size(this._header, width, height);
-  //   const remnants = [
-  //     width - header_size[Gtk.Orientation.HORIZONTAL],
-  //     height - header_size[Gtk.Orientation.VERTICAL],
-  //   ];
-  // }
 
   private get_widgets_sizes(
     widgets: (Gtk.Widget | undefined)[],
