@@ -51,9 +51,9 @@ export class ChartsPage extends Adw.Bin
       if (!country || country.selected) return;
 
       this.activate_action(
-        `navigator.visit`,
+        `navigator.replace`,
         GLib.Variant.new_string(
-          `muzika:charts?country=${country.code}&replace=true`,
+          `muzika:charts?country=${country.code}`,
         ),
       );
     });
