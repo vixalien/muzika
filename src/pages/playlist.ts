@@ -22,7 +22,7 @@ import {
 
 import { Carousel } from "../components/carousel/index.js";
 import { PlaylistHeader } from "../components/playlist/header.js";
-import { PageLoadContext, MuzikaPageWidget } from "src/navigation.js";
+import { MuzikaPageWidget, PageLoadContext } from "src/navigation.js";
 import { ObjectContainer } from "src/util/objectcontainer.js";
 import { PlaylistItemView } from "src/components/playlist/itemview.js";
 import { Paginator } from "src/components/paginator.js";
@@ -166,11 +166,10 @@ export class PlaylistPage extends Adw.Bin
     this.insert_action_group("playlist", group);
   }
 
-  private delete_playlist() {
+  private async delete_playlist() {
     if (this.playlist?.editable !== true) return;
 
-    const dialog = Adw.MessageDialog.new(
-      this.get_window(),
+    const dialog = Adw.AlertDialog.new(
       _("Delete playlist"),
       _("Are you sure you want to delete this playlist?"),
     );
@@ -182,26 +181,25 @@ export class PlaylistPage extends Adw.Bin
       Adw.ResponseAppearance.DESTRUCTIVE,
     );
 
-    dialog.connect("response", (__, response) => {
-      if (response === "delete") {
-        delete_playlist(this.playlist!.id)
-          .then(() => {
-            this.get_window().add_toast(
-              _("Playlist deleted"),
-            );
-            this.activate_action("navigation.pop", null);
-          }).catch(() => {
-            this.get_window().add_toast(
-              _("Couldn't delete playlist"),
-            );
-          });
-      }
-    });
+    const response = await dialog.choose(this.get_window(), null)
+      .catch(console.error);
 
-    dialog.present();
+    if (response === "delete") {
+      delete_playlist(this.playlist!.id)
+        .then(() => {
+          this.get_window().add_toast(
+            _("Playlist deleted"),
+          );
+          this.activate_action("navigation.pop", null);
+        }).catch(() => {
+          this.get_window().add_toast(
+            _("Couldn't delete playlist"),
+          );
+        });
+    }
   }
 
-  private remove_tracks(positions: number[]) {
+  private async remove_tracks(positions: number[]) {
     if (!this.playlist || positions.length === 0) return;
 
     const items: Parameters<typeof remove_playlist_items>[1] = [];
@@ -237,8 +235,7 @@ export class PlaylistPage extends Adw.Bin
       );
     };
 
-    const dialog = Adw.MessageDialog.new(
-      this.get_window(),
+    const dialog = Adw.AlertDialog.new(
       _("Remove from playlist"),
       _(" Are you sure that you want to remove the selected content from the playlist? "),
     );
@@ -250,35 +247,29 @@ export class PlaylistPage extends Adw.Bin
       Adw.ResponseAppearance.DESTRUCTIVE,
     );
 
-    dialog.connect("response", (_, response) => {
-      if (response === "remove") {
-        remove_playlist_items(this.playlist!.id, items)
-          .then((message) => {
-            if (message.status === "STATUS_SUCCEEDED") {
-              success_toast();
+    const response = await dialog.choose(this.get_window(), null);
 
-              positions
-                // order by position descending
-                .sort((a, b) => b - a)
-                .forEach((position) => {
-                  this.model.remove(position);
-                });
+    if (response === "remove") {
+      const message = await remove_playlist_items(this.playlist!.id, items)
+        .catch((err) => {
+          console.error(err);
+        });
 
-              this._playlist_item_view.multi_selection_model!.unselect_all();
-            } else {
-              error_toast();
-            }
-          })
-          .catch((err) => {
-            error_toast();
-            console.error(err);
+      if (message?.status === "STATUS_SUCCEEDED") {
+        success_toast();
+
+        positions
+          // order by position descending
+          .sort((a, b) => b - a)
+          .forEach((position) => {
+            this.model.remove(position);
           });
-      } else {
-        dialog.close();
-      }
-    });
 
-    dialog.present();
+        this._playlist_item_view.multi_selection_model!.unselect_all();
+      } else {
+        error_toast();
+      }
+    }
   }
 
   private add_cb(
@@ -325,13 +316,11 @@ export class PlaylistPage extends Adw.Bin
 
     const edit_dialog = new EditPlaylistDialog(this.playlist);
 
-    edit_dialog.set_transient_for(this.get_root() as Gtk.Window);
-
     edit_dialog.connect("saved", (_, values: ObjectContainer<EditedValues>) => {
       this.update_values(values.object);
     });
 
-    edit_dialog.present();
+    edit_dialog.present(this.get_root() as Gtk.Window);
   }
 
   update_values(values: EditedValues) {

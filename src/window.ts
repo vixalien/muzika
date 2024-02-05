@@ -34,7 +34,7 @@ import { get_player, Settings } from "./application.js";
 import {
   PlayerNowPlayingDetails,
 } from "./components/player/now-playing/details.js";
-import { LoginPage } from "./pages/login.js";
+import { LoginDialog } from "./pages/login.js";
 import { AddActionEntries } from "./util/action.js";
 import { get_current_user, get_option } from "libmuse";
 import { PlayerView } from "./components/player/view.js";
@@ -49,6 +49,8 @@ GObject.type_ensure(PlayerNowPlayingDetails.$gtype);
 GObject.type_ensure(PlayerNowPlayingView.$gtype);
 GObject.type_ensure(PlayerView.$gtype);
 GObject.type_ensure(WindowSidebar.$gtype);
+
+Gio._promisify(Adw.AlertDialog.prototype, "choose", "choose_finish");
 
 export class Window extends Adw.ApplicationWindow {
   static {
@@ -272,8 +274,8 @@ export class Window extends Adw.ApplicationWindow {
     this.add_action(visible_view);
   }
 
-  logout() {
-    const dialog = Adw.MessageDialog.new(this, _("Logout"), _("Are you sure?"));
+  async logout() {
+    const dialog = Adw.AlertDialog.new(_("Logout"), _("Are you sure?"));
     dialog.add_response("cancel", _("Cancel"));
     dialog.add_response("logout", _("Logout"));
     dialog.default_response = "cancel";
@@ -282,13 +284,13 @@ export class Window extends Adw.ApplicationWindow {
       Adw.ResponseAppearance.DESTRUCTIVE,
     );
 
-    dialog.connect("response", (_, response) => {
-      if (response === "logout") {
-        get_option("auth").token = null;
-      }
-    });
+    const response = await dialog.choose(this, null)
+      .catch(console.error);
 
-    dialog.present();
+    if (response === "logout") {
+      get_option("auth").token = null;
+      this.navigator.reload();
+    }
   }
 
   add_toast(text: string) {
@@ -300,19 +302,17 @@ export class Window extends Adw.ApplicationWindow {
   }
 
   auth_flow() {
-    const page = new LoginPage();
+    const loginDialog = new LoginDialog();
 
-    page.set_modal(true);
-    page.set_transient_for(this);
-    page.present();
+    loginDialog.present(this);
 
     const controller = new AbortController();
 
-    page.connect("close-request", () => {
+    loginDialog.connect("closed", () => {
       controller.abort();
     });
 
-    page.auth_flow(controller.signal)
+    loginDialog.auth_flow(controller.signal)
       .then(() => {
         this.add_toast(_("Successfully logged in!"));
         this.navigator.reload();
@@ -327,7 +327,7 @@ export class Window extends Adw.ApplicationWindow {
         console.log("An error happened while logging in", error);
       })
       .finally(() => {
-        page.destroy();
+        loginDialog.close();
       });
   }
 

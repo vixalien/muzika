@@ -1,13 +1,7 @@
 using Gtk 4.0;
 using Adw 1;
 
-template $MuzikaPreferencesWindow : Adw.PreferencesWindow {
-  default-width: 600;
-  default-height: 400;
-  search-enabled: false;
-  hide-on-close: true;
-  title: _("Preferences");
-
+template $MuzikaPreferencesDialog : Adw.PreferencesDialog {
   Adw.PreferencesPage sound_page {
     title: _("Sound");
     icon-name: "multimedia-volume-control-symbolic";
