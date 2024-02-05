@@ -131,7 +131,7 @@ export class Window extends Adw.ApplicationWindow {
 
     this.navigator = new Navigator(this._navigation_view);
 
-    this.navigator.navigate("home");
+    this.navigator.navigate("playlist:LM");
 
     this.navigator.connect("navigate", () => {
       this.show_view("main");
