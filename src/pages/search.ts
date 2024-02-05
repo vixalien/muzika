@@ -80,7 +80,7 @@ export class SearchPage extends Adw.Bin
     this._context_label.connect("activate-link", (_, uri) => {
       if (uri && uri.startsWith("muzika:")) {
         this.activate_action(
-          "navigator.visit",
+          "navigator.replace",
           GLib.Variant.new_string(uri),
         );
 
@@ -162,7 +162,7 @@ export class SearchPage extends Adw.Bin
           new Gtk.ToggleButton({
             label: filter_to_string(filter),
             css_classes: ["chip"],
-            action_name: "navigator.visit",
+            action_name: "navigator.replace",
             action_target: GLib.Variant.new("s", url),
             active: selected,
           }),

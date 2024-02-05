@@ -306,7 +306,7 @@ export class InlineTabSwitcher extends Gtk.Widget {
     }
 
     if (tab.navigate != null) {
-      button.action_name = "navigator.visit";
+      button.action_name = "navigator.replace";
       button.action_target = GLib.Variant.new_string(tab.navigate);
     }
 
