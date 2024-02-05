@@ -33,161 +33,148 @@ template $PlaylistPage : Adw.Bin {
         }
       }
 
-      ScrolledWindow scrolled {
-        vexpand: true;
-        hexpand: true;
-        hscrollbar-policy: never;
+      ScrolledWindow {
+        $ScrolledView {
+          vexpand: true;
+          hexpand: true;
 
-        Box {
-          orientation: vertical;
+          [header]
+          $PlaylistHeader header {
+            show-large-header: true;
 
-          Adw.Clamp {
-            margin-top: 24;
-            tightening-threshold: 1200;
-            maximum-size: 1400;
+            [primary-button]
+            Button shuffle_button {
+              action-name: "queue.play-playlist";
 
-            Box {
-              spacing: 24;
-              orientation: vertical;
-              valign: start;
+              styles ["suggested-action", "pill"]
 
-              $PlaylistHeader header {
-                show-large-header: true;
-
-                [primary-button]
-                Button shuffle_button {
-                  action-name: "queue.play-playlist";
-
-                  styles ["suggested-action", "pill"]
-
-                  Adw.ButtonContent {
-                    label: _("Shuffle");
-                    icon-name: "media-playlist-shuffle-symbolic";
-                  }
-                }
-
-                [primary-button]
-                Button edit_playlist_button {
-                  clicked => $edit_cb();
-
-                  styles ["pill"]
-
-                  Adw.ButtonContent {
-                    label: _("Edit Playlist");
-                    icon-name: "document-edit-symbolic";
-                  }
-                }
-
-                [primary-button]
-                Button add_to_library_button {
-                  styles ["pill"]
-
-                  Adw.ButtonContent {
-                    label: _("Add to Library");
-                    icon-name: "list-add-symbolic";
-                  }
-                }
+              Adw.ButtonContent {
+                label: _("Shuffle");
+                icon-name: "media-playlist-shuffle-symbolic";
               }
+            }
 
-              Box {
-                orientation: vertical;
+            [primary-button]
+            Button edit_playlist_button {
+              clicked => $edit_cb();
 
-                $PlaylistItemView playlist_item_view {
-                  show-column: true;
-                }
+              styles ["pill"]
 
-                $Paginator paginator {
-                  activate => $load_more();
-                }
+              Adw.ButtonContent {
+                label: _("Edit Playlist");
+                icon-name: "document-edit-symbolic";
+              }
+            }
 
-                Box more {
-                  margin-top: 12;
-                  margin-start: 12;
-                  margin-end: 12;
-                  margin-bottom: 24;
+            [primary-button]
+            Button add_to_library_button {
+              styles ["pill"]
 
-                  Box data {
-                    styles [
-                      "dim-label",
-                    ]
-
-                    spacing: 6;
-
-                    Label trackCount {
-                    }
-
-                    Label separator {
-                      label: "·";
-                    }
-
-                    Label duration {
-                    }
-                  }
-                }
+              Adw.ButtonContent {
+                label: _("Add to Library");
+                icon-name: "list-add-symbolic";
               }
             }
           }
 
-          Adw.Clamp insights_clamp {
-            tightening-threshold: 1200;
-            maximum-size: 1400;
-            vexpand: true;
-            visible: false;
+          $PlaylistListView playlist_item_view {
+            // show-column: true;
+          }
 
-            styles ["insights-clamp"]
+          [footer]
+          Box {
+            orientation: vertical;
 
-            Box insights {
-              orientation: vertical;
-              spacing: 12;
+            $Paginator paginator {
+              activate => $load_more();
+            }
 
-              styles ["insights-box"]
-              
-              Box suggestions {
-                spacing: 12;
-                orientation: vertical;
+            Box more {
+              margin-top: 12;
+              margin-start: 12;
+              margin-end: 12;
+              margin-bottom: 24;
 
-                Box titlesandbuttons {
-                  spacing: 6;
-                  margin-start: 12;
-                  margin-end: 12;
-                  height-request: 42;
+              Box data {
+                styles [
+                  "dim-label",
+                ]
 
-                  Box titles {
-                    valign: center;
-                    orientation: vertical;
+                spacing: 6;
 
-                    Label title {
-                      halign: start;
-                      ellipsize: end;
-                      label: _("Suggestions");
-
-                      styles [
-                        "title-2",
-                      ]
-                    }
-                  }
-
-                  Box buttons {
-                    halign: end;
-                    hexpand: true;
-                    valign: center;
-                    spacing: 6;
-
-                    Button refresh_button {
-                      label: _("Refresh");
-                      overflow: hidden;
-                      clicked => $refresh_suggestions_cb();
-
-                      styles [
-                        "rounded",
-                      ]
-                    }
-                  }
+                Label trackCount {
                 }
 
-                $PlaylistItemView suggestions_item_view {
-                  show-add: true;
-                  show-column: true;
+                Label separator {
+                  label: "·";
+                }
+
+                Label duration {
+                }
+              }
+            }
+
+            Adw.Clamp insights_clamp {
+              tightening-threshold: 1200;
+              maximum-size: 1400;
+              vexpand: true;
+              visible: false;
+
+              styles ["insights-clamp"]
+
+              Box insights {
+                orientation: vertical;
+                spacing: 12;
+
+                styles ["insights-box"]
+                
+                Box suggestions {
+                  spacing: 12;
+                  orientation: vertical;
+
+                  Box titlesandbuttons {
+                    spacing: 6;
+                    margin-start: 12;
+                    margin-end: 12;
+                    height-request: 42;
+
+                    Box titles {
+                      valign: center;
+                      orientation: vertical;
+
+                      Label title {
+                        halign: start;
+                        ellipsize: end;
+                        label: _("Suggestions");
+
+                        styles [
+                          "title-2",
+                        ]
+                      }
+                    }
+
+                    Box buttons {
+                      halign: end;
+                      hexpand: true;
+                      valign: center;
+                      spacing: 6;
+
+                      Button refresh_button {
+                        label: _("Refresh");
+                        overflow: hidden;
+                        clicked => $refresh_suggestions_cb();
+
+                        styles [
+                          "rounded",
+                        ]
+                      }
+                    }
+                  }
+
+                  $PlaylistItemView suggestions_item_view {
+                    show-add: true;
+                    show-column: true;
+                  }
                 }
               }
             }

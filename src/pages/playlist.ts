@@ -39,6 +39,9 @@ import {
   VScrollState,
 } from "src/util/scrolled.js";
 import { add_toast, get_window } from "src/util/window.js";
+import { ScrolledView } from "src/components/scrolled-view.js";
+import { PlaylistListView } from "src/components/playlist/listview.js";
+import { Rectangle } from "gi-types/gdk4.js";
 
 interface PlaylistState extends VScrollState {
   playlist: Playlist;
@@ -48,6 +51,7 @@ GObject.type_ensure(Paginator.$gtype);
 GObject.type_ensure(PlaylistHeader.$gtype);
 GObject.type_ensure(PlaylistItemView.$gtype);
 GObject.type_ensure(PlaylistBar.$gtype);
+GObject.type_ensure(ScrolledView.$gtype);
 
 export class PlaylistPage extends Adw.Bin
   implements MuzikaPageWidget<Playlist, PlaylistState> {
@@ -59,7 +63,7 @@ export class PlaylistPage extends Adw.Bin
         "trackCount",
         "separator",
         "duration",
-        "scrolled",
+        // "scrolled",
         "data",
         "playlist_item_view",
         "paginator",
@@ -82,9 +86,9 @@ export class PlaylistPage extends Adw.Bin
   private _trackCount!: Gtk.Label;
   private _duration!: Gtk.Label;
   private _separator!: Gtk.Label;
-  private _scrolled!: Gtk.ScrolledWindow;
+  // private _scrolled!: Gtk.ScrolledWindow;
   private _data!: Gtk.Box;
-  private _playlist_item_view!: PlaylistItemView;
+  private _playlist_item_view!: PlaylistListView;
   private _paginator!: Paginator;
   private _header!: PlaylistHeader;
   private _bar!: PlaylistBar;
@@ -104,14 +108,18 @@ export class PlaylistPage extends Adw.Bin
   constructor() {
     super();
 
-    this._scrolled.connect("edge-reached", (_, pos) => {
-      if (pos === Gtk.PositionType.BOTTOM) {
-        this.load_more();
-      }
-    });
+    // this._scrolled.connect("edge-reached", (_, pos) => {
+    //   if (pos === Gtk.PositionType.BOTTOM) {
+    //     this.load_more();
+    //   }
+    // });
 
-    this._playlist_item_view.model = this.model;
-    this._bar.model = this._playlist_item_view.multi_selection_model!;
+    const selection_model = Gtk.MultiSelection.new(
+      this.model,
+    ) as Gtk.MultiSelection<ObjectContainer<PlaylistItem>>;
+
+    this._playlist_item_view.model = selection_model
+    this._bar.model = selection_model
 
     this._suggestions_item_view.model = this.suggestions_model;
 
@@ -359,8 +367,8 @@ export class PlaylistPage extends Adw.Bin
 
     this._playlist_item_view.playlistId = playlist.id;
     this._playlist_item_view.editable = this._bar.editable = playlist.editable;
-    this._playlist_item_view.show_rank = playlist.tracks[0] &&
-      playlist.tracks[0].rank != null;
+    // this._playlist_item_view.show_rank = playlist.tracks[0] &&
+    //   playlist.tracks[0].rank != null;
 
     this._bar.playlistId = this.playlist.id;
     this._suggestions.visible = this.playlist.editable;
@@ -546,13 +554,18 @@ export class PlaylistPage extends Adw.Bin
           .map((container) => (container as PlayableContainer).object)
           .filter((item) => item != null) as PlaylistItem[],
       },
-      vscroll: this._scrolled.get_vadjustment().get_value(),
+      vscroll: 0,
     };
   }
 
   restore_state(state: PlaylistState) {
     this.present(state.playlist);
 
-    set_scrolled_window_initial_vscroll(this._scrolled, state.vscroll);
+    // set_scrolled_window_initial_vscroll(this._scrolled, state.vscroll);
   }
+
+  size_allocate(allocation: Rectangle, baseline: number): void {
+    
+  }
+  
 }
