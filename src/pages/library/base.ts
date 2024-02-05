@@ -109,9 +109,9 @@ export class AbstractLibraryPage<PageOrder extends LibraryOrder | Order = Order>
 
     if (!order) return;
 
-    const url = `muzika:${this.uri}?replace=true&order=${order}`;
+    const url = `muzika:${this.uri}?order=${order}`;
 
-    this.activate_action("navigator.visit", GLib.Variant.new_string(url));
+    this.activate_action("navigator.replace", GLib.Variant.new_string(url));
   }
 
   show_library(library: LibraryResults) {

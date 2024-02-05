@@ -70,9 +70,9 @@ export class LibrarySongsPage extends Adw.Bin
 
     if (!order) return;
 
-    let url = `muzika:${this.uri}?replace=true&order=${order}`;
+    let url = `muzika:${this.uri}?order=${order}`;
 
-    this.activate_action("navigator.visit", GLib.Variant.new_string(url));
+    this.activate_action("navigator.replace", GLib.Variant.new_string(url));
   }
 
   loading = false;
