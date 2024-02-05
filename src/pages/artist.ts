@@ -7,7 +7,7 @@ import Gio from "gi://Gio";
 import { Artist, Category, get_artist, MixedItem } from "../muse.js";
 
 import { Carousel } from "../components/carousel/index.js";
-import { EndpointContext, MuzikaComponent } from "src/navigation.js";
+import { PageLoadContext, MuzikaPageWidget } from "src/navigation.js";
 import { PlaylistListView } from "src/components/playlist/listview.js";
 import { PlaylistItemView } from "src/components/playlist/itemview.js";
 import { PlayableContainer, PlayableList } from "src/util/playablelist.js";
@@ -26,7 +26,7 @@ GObject.type_ensure(PlaylistHeader.$gtype);
 GObject.type_ensure(PlaylistListView.$gtype);
 
 export class ArtistPage extends Adw.Bin
-  implements MuzikaComponent<Artist, ArtistState> {
+  implements MuzikaPageWidget<Artist, ArtistState> {
   static {
     GObject.registerClass({
       GTypeName: "ArtistPage",
@@ -177,7 +177,7 @@ export class ArtistPage extends Adw.Bin
     this._carousels.append(carousel);
   }
 
-  static async load(context: EndpointContext) {
+  static async load(context: PageLoadContext) {
     const artist = await get_artist(context.match.params.channelId, {
       signal: context.signal,
     });

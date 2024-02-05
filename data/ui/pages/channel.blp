@@ -5,6 +5,12 @@ template $ChannelPage : Adw.Bin {
   Adw.ToolbarView {
     [top]
     Adw.HeaderBar {
+      [start]
+      Button {
+        icon-name: "refresh";
+        action-name: "navigator.reload";
+      }
+
       [end]
       MenuButton menu {
         icon-name: "view-more-symbolic";

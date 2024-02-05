@@ -11,7 +11,7 @@ import type {
 
 import { Carousel } from "../components/carousel/index.js";
 import { Loading } from "../components/loading.js";
-import { EndpointContext, MuzikaComponent } from "src/navigation.js";
+import { PageLoadContext, MuzikaPageWidget } from "src/navigation.js";
 import { MixedCardItem } from "src/components/library/mixedcard.js";
 import {
   set_scrolled_window_initial_vscroll,
@@ -25,7 +25,7 @@ export interface ChartsPageState extends VScrollState {
 }
 
 export class ChartsPage extends Adw.Bin
-  implements MuzikaComponent<Charts, ChartsPageState> {
+  implements MuzikaPageWidget<Charts, ChartsPageState> {
   static {
     GObject.registerClass({
       GTypeName: "ChartsPage",
@@ -51,15 +51,15 @@ export class ChartsPage extends Adw.Bin
       if (!country || country.selected) return;
 
       this.activate_action(
-        `navigator.visit`,
+        `navigator.replace`,
         GLib.Variant.new_string(
-          `muzika:charts?country=${country.code}&replace=true`,
+          `muzika:charts?country=${country.code}`,
         ),
       );
     });
   }
 
-  static load(ctx: EndpointContext) {
+  static load(ctx: PageLoadContext) {
     return get_charts(ctx.url.searchParams.get("country") ?? undefined, {
       signal: ctx.signal,
     });

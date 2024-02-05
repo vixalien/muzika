@@ -5,7 +5,7 @@ import Gtk from "gi://Gtk?version=4.0";
 
 import { ArtistAlbums, get_artist_albums } from "src/muse.js";
 
-import { EndpointContext, MuzikaComponent } from "src/navigation.js";
+import { PageLoadContext, MuzikaPageWidget } from "src/navigation.js";
 import { CarouselGridView } from "src/components/carousel/view/grid";
 import { PlayableContainer } from "src/util/playablelist";
 import { MixedCardItem } from "src/components/library/mixedcard";
@@ -21,7 +21,7 @@ interface ArtistAlbumsState extends VScrollState {
 GObject.type_ensure(CarouselGridView.$gtype);
 
 export class ArtistAlbumsPage extends Adw.Bin
-  implements MuzikaComponent<ArtistAlbums, ArtistAlbumsState> {
+  implements MuzikaPageWidget<ArtistAlbums, ArtistAlbumsState> {
   static {
     GObject.registerClass({
       GTypeName: "ArtistAlbumsPage",
@@ -113,7 +113,7 @@ export class ArtistAlbumsPage extends Adw.Bin
     );
   }
 
-  static async load(context: EndpointContext) {
+  static async load(context: PageLoadContext) {
     const results = await get_artist_albums(
       context.match.params.channelId,
       context.match.params.params,

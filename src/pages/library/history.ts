@@ -4,7 +4,7 @@ import Gtk from "gi://Gtk?version=4.0";
 
 import { get_history, History, PlaylistItem } from "../../muse.js";
 
-import { EndpointContext, MuzikaComponent } from "src/navigation.js";
+import { PageLoadContext, MuzikaPageWidget } from "src/navigation.js";
 import { PlaylistItemView } from "src/components/playlist/itemview.js";
 import {
   SectionedPlayableContainer,
@@ -63,7 +63,7 @@ interface CategoryMeta {
 }
 
 export class HistoryPage extends Adw.Bin
-  implements MuzikaComponent<History, HistoryState> {
+  implements MuzikaPageWidget<History, HistoryState> {
   static {
     GObject.registerClass({
       GTypeName: "HistoryPage",
@@ -153,7 +153,7 @@ export class HistoryPage extends Adw.Bin
     this.present(state.results);
   }
 
-  static load(context: EndpointContext) {
+  static load(context: PageLoadContext) {
     return get_history();
   }
 }

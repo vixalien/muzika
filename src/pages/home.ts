@@ -8,7 +8,7 @@ import { get_home, Home, MixedContent } from "../muse.js";
 
 import { Carousel } from "../components/carousel/index.js";
 import { Loading } from "../components/loading.js";
-import { EndpointContext, MuzikaComponent } from "src/navigation.js";
+import { PageLoadContext, MuzikaPageWidget } from "src/navigation.js";
 import {
   set_scrolled_window_initial_vscroll,
   VScrollState,
@@ -22,7 +22,7 @@ export interface HomePageState extends VScrollState {
 }
 
 export class HomePage extends Adw.Bin
-  implements MuzikaComponent<Home, HomePageState> {
+  implements MuzikaPageWidget<Home, HomePageState> {
   static {
     GObject.registerClass({
       GTypeName: "HomePage",
@@ -52,7 +52,7 @@ export class HomePage extends Adw.Bin
     });
   }
 
-  static load(ctx: EndpointContext) {
+  static load(ctx: PageLoadContext) {
     return get_home({ limit: 3, signal: ctx.signal });
   }
 

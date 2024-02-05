@@ -6,56 +6,37 @@ import Adw from "gi://Adw";
 import { match, MatchFunction, MatchResult } from "path-to-regexp";
 
 import { Window } from "./window.js";
-import { endpoints } from "./endpoints.js";
+import { pageMetas } from "./pages.js";
 import { AddActionEntries } from "./util/action.js";
 import { Page } from "./components/nav/page.js";
 import { list_model_to_array } from "./util/list.js";
 
-export type EndpointResponse<Data> = {
-  title?: string;
-  data: Data;
-};
-
-export interface ShowPageOptions {
-  title: string;
-  page: Gtk.Widget;
-  endpoint: Endpoint<any>;
-  uri: string;
-}
-
-export interface MuzikaComponent<
-  Data extends any,
-  State extends any,
-> {
+export interface MuzikaPageWidget<Data = unknown, State = unknown>
+  extends Gtk.Widget {
   __page_state?: State;
   present(data: Data): void;
   get_state(): State;
   restore_state(state: State): void;
 }
 
-export interface EndpointContext {
+export interface PageLoadContext {
   match: MatchResult<Record<string, string>>;
   url: URL;
   signal: AbortSignal;
   set_title(title: string): void;
 }
 
-export type Endpoint<Page extends MuzikaComponent<unknown, unknown>> =
-  Page extends MuzikaComponent<infer Data, infer State> ? {
-      title: string;
-      uri: string;
-      component(): MuzikaComponent<Data, State> & Gtk.Widget;
-      load(context: EndpointContext): void | Promise<void | Data>;
-    }
-    : never;
+export type MuzikaPageMeta<Data = unknown, State = unknown> = {
+  title: string;
+  uri: string;
+  build(): MuzikaPageWidget<Data, State>;
+  load(context: PageLoadContext): void | Promise<void | Data>;
+};
 
 export class Navigator extends GObject.Object {
   private _view: Adw.NavigationView;
 
-  private match_map: Map<
-    MatchFunction,
-    Endpoint<MuzikaComponent<unknown, unknown>>
-  > = new Map();
+  private match_map: Map<MatchFunction, MuzikaPageMeta> = new Map();
 
   private stacks: Map<string, Adw.NavigationPage[]> = new Map();
 
@@ -97,9 +78,9 @@ export class Navigator extends GObject.Object {
 
     this.match_map = new Map();
 
-    for (const endpoint of endpoints) {
-      const fn = match(endpoint.uri, {});
-      this.match_map.set(fn, endpoint);
+    for (const page of pageMetas) {
+      const fn = match(page.uri, {});
+      this.match_map.set(fn, page);
     }
   }
 
@@ -123,9 +104,30 @@ export class Navigator extends GObject.Object {
         },
       },
       {
+        name: "replace",
+        parameter_type: "s",
+        activate: (_action, param) => {
+          if (!param) return;
+
+          const [url] = param.get_string();
+
+          if (url) {
+            if (url.startsWith("muzika:")) {
+              this.replace(url.slice(7));
+            }
+          }
+        },
+      },
+      {
         name: "back",
         activate: (_) => {
           this.back();
+        },
+      },
+      {
+        name: "reload",
+        activate: () => {
+          this.reload();
         },
       },
     ]);
@@ -133,60 +135,46 @@ export class Navigator extends GObject.Object {
     return action_group;
   }
 
-  last_controller: AbortController | null = null;
+  private abort_controller: AbortController | null = null;
+
+  private abort_current() {
+    if (this.abort_controller) {
+      this.abort_controller.abort();
+    }
+
+    this.abort_controller = new AbortController();
+  }
+
+  private reset_abort_controller() {
+    this.abort_controller = null;
+  }
+
+  reload() {
+    const page = this._view.get_last_child() as Page<unknown> | null;
+
+    if (!page || page.loading || !(page instanceof Page)) return;
+
+    this.abort_current();
+
+    return page.reload(this.abort_controller!.signal)
+      ?.then(() => {
+        this.reset_abort_controller();
+      });
+  }
 
   private show_page(
     uri: string,
     match: MatchResult<Record<string, string>>,
-    endpoint: Endpoint<MuzikaComponent<unknown, unknown>>,
+    meta: MuzikaPageMeta,
   ) {
-    const url = new URL("muzika:" + uri);
-    const component = endpoint.component();
-    const page = new Page(uri, endpoint, component);
+    this.abort_current();
 
-    if (this.last_controller) {
-      this.last_controller.abort();
-    }
-
-    this.last_controller = new AbortController();
-
-    const response = endpoint.load({
-      match,
-      url,
-      signal: this.last_controller.signal,
-      set_title(title) {
-        page.title = title;
-      },
-    });
-
-    this.loading = true;
-
+    const page = new Page(meta);
     this._view.push(page);
-
-    const handle_error = (error: any) => {
-      // TODO: handle this better
-
-      if (error instanceof DOMException && error.name == "AbortError") {
-        this._view.remove(page);
-        return;
-      }
-
-      this.loading = false;
-      this.last_controller = null;
-
-      page.show_error(error);
-    };
-
-    Promise.resolve(response).then(
-      (data) => {
-        this.loading = false;
-        this.last_controller = null;
-
-        if (data != null) {
-          page.loaded(data);
-        }
-      },
-    ).catch(handle_error);
+    page.load(uri, match, this.abort_controller!.signal)
+      .then(() => {
+        this.reset_abort_controller();
+      });
   }
 
   get current_uri(): string | null {
@@ -215,12 +203,6 @@ export class Navigator extends GObject.Object {
     this._view.pop();
   }
 
-  // reload(navigate?: boolean) {
-  //   this.go(0, navigate);
-  // }
-  reload() {
-  }
-
   private match_uri(uri: string) {
     // muzika:home to
     // muzika/home
@@ -238,13 +220,13 @@ export class Navigator extends GObject.Object {
       );
     }
 
-    for (const [fn, endpoint] of this.match_map) {
+    for (const [fn, meta] of this.match_map) {
       const match = fn(path);
 
       if (match) {
         return {
           match: match as MatchResult<Record<string, string>>,
-          endpoint,
+          meta,
         };
       }
     }
@@ -254,8 +236,42 @@ export class Navigator extends GObject.Object {
     const match = this.match_uri(uri);
 
     if (match) {
-      this.show_page(uri, match.match, match.endpoint);
+      this.show_page(uri, match.match, match.meta);
       this.emit("navigate");
+    }
+  }
+
+  replace(uri: string) {
+    const page = this._view.get_last_child() as Page<unknown> | null;
+
+    if (!page || !(page instanceof Page)) return;
+
+    const match = this.match_uri(uri);
+
+    if (!match) {
+      console.error(`Tried to replace a page with an invalid uri: ${uri}`);
+      return;
+    }
+
+    if (match.meta !== page.meta) {
+      console.error(
+        `Tried to replace a page with a uri that renders a different page. Expected: ${page.meta.uri}, got: ${match.meta.uri}`,
+      );
+      return;
+    }
+
+    this.abort_current();
+
+    if (match) {
+      page.load;
+      return page.load(
+        uri,
+        match.match,
+        this.abort_controller!.signal,
+      )
+        ?.then(() => {
+          this.reset_abort_controller();
+        });
     }
   }
 

@@ -6,7 +6,7 @@ import { get_new_releases, NewReleases } from "../muse.js";
 
 import { Carousel } from "../components/carousel/index.js";
 import { Loading } from "../components/loading.js";
-import { EndpointContext, MuzikaComponent } from "src/navigation.js";
+import { PageLoadContext, MuzikaPageWidget } from "src/navigation.js";
 import {
   set_scrolled_window_initial_vscroll,
   VScrollState,
@@ -19,7 +19,7 @@ export interface NewReleasesPageState extends VScrollState {
 }
 
 export class NewReleasesPage extends Adw.Bin
-  implements MuzikaComponent<NewReleases, NewReleasesPageState> {
+  implements MuzikaPageWidget<NewReleases, NewReleasesPageState> {
   static {
     GObject.registerClass({
       GTypeName: "NewReleasesPage",
@@ -33,7 +33,7 @@ export class NewReleasesPage extends Adw.Bin
 
   contents?: NewReleases;
 
-  static async load(ctx: EndpointContext) {
+  static async load(ctx: PageLoadContext) {
     const data = await get_new_releases({
       signal: ctx.signal,
     });

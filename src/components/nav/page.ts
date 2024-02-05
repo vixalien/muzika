@@ -3,10 +3,11 @@ import Adw from "gi://Adw";
 import GObject from "gi://GObject";
 
 import { Loading } from "../loading";
-import { Endpoint, MuzikaComponent } from "src/navigation";
+import { MuzikaPageMeta, MuzikaPageWidget } from "src/navigation";
 import { ERROR_CODE, MuseError } from "src/muse";
 import { AuthenticationErrorPage } from "src/pages/authentication-error";
 import { ErrorPage } from "src/pages/error";
+import { MatchResult } from "path-to-regexp";
 
 export interface PageState<State> {
   state: State;
@@ -49,8 +50,6 @@ export class Page<Data extends unknown, State extends unknown = null>
   private _loading!: Loading;
   private _content!: Adw.Bin;
 
-  uri: string;
-
   get loading() {
     return this._stack.visible_child === this._loading;
   }
@@ -72,43 +71,31 @@ export class Page<Data extends unknown, State extends unknown = null>
     }
   }
 
-  page: MuzikaComponent<Data, State>;
-  endpoint: Endpoint<MuzikaComponent<Data, State>>;
+  uri: string;
+  page?: MuzikaPageWidget<Data, State>;
+  meta: MuzikaPageMeta<Data, State>;
+  last_match?: MatchResult<Record<string, string>>;
 
   private __state: PageState<State> | null = null;
   private __error: any;
 
   constructor(
-    uri: string,
-    endpoint: Endpoint<MuzikaComponent<Data, State>>,
-    page: MuzikaComponent<Data, State>,
+    meta: MuzikaPageMeta<Data, State>,
   ) {
     super();
 
-    this.uri = uri;
+    this.uri = meta.uri;
 
-    this.endpoint = endpoint;
-    this.page = page;
-    this.title = endpoint.title;
+    this.meta = meta;
+    this.title = meta.title;
 
     this.loading = true;
-  }
-
-  loaded(data: Data) {
-    const page = this.endpoint.component();
-
-    page.present(data);
-
-    this.loading = false;
-
-    this.page = page;
-    this._content.child = page;
   }
 
   vfunc_hidden(): void {
     if (this.__error) {
       this.page = this._content.child = null as any;
-    } else {
+    } else if (this.page) {
       this.__state = {
         state: this.page.get_state(),
       };
@@ -118,34 +105,84 @@ export class Page<Data extends unknown, State extends unknown = null>
 
   vfunc_showing(): void {
     if (this.__state) {
-      const page = this.endpoint.component();
+      const page = this.meta.build();
       page.restore_state(this.__state.state);
       this.page = page;
       this._content.child = page;
       this.__state = null;
     } else if (this.__error) {
       this.show_error(this.__error);
+    } else if (this.last_match) {
+      // page never got to load
+      this.reload();
     }
   }
 
   show_error(error: any) {
     this.__error = error;
 
-    let error_widget: Gtk.Widget;
+    let error_page: Gtk.Widget;
 
     if (error instanceof MuseError && error.code === ERROR_CODE.AUTH_REQUIRED) {
-      error_widget = new AuthenticationErrorPage({ error });
-      this.title = _("Authentication Required");
+      error_page = new AuthenticationErrorPage({ error });
     } else {
-      error_widget = new ErrorPage({ error });
-      this.title = _("Error");
+      error_page = new ErrorPage({ error });
     }
 
-    const toolbar_view = new Adw.ToolbarView();
-    toolbar_view.add_top_bar(Adw.HeaderBar.new());
-    toolbar_view.content = error_widget;
-
     this.loading = false;
-    this._content.child = toolbar_view;
+    this._content.child = error_page;
+  }
+
+  async load(
+    uri: string,
+    match: MatchResult<Record<string, string>>,
+    signal: AbortSignal,
+  ) {
+    this.loading = true;
+    this.uri = uri;
+    this.last_match = match;
+
+    try {
+      const result = await this.meta.load({
+        match,
+        set_title: this.set_title.bind(this),
+        signal,
+        url: new URL("muzika:" + uri),
+      })?.catch((error) => {
+        throw error;
+      });
+
+      this.loading = false;
+      this.__error = null;
+
+      const page = this.meta.build();
+      page.present(result!);
+
+      this._content.child = this.page = page;
+    } catch (error) {
+      this._handle_error(error);
+    }
+  }
+
+  private _handle_error(error: unknown) {
+    if (error instanceof DOMException && error.name == "AbortError") {
+      // do nothing
+      // TODO: maybe
+      // this._view.remove(page);
+      return;
+    }
+
+    this.show_error(error);
+  }
+
+  reload(_signal?: AbortSignal) {
+    const signal = _signal ?? new AbortController().signal;
+
+    if (!this.last_match) {
+      console.error("trying to reload a page that never loaded");
+      return;
+    }
+
+    return this.load(this.uri, this.last_match, signal);
   }
 }

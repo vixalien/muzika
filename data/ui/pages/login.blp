@@ -97,6 +97,14 @@ template $LoginPage : Adw.Window {
               }
             }
           }
+
+          Button {
+            label: _("Get a new code");
+            halign: center;
+            clicked => $refresh_cb();
+
+            styles ["pill"]
+          }
         }
       }
     }

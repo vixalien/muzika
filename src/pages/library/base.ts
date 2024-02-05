@@ -8,7 +8,7 @@ import { LibraryView } from "../../components/library/view.js";
 
 import type { LibraryOrder, Order } from "libmuse/types/mixins/utils.js";
 import { MixedCardItem } from "src/components/library/mixedcard.js";
-import { EndpointContext, MuzikaComponent } from "src/navigation.js";
+import { MuzikaPageWidget, PageLoadContext } from "src/navigation.js";
 import {
   set_scrolled_window_initial_vscroll,
   VScrollState,
@@ -56,7 +56,7 @@ interface LibraryState extends VScrollState {
 
 export class AbstractLibraryPage<PageOrder extends LibraryOrder | Order = Order>
   extends Adw.Bin
-  implements MuzikaComponent<LoadedLibrary, LibraryState> {
+  implements MuzikaPageWidget<LoadedLibrary, LibraryState> {
   static {
     GObject.registerClass({
       GTypeName: "AbstractLibraryPage",
@@ -79,15 +79,24 @@ export class AbstractLibraryPage<PageOrder extends LibraryOrder | Order = Order>
     this.uri = options.uri;
 
     this.view = new LibraryView({
-      filters: Array.from((this.orders).keys()),
+      filters: Array.from(this.orders.keys()),
     });
 
     this.view.connect("paginate", () => {
       this.load_more();
     });
 
+    const headerbar = new Adw.HeaderBar();
+
+    headerbar.pack_start(
+      new Gtk.Button({
+        icon_name: "refresh",
+        action_name: "navigator.reload",
+      }),
+    );
+
     this.toolbar_view = new Adw.ToolbarView();
-    this.toolbar_view.add_top_bar(Adw.HeaderBar.new());
+    this.toolbar_view.add_top_bar(headerbar);
     this.toolbar_view.content = this.view;
 
     this.child = this.toolbar_view;
@@ -100,9 +109,9 @@ export class AbstractLibraryPage<PageOrder extends LibraryOrder | Order = Order>
 
     if (!order) return;
 
-    const url = `muzika:${this.uri}?replace=true&order=${order}`;
+    const url = `muzika:${this.uri}?order=${order}`;
 
-    this.activate_action("navigator.visit", GLib.Variant.new_string(url));
+    this.activate_action("navigator.replace", GLib.Variant.new_string(url));
   }
 
   show_library(library: LibraryResults) {
@@ -170,7 +179,7 @@ export class AbstractLibraryPage<PageOrder extends LibraryOrder | Order = Order>
   static get_loader(
     loader: LibraryLoader<LibraryOrder> | LibraryLoader<Order>,
   ) {
-    return function (context: EndpointContext) {
+    return function (context: PageLoadContext) {
       return (loader as LibraryLoader<LibraryOrder>)({
         signal: context.signal,
         order: context.url.searchParams.get("order") as LibraryOrder ??
@@ -181,7 +190,7 @@ export class AbstractLibraryPage<PageOrder extends LibraryOrder | Order = Order>
           order: context.url.searchParams.get("order"),
         };
       });
-    } as (context: EndpointContext) => Promise<LoadedLibrary>;
+    } as (context: PageLoadContext) => Promise<LoadedLibrary>;
   }
 
   static load: ReturnType<typeof AbstractLibraryPage.get_loader>;
