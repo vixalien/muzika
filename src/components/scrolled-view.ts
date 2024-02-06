@@ -340,7 +340,7 @@ export class ScrolledView extends Gtk.Widget {
 
           const visible_height = Math.min(
             widget_height,
-            height + Math.max(y, 0),
+            height + Math.min(y, 0),
           );
 
           // update adjust values
