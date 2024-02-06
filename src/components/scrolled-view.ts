@@ -304,7 +304,7 @@ export class ScrolledView extends Gtk.Widget {
     this.set_adjustment_values(
       Gtk.Orientation.HORIZONTAL,
       width,
-      totals[Gtk.Orientation.HORIZONTAL] + total_spacing,
+      totals[Gtk.Orientation.HORIZONTAL],
     );
     this.set_adjustment_values(
       Gtk.Orientation.VERTICAL,
