@@ -40,81 +40,101 @@ template $PlaylistPage : Adw.Bin {
 
       ScrolledWindow {
         $ScrolledView {
+          spacing: 24;
           vexpand: true;
           hexpand: true;
 
           [header]
-          $PlaylistHeader header {
-            show-large-header: true;
+          Adw.Clamp {
+            margin-top: 24;
+            tightening-threshold: 1200;
+            maximum-size: 1400;
 
-            [button]
-            Button shuffle_button {
-              action-name: "queue.play-playlist";
+            $PlaylistHeader header {
+              show-large-header: true;
 
-              styles ["suggested-action", "pill"]
+              [button]
+              Button shuffle_button {
+                action-name: "queue.play-playlist";
 
-              Adw.ButtonContent {
-                label: _("Shuffle");
-                icon-name: "media-playlist-shuffle-symbolic";
+                styles ["suggested-action", "pill"]
+
+                Adw.ButtonContent {
+                  label: _("Shuffle");
+                  icon-name: "media-playlist-shuffle-symbolic";
+                }
               }
-            }
 
-            [button]
-            Button edit_playlist_button {
-              clicked => $edit_cb();
+              [button]
+              Button edit_playlist_button {
+                clicked => $edit_cb();
 
-              styles ["pill"]
+                styles ["pill"]
 
-              Adw.ButtonContent {
-                label: _("Edit Playlist");
-                icon-name: "document-edit-symbolic";
+                Adw.ButtonContent {
+                  label: _("Edit Playlist");
+                  icon-name: "document-edit-symbolic";
+                }
               }
-            }
 
-            [button]
-            Button add_to_library_button {
-              styles ["pill"]
+              [button]
+              Button add_to_library_button {
+                styles ["pill"]
 
-              Adw.ButtonContent {
-                label: _("Add to Library");
-                icon-name: "list-add-symbolic";
+                Adw.ButtonContent {
+                  label: _("Add to Library");
+                  icon-name: "list-add-symbolic";
+                }
               }
             }
           }
 
-          $PlaylistListView playlist_item_view {
-            // show-column: true;
+          Adw.ClampScrollable {
+            tightening-threshold: 1200;
+            maximum-size: 1400;
+
+            $PlaylistListView playlist_item_view {
+              // show-column: true;
+            }
           }
 
           [footer]
           Box {
             orientation: vertical;
+            spacing: 24;
 
-            $Paginator paginator {
-              activate => $load_more();
-            }
+            Adw.Clamp {
+              tightening-threshold: 1200;
+              maximum-size: 1400;
 
-            Box more {
-              margin-top: 12;
-              margin-start: 12;
-              margin-end: 12;
-              margin-bottom: 24;
-
-              Box data {
-                styles [
-                  "dim-label",
-                ]
-
-                spacing: 6;
-
-                Label trackCount {
+              Box {
+                  orientation: vertical;
                 }
 
-                Label separator {
-                  label: "·";
-                }
+                            $Paginator paginator {
+                activate => $load_more();
+              }
 
-                Label duration {
+              Box more {
+                margin-start: 12;
+                margin-end: 12;
+
+                Box data {
+                  styles [
+                    "dim-label",
+                  ]
+
+                  spacing: 6;
+
+                  Label trackCount {
+                  }
+
+                  Label separator {
+                    label: "·";
+                  }
+
+                  Label duration {
+                  }
                 }
               }
             }
@@ -122,8 +142,6 @@ template $PlaylistPage : Adw.Bin {
             Adw.Clamp insights_clamp {
               tightening-threshold: 1200;
               maximum-size: 1400;
-              vexpand: true;
-              visible: false;
 
               styles ["insights-clamp"]
 
