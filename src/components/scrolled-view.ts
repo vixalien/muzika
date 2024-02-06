@@ -359,7 +359,12 @@ export class ScrolledView extends Gtk.Widget {
 
         y -= this.spacing;
 
-        child.size_allocate(allocation, -1);
+        if ((allocation.height + allocation.y) < 0 || (allocation.y) > height) {
+          child.unmap();
+        } else {
+          child.map();
+          child.size_allocate(allocation, -1);
+        }
       }
     }
 
