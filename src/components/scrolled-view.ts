@@ -13,7 +13,7 @@
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
+ * Lesser General License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library. If not, see <http://www.gnu.org/licenses/>.
@@ -22,6 +22,11 @@
 import GObject from "gi://GObject";
 import Gtk from "gi://Gtk?version=4.0";
 import Gdk from "gi://Gdk?version=4.0";
+import GLib from "gi://GLib";
+
+const WIDGET_FLAGS = GObject.ParamFlags.READWRITE |
+  GObject.ParamFlags.EXPLICIT_NOTIFY |
+  GObject.ParamFlags.CONSTRUCT;
 
 export class ScrolledView extends Gtk.Widget {
   static {
@@ -81,7 +86,16 @@ export class ScrolledView extends Gtk.Widget {
           "Horizontal Scroll Policy",
           Gtk.ScrollablePolicy.$gtype,
           Gtk.ScrollablePolicy.MINIMUM,
-          GObject.ParamFlags.READWRITE | GObject.ParamFlags.EXPLICIT_NOTIFY,
+          WIDGET_FLAGS,
+        ),
+        spacing: GObject.param_spec_uint(
+          "spacing",
+          "Spacing",
+          "The separation between elements",
+          0,
+          GLib.MAXUINT32,
+          0,
+          WIDGET_FLAGS,
         ),
       },
     }, this);
@@ -93,10 +107,10 @@ export class ScrolledView extends Gtk.Widget {
 
   // property header
   private _header?: Gtk.Widget;
-  public get header() {
+  get header() {
     return this._header;
   }
-  public set header(widget: Gtk.Widget | undefined) {
+  set header(widget: Gtk.Widget | undefined) {
     if (widget === this._header) return;
 
     if (this._header) {
@@ -111,10 +125,10 @@ export class ScrolledView extends Gtk.Widget {
 
   // property child
   private _child?: Gtk.Widget;
-  public get child() {
+  get child() {
     return this._child;
   }
-  public set child(widget: Gtk.Widget | undefined) {
+  set child(widget: Gtk.Widget | undefined) {
     if (widget === this._child) return;
 
     if (this._child) {
@@ -128,10 +142,10 @@ export class ScrolledView extends Gtk.Widget {
 
   // property footer
   private _footer?: Gtk.Widget;
-  public get footer() {
+  get footer() {
     return this._footer;
   }
-  public set footer(widget: Gtk.Widget | undefined) {
+  set footer(widget: Gtk.Widget | undefined) {
     if (widget === this._footer) return;
 
     if (this._footer) {
@@ -169,20 +183,20 @@ export class ScrolledView extends Gtk.Widget {
   };
 
   // hadjustment
-  public get hadjustment(): Gtk.Adjustment {
+  get hadjustment(): Gtk.Adjustment {
     return this.adjustment[Gtk.Orientation.HORIZONTAL];
   }
-  public set hadjustment(v: Gtk.Adjustment) {
+  set hadjustment(v: Gtk.Adjustment) {
     this.adjustment[Gtk.Orientation.HORIZONTAL] = v;
     this.queue_allocate();
     this.notify("hadjustment");
     v.connect("value-changed", () => this.queue_allocate());
   }
 
-  public get vadjustment(): Gtk.Adjustment {
+  get vadjustment(): Gtk.Adjustment {
     return this.adjustment[Gtk.Orientation.VERTICAL];
   }
-  public set vadjustment(v: Gtk.Adjustment) {
+  set vadjustment(v: Gtk.Adjustment) {
     this.adjustment[Gtk.Orientation.VERTICAL] = v;
     v.connect("value-changed", () => this.queue_allocate());
     this.notify("vadjustment");
@@ -194,10 +208,10 @@ export class ScrolledView extends Gtk.Widget {
   private scroll_policy = orientedPair(Gtk.ScrollablePolicy.MINIMUM);
 
   // vscroll-policy
-  public get vscroll_policy(): Gtk.ScrollablePolicy {
+  get vscroll_policy(): Gtk.ScrollablePolicy {
     return this.scroll_policy[Gtk.Orientation.VERTICAL];
   }
-  public set vscroll_policy(v: Gtk.ScrollablePolicy) {
+  set vscroll_policy(v: Gtk.ScrollablePolicy) {
     if (v === this.vscroll_policy) return;
     this.scroll_policy[Gtk.Orientation.VERTICAL] = v;
     this.queue_resize();
@@ -205,14 +219,27 @@ export class ScrolledView extends Gtk.Widget {
   }
 
   // hscroll-policy
-  public get hscoll_policy(): Gtk.ScrollablePolicy {
+  get hscoll_policy(): Gtk.ScrollablePolicy {
     return this.scroll_policy[Gtk.Orientation.HORIZONTAL];
   }
-  public set hscoll_policy(v: Gtk.ScrollablePolicy) {
+  set hscoll_policy(v: Gtk.ScrollablePolicy) {
     if (v === this.hscoll_policy) return;
     this.scroll_policy[Gtk.Orientation.HORIZONTAL] = v;
     this.queue_resize();
     this.notify("hscroll-policy");
+  }
+
+  // spacing
+
+  private _spacing = 0;
+  get spacing(): number {
+    return this._spacing;
+  }
+  set spacing(v: number) {
+    if (v === this.spacing) return;
+    this._spacing = v;
+    this.queue_resize();
+    this.notify("spacing");
   }
 
   private child_adjustment = orientedPair(
@@ -275,16 +302,18 @@ export class ScrolledView extends Gtk.Widget {
     // get the total and each widget's size
     const { totals, sizes } = this.get_widgets_sizes(children, width, height);
 
+    const total_spacing = this.spacing * Math.max(0, sizes.size - 1);
+
     // update the adjustment to reflect the total widget's sizes
     this.set_adjustment_values(
       Gtk.Orientation.HORIZONTAL,
       width,
-      totals[Gtk.Orientation.HORIZONTAL],
+      totals[Gtk.Orientation.HORIZONTAL] + total_spacing,
     );
     this.set_adjustment_values(
       Gtk.Orientation.VERTICAL,
       height,
-      totals[Gtk.Orientation.VERTICAL],
+      totals[Gtk.Orientation.VERTICAL] + total_spacing,
     );
 
     let x = this.adjustment[Gtk.Orientation.HORIZONTAL].value,
@@ -331,6 +360,8 @@ export class ScrolledView extends Gtk.Widget {
         } else {
           y -= allocation.height;
         }
+
+        y -= this.spacing;
 
         child.size_allocate(allocation, -1);
       }
