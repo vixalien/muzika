@@ -40,7 +40,7 @@ import { get_current_user, get_option } from "libmuse";
 import { PlayerView } from "./components/player/view.js";
 import "./components/player/video/view.js";
 import { VideoPlayerView } from "./components/player/video/view.js";
-import { GetAddToPlaylist } from "./components/playlist/get_add_to_playlist.js";
+import { SaveToPlaylistDialog } from "./components/playlist/save-to-playlist.js";
 import { PlayerNowPlayingView } from "./components/player/now-playing/view.js";
 import { WindowSidebar } from "./sidebar.js";
 
@@ -211,7 +211,7 @@ export class Window extends Adw.ApplicationWindow {
         activate: (_, parameter) => {
           if (!parameter) return;
 
-          GetAddToPlaylist.new_videos(parameter.get_string()[0].split(","));
+          SaveToPlaylistDialog.new_videos(parameter.get_string()[0].split(","));
         },
       },
       {
@@ -220,7 +220,7 @@ export class Window extends Adw.ApplicationWindow {
         activate: (_, parameter) => {
           if (!parameter) return;
 
-          GetAddToPlaylist.new_playlist(
+          SaveToPlaylistDialog.new_playlist(
             parameter.get_string()[0].split(",")[0],
           );
         },

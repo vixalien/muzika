@@ -1,11 +1,10 @@
 using Gtk 4.0;
 using Adw 1;
 
-template $GetAddToPlaylist : Adw.Window {
+template $SaveToPlaylistDialog : Adw.Dialog {
   title: _("Save to playlist");
-  default-width: 360;
-  default-height: 460;
-  modal: true;
+  content-width: 360;
+  content-height: 460;
 
   Adw.ToolbarView {
     [top]

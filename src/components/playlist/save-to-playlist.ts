@@ -69,12 +69,12 @@ export interface GetAddToPlaylistOptions {
   playlistId: string | null;
 }
 
-export class GetAddToPlaylist extends Adw.Window {
+export class SaveToPlaylistDialog extends Adw.Dialog {
   static {
     GObject.registerClass({
-      GTypeName: "GetAddToPlaylist",
+      GTypeName: "SaveToPlaylistDialog",
       Template:
-        "resource:///com/vixalien/muzika/ui/components/playlist/get-add-to-playlist.ui",
+        "resource:///com/vixalien/muzika/ui/components/playlist/save-to-playlist.ui",
       InternalChildren: [
         "list_view",
       ],
@@ -110,8 +110,7 @@ export class GetAddToPlaylist extends Adw.Window {
 
     get_add_to_playlist(videoIds, playlistId).then((result) => {
       this.show_add_to_playlist(result);
-      this.set_transient_for(get_window());
-      this.present();
+      this.present(get_window());
     });
   }
 
