@@ -24,10 +24,6 @@ import Gtk from "gi://Gtk?version=4.0";
 import Gdk from "gi://Gdk?version=4.0";
 import GLib from "gi://GLib";
 
-const WIDGET_FLAGS = GObject.ParamFlags.READWRITE |
-  GObject.ParamFlags.EXPLICIT_NOTIFY |
-  GObject.ParamFlags.CONSTRUCT;
-
 export class ScrolledView extends Gtk.Widget {
   static {
     GObject.registerClass({
@@ -86,7 +82,7 @@ export class ScrolledView extends Gtk.Widget {
           "Horizontal Scroll Policy",
           Gtk.ScrollablePolicy.$gtype,
           Gtk.ScrollablePolicy.MINIMUM,
-          WIDGET_FLAGS,
+          GObject.ParamFlags.READWRITE | GObject.ParamFlags.EXPLICIT_NOTIFY,
         ),
         spacing: GObject.param_spec_uint(
           "spacing",
@@ -95,7 +91,7 @@ export class ScrolledView extends Gtk.Widget {
           0,
           GLib.MAXUINT32,
           0,
-          WIDGET_FLAGS,
+          GObject.ParamFlags.READWRITE | GObject.ParamFlags.EXPLICIT_NOTIFY,
         ),
       },
     }, this);
