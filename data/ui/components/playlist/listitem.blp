@@ -7,6 +7,7 @@ template $PlaylistListItem : Box {
 
   styles [ "br-6" ]
 
+  /*
   $DynamicImage dynamic_image {
     size: 48;
     action-size: 16;
@@ -14,6 +15,7 @@ template $PlaylistListItem : Box {
 
     styles [ "br-6" ]
   }
+  */
 
   Box chart_rank {
     visible: false;
@@ -42,8 +44,8 @@ template $PlaylistListItem : Box {
     spacing: 3;
     hexpand: true;
 
-    Label title {
-      ellipsize: end;
+    Inscription title {
+      text-overflow: ellipsize_end;
       xalign: 0;
 
       styles [
