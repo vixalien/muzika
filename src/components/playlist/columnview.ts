@@ -369,8 +369,9 @@ class DurationColumn extends Gtk.ColumnViewColumn {
 
   setup_cb(_factory: Gtk.SignalListItemFactory, list_item: Gtk.ListItem) {
     const label = new Gtk.Label({
-      xalign: 0,
-      css_classes: ["dim-label"],
+      xalign: 1,
+      halign: Gtk.Align.END,
+      css_classes: ["dim-label", "numeric"],
     });
 
     list_item.set_child(label);
