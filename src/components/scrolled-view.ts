@@ -23,6 +23,11 @@ import GObject from "gi://GObject";
 import Gtk from "gi://Gtk?version=4.0";
 import Gdk from "gi://Gdk?version=4.0";
 import GLib from "gi://GLib";
+import {
+  get_opposite_orientation,
+  OrientedPair,
+  orientedPair,
+} from "src/util/orientation";
 
 export class ScrolledView extends Gtk.Widget {
   static {
@@ -173,10 +178,7 @@ export class ScrolledView extends Gtk.Widget {
 
   // adjustments
 
-  private adjustment: OrientedPair<Gtk.Adjustment> = {
-    "0": new Gtk.Adjustment(),
-    "1": new Gtk.Adjustment(),
-  };
+  private adjustment = orientedPair(new Gtk.Adjustment(), new Gtk.Adjustment());
 
   // hadjustment
   get hadjustment(): Gtk.Adjustment {
@@ -440,9 +442,7 @@ export class ScrolledView extends Gtk.Widget {
           ? Gtk.Orientation.VERTICAL
           : Gtk.Orientation.HORIZONTAL;
 
-      const opposite = orientation === Gtk.Orientation.VERTICAL
-        ? Gtk.Orientation.HORIZONTAL
-        : Gtk.Orientation.VERTICAL;
+      const opposite = get_opposite_orientation(orientation);
 
       let min, nat;
 
@@ -469,18 +469,6 @@ export class ScrolledView extends Gtk.Widget {
   vfunc_get_request_mode(): Gtk.SizeRequestMode {
     return Gtk.SizeRequestMode.HEIGHT_FOR_WIDTH;
   }
-}
-
-type OrientedPair<T> = Record<Gtk.Orientation, T>;
-
-function orientedPair<T>(
-  initial_value: T,
-  initial_value2?: T,
-): OrientedPair<T> {
-  return {
-    "0": initial_value,
-    "1": initial_value2 || initial_value,
-  };
 }
 
 function isScrollable(
