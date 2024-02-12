@@ -26,9 +26,9 @@ To update the relevant `gtk4-plugin-gtk4-sources.json` file, do:
 
 ```sh
 wget https://crates.io/api/v1/crates/gst-plugin-gtk4/0.11.1/download
-tar-xf download
+tar -xf download
 cd gst-plugin-gtk4-0.11.1/
-flatpak-cargo-generator Cargo.lock -o ../gst-plugin-gtk4-sources.json
+flatpak-cargo-generator Cargo.lock -o ../modules/gst-plugin-gtk4-sources.json
 ```
 
 ### yarn-deps
