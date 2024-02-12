@@ -1,15 +1,17 @@
 import Gtk from "gi://Gtk?version=4.0";
 import GObject from "gi://GObject";
 import Gio from "gi://Gio";
-import Adw from "gi://Adw";
+import Gdk from "gi://Gdk?version=4.0";
+import GLib from "gi://GLib";
 
 import { PlaylistColumnView } from "./columnview";
 import { PlaylistListView } from "./listview";
 import { PlayableContainer, PlayableList } from "src/util/playablelist";
 import { get_player } from "src/application";
 import { SignalListeners } from "src/util/signal-listener";
+import { get_opposite_orientation, orientedPair } from "src/util/orientation";
 
-export class PlaylistItemView extends Adw.Bin {
+export class PlaylistItemView extends Gtk.Widget {
   static {
     GObject.registerClass({
       GTypeName: "PlaylistItemView",
@@ -25,42 +27,42 @@ export class PlaylistItemView extends Adw.Bin {
           "show-rank",
           "Show Rank",
           "Whether to show the rank of the playlist item",
-          GObject.ParamFlags.READWRITE,
+          GObject.ParamFlags.READWRITE | GObject.ParamFlags.EXPLICIT_NOTIFY,
           false,
         ),
         "show-artists": GObject.ParamSpec.boolean(
           "show-artists",
           "Show Artists",
           "Whether to show the artists of each track",
-          GObject.ParamFlags.READWRITE,
+          GObject.ParamFlags.READWRITE | GObject.ParamFlags.EXPLICIT_NOTIFY,
           true,
         ),
         "show-time": GObject.ParamSpec.boolean(
           "show-time",
           "Show Time",
           "Whether to show the duration of each track",
-          GObject.ParamFlags.READWRITE,
+          GObject.ParamFlags.READWRITE | GObject.ParamFlags.EXPLICIT_NOTIFY,
           true,
         ),
         "show-column": GObject.ParamSpec.boolean(
           "show-column",
           "Show Column",
           "Whether to show the column view",
-          GObject.ParamFlags.READWRITE,
+          GObject.ParamFlags.READWRITE | GObject.ParamFlags.EXPLICIT_NOTIFY,
           false,
         ),
         album: GObject.ParamSpec.boolean(
           "album",
           "Album",
           "Whether this view is displaying an album",
-          GObject.ParamFlags.READWRITE,
+          GObject.ParamFlags.READWRITE | GObject.ParamFlags.EXPLICIT_NOTIFY,
           false,
         ),
         "selection-mode": GObject.ParamSpec.boolean(
           "selection-mode",
           "Selection Mode",
           "Whether this view is in selection mode",
-          GObject.ParamFlags.READWRITE,
+          GObject.ParamFlags.READWRITE | GObject.ParamFlags.EXPLICIT_NOTIFY,
           false,
         ),
         "show-add": GObject.param_spec_boolean(
@@ -68,7 +70,46 @@ export class PlaylistItemView extends Adw.Bin {
           "Show Add",
           "Show Add button",
           true,
-          GObject.ParamFlags.READWRITE,
+          GObject.ParamFlags.READWRITE | GObject.ParamFlags.EXPLICIT_NOTIFY,
+        ),
+        hadjustment: GObject.param_spec_object(
+          "hadjustment",
+          "Hadjustment",
+          "Horizontal Adjustment",
+          Gtk.Adjustment.$gtype,
+          GObject.ParamFlags.READWRITE | GObject.ParamFlags.EXPLICIT_NOTIFY,
+        ),
+        vadjustment: GObject.param_spec_object(
+          "vadjustment",
+          "Vadjustment",
+          "Vertical Adjustment",
+          Gtk.Adjustment.$gtype,
+          GObject.ParamFlags.READWRITE | GObject.ParamFlags.EXPLICIT_NOTIFY,
+        ),
+        vscroll_policy: GObject.param_spec_enum(
+          "vscroll-policy",
+          "VScroll-Policy",
+          "Vertical Scroll Policy",
+          Gtk.ScrollablePolicy.$gtype,
+          Gtk.ScrollablePolicy.MINIMUM,
+          GObject.ParamFlags.READWRITE | GObject.ParamFlags.EXPLICIT_NOTIFY,
+        ),
+        hscroll_policy: GObject.param_spec_enum(
+          "hscroll-policy",
+          "HScroll-Policy",
+          "Horizontal Scroll Policy",
+          Gtk.ScrollablePolicy.$gtype,
+          Gtk.ScrollablePolicy.MINIMUM,
+          GObject.ParamFlags.READWRITE | GObject.ParamFlags.EXPLICIT_NOTIFY,
+        ),
+        spacing: GObject.param_spec_uint(
+          "spacing",
+          "Spacing",
+          "The separation between elements",
+          0,
+          GLib.MAXUINT32,
+          0,
+          GObject.ParamFlags.READWRITE | GObject.ParamFlags.EXPLICIT_NOTIFY,
         ),
       },
       Signals: {
@@ -76,67 +117,131 @@ export class PlaylistItemView extends Adw.Bin {
           param_types: [GObject.TYPE_OBJECT],
         },
       },
+      Implements: [
+        Gtk.Scrollable,
+      ],
     }, this);
   }
 
-  private get_current_child() {
-    return this.child as CurrentChild;
+  // adjustments
+
+  private adjustment = orientedPair(new Gtk.Adjustment(), new Gtk.Adjustment());
+  private child_adjustment = orientedPair(
+    new Gtk.Adjustment(),
+    new Gtk.Adjustment(),
+  );
+
+  // hadjustment
+  get hadjustment(): Gtk.Adjustment {
+    return this.adjustment[Gtk.Orientation.HORIZONTAL];
+  }
+  set hadjustment(v: Gtk.Adjustment) {
+    this.adjustment[Gtk.Orientation.HORIZONTAL] = v;
+    v.connect("value-changed", () => this.queue_resize());
+    this.queue_resize();
+    this.notify("hadjustment");
   }
 
-  private get_current_property<Key extends keyof CurrentChild>(property: Key) {
-    return this.get_current_child()[property];
+  get vadjustment(): Gtk.Adjustment {
+    return this.adjustment[Gtk.Orientation.VERTICAL];
+  }
+  set vadjustment(v: Gtk.Adjustment) {
+    this.adjustment[Gtk.Orientation.VERTICAL] = v;
+    v.connect("value-changed", () => this.queue_resize());
+    this.notify("vadjustment");
+    this.queue_resize();
   }
 
-  private set_current_property<Key extends keyof CurrentChild>(
-    property: Key,
-    value: CurrentChild[Key],
-  ) {
-    return this.get_current_child()[property] = value;
+  // scroll policy
+
+  private scroll_policy = orientedPair(Gtk.ScrollablePolicy.MINIMUM);
+
+  // vscroll-policy
+  get vscroll_policy(): Gtk.ScrollablePolicy {
+    return this.scroll_policy[Gtk.Orientation.VERTICAL];
   }
+  set vscroll_policy(v: Gtk.ScrollablePolicy) {
+    if (v === this.vscroll_policy) return;
+    this.scroll_policy[Gtk.Orientation.VERTICAL] = v;
+    this.queue_resize();
+    this.notify("vscroll-policy");
+  }
+
+  // hscroll-policy
+  get hscoll_policy(): Gtk.ScrollablePolicy {
+    return this.scroll_policy[Gtk.Orientation.HORIZONTAL];
+  }
+  set hscoll_policy(v: Gtk.ScrollablePolicy) {
+    if (v === this.hscoll_policy) return;
+    this.scroll_policy[Gtk.Orientation.HORIZONTAL] = v;
+    this.queue_resize();
+    this.notify("hscroll-policy");
+  }
+
+  public get child(): PlaylistListView | PlaylistColumnView {
+    return this.show_column ? this.columnview : this.listview;
+  }
+
+  private get hidden_child(): PlaylistListView | PlaylistColumnView {
+    return this.show_column ? this.listview : this.columnview;
+  }
+
+  private listview = new PlaylistListView({ visible: false });
+  private columnview = new PlaylistColumnView({ visible: false });
+
+  // private get_current_child() {
+  //   return this.child as CurrentChild;
+  // }
+
+  // private get_current_property<Key extends keyof CurrentChild>(property: Key) {
+  //   return this.get_current_child()[property];
+  // }
+
+  // private set_current_property<Key extends keyof CurrentChild>(
+  //   property: Key,
+  //   value: CurrentChild[Key],
+  // ) {
+  //   return this.get_current_child()[property] = value;
+  // }
 
   // property: selection-mode
-
-  private _selection_mode = false;
-
   get selection_mode() {
-    return this._selection_mode;
+    return this.listview.selection_mode;
   }
 
   set selection_mode(value: boolean) {
-    this._selection_mode = value;
-    this.set_current_property("selection_mode", value);
+    if (this.selection_mode === value) return;
+
+    this.listview.selection_mode = this.columnview.selection_mode = value;
 
     if (value == false) {
       this.multi_selection_model?.unselect_all();
     }
+
+    this.notify("selection-mode");
   }
 
   // property: playlistId
 
-  private _playlistId?: string;
-
   get playlistId() {
-    return this._playlistId;
+    return this.listview.playlistId;
   }
 
-  set playlistId(playlistId: string | undefined) {
-    this._playlistId = playlistId;
+  set playlistId(value: string | undefined) {
+    if (this.playlistId === value) return;
 
-    this.set_current_property("playlistId", playlistId);
+    this.listview.playlistId = this.columnview.playlistId = value;
   }
 
   // property: album
-
-  private _album = false;
-
   get album() {
-    return this._album;
+    return this.listview.album;
   }
 
-  set album(album: boolean) {
-    this._album = album;
+  set album(value: boolean) {
+    if (this.album === value) return;
 
-    this.set_current_property("album", album);
+    this.listview.album = this.columnview.album = value;
   }
 
   // property: model
@@ -149,161 +254,137 @@ export class PlaylistItemView extends Adw.Bin {
 
   multi_selection_model: Gtk.MultiSelection<PlayableContainer> | null = null;
 
-  set model(model: PlayableList | null) {
+  set model(value: PlayableList | null) {
+    if (this.model === value) return;
+
     this.clear_listeners();
 
-    this._model = model;
+    this._model = value;
 
-    this.multi_selection_model = new Gtk.MultiSelection({
-      model: model as any,
-    });
+    this.multi_selection_model = Gtk.MultiSelection.new(
+      value!,
+    ) as Gtk.MultiSelection<PlayableContainer>;
 
-    this.set_current_property("model", this.multi_selection_model!);
+    this.listview.model = this.columnview.model = this.multi_selection_model!;
 
     this.setup_listeners();
   }
 
   // property: show-rank
-
-  private _show_rank = false;
-
   get show_rank() {
-    return this._show_rank;
+    return this.columnview.show_rank;
   }
 
-  set show_rank(show: boolean) {
-    this._show_rank = show;
+  set show_rank(value: boolean) {
+    if (value === this.show_rank) return;
 
-    const child = this.child as CurrentChild;
+    this.columnview.show_rank = value;
 
-    if (child instanceof PlaylistColumnView) {
-      child.show_rank = show;
-    }
+    this.notify("show-rank");
   }
 
   // property: show-artists
-
-  private _show_artists = true;
-
   get show_artists() {
-    return this._show_artists;
+    return this.columnview.show_artists;
   }
 
-  set show_artists(show: boolean) {
-    this._show_artists = show;
+  set show_artists(value: boolean) {
+    if (value === this.show_artists) return;
 
-    const child = this.child as CurrentChild;
+    this.columnview.show_artists = value;
 
-    if (child instanceof PlaylistColumnView) {
-      child.show_artists = show;
-    }
+    this.notify("show-artists");
   }
 
   // property: show-time
-
-  private _show_time = true;
-
   get show_time() {
-    return this._show_time;
+    return this.columnview.show_time;
   }
+  set show_time(value: boolean) {
+    if (value === this.show_time) return;
 
-  set show_time(show: boolean) {
-    this._show_time = show;
+    this.columnview.show_time = value;
 
-    const child = this.child as CurrentChild;
-
-    if (child instanceof PlaylistColumnView) {
-      child.show_time = show;
-    }
+    this.notify("show-time");
   }
 
   // property: show-column
 
+  private _show_column = false;
   get show_column() {
-    return this.child instanceof PlaylistColumnView;
+    return this._show_column;
   }
+  set show_column(value: boolean) {
+    if (this.show_column === value) return;
 
-  set show_column(column: boolean) {
-    if (this.child != null && this.show_column === column) {
-      return;
-    }
+    this._show_column = value;
 
-    const props = {
-      header_factory: this.header_factory ?? null as any,
-      model: this.multi_selection_model!,
-      selection_mode: this.selection_mode,
-      album: this.album,
-      show_add: this.show_add,
-      playlistId: this.playlistId ?? null as any,
-      editable: this.editable,
-    };
+    this.child.visible = true;
+    this.hidden_child.visible = false;
 
-    if (column) {
-      this.child = new PlaylistColumnView({
-        ...props,
-        show_rank: this.show_rank,
-        show_artists: this.show_artists,
-        show_time: this.show_time,
-      });
-    } else {
-      this.child = new PlaylistListView(
-        props,
-      );
-    }
+    // this can apparently be set on construct time
+    if (!this.adjustment || !this.get_mapped()) return;
 
-    this.child.connect("add", (_list, index) => {
-      this.add_cb(index);
-    });
+    this.notify("show-column");
+    this.queue_resize();
   }
 
   // property: editable
-
-  private _editable = false;
-
   get editable() {
-    return this._editable;
+    return this.listview.editable;
   }
+  set editable(value: boolean) {
+    if (this.editable === value) return;
 
-  set editable(show: boolean) {
-    this._editable = show;
+    this.listview.editable = this.columnview.editable = value;
 
-    this.set_current_property("editable", show);
+    this.notify("editable");
   }
 
   // property: show-add
-
-  private _show_add = false;
-
   get show_add() {
-    return this._show_add;
+    return this.listview.show_add;
   }
+  set show_add(value: boolean) {
+    if (this.show_add === value) return;
 
-  set show_add(show: boolean) {
-    this._show_add = show;
+    this.listview.show_add = this.columnview.show_add = value;
 
-    this.set_current_property("show_add", show);
+    this.notify("show-add");
   }
 
   // property: header-factory
-
-  private _header_factory: Gtk.ListItemFactory | null = null;
-
   get header_factory() {
-    return this._header_factory;
+    return this.listview.header_factory;
   }
+  set header_factory(value: Gtk.ListItemFactory | null) {
+    if (this.header_factory === value) return;
 
-  set header_factory(factory: Gtk.ListItemFactory | null) {
-    this._header_factory = factory;
+    this.listview.header_factory = this.columnview.header_factory = value!;
 
-    this.set_current_property("header_factory", factory!);
+    // TODO: this should be a property
+    // this.notify("header-factory");
   }
 
   constructor(options: Partial<PlaylistItemViewOptions> = {}) {
     super();
 
-    this.show_column = options.show_column ?? false;
-
     if (options.model) this.model = options.model;
+
+    this.listview.set_parent(this);
+    this.listview.connect("add", (_list, index) => {
+      this.add_cb(index);
+    });
+
+    this.columnview.set_parent(this);
+    this.columnview.connect("add", (_list, index) => {
+      this.add_cb(index);
+    });
+
+    this.listview.vadjustment = this.columnview.vadjustment = this
+      .child_adjustment[Gtk.Orientation.VERTICAL];
+    this.listview.hadjustment = this.columnview.hadjustment = this
+      .child_adjustment[Gtk.Orientation.HORIZONTAL];
   }
 
   update() {
@@ -396,11 +477,133 @@ export class PlaylistItemView extends Adw.Bin {
     this.clear_listeners();
     super.vfunc_unmap();
   }
+
+  private set_adjustment_values(
+    orientation: Gtk.Orientation,
+    viewport_size: number,
+    child_size: number,
+  ) {
+    const adjustment = this.adjustment[orientation];
+    const upper = child_size;
+    let value = adjustment.value;
+
+    /* We clamp to the left in RTL mode */
+    if (
+      orientation === Gtk.Orientation.HORIZONTAL &&
+      this.get_direction() === Gtk.TextDirection.RTL
+    ) {
+      const dist = adjustment.upper - value - adjustment.page_size;
+      value = upper - dist - viewport_size;
+    }
+
+    adjustment.configure(
+      value,
+      0,
+      upper,
+      viewport_size * 0.1,
+      viewport_size * 0.9,
+      viewport_size,
+    );
+  }
+
+  vfunc_size_allocate(width: number, height: number, baseline: number): void {
+    // if (!this.child.visible) return;
+
+    this.adjustment[Gtk.Orientation.VERTICAL].freeze_notify();
+    this.adjustment[Gtk.Orientation.HORIZONTAL].freeze_notify();
+
+    const child_adjustment = this.child_adjustment[Gtk.Orientation.VERTICAL];
+
+    child_adjustment.freeze_notify();
+
+    const orientation =
+      this.get_request_mode() === Gtk.SizeRequestMode.HEIGHT_FOR_WIDTH
+        ? Gtk.Orientation.HORIZONTAL
+        : Gtk.Orientation.VERTICAL;
+    const opposite = get_opposite_orientation(orientation);
+
+    const child_size = orientedPair(width, height);
+
+    let min, nat;
+
+    [min, nat] = this.child.measure(orientation, -1);
+
+    if (this.scroll_policy[orientation] === Gtk.ScrollablePolicy.MINIMUM) {
+      child_size[orientation] = Math.max(child_size[orientation], min);
+    } else {
+      child_size[orientation] = Math.max(child_size[orientation], nat);
+    }
+
+    [min, nat] = this.child.measure(opposite, child_size[orientation]);
+
+    if (this.scroll_policy[opposite] === Gtk.ScrollablePolicy.MINIMUM) {
+      child_size[opposite] = Math.max(child_size[opposite], min);
+    } else {
+      child_size[opposite] = Math.max(child_size[opposite], nat);
+    }
+
+    // update the adjustment to reflect the total widget's sizes
+    this.set_adjustment_values(
+      Gtk.Orientation.HORIZONTAL,
+      width,
+      child_size[Gtk.Orientation.HORIZONTAL],
+    );
+    this.set_adjustment_values(
+      Gtk.Orientation.VERTICAL,
+      height,
+      child_size[Gtk.Orientation.VERTICAL],
+    );
+
+    const allocation = new Gdk.Rectangle();
+
+    const widget_height = child_size[Gtk.Orientation.VERTICAL],
+      widget_width = child_size[Gtk.Orientation.HORIZONTAL],
+      x = this.adjustment[Gtk.Orientation.HORIZONTAL].value,
+      y = this.adjustment[Gtk.Orientation.VERTICAL].value;
+
+    const visible_height = Math.min(
+      widget_height,
+      height,
+    );
+
+    child_adjustment.value = y + 20;
+    child_adjustment.page_size = visible_height;
+
+    allocation.width = widget_width;
+    allocation.height = visible_height;
+    allocation.x = -x;
+    allocation.y = 0;
+
+    this.child.size_allocate(allocation, -1);
+
+    child_adjustment.thaw_notify();
+
+    this.adjustment[Gtk.Orientation.VERTICAL].thaw_notify();
+    this.adjustment[Gtk.Orientation.HORIZONTAL].thaw_notify();
+
+    // setTimeout(() => {
+    // this.child.visible = true;
+    // this.hidden_child.visible = false;
+    // }, 1000);
+  }
+
+  vfunc_snapshot(snapshot: Gtk.Snapshot): void {
+    this.snapshot_child(this.child, snapshot);
+  }
+
+  vfunc_get_request_mode(): Gtk.SizeRequestMode {
+    return Gtk.SizeRequestMode.HEIGHT_FOR_WIDTH;
+  }
+
+  vfunc_measure(
+    orientation: Gtk.Orientation,
+    for_size: number,
+  ): [number, number, number, number] {
+    return this.child.measure(orientation, for_size);
+  }
 }
 
 export interface PlaylistItemViewOptions {
   model: PlayableList;
   show_column: boolean;
 }
-
-type CurrentChild = PlaylistColumnView | PlaylistListView;
