@@ -30,6 +30,6 @@
   "scripts": {
     "build": "node lib/build.js",
     "typecheck": "tsc --strict --noEmit",
-    "generate-sources": "flatpak-yarn-generator yarn.lock -o build-aux/flatpak/generated-sources.json"
+    "generate-sources": "flatpak-yarn-generator yarn.lock -o build-aux/flatpak/modules/yarn-deps-sources.json"
   }
 }

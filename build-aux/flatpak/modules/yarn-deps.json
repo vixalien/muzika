@@ -1,0 +1,14 @@
+{
+  "name": "yarn-deps",
+  "buildsystem": "simple",
+  "build-commands": [
+    "/usr/lib/sdk/node18/enable.sh",
+    "mkdir -p /app",
+    "ls $FLATPAK_BUILDER_BUILDDIR",
+    "cp -r $FLATPAK_BUILDER_BUILDDIR/yarn-mirror/ /app",
+    "echo $'yarn-offline-mirror \"/app/yarn-mirror\"' > /app/.yarnrc"
+  ],
+  "sources": [
+    "yarn-deps-sources.json"
+  ]
+}

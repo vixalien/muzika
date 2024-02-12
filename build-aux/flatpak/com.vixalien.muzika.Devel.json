@@ -41,74 +41,9 @@
     "/yarn-mirror"
   ],
   "modules": [
-    {
-      "name": "cargo-c",
-      "buildsystem": "simple",
-      "build-commands": [
-        "cargo install cargo-c --root /app"
-      ],
-      "build-options": {
-        "build-args": [
-          "--share=network"
-        ]
-      },
-      "cleanup": [
-        "*"
-      ]
-    },
-    {
-      "name": "gst-plugins-rs",
-      "buildsystem": "simple",
-      "sources": [
-        {
-          "type": "git",
-          "url": "https://gitlab.freedesktop.org/gstreamer/gst-plugins-rs",
-          "branch": "0.10"
-        }
-      ],
-      "build-options": {
-        "build-args": [
-          "--share=network"
-        ],
-        "env": {
-          "CARGO_NET_GIT_FETCH_WITH_CLI": "true"
-        }
-      },
-      "build-commands": [
-        "cargo cinstall -p gst-plugin-gtk4 --prefix=/app"
-      ]
-    },
-    {
-      "name": "blueprint-compiler",
-      "buildsystem": "meson",
-      "sources": [
-        {
-          "type": "git",
-          "url": "https://gitlab.gnome.org/jwestman/blueprint-compiler",
-          "tag": "v0.8.0"
-        }
-      ]
-    },
-    {
-      "name": "yarn-deps",
-      "buildsystem": "simple",
-      "build-commands": [
-        "/usr/lib/sdk/node18/enable.sh",
-        "mkdir -p /app",
-        "ls $FLATPAK_BUILDER_BUILDDIR",
-        "cp -r $FLATPAK_BUILDER_BUILDDIR/yarn-mirror/ /app"
-      ],
-      "sources": [
-        "generated-sources.json"
-      ]
-    },
-    {
-      "name": "write-yarnrc",
-      "buildsystem": "simple",
-      "build-commands": [
-        "echo $'yarn-offline-mirror \"/app/yarn-mirror\"' > /app/.yarnrc"
-      ]
-    },
+    "modules/gst-plugin-gtk4.json",
+    "modules/blueprint-compiler.json",
+    "modules/yarn-deps.json",
     {
       "name": "muzika",
       "buildsystem": "meson",
