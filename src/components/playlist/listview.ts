@@ -138,8 +138,8 @@ export class PlaylistListView extends Gtk.ListView {
 
     item.show_add = this.show_add;
 
-    item.dynamic_image.selection_mode = this.selection_mode;
-    item.dynamic_image.selected = list_item.selected;
+    // item.dynamic_image.selection_mode = this.selection_mode;
+    // item.dynamic_image.selected = list_item.selected;
 
     item.set_item(
       list_item.position,
@@ -148,37 +148,37 @@ export class PlaylistListView extends Gtk.ListView {
       this.editable,
     );
 
-    if (this.album) {
-      item.dynamic_image.track_number = list_item.position + 1;
-    }
+    // if (this.album) {
+    //   item.dynamic_image.track_number = list_item.position + 1;
+    // }
 
-    item.signals.connect(
-      item.dynamic_image,
-      "notify::selected",
-      (dynamic_image: DynamicImage) => {
-        this.selection_mode_toggled(
-          list_item.position,
-          dynamic_image.selected,
-        );
-      },
-    );
+    // item.signals.connect(
+    //   item.dynamic_image,
+    //   "notify::selected",
+    //   (dynamic_image: DynamicImage) => {
+    //     this.selection_mode_toggled(
+    //       list_item.position,
+    //       dynamic_image.selected,
+    //     );
+    //   },
+    // );
 
-    item.signals.add(
-      container,
-      container.connect("notify::state", () => {
-        item.dynamic_image.state = container.state;
-      }),
-    );
+    // item.signals.add(
+    //   container,
+    //   container.connect("notify::state", () => {
+    //     item.dynamic_image.state = container.state;
+    //   }),
+    // );
 
-    item.dynamic_image.state = container.state;
+    // item.dynamic_image.state = container.state;
 
-    item.signals.add(
-      container,
-      container.connect("notify", () => {
-        item.dynamic_image.selection_mode = this.selection_mode;
-        item.show_add = this.show_add;
-      }),
-    );
+    // item.signals.add(
+    //   container,
+    //   container.connect("notify", () => {
+    //     item.dynamic_image.selection_mode = this.selection_mode;
+    //     item.show_add = this.show_add;
+    //   }),
+    // );
 
     item.signals.add(
       item,
