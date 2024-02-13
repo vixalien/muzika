@@ -11,6 +11,18 @@ template $HomePage : Adw.Bin {
         action-name: "navigator.reload";
       }
     }
+
+    [top]
+    ScrolledWindow {
+      vscrollbar-policy: never;
+      hscrollbar-policy: external;
+
+      Box moods {
+        visible: false;
+
+        styles ["toolbar"]
+      }
+    }
   
     content: ScrolledWindow scrolled {
       vexpand: true;
