@@ -50,7 +50,28 @@ template $ArtistPage : Adw.Bin {
               show-meta: false;
               show-avatar: true;
 
-              [button]
+              [primary-button]
+              Button subscribe_button {
+                // clicked => $subscribe_cb();
+
+                styles ["outline", "pill", "flat"]
+
+                Box {
+                  spacing: 12;
+
+                  Label {
+                    label: "Subscribe";
+                  }
+
+                  Label subscribers {
+                    label: "129K";
+
+                    styles ["thin-label"]
+                  }
+                }
+              }
+
+              [secondary-button]
               Button shuffle_button {
                 action-name: "queue.play-playlist";
 
@@ -62,7 +83,7 @@ template $ArtistPage : Adw.Bin {
                 }
               }
 
-              [button]
+              [secondary-button]
               Button radio_button {
                 action-name: "queue.play-playlist";
 

@@ -8,14 +8,6 @@ import type { ArtistRun, Thumbnail } from "libmuse";
 import { load_thumbnails } from "../webimage.js";
 import { pretty_subtitles } from "src/util/text.js";
 
-interface ButtonProps extends Partial<Gtk.Button.ConstructorProperties> {
-  on_clicked?: () => void;
-  styles?: string[];
-}
-
-interface MenuButtonProps
-  extends Partial<Gtk.MenuButton.ConstructorProperties> {}
-
 export class PlaylistHeader extends Gtk.Box {
   static {
     GObject.registerClass({
@@ -53,7 +45,6 @@ export class PlaylistHeader extends Gtk.Box {
         "submeta",
         "description_stack",
         "more",
-        "buttons",
         "description",
         "description_long",
         "year",
@@ -62,6 +53,9 @@ export class PlaylistHeader extends Gtk.Box {
         "image",
         "explicit",
         "avatar",
+        "primary_buttons",
+        "secondary_buttons",
+        "buttons",
       ],
     }, this);
   }
@@ -72,7 +66,6 @@ export class PlaylistHeader extends Gtk.Box {
   private _submeta!: Gtk.Box;
   private _description_stack!: Gtk.Stack;
   private _more!: Gtk.Expander;
-  private _buttons!: Gtk.Box;
   private _description!: Gtk.Label;
   private _description_long!: Gtk.Label;
   private _year!: Gtk.Label;
@@ -81,6 +74,9 @@ export class PlaylistHeader extends Gtk.Box {
   private _image!: Gtk.Image;
   private _explicit!: Gtk.Image;
   private _avatar!: Adw.Avatar;
+  private _primary_buttons!: Gtk.Box;
+  private _secondary_buttons!: Gtk.Box;
+  private _buttons!: Gtk.Box;
 
   constructor() {
     super();
@@ -116,14 +112,17 @@ export class PlaylistHeader extends Gtk.Box {
   set show_large_header(value: boolean) {
     if (this.show_large_header === value) return;
 
-    this.orientation = value
+    this.orientation = this._buttons.orientation = value
       ? Gtk.Orientation.HORIZONTAL
       : Gtk.Orientation.VERTICAL;
+
+    this._buttons.spacing = value ? 6 : 12;
 
     this._stack.halign =
       this._submeta.halign =
       this._more.halign =
-      this._buttons.halign =
+      this._primary_buttons.halign =
+      this._secondary_buttons.halign =
         value ? Gtk.Align.FILL : Gtk.Align.CENTER;
 
     this._title.justify =
@@ -222,13 +221,13 @@ export class PlaylistHeader extends Gtk.Box {
       }
     }
 
-    const subtitles = pretty_subtitles(
+    const { markup, plain } = pretty_subtitles(
       subtitle_authors,
       subtitle_nodes,
     );
 
-    this._subtitle.label = subtitles.markup;
-    this._subtitle.tooltip_text = subtitles.plain;
+    this._subtitle.label = markup;
+    this._subtitle.tooltip_text = plain;
   }
 
   set_explicit(explicit: boolean) {
@@ -240,8 +239,12 @@ export class PlaylistHeader extends Gtk.Box {
     child: GObject.Object,
     type?: string | null | undefined,
   ): void {
-    if (type === "button" && child instanceof Gtk.Widget) {
-      this._buttons.append(child);
+    if (type === "primary-button" && child instanceof Gtk.Widget) {
+      this._primary_buttons.visible = true;
+      this._primary_buttons.append(child);
+    } else if (type === "secondary-button" && child instanceof Gtk.Widget) {
+      this._secondary_buttons.visible = true;
+      this._secondary_buttons.append(child);
     } else {
       super.vfunc_add_child(_builder, child, type);
     }

@@ -53,7 +53,7 @@ template $PlaylistPage : Adw.Bin {
               $PlaylistHeader header {
                 show-large-header: true;
 
-                [button]
+                [primary-button]
                 Button shuffle_button {
                   action-name: "queue.play-playlist";
 
@@ -65,7 +65,7 @@ template $PlaylistPage : Adw.Bin {
                   }
                 }
 
-                [button]
+                [primary-button]
                 Button edit_playlist_button {
                   clicked => $edit_cb();
 
@@ -77,7 +77,7 @@ template $PlaylistPage : Adw.Bin {
                   }
                 }
 
-                [button]
+                [primary-button]
                 Button add_to_library_button {
                   styles ["pill"]
 
