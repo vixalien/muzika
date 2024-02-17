@@ -75,7 +75,7 @@ template $LoginDialog : Adw.Dialog {
                   Button button {
                     halign: center;
                     icon-name: "edit-copy-symbolic";
-                    tooltip-text: _("Copy authentication code");
+                    tooltip-text: _("Copy Code");
 
                     styles ["flat"]
                   }
@@ -83,7 +83,7 @@ template $LoginDialog : Adw.Dialog {
               }
 
               Button {
-                label: _("Get a new code");
+                label: _("Refresh Code");
                 halign: center;
                 clicked => $refresh_cb();
 
