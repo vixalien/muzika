@@ -1,6 +1,7 @@
 import Gtk from "gi://Gtk?version=4.0";
 import GObject from "gi://GObject";
 import Adw from "gi://Adw";
+import GLib from "gi://GLib";
 
 import { Paginator } from "../components/paginator.js";
 
@@ -8,11 +9,12 @@ import { get_home, Home, MixedContent } from "../muse.js";
 
 import { Carousel } from "../components/carousel/index.js";
 import { Loading } from "../components/loading.js";
-import { PageLoadContext, MuzikaPageWidget } from "src/navigation.js";
+import { MuzikaPageWidget, PageLoadContext } from "src/navigation.js";
 import {
   set_scrolled_window_initial_vscroll,
   VScrollState,
 } from "src/util/scrolled.js";
+import { Mood } from "libmuse/types/parsers/browsing.js";
 
 GObject.type_ensure(Loading.$gtype);
 GObject.type_ensure(Paginator.$gtype);
@@ -27,7 +29,7 @@ export class HomePage extends Adw.Bin
     GObject.registerClass({
       GTypeName: "HomePage",
       Template: "resource:///com/vixalien/muzika/ui/pages/home.ui",
-      InternalChildren: ["scrolled", "box", "paginator", "carousels"],
+      InternalChildren: ["scrolled", "box", "paginator", "carousels", "moods"],
     }, this);
   }
 
@@ -35,6 +37,7 @@ export class HomePage extends Adw.Bin
   private _box!: Gtk.Box;
   private _paginator!: Paginator;
   private _carousels!: Gtk.Box;
+  private _moods!: Gtk.Box;
 
   home?: Home;
 
@@ -53,7 +56,11 @@ export class HomePage extends Adw.Bin
   }
 
   static load(ctx: PageLoadContext) {
-    return get_home({ limit: 3, signal: ctx.signal });
+    return get_home({
+      limit: 3,
+      signal: ctx.signal,
+      params: ctx.url.searchParams.get("params") || undefined,
+    });
   }
 
   present(home: Home): void {
@@ -61,6 +68,7 @@ export class HomePage extends Adw.Bin
     this._paginator.can_paginate = home.continuation != null;
 
     this.append_contents(home.results);
+    this.show_moods(home.moods);
 
     // this.check_height_and_load();
 
@@ -97,12 +105,34 @@ export class HomePage extends Adw.Bin
     return;
   }
 
-  append_contents(result: MixedContent[]) {
+  private append_contents(result: MixedContent[]) {
     for (const content of result) {
       const carousel = new Carousel();
 
       carousel.show_content(content);
       this._carousels.append(carousel);
+    }
+  }
+
+  private show_moods(moods: Mood[]) {
+    if (!moods || moods.length === null) {
+      this._moods.visible = false;
+      return;
+    }
+
+    this._moods.visible = true;
+
+    for (const mood of moods) {
+      const button = new Gtk.ToggleButton({
+        label: mood.name,
+        action_name: "navigator.replace",
+        action_target: GLib.Variant.new_string(
+          mood.selected ? "muzika:home" : `muzika:home?params=${mood.params}`,
+        ),
+        active: mood.selected,
+      });
+
+      this._moods.append(button);
     }
   }
 
