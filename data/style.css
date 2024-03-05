@@ -328,6 +328,8 @@ button.large {
 .pill.outline {
   border: 2px solid;
   border-color: @borders;
+  padding-top: 8px;
+  padding-bottom: 8px;
 }
 
 .pill.outline label {
