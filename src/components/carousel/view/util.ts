@@ -114,8 +114,13 @@ function activate_mixed_card(
       uri = `album:${item.browseId}`;
       break;
     case "library-artist":
-      // remove MPLA prefix
-      uri = `artist:${item.browseId.slice(4)}`;
+      // remove MPLA prefix if it's there
+      const id = item.browseId;
+      if (id.startsWith("MPLA")) {
+        uri = `artist:${item.browseId.slice(4)}`;
+      } else {
+        uri = `artist:${item.browseId}`;
+      }
       break;
     case "inline-video":
     case "song":
