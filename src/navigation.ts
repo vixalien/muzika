@@ -96,6 +96,8 @@ export class Navigator extends GObject.Object {
   private visible_page_changed_cb() {
     const current_page = this._view.visible_page;
 
+    if (!current_page) return;
+
     if (this.last_binding) {
       this.last_binding.unbind();
       this.last_binding = null;
