@@ -64,20 +64,18 @@ template $ArtistPage : Adw.Bin {
 
               [primary-button]
               Button subscribe_button {
-                // clicked => $subscribe_cb();
+                clicked => $toggle_subscribe_cb();
 
                 styles ["outline", "pill", "flat"]
 
                 Box {
                   spacing: 12;
 
-                  Label {
+                  Label subscribe_label {
                     label: _("Subscribe");
                   }
 
                   Label subscribers {
-                    label: "129K";
-
                     styles ["thin-label"]
                   }
                 }

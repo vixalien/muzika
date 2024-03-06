@@ -4,7 +4,14 @@ import GLib from "gi://GLib";
 import Adw from "gi://Adw";
 import Gio from "gi://Gio";
 
-import { Artist, Category, get_artist, MixedItem } from "../muse.js";
+import {
+  Artist,
+  Category,
+  get_artist,
+  MixedItem,
+  subscribe_artists,
+  unsubscribe_artists,
+} from "../muse.js";
 
 import { Carousel } from "../components/carousel/index.js";
 import { PageLoadContext, MuzikaPageWidget } from "src/navigation.js";
@@ -17,6 +24,7 @@ import {
   VScrollState,
 } from "src/util/scrolled.js";
 import { PlaylistHeader } from "src/components/playlist/header.js";
+import { Window } from "src/window.js";
 
 interface ArtistState extends VScrollState {
   artist: Artist;
@@ -25,24 +33,32 @@ interface ArtistState extends VScrollState {
 GObject.type_ensure(PlaylistHeader.$gtype);
 GObject.type_ensure(PlaylistListView.$gtype);
 
-export class ArtistPage extends Adw.Bin
-  implements MuzikaPageWidget<Artist, ArtistState> {
+export class ArtistPage
+  extends Adw.Bin
+  implements MuzikaPageWidget<Artist, ArtistState>
+{
   static {
-    GObject.registerClass({
-      GTypeName: "ArtistPage",
-      Template: "resource:///com/vixalien/muzika/ui/pages/artist.ui",
-      InternalChildren: [
-        "top_songs",
-        "more_top_songs",
-        "playlist_item_view",
-        "header",
-        "carousels",
-        "menu",
-        "scrolled",
-        "shuffle_button",
-        "radio_button",
-      ],
-    }, this);
+    GObject.registerClass(
+      {
+        GTypeName: "ArtistPage",
+        Template: "resource:///com/vixalien/muzika/ui/pages/artist.ui",
+        InternalChildren: [
+          "top_songs",
+          "more_top_songs",
+          "playlist_item_view",
+          "header",
+          "carousels",
+          "menu",
+          "scrolled",
+          "shuffle_button",
+          "radio_button",
+          "subscribe_button",
+          "subscribe_label",
+          "subscribers",
+        ],
+      },
+      this
+    );
   }
 
   artist?: Artist;
@@ -56,6 +72,9 @@ export class ArtistPage extends Adw.Bin
   private _scrolled!: Gtk.ScrolledWindow;
   private _shuffle_button!: Gtk.Button;
   private _radio_button!: Gtk.Button;
+  private _subscribe_button!: Gtk.Button;
+  private _subscribe_label!: Gtk.Label;
+  private _subscribers!: Gtk.Label;
 
   model = new PlayableList();
 
@@ -67,11 +86,11 @@ export class ArtistPage extends Adw.Bin
 
   show_top_songs(songs: Artist["songs"]) {
     this._playlist_item_view.playlistId = songs.browseId ?? undefined;
-    this._playlist_item_view.show_artists = songs.results.some((track) =>
-      track.artists.length > 0
+    this._playlist_item_view.show_artists = songs.results.some(
+      (track) => track.artists.length > 0
     );
-    this._playlist_item_view.show_time = songs.results.some((track) =>
-      track.duration != null
+    this._playlist_item_view.show_time = songs.results.some(
+      (track) => track.duration != null
     );
 
     if (songs.results && songs.results.length > 0) {
@@ -83,7 +102,7 @@ export class ArtistPage extends Adw.Bin
         0,
         songs.results.map((track) =>
           PlayableContainer.new_from_playlist_item(track)
-        ),
+        )
       );
     } else {
       this._top_songs.visible = false;
@@ -94,7 +113,7 @@ export class ArtistPage extends Adw.Bin
       this._more_top_songs.action_name = "navigator.visit";
       this._more_top_songs.action_target = GLib.Variant.new(
         "s",
-        `muzika:playlist:${songs.browseId}`,
+        `muzika:playlist:${songs.browseId}`
       );
     }
   }
@@ -114,14 +133,14 @@ export class ArtistPage extends Adw.Bin
     this._shuffle_button.visible = artist.shuffleId != null;
     if (artist.shuffleId) {
       this._shuffle_button.action_target = GLib.Variant.new_string(
-        `${artist.shuffleId}`,
+        `${artist.shuffleId}`
       );
     }
 
     this._radio_button.visible = artist.radioId != null;
     if (artist.radioId) {
       this._radio_button.action_target = GLib.Variant.new_string(
-        `${artist.radioId}`,
+        `${artist.radioId}`
       );
     }
 
@@ -135,7 +154,77 @@ export class ArtistPage extends Adw.Bin
     this.add_carousel(_("Playlists"), artist.playlists);
     this.add_carousel(_("Fans might also like"), artist.related);
 
+    this.update_subscribe_button();
+
     this.setup_menu();
+  }
+
+  private update_subscribe_button() {
+    if (!this.artist) return;
+
+    if (this.artist?.subscribed) {
+      this._subscribe_label.label = _("Subscribed");
+      this._subscribe_button.remove_css_class("subscribe");
+    } else {
+      this._subscribe_button.add_css_class("subscribe");
+      this._subscribe_label.label = _("Subscribe");
+    }
+
+    this._subscribers.visible = !!this.artist.subscribers;
+
+    if (this.artist.subscribers) {
+      this._subscribers.label = this.artist.subscribers;
+    }
+  }
+
+  private subscribe_controller: AbortController | null = null;
+
+  private toggle_subscribe_cb() {
+    if (!this.artist) return;
+
+    if (this.subscribe_controller) {
+      this.subscribe_controller.abort();
+    }
+
+    this.subscribe_controller = new AbortController();
+
+    const old_subscribed = this.artist!.subscribed;
+
+    const options = [
+      [this.artist.channelId],
+      {
+        signal: this.subscribe_controller.signal,
+      },
+    ] as [string[], { signal: AbortSignal }];
+
+    let promise;
+    if (old_subscribed) {
+      promise = unsubscribe_artists(...options);
+    } else {
+      promise = subscribe_artists(...options);
+    }
+
+    // being optimistic...
+    this.artist!.subscribed = !old_subscribed;
+    this.update_subscribe_button();
+
+    promise
+      .then(() => {
+        this.artist!.subscribed = !old_subscribed;
+      })
+      .catch(() => {
+        this.artist!.subscribed = old_subscribed;
+        const window = this.get_root() as Window;
+        window.add_toast(
+          old_subscribed
+            ? _("Couldn't unsubscribe from artist. Try again later")
+            : _("Couldn't subscribe to artist. Try again later")
+        );
+      })
+      .finally(() => {
+        this.update_subscribe_button();
+        this.subscribe_controller = null;
+      });
   }
 
   private setup_menu() {
@@ -147,7 +236,7 @@ export class ArtistPage extends Adw.Bin
 
     share_section.append(
       _("Copy Link"),
-      `win.copy-url("https://music.youtube.com/channel/${this.artist.channelId}")`,
+      `win.copy-url("https://music.youtube.com/channel/${this.artist.channelId}")`
     );
 
     menu.append_section(null, share_section);
@@ -158,16 +247,16 @@ export class ArtistPage extends Adw.Bin
   add_carousel(
     title: string,
     data: Category<MixedItem>,
-    show_more_button = false,
+    show_more_button = false
   ) {
     if (!data || data.results.length === 0) return;
 
     const carousel = new Carousel();
 
     carousel.setup_more_button(
-      (show_more_button && data.browseId != null && data.params != null)
+      show_more_button && data.browseId != null && data.params != null
         ? `navigator.visit("muzika:artist-albums:${data.browseId}:${data.params}")`
-        : null,
+        : null
     );
 
     carousel.show_content({
