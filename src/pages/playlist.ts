@@ -65,7 +65,6 @@ export class PlaylistPage extends Adw.Bin
         "playlist_item_view",
         "paginator",
         "header",
-        "select",
         "bar",
         "suggestions",
         "suggestions_item_view",
@@ -89,7 +88,6 @@ export class PlaylistPage extends Adw.Bin
   private _playlist_item_view!: PlaylistItemView;
   private _paginator!: Paginator;
   private _header!: PlaylistHeader;
-  private _select!: Gtk.ToggleButton;
   private _bar!: PlaylistBar;
   private _suggestions!: Gtk.Box;
   private _suggestions_item_view!: PlaylistItemView;
@@ -120,13 +118,6 @@ export class PlaylistPage extends Adw.Bin
 
     this._suggestions_item_view.connect("add", this.add_cb.bind(this));
 
-    this._select.connect("toggled", () => {
-      this._playlist_item_view.selection_mode = this._select.active;
-      this._bar.selection_mode = this._select.active;
-      this._bar.update_selection();
-      this._playlist_item_view.update();
-    });
-
     this.add_actions();
   }
 
@@ -143,6 +134,12 @@ export class PlaylistPage extends Adw.Bin
         activate: (__) => {
           this.delete_playlist();
         },
+      },
+      {
+        name: "select",
+        activate: () => {
+          this.toggle_selection_mode()
+        }
       },
       {
         name: "remove-tracks",
@@ -164,6 +161,15 @@ export class PlaylistPage extends Adw.Bin
     ]);
 
     this.insert_action_group("playlist", group);
+  }
+
+  private toggle_selection_mode() {
+    const selection_mode = this._playlist_item_view.selection_mode;
+
+    this._playlist_item_view.selection_mode = !selection_mode;
+    this._bar.selection_mode = !selection_mode;
+    this._bar.update_selection();
+    this._playlist_item_view.update();
   }
 
   private async delete_playlist() {
@@ -466,7 +472,16 @@ export class PlaylistPage extends Adw.Bin
       ],
       [_("Play Next"), `queue.add-playlist("${this.playlist.id}?next=true")`],
       [_("Add to queue"), `queue.add-playlist("${this.playlist.id}")`],
-      this.playlist.editable ? [_("Delete"), `playlist.delete`] : null,
+      {
+        section: null,
+        items: [
+          [
+            _("Select tracks…"),
+            `playlist.select`,
+          ],
+          this.playlist.editable ? [_("Delete Playlist…"), `playlist.delete`] : null,
+        ],
+      },
       {
         section: null,
         items: [
