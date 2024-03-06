@@ -253,9 +253,17 @@ export class NavbarView extends Gtk.Box {
   search() {
     const query = this._search.text;
 
+    let uri;
+
+    if (isValidMuzikaURI(query)) {
+      uri = query;
+    } else {
+      uri = `muzika:search:${encodeURIComponent(query)}`;
+    }
+
     this.activate_action(
       "navigator.visit",
-      GLib.Variant.new_string(`muzika:search:${encodeURIComponent(query)}`),
+      GLib.Variant.new_string(uri),
     );
 
     this.emit("searched");
@@ -453,5 +461,15 @@ export class NavbarListStore<
 
   get get_section() {
     return this.vfunc_get_section;
+  }
+}
+
+function isValidMuzikaURI(uri: string) {
+  try {
+    const url = new URL(uri);
+    // accept muzika:id but not muzika://id
+    return url.protocol === "muzika:" && uri.at(6) !== "/";
+  } catch {
+    return false;
   }
 }
