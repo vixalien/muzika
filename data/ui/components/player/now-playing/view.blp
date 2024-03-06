@@ -53,15 +53,17 @@ template $PlayerNowPlayingView : Adw.NavigationPage {
 
         Adw.Clamp {
           width-request: 200;
+          maximum-size: 1060;
+          tightening-threshold: 800;
 
           Box content_box {
             orientation: vertical;
             spacing: 12;
             valign: center;
-            margin-top: 48;
-            margin-bottom: 48;
-            margin-start: 12;
-            margin-end: 12;
+            margin-top: 24;
+            margin-bottom: 24;
+            margin-start: 24;
+            margin-end: 24;
 
             Box song_box {
               orientation: vertical;
@@ -129,6 +131,12 @@ template $PlayerNowPlayingView : Adw.NavigationPage {
                 }
               }
             }
+
+            Adw.Clamp {
+
+            Box {
+            orientation: vertical;
+            spacing: 12;
 
             Box controls {
               orientation: vertical;
@@ -221,6 +229,9 @@ template $PlayerNowPlayingView : Adw.NavigationPage {
                   "flat",
                 ]
               }
+            }
+            }
+
             }
           }
         }
