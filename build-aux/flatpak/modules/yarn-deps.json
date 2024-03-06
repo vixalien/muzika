@@ -5,7 +5,7 @@
     "/usr/lib/sdk/node18/enable.sh",
     "mkdir -p /app",
     "ls $FLATPAK_BUILDER_BUILDDIR",
-    "cp -r $FLATPAK_BUILDER_BUILDDIR/yarn-mirror/ /app",
+    "cp -r $FLATPAK_BUILDER_BUILDDIR/flatpak-node/yarn-mirror/ /app",
     "echo $'yarn-offline-mirror \"/app/yarn-mirror\"' > /app/.yarnrc"
   ],
   "sources": [
