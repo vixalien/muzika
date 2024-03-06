@@ -10,6 +10,7 @@ import { pageMetas } from "./pages.js";
 import { AddActionEntries } from "./util/action.js";
 import { Page } from "./components/nav/page.js";
 import { list_model_to_array } from "./util/list.js";
+import { get_window } from "./util/window.js";
 
 export interface MuzikaPageWidget<Data = unknown, State = unknown>
   extends Gtk.Widget {
@@ -82,6 +83,30 @@ export class Navigator extends GObject.Object {
       const fn = match(page.uri, {});
       this.match_map.set(fn, page);
     }
+
+    // track when the current page changes
+    this._view.connect(
+      "notify::visible-page",
+      this.visible_page_changed_cb.bind(this),
+    );
+  }
+
+  private last_binding: GObject.Binding | null = null;
+
+  private visible_page_changed_cb() {
+    const current_page = this._view.visible_page;
+
+    if (this.last_binding) {
+      this.last_binding.unbind();
+      this.last_binding = null;
+    }
+
+    this.last_binding = current_page.bind_property(
+      "title",
+      get_window(),
+      "title",
+      GObject.BindingFlags.SYNC_CREATE,
+    );
   }
 
   get_action_group() {
