@@ -2,6 +2,7 @@ import Gtk from "gi://Gtk?version=4.0";
 import GObject from "gi://GObject";
 import Adw from "gi://Adw";
 import GLib from "gi://GLib";
+import Gio from "gi://Gio";
 
 import { escape_label, indent_stack } from "src/util/text";
 
@@ -63,8 +64,19 @@ export class ErrorPage extends Adw.Bin {
 
   set_error(error: any) {
     if (error instanceof GLib.Error) {
-      this.set_message(error.message);
-      this.set_more(!!error, error.toString());
+      if (
+        error instanceof Gio.ResolverError &&
+        !Gio.NetworkMonitor.get_default().network_available
+      ) {
+        this._status.title = _("Connect to the internet");
+        this.set_message(
+          _("You're offline. Check your connection and try again."),
+        );
+        this.set_more(!!error, error.toString());
+      } else {
+        this.set_message(error.message);
+        this.set_more(!!error, error.toString());
+      }
     } else if (error instanceof Error) {
       this.set_message(`${error.name}: ${error.message}`);
       this.set_more(!!error, error_to_string(error));
