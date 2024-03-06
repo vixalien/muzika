@@ -394,6 +394,8 @@ export class Window extends Adw.ApplicationWindow {
   }
 
   private fullscreen_video() {
+    if (!get_player().queue.current_is_video) return;
+    
     this.show_view("video");
 
     if (this.is_fullscreen()) {
