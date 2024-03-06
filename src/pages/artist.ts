@@ -4,7 +4,12 @@ import GLib from "gi://GLib";
 import Adw from "gi://Adw";
 import Gio from "gi://Gio";
 
-import { get_artist, subscribe_artists, unsubscribe_artists } from "libmuse";
+import {
+  get_artist,
+  get_option,
+  subscribe_artists,
+  unsubscribe_artists,
+} from "libmuse";
 import type { Artist, Category, MixedItem } from "libmuse";
 
 import { Carousel } from "../components/carousel/index.js";
@@ -167,6 +172,9 @@ export class ArtistPage extends Adw.Bin
     if (this.artist.subscribers) {
       this._subscribers.label = this.artist.subscribers;
     }
+
+    // Can't subscribe if logged out
+    this._subscribe_button.sensitive = get_option("auth").has_token();
   }
 
   private subscribe_controller: AbortController | null = null;
