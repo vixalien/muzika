@@ -138,8 +138,8 @@ export class PlaylistPage extends Adw.Bin
       {
         name: "select",
         activate: () => {
-          this.toggle_selection_mode()
-        }
+          this.toggle_selection_mode();
+        },
       },
       {
         name: "remove-tracks",
@@ -303,11 +303,9 @@ export class PlaylistPage extends Adw.Bin
           container.object.setVideoId = added.setVideoId;
         }
       })
-      .catch((error) => {
+      .catch(() => {
         this.model.remove(this.model.get_n_items() - 1);
         this.playlist?.tracks.pop();
-
-        console.error(error);
 
         (this.get_root() as Window).add_toast(_("Failed to add suggestion"));
       });
@@ -447,13 +445,17 @@ export class PlaylistPage extends Adw.Bin
           this.playlist!.suggestions = result.suggestions;
           this.playlist!.suggestions_continuation = result.continuation;
 
-          this.suggestions_model.remove_all();
           this.suggestions_model.splice(
             0,
             this.suggestions_model.n_items,
             result.suggestions.map((suggestion) =>
               PlayableContainer.new(suggestion)
             ),
+          );
+        })
+        .catch(() => {
+          this.get_window().add_toast(
+            _("Couldn't refresh playlist suggestions"),
           );
         });
     } else {
@@ -479,7 +481,9 @@ export class PlaylistPage extends Adw.Bin
             _("Select tracks…"),
             `playlist.select`,
           ],
-          this.playlist.editable ? [_("Delete Playlist…"), `playlist.delete`] : null,
+          this.playlist.editable
+            ? [_("Delete Playlist…"), `playlist.delete`]
+            : null,
         ],
       },
       {

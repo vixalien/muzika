@@ -184,7 +184,11 @@ export class Navigator extends GObject.Object {
     this.abort_current();
 
     return page.reload(this.abort_controller!.signal)
-      ?.then(() => {
+      ?.catch((error) => {
+        if (error instanceof DOMException && error.name == "AbortError") return;
+        page.show_error(error);
+      })
+      .finally(() => {
         this.reset_abort_controller();
       });
   }
@@ -201,6 +205,10 @@ export class Navigator extends GObject.Object {
     page.load(uri, match, this.abort_controller!.signal)
       .then(() => {
         this.reset_abort_controller();
+      })
+      .catch((error) => {
+        if (error instanceof DOMException && error.name == "AbortError") return;
+        page.show_error(error);
       });
   }
 
@@ -298,6 +306,11 @@ export class Navigator extends GObject.Object {
       )
         ?.then(() => {
           this.reset_abort_controller();
+        }).catch((error) => {
+          if (error instanceof DOMException && error.name == "AbortError") {
+            return;
+          }
+          page.show_error(error);
         });
     }
   }

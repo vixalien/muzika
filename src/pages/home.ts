@@ -15,6 +15,7 @@ import {
   VScrollState,
 } from "src/util/scrolled.js";
 import { Mood } from "libmuse/types/parsers/browsing.js";
+import { get_window } from "src/util/window.js";
 
 GObject.type_ensure(Loading.$gtype);
 GObject.type_ensure(Paginator.$gtype);
@@ -45,7 +46,7 @@ export class HomePage extends Adw.Bin
     super();
 
     this._scrolled.vadjustment.connect("value-changed", () => {
-      if (this.check_if_almost_scrolled()) {
+      if (this.check_if_almost_scrolled() && !this.had_error_loading) {
         this.load_more();
       }
     });
@@ -149,8 +150,10 @@ export class HomePage extends Adw.Bin
     return false;
   }
 
+  private had_error_loading = false;
+
   check_height_and_load() {
-    if (this._paginator.loading) return;
+    if (this._paginator.loading || this.had_error_loading) return;
 
     // scroll if the scrolled window is not full
     if (
@@ -182,12 +185,23 @@ export class HomePage extends Adw.Bin
           this.home!.continuation = updated.continuation;
           this.home!.results.push(...updated.results);
 
-          this.loading = false;
           this._paginator.can_paginate = updated.continuation != null;
+          this.had_error_loading = false;
 
           this.append_contents(updated.results);
 
           this.check_height_and_load();
+        })
+        .catch(() => {
+          get_window().add_toast(
+            _("Couldn't get more items from your home feed. Please try again later."),
+          );
+
+          this._paginator.can_paginate = !!this.home?.continuation;
+          this.had_error_loading = true;
+        })
+        .finally(() => {
+          this.loading = false;
         });
     } else {
       this.loading = false;

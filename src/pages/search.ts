@@ -16,12 +16,13 @@ import { SearchSection } from "../components/search/section.js";
 import { TopResultSection } from "../components/search/topresultsection.js";
 import { Paginator } from "../components/paginator.js";
 import { InlineTabSwitcher, Tab } from "../components/inline-tab-switcher.js";
-import { PageLoadContext, MuzikaPageWidget } from "src/navigation.js";
+import { MuzikaPageWidget, PageLoadContext } from "src/navigation.js";
 import { escape_label } from "src/util/text.js";
 import {
   set_scrolled_window_initial_vscroll,
   VScrollState,
 } from "src/util/scrolled.js";
+import { get_window } from "src/util/window.js";
 
 const vprintf = imports.format.vprintf;
 
@@ -266,6 +267,11 @@ export class SearchPage extends Adw.Bin
 
         this._paginator.loading = this.loading = false;
         this._paginator.set_reveal_child(results.continuation != null);
+      })
+      .catch(() => {
+        get_window()
+          .add_toast(_("Couldn't get more search results. Try again later."));
+        this._paginator.loading = this.loading = false;
       });
   }
 

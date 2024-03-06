@@ -8,13 +8,14 @@ import { get_library_songs, LibrarySongs } from "../../muse.js";
 import { alphabetical_orders, order_id_to_name } from "./base.js";
 import { Paginator } from "src/components/paginator.js";
 import type { Order } from "libmuse/types/mixins/utils.js";
-import { PageLoadContext, MuzikaPageWidget } from "src/navigation.js";
+import { MuzikaPageWidget, PageLoadContext } from "src/navigation.js";
 import { PlayableContainer, PlayableList } from "src/util/playablelist.js";
 import { PlaylistItemView } from "src/components/playlist/itemview.js";
 import {
   set_scrolled_window_initial_vscroll,
   VScrollState,
 } from "src/util/scrolled.js";
+import { get_window } from "src/util/window.js";
 
 // make sure paginator is registered before LibrarySongsPage
 GObject.type_ensure(Paginator.$gtype);
@@ -86,7 +87,11 @@ export class LibrarySongsPage extends Adw.Bin
         this.results!.continuation = library.continuation;
 
         this.show_library(library);
-
+      })
+      .catch(() => {
+        get_window().add_toast(_("Couldn't get more library songs"));
+      })
+      .finally(() => {
         this._paginator.loading = this.loading = false;
       });
   }

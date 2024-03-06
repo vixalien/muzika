@@ -94,11 +94,23 @@ export class LoginDialog extends Adw.Dialog {
       .catch((error) => {
         if ((error instanceof DOMException) && error.name === "AbortError") {
           return;
-        } else {
+        }
+
+        if (this.errored_before) {
           throw error;
+        } else {
+          this._toast_overlay.add_toast(
+            Adw.Toast.new(
+              _("An Error happened while trying to log you in. Generating a new code…"),
+            ),
+          );
+          this.errored_before = true;
+          return this.refresh_cb();
         }
       });
   }
+
+  private errored_before = false;
 
   private refresh_cb() {
     const signal = this._last_signal;

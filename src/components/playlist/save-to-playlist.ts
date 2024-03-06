@@ -108,10 +108,15 @@ export class SaveToPlaylistDialog extends Adw.Dialog {
 
     this._list_view.connect("activate", this.activate_cb.bind(this));
 
-    get_add_to_playlist(videoIds, playlistId).then((result) => {
-      this.show_add_to_playlist(result);
-      this.present(get_window());
-    });
+    get_add_to_playlist(videoIds, playlistId)
+      .then((result) => {
+        this.show_add_to_playlist(result);
+        this.present(get_window());
+      }).catch(() => {
+        get_window().add_toast(
+          _("Couldn't get your playlists. Please try again later."),
+        );
+      });
   }
 
   private setup_cb(
