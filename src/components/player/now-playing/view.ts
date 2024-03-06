@@ -30,8 +30,9 @@ export class PlayerNowPlayingView extends Adw.NavigationPage {
         "timestamp",
         "duration",
         "play_image",
-        "overlay_bin",
+        "overlay_box",
         "repeat_button",
+        "expand_button",
         "fullscreen_button",
         "switchers",
       ],
@@ -67,8 +68,9 @@ export class PlayerNowPlayingView extends Adw.NavigationPage {
   private _timestamp!: Gtk.Label;
   private _duration!: Gtk.Label;
   private _play_image!: Gtk.Image;
-  private _overlay_bin!: Adw.Bin;
+  private _overlay_box!: Gtk.Box;
   private _repeat_button!: Gtk.ToggleButton;
+  private _expand_button!: Gtk.Button;
   private _fullscreen_button!: Gtk.Button;
   private _switchers!: Gtk.Box;
 
@@ -254,7 +256,7 @@ export class PlayerNowPlayingView extends Adw.NavigationPage {
       this._music_counterpart.sensitive =
         !!track.counterpart;
 
-    this._overlay_bin.visible = this.player.queue.current_is_video;
+    this._overlay_box.visible = this.player.queue.current_is_video;
 
     if (this.player.queue.current_is_video) {
       this._video_counterpart.active = true;
@@ -349,10 +351,12 @@ export class PlayerNowPlayingView extends Adw.NavigationPage {
 
   private show_fullscreen_button() {
     this._fullscreen_button.visible = true;
+    this._expand_button.visible = true;
   }
 
   private hide_fullscreen_button() {
     this._fullscreen_button.visible = false;
+    this._expand_button.visible = false;
   }
 
   private toggle_fullscreen_button() {

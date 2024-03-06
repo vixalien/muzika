@@ -82,11 +82,21 @@ template $PlayerNowPlayingView : Adw.NavigationPage {
                 }
 
                 [overlay]
-                Adw.Bin overlay_bin {
+                Box overlay_box {
                   halign: end;
                   valign: end;
                   margin-end: 12;
                   margin-bottom: 12;
+                  spacing: 6;
+
+                  Button expand_button {
+                    icon-name: "go-up-symbolic";
+                    action-name: "win.visible-view";
+                    action-target: "'video'";
+                    visible: false;
+
+                    styles ["osd", "circular"]
+                  }
 
                   Button fullscreen_button {
                     icon-name: "view-fullscreen-symbolic";
