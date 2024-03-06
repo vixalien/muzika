@@ -8,6 +8,7 @@ import {
   Artist,
   Category,
   get_artist,
+  get_option,
   MixedItem,
   subscribe_artists,
   unsubscribe_artists,
@@ -175,6 +176,9 @@ export class ArtistPage
     if (this.artist.subscribers) {
       this._subscribers.label = this.artist.subscribers;
     }
+
+    // Can't subscribe if logged out
+    this._subscribe_button.sensitive = get_option("auth").has_token();
   }
 
   private subscribe_controller: AbortController | null = null;
