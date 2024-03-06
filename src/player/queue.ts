@@ -15,6 +15,7 @@ import {
   get_track_settings,
   get_tracklist,
 } from "./helpers.js";
+import { add_toast } from "src/util/window.js";
 
 const vprintf = imports.format.vprintf;
 
@@ -386,7 +387,7 @@ export class Queue extends GObject.Object {
               -1,
             );
 
-            this.add_toast(
+            add_toast(
               params.has("next")
                 ? vprintf(_('Playing "%s" next'), [normalized_title])
                 // Translators: %s is a playlist name
@@ -411,7 +412,7 @@ export class Queue extends GObject.Object {
             if (
               params.has("radio") && this.current?.object.videoId === ids[0]
             ) {
-              this.add_toast(_("Starting Radio"));
+              add_toast(_("Starting Radio"));
             }
             this.play_song(ids[0]);
           } else {
@@ -439,7 +440,7 @@ export class Queue extends GObject.Object {
               -1,
             );
 
-            this.add_toast(
+            add_toast(
               params.has("next")
                 ? ngettext(
                   // Translators: %s is a song's name
@@ -520,14 +521,6 @@ export class Queue extends GObject.Object {
 
     this.notify("can-play-next");
     this.notify("can-play-previous");
-  }
-
-  private add_toast(text: string) {
-    const win = this.app.active_window;
-
-    if (win instanceof Window) {
-      win.add_toast(text);
-    }
   }
 
   // TODO:

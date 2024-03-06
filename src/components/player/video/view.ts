@@ -5,6 +5,7 @@ import GLib from "gi://GLib";
 
 import { get_player } from "src/application";
 import { VideoControls } from "./controls";
+import { get_window } from "src/util/window";
 
 GObject.type_ensure(VideoControls.$gtype);
 
@@ -106,7 +107,7 @@ export class VideoPlayerView extends Adw.Bin {
       return;
     }
 
-    const window = this.get_root() as Gtk.Window;
+    const window = get_window();
 
     window.connect("notify::fullscreened", () => {
       this._fullscreen.set_icon_name(

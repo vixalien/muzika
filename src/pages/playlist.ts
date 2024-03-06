@@ -40,6 +40,7 @@ import {
   set_scrolled_window_initial_vscroll,
   VScrollState,
 } from "src/util/scrolled.js";
+import { add_toast, get_window } from "src/util/window.js";
 
 interface PlaylistState extends VScrollState {
   playlist: Playlist;
@@ -121,10 +122,6 @@ export class PlaylistPage extends Adw.Bin
     this.add_actions();
   }
 
-  private get_window() {
-    return this.root as Window;
-  }
-
   add_actions() {
     const group = new Gio.SimpleActionGroup();
 
@@ -187,20 +184,16 @@ export class PlaylistPage extends Adw.Bin
       Adw.ResponseAppearance.DESTRUCTIVE,
     );
 
-    const response = await dialog.choose(this.get_window(), null)
+    const response = await dialog.choose(get_window(), null)
       .catch(console.error);
 
     if (response === "delete") {
       delete_playlist(this.playlist!.id)
         .then(() => {
-          this.get_window().add_toast(
-            _("Playlist deleted"),
-          );
+          add_toast(_("Playlist deleted"));
           this.activate_action("navigation.pop", null);
         }).catch(() => {
-          this.get_window().add_toast(
-            _("Couldn't delete playlist"),
-          );
+          add_toast(_("Couldn't delete playlist"));
         });
     }
   }
@@ -224,7 +217,7 @@ export class PlaylistPage extends Adw.Bin
     }
 
     const error_toast = () => {
-      this.get_window().add_toast(
+      add_toast(
         items.length > 1
           ? _("Couldn't remove songs from playlist")
           : _("Couldn't remove song from playlist"),
@@ -232,7 +225,7 @@ export class PlaylistPage extends Adw.Bin
     };
 
     const success_toast = () => {
-      this.get_window().add_toast(
+      add_toast(
         ngettext(
           vprintf(_("%d song removed from playlist"), [items.length]),
           vprintf(_("%d songs removed from playlist"), [items.length]),
@@ -253,7 +246,8 @@ export class PlaylistPage extends Adw.Bin
       Adw.ResponseAppearance.DESTRUCTIVE,
     );
 
-    const response = await dialog.choose(this.get_window(), null);
+    const response = await dialog.choose(get_window(), null)
+      .catch(console.error);
 
     if (response === "remove") {
       const message = await remove_playlist_items(this.playlist!.id, items)
@@ -307,7 +301,7 @@ export class PlaylistPage extends Adw.Bin
         this.model.remove(this.model.get_n_items() - 1);
         this.playlist?.tracks.pop();
 
-        (this.get_root() as Window).add_toast(_("Failed to add suggestion"));
+        add_toast(_("Failed to add suggestion"));
       });
 
     if (this._suggestions_item_view.model!.get_n_items() <= 0) {
@@ -324,7 +318,7 @@ export class PlaylistPage extends Adw.Bin
       this.update_values(values.object);
     });
 
-    edit_dialog.present(this.get_root() as Gtk.Window);
+    edit_dialog.present(get_window());
   }
 
   update_values(values: EditedValues) {
@@ -454,9 +448,7 @@ export class PlaylistPage extends Adw.Bin
           );
         })
         .catch(() => {
-          this.get_window().add_toast(
-            _("Couldn't refresh playlist suggestions"),
-          );
+          add_toast(_("Couldn't refresh playlist suggestions"));
         });
     } else {
       this.suggestions_model.remove_all();

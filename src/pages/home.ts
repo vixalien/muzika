@@ -15,7 +15,7 @@ import {
   VScrollState,
 } from "src/util/scrolled.js";
 import { Mood } from "libmuse/types/parsers/browsing.js";
-import { get_window } from "src/util/window.js";
+import { add_toast } from "src/util/window.js";
 
 GObject.type_ensure(Loading.$gtype);
 GObject.type_ensure(Paginator.$gtype);
@@ -193,7 +193,7 @@ export class HomePage extends Adw.Bin
           this.check_height_and_load();
         })
         .catch(() => {
-          get_window().add_toast(
+          add_toast(
             _("Couldn't get more items from your home feed. Please try again later."),
           );
 

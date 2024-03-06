@@ -13,7 +13,7 @@ import {
   set_scrolled_window_initial_vscroll,
   VScrollState,
 } from "src/util/scrolled.js";
-import { get_window } from "src/util/window.js";
+import { add_toast } from "src/util/window.js";
 
 export const library_orders = new Map<string, LibraryOrder>([
   [_("Recent activity"), "recent_activity"],
@@ -172,7 +172,7 @@ export class AbstractLibraryPage<PageOrder extends LibraryOrder | Order = Order>
         this.show_library(library);
       })
       .catch(() => {
-        get_window().add_toast(_("Couldn't get more library items"));
+        add_toast(_("Couldn't get more library items"));
       })
       .finally(() => {
         this.view.paginator_loading = this.loading = false;

@@ -5,8 +5,7 @@ import Gtk from "gi://Gtk?version=4.0";
 
 import { ObjectContainer } from "src/util/objectcontainer";
 import { edit_playlist, Playlist } from "src/muse";
-import { Window } from "src/window";
-import { Application } from "src/application";
+import { add_toast } from "src/util/window";
 
 export class PrivacyStatus extends GObject.Object {
   static {
@@ -188,11 +187,6 @@ export class EditPlaylistDialog extends Adw.PreferencesDialog {
     };
   }
 
-  private get_window() {
-    return (Gtk.Application.get_default() as Application)
-      .get_active_window() as Window;
-  }
-
   private async save_cb() {
     const values = this.get_values();
 
@@ -202,7 +196,7 @@ export class EditPlaylistDialog extends Adw.PreferencesDialog {
       privacy_status: values.privacy.id as any,
     });
 
-    this.get_window().add_toast(_("Playlist saved"));
+    add_toast(_("Playlist saved"));
 
     this.emit("saved", new ObjectContainer(values));
     this.close();

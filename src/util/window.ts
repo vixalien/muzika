@@ -6,3 +6,7 @@ export function get_window() {
   return (Gtk.Application.get_default() as Application)
     .get_active_window() as Window;
 }
+
+export function add_toast(toast: string) {
+  return get_window().add_toast(toast);
+}

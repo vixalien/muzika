@@ -22,7 +22,7 @@ import {
   set_scrolled_window_initial_vscroll,
   VScrollState,
 } from "src/util/scrolled.js";
-import { get_window } from "src/util/window.js";
+import { add_toast } from "src/util/window.js";
 
 const vprintf = imports.format.vprintf;
 
@@ -269,8 +269,7 @@ export class SearchPage extends Adw.Bin
         this._paginator.set_reveal_child(results.continuation != null);
       })
       .catch(() => {
-        get_window()
-          .add_toast(_("Couldn't get more search results. Try again later."));
+        add_toast(_("Couldn't get more search results. Try again later."));
         this._paginator.loading = this.loading = false;
       });
   }

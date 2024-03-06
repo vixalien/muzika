@@ -13,7 +13,7 @@ import {
 } from "libmuse";
 import { ObjectContainer } from "src/util/objectcontainer";
 import { AddToPlaylistItemCard } from "./add-to-playlist-item";
-import { Window } from "src/window";
+import { add_toast, get_window } from "src/util/window";
 
 const vprintf = imports.format.vprintf;
 
@@ -113,7 +113,7 @@ export class SaveToPlaylistDialog extends Adw.Dialog {
         this.show_add_to_playlist(result);
         this.present(get_window());
       }).catch(() => {
-        get_window().add_toast(
+        add_toast(
           _("Couldn't get your playlists. Please try again later."),
         );
       });
@@ -289,11 +289,6 @@ export class SaveToPlaylistDialog extends Adw.Dialog {
       }),
     );
   }
-}
-
-function get_window() {
-  return (Gtk.Application.get_default() as Gtk.Application)
-    .get_active_window() as Window;
 }
 
 function add_title_to_add_playlist_items(

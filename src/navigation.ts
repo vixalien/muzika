@@ -344,9 +344,7 @@ export class Navigator extends GObject.Object {
 }
 
 export function get_navigator(widget?: Gtk.Widget) {
-  const window = ((widget?.root) ||
-    (Gtk.Application.get_default() as Gtk.Application)
-      .active_window) as Window;
+  const window = ((widget?.root) || get_window()) as Window;
 
   return window.navigator;
 }

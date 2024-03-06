@@ -15,7 +15,7 @@ import {
   set_scrolled_window_initial_vscroll,
   VScrollState,
 } from "src/util/scrolled.js";
-import { get_window } from "src/util/window.js";
+import { add_toast } from "src/util/window.js";
 
 // make sure paginator is registered before LibrarySongsPage
 GObject.type_ensure(Paginator.$gtype);
@@ -89,7 +89,7 @@ export class LibrarySongsPage extends Adw.Bin
         this.show_library(library);
       })
       .catch(() => {
-        get_window().add_toast(_("Couldn't get more library songs"));
+        add_toast(_("Couldn't get more library songs"));
       })
       .finally(() => {
         this._paginator.loading = this.loading = false;
