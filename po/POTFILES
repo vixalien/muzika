@@ -55,4 +55,5 @@ src/pages/playlist.ts
 src/pages/search.ts
 src/player/index.ts
 src/player/queue.ts
+src/util/language.ts
 src/window.ts

@@ -11,6 +11,7 @@ import { MuzikaPlayer } from "./player/index.js";
 import { MPRIS } from "./mpris.js";
 import { get_option } from "src/muse";
 import { MuzikaPreferencesDialog } from "./pages/preferences.js";
+import { get_default_muse_lang, get_language_string, set_muse_lang } from "./util/language.js";
 
 export const Settings = new Gio.Settings({ schema: pkg.name });
 
@@ -67,6 +68,8 @@ export class Application extends Adw.Application {
 
     this.set_argv(argv);
 
+    set_muse_lang();
+
     this.init_actions();
 
     const show_about_action = new Gio.SimpleAction({ name: "about" });
@@ -111,6 +114,7 @@ export class Application extends Adw.Application {
         version: pkg.version,
         uri: this.window?.navigator.current_uri,
         logged_in: get_option("auth").has_token(),
+        language: get_language_string(get_option("language")),
       },
       null,
       2,
