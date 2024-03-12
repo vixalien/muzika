@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     "target": "ES2020",
-    "module": "ES2020",
+    "module": "ESNext",
     "lib": [
       "ESNext",
       "DOM"
@@ -10,14 +10,14 @@
     "checkJs": true,
     "outDir": "_build",
     "strict": true,
-    "moduleResolution": "node",
+    "moduleResolution": "Bundler",
     "baseUrl": ".",
     "paths": {
       "*": [
         "*",
         "types/*",
         "gi-types/*"
-      ]
+      ],
     },
     "typeRoots": [
       "gi-types"
