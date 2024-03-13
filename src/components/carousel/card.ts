@@ -22,6 +22,7 @@ import { SignalListeners } from "src/util/signal-listener.js";
 import { MenuHelper } from "src/util/menu/index.js";
 import { menuLikeRow } from "src/util/menu/like.js";
 import { setup_link_label } from "src/util/label.js";
+import { get_state_pspec } from "../dynamic-action.js";
 
 enum CarouselImageType {
   AVATAR,
@@ -39,6 +40,9 @@ export class CarouselCard extends Gtk.Box {
       Children: [
         "dynamic_image",
       ],
+      Properties: {
+        state: get_state_pspec(),
+      },
       InternalChildren: [
         "title",
         "subtitles",
@@ -448,7 +452,11 @@ export class CarouselCard extends Gtk.Box {
     }
   }
 
-  set_state(state: DynamicActionState) {
+  get state() {
+    return this.dynamic_image.state;
+  }
+
+  set state(state: DynamicActionState) {
     this.dynamic_image.state = state;
   }
 }
