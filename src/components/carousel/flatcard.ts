@@ -29,7 +29,7 @@ import type {
   WatchPlaylist,
 } from "libmuse";
 import { DynamicImage, DynamicImageStorageType } from "../dynamic-image.js";
-import { DynamicActionState } from "../dynamic-action.js";
+import { DynamicActionState, get_state_pspec } from "../dynamic-action.js";
 import { MixedCardItem } from "../library/mixedcard.js";
 import { MenuHelper } from "src/util/menu.js";
 import { setup_link_label } from "src/util/label.js";
@@ -55,6 +55,9 @@ export class FlatCard extends Gtk.Box {
         "subtitle",
         "dynamic_image",
       ],
+      Properties: {
+        state: get_state_pspec(),
+      },
     }, this);
   }
 
@@ -753,6 +756,10 @@ export class FlatCard extends Gtk.Box {
       default:
         console.warn(`Unknown content type: ${content.type}`);
     }
+  }
+
+  get_state() {
+    return this._dynamic_image.state;
   }
 
   set_state(state: DynamicActionState) {
