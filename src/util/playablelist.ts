@@ -9,6 +9,7 @@ import { SignalListeners } from "./signal-listener";
 import { get_player } from "src/application";
 import { MixedCardItem } from "src/components/library/mixedcard";
 import { ObjectContainer } from "./objectcontainer";
+import { get_state_pspec } from "src/components/dynamic-action";
 
 function get_mixed_card_props(item: MixedCardItem) {
   let props: PlayableContainerProps<MixedCardItem>;
@@ -109,15 +110,7 @@ export class PlayableContainer<T extends Object = PlaylistItem>
           GObject.ParamFlags.READWRITE,
           GObject.Object.$gtype,
         ),
-        state: GObject.ParamSpec.uint(
-          "state",
-          "State",
-          "The state of the item",
-          GObject.ParamFlags.READWRITE,
-          DynamicActionState.DEFAULT,
-          DynamicActionState.PLAYING,
-          DynamicActionState.DEFAULT,
-        ),
+        state: get_state_pspec(),
         video_id: GObject.ParamSpec.string(
           "video-id",
           "Video ID",

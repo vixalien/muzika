@@ -18,6 +18,18 @@ export interface DynamicActionConstructorProperties
   hovering: boolean;
 }
 
+export function get_state_pspec() {
+  return GObject.ParamSpec.uint(
+    "state",
+    "State",
+    "The current playback state",
+    GObject.ParamFlags.READWRITE,
+    DynamicActionState.DEFAULT,
+    DynamicActionState.PAUSED,
+    DynamicActionState.DEFAULT,
+  );
+}
+
 export class DynamicAction extends Adw.Bin {
   static {
     GObject.registerClass({
@@ -46,15 +58,7 @@ export class DynamicAction extends Adw.Bin {
           1000000,
           48,
         ),
-        "state": GObject.ParamSpec.uint(
-          "state",
-          "State",
-          "The current state of this dynamic action",
-          GObject.ParamFlags.READWRITE,
-          DynamicActionState.DEFAULT,
-          DynamicActionState.PAUSED,
-          DynamicActionState.DEFAULT,
-        ),
+        "state": get_state_pspec(),
         "fill": GObject.ParamSpec.boolean(
           "fill",
           "Fill",
