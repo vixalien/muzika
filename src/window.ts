@@ -254,53 +254,53 @@ export class Window extends Adw.ApplicationWindow {
           );
         },
       },
+      {
+        name: "login",
+        activate: () => {
+          return this.auth_flow();
+        },
+      },
+      {
+        name: "logout",
+        activate: () => {
+          return this.logout();
+        },
+      },
+      {
+        name: "visible-view",
+        parameter_type: "s",
+        state: '"main"',
+        activate: (action, param) => {
+          const string = param?.get_string()[0];
+          if (string && this.show_view(string)) {
+            action.set_state(GLib.Variant.new_string(string));
+          }
+        },
+      },
     ]);
 
-    const login_action = Gio.SimpleAction.new("login", null);
-    login_action.connect("activate", () => {
-      this.auth_flow();
-    });
-    login_action.enabled = !get_option("auth").has_token();
-    this.add_action(login_action);
-
-    const logout_action = Gio.SimpleAction.new("logout", null);
-    logout_action.connect("activate", () => {
-      this.logout();
-    });
-    logout_action.enabled = get_option("auth").has_token();
-    this.add_action(logout_action);
-
     get_option("auth").addEventListener("token-changed", () => {
-      login_action.enabled = !get_option("auth").has_token();
-      logout_action.enabled = get_option("auth").has_token();
+      this.update_auth_actions();
       this._sidebar.token_changed();
     });
 
-    const visible_view = Gio.SimpleAction.new_stateful(
-      "visible-view",
-      GLib.VariantType.new("s"),
-      GLib.Variant.new("s", "main"),
-    );
-
-    visible_view.connect("activate", (action, param) => {
-      const string = param?.get_string()[0];
-      if (string && this.show_view(string)) {
-        action.set_state(GLib.Variant.new_string(string));
-      }
-    });
+    this.update_auth_actions();
 
     this._main_stack.connect("notify::visible-child", () => {
       const visible_child = this._main_stack.get_visible_child_name();
 
       if (
         visible_child &&
-        visible_child != visible_view.get_state()?.get_string()[0]
+        visible_child != this.get_action_state("visible-child")?.get_string()[0]
       ) {
-        visible_view.change_state(GLib.Variant.new_string(visible_child));
+        this.change_action_state("visible-view", GLib.Variant.new_string(visible_child))
       }
     });
+  }
 
-    this.add_action(visible_view);
+  private update_auth_actions() {
+    this.action_enabled_changed("login", !get_option("auth").has_token());
+    this.action_enabled_changed("logout", get_option("auth").has_token());
   }
 
   async logout() {
