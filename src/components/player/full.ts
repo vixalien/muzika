@@ -12,6 +12,7 @@ import { PlayerPreview } from "./preview.js";
 import { SignalListeners } from "src/util/signal-listener.js";
 import { get_player } from "src/application.js";
 import { bind_play_icon, bind_repeat_button } from "src/player/helpers.js";
+import { setup_link_label } from "src/util/label.js";
 
 GObject.type_ensure(PlayerPreview.$gtype);
 
@@ -137,20 +138,7 @@ export class FullPlayerView extends Gtk.ActionBar {
     });
 
     [this._title, this._subtitle].forEach((label) => {
-      this.listeners.connect(
-        label,
-        "activate-link",
-        (_: Gtk.Label, uri: string) => {
-          if (uri && uri.startsWith("muzika:")) {
-            this.activate_action(
-              "navigator.visit",
-              GLib.Variant.new_string(uri),
-            );
-
-            return true;
-          }
-        },
-      );
+      setup_link_label(label);
     });
   }
 

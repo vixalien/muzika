@@ -30,6 +30,7 @@ import { DynamicActionState } from "../dynamic-action.js";
 import { MixedCardItem } from "../library/mixedcard.js";
 import { MenuHelper } from "src/util/menu/index.js";
 import { menuLikeRow } from "src/util/menu/like.js";
+import { setup_link_label } from "src/util/label.js";
 
 GObject.type_ensure(DynamicImage.$gtype);
 
@@ -67,16 +68,7 @@ export class FlatCard extends Gtk.Box {
   constructor() {
     super();
 
-    this._subtitle.connect("activate-link", (_, uri) => {
-      if (uri && uri.startsWith("muzika:")) {
-        this.activate_action(
-          "navigator.visit",
-          GLib.Variant.new_string(uri),
-        );
-
-        return true;
-      }
-    });
+    setup_link_label(this._subtitle);
 
     this.menu_helper = MenuHelper.new(this);
   }

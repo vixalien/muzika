@@ -21,6 +21,7 @@ import { DynamicActionState, DynamicImage } from "../dynamic-image";
 import { SignalListeners } from "src/util/signal-listener.js";
 import { MenuHelper } from "src/util/menu/index.js";
 import { menuLikeRow } from "src/util/menu/like.js";
+import { setup_link_label } from "src/util/label.js";
 
 enum CarouselImageType {
   AVATAR,
@@ -57,37 +58,13 @@ export class CarouselCard extends Gtk.Box {
   private content?: MixedCardItem;
 
   private listeners = new SignalListeners();
-  private hover = new Gtk.EventControllerMotion();
 
   private menu_helper: MenuHelper;
 
   constructor() {
     super();
 
-    this.listeners.connect(this.hover, "enter", () => {
-      this._subtitle.add_css_class("hover");
-    });
-
-    this.listeners.connect(this.hover, "leave", () => {
-      this._subtitle.remove_css_class("hover");
-    });
-
-    this._subtitles.add_controller(this.hover);
-
-    this.listeners.connect(
-      this._subtitle,
-      "activate-link",
-      (_: Gtk.Label, uri: string) => {
-        if (uri && uri.startsWith("muzika:")) {
-          this.activate_action(
-            "navigator.visit",
-            GLib.Variant.new_string(uri),
-          );
-
-          return true;
-        }
-      },
-    );
+    setup_link_label(this._subtitle, this.listeners);
 
     this.menu_helper = MenuHelper.new(this);
   }
@@ -104,10 +81,6 @@ export class CarouselCard extends Gtk.Box {
 
   clear() {
     this.listeners.clear();
-
-    if (this.hover.widget != null) {
-      this._subtitles.remove_controller(this.hover);
-    }
   }
 
   private setup_image(

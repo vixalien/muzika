@@ -1,12 +1,12 @@
 import Gtk from "gi://Gtk?version=4.0";
 import GObject from "gi://GObject";
 import Adw from "gi://Adw";
-import GLib from "gi://GLib";
 
 import type { ArtistRun, Thumbnail } from "libmuse";
 
 import { load_thumbnails } from "../webimage.js";
 import { pretty_subtitles } from "src/util/text.js";
+import { setup_link_label } from "src/util/label.js";
 
 export class PlaylistHeader extends Gtk.Box {
   static {
@@ -81,28 +81,7 @@ export class PlaylistHeader extends Gtk.Box {
   constructor() {
     super();
 
-    const hover = new Gtk.EventControllerMotion();
-
-    hover.connect("enter", () => {
-      this._subtitle.add_css_class("hover");
-    });
-
-    hover.connect("leave", () => {
-      this._subtitle.remove_css_class("hover");
-    });
-
-    this._subtitle.add_controller(hover);
-
-    this._subtitle.connect("activate-link", (_, uri) => {
-      if (uri && uri.startsWith("muzika:")) {
-        this.activate_action(
-          "navigator.visit",
-          GLib.Variant.new_string(uri),
-        );
-
-        return true;
-      }
-    });
+    setup_link_label(this._subtitle);
   }
 
   get show_large_header() {

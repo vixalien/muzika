@@ -12,6 +12,7 @@ import { PlayableContainer } from "src/util/playablelist";
 import { DynamicImage, DynamicImageStorageType } from "../dynamic-image";
 import { generate_menu } from "src/util/menu";
 import { get_button_props } from "src/util/menu/like";
+import { setup_link_label } from "src/util/label";
 
 class ImageColumn extends Gtk.ColumnViewColumn {
   static {
@@ -280,13 +281,7 @@ class ArtistColumn extends Gtk.ColumnViewColumn {
       css_classes: ["flat-links", "dim-label"],
     });
 
-    label.connect("activate-link", (_, uri) => {
-      if (uri && uri.startsWith("muzika:")) {
-        label.activate_action("navigator.visit", GLib.Variant.new_string(uri));
-
-        return true;
-      }
-    });
+    setup_link_label(label);
 
     list_item.set_child(label);
   }
@@ -330,13 +325,7 @@ class AlbumColumn extends Gtk.ColumnViewColumn {
       css_classes: ["flat-links", "dim-label"],
     });
 
-    label.connect("activate-link", (_, uri) => {
-      if (uri && uri.startsWith("muzika:")) {
-        label.activate_action("navigator.visit", GLib.Variant.new_string(uri));
-
-        return true;
-      }
-    });
+    setup_link_label(label);
 
     list_item.set_child(label);
   }
