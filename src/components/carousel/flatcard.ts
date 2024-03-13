@@ -19,7 +19,7 @@ import {
 
 // first register the DynamicImage class
 import { pretty_subtitles } from "src/util/text.js";
-import {
+import type {
   ParsedAlbum,
   ParsedPlaylist,
   ParsedSong,
@@ -27,11 +27,12 @@ import {
   Ranked,
   RelatedArtist,
   WatchPlaylist,
-} from "libmuse/types/parsers/browsing.js";
+} from "libmuse";
 import { DynamicImage, DynamicImageStorageType } from "../dynamic-image.js";
 import { DynamicActionState } from "../dynamic-action.js";
 import { MixedCardItem } from "../library/mixedcard.js";
 import { MenuHelper } from "src/util/menu.js";
+import { setup_link_label } from "src/util/label.js";
 
 GObject.type_ensure(DynamicImage.$gtype);
 
@@ -69,16 +70,7 @@ export class FlatCard extends Gtk.Box {
   constructor() {
     super();
 
-    this._subtitle.connect("activate-link", (_, uri) => {
-      if (uri && uri.startsWith("muzika:")) {
-        this.activate_action(
-          "navigator.visit",
-          GLib.Variant.new_string(uri),
-        );
-
-        return true;
-      }
-    });
+    setup_link_label(this._subtitle);
 
     this.menu_helper = MenuHelper.new(this);
   }

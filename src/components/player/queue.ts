@@ -1,14 +1,14 @@
 import Gtk from "gi://Gtk?version=4.0";
 import GObject from "gi://GObject";
 import Adw from "gi://Adw";
-import GLib from "gi://GLib";
 
 import { ObjectContainer } from "src/util/objectcontainer";
-import type { QueueTrack } from "libmuse/types/parsers/queue";
+import type { QueueTrack } from "libmuse";
 import { QueueItem } from "./queueitem";
 import { MuzikaPlayer } from "src/player";
 import { escape_label } from "src/util/text";
 import { get_player } from "src/application";
+import { setup_link_label } from "src/util/label";
 
 export class QueueView extends Gtk.Stack {
   static {
@@ -80,28 +80,7 @@ export class QueueView extends Gtk.Stack {
     this.update_visible_child();
     this.update_settings();
 
-    const hover = new Gtk.EventControllerMotion();
-
-    hover.connect("enter", () => {
-      this._playlist_label.add_css_class("hover");
-    });
-
-    hover.connect("leave", () => {
-      this._playlist_label.remove_css_class("hover");
-    });
-
-    this._playlist_label.add_controller(hover);
-
-    this._playlist_label.connect("activate-link", (_, uri) => {
-      if (uri && uri.startsWith("muzika:")) {
-        this.activate_action(
-          "navigator.visit",
-          GLib.Variant.new_string(uri),
-        );
-
-        return true;
-      }
-    });
+    setup_link_label(this._playlist_label);
   }
 
   update_visible_child() {
@@ -183,10 +162,8 @@ export class QueueView extends Gtk.Stack {
   activate_cb() {}
 
   vfunc_map(): void {
-    // @ts-expect-error outdated types
     this._list_view.scroll_to(
       this.player.queue.position,
-      // @ts-expect-error outdated types
       Gtk.ListScrollFlags.NONE,
       null,
     );

@@ -7,6 +7,7 @@ import { pretty_subtitles } from "src/util/text.js";
 import { DynamicImage, DynamicImageStorageType } from "../dynamic-image";
 import { SignalListeners } from "src/util/signal-listener.js";
 import { MenuHelper } from "src/util/menu.js";
+import { setup_link_label } from "src/util/label.js";
 
 export class PlaylistListItem extends Gtk.Box {
   static {
@@ -62,21 +63,17 @@ export class PlaylistListItem extends Gtk.Box {
   constructor() {
     super({});
 
-    this.listeners.connect(this._subtitle, "activate-link", (_, uri) => {
-      if (uri && uri.startsWith("muzika:")) {
-        this.activate_action(
-          "navigator.visit",
-          GLib.Variant.new_string(uri),
-        );
-
-        return true;
-      }
-    });
+    setup_link_label(this._subtitle);
 
     this.menu_helper = MenuHelper.new(this);
   }
 
-  set_item(position: number, item: PlaylistItem, playlistId?: string, editable = false) {
+  set_item(
+    position: number,
+    item: PlaylistItem,
+    playlistId?: string,
+    editable = false,
+  ) {
     this.item = item;
     this.playlistId = playlistId;
 
@@ -125,7 +122,9 @@ export class PlaylistListItem extends Gtk.Box {
       [_("Play next"), `queue.add-song("${item.videoId}?next=true")`],
       [_("Add to queue"), `queue.add-song("${item.videoId}")`],
       [_("Save to playlist"), `win.add-to-playlist("${item.videoId}")`],
-      editable ? [_("Remove from playlist"), `playlist.remove-tracks([${position}])`] : null,
+      editable
+        ? [_("Remove from playlist"), `playlist.remove-tracks([${position}])`]
+        : null,
       item.album
         ? [
           _("Go to album"),
