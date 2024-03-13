@@ -151,7 +151,6 @@ class ChartRankColumn extends Gtk.ColumnViewColumn {
     const factory = Gtk.SignalListItemFactory.new();
     factory.connect("setup", this.setup_cb.bind(this));
     factory.connect("bind", this.bind_cb.bind(this));
-    factory.connect("teardown", this.teardown_cb.bind(this));
 
     this.factory = factory;
   }
@@ -183,10 +182,6 @@ class ChartRankColumn extends Gtk.ColumnViewColumn {
           break;
       }
     }
-  }
-
-  teardown_cb(_factory: Gtk.SignalListItemFactory, list_item: Gtk.ListItem) {
-    list_item.set_child(null);
   }
 }
 

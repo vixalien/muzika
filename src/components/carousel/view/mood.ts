@@ -63,7 +63,6 @@ export class CarouselMoodView extends Gtk.GridView {
     const factory = Gtk.SignalListItemFactory.new();
     factory.connect("bind", this.bind_cb.bind(this));
     factory.connect("setup", this.setup_cb.bind(this));
-    factory.connect("teardown", this.teardown_cb.bind(this));
 
     this.factory = factory;
     this.model = Gtk.NoSelection.new(this.items);
@@ -81,10 +80,6 @@ export class CarouselMoodView extends Gtk.GridView {
     if (container.object) {
       moodbox.show_mood(container.object);
     }
-  }
-
-  teardown_cb(_factory: Gtk.ListItemFactory, list_item: Gtk.ListItem) {
-    list_item.child = null as any;
   }
 
   vfunc_map(): void {
