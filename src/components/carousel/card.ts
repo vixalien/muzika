@@ -61,14 +61,12 @@ export class CarouselCard extends Gtk.Box {
 
   private content?: MixedCardItem;
 
-  private listeners = new SignalListeners();
-
   private menu_helper: MenuHelper;
 
   constructor() {
     super();
 
-    setup_link_label(this._subtitle, this.listeners);
+    setup_link_label(this._subtitle);
 
     this.menu_helper = MenuHelper.new(this);
   }
@@ -81,10 +79,6 @@ export class CarouselCard extends Gtk.Box {
     this._explicit.visible = false;
     this.subtitle_authors = [];
     this.content = undefined;
-  }
-
-  clear() {
-    this.listeners.clear();
   }
 
   private setup_image(

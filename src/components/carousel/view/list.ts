@@ -35,7 +35,6 @@ export class CarouselListView extends Gtk.ListView {
     factory.connect("bind", this.bind_cb.bind(this));
     factory.connect("setup", this.setup_cb.bind(this));
     factory.connect("unbind", this.unbind_cb.bind(this));
-    factory.connect("teardown", this.teardown_cb.bind(this));
 
     this.factory = factory;
     this.model = Gtk.NoSelection.new(this.items);
@@ -53,19 +52,19 @@ export class CarouselListView extends Gtk.ListView {
     if (container.object) {
       card.show_item(container.object);
 
-      container.connect("notify::state", () => {
-        card.set_state(container.state);
-      });
+      (container as any).binding = container.bind_property(
+        "state",
+        card,
+        "state",
+        GObject.BindingFlags.SYNC_CREATE,
+      );
     }
   }
 
   unbind_cb(_factory: Gtk.ListItemFactory, list_item: Gtk.ListItem) {
-    const card = list_item.child as CarouselCard;
-    card.clear();
-  }
+    const container = list_item.item as PlayableContainer<MixedCardItem>;
 
-  teardown_cb(_factory: Gtk.ListItemFactory, list_item: Gtk.ListItem) {
-    list_item.child = null as any;
+    ((container as any).binding as GObject.Binding)?.unbind();
   }
 
   vfunc_map(): void {
