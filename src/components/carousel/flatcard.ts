@@ -812,11 +812,11 @@ export class FlatCard extends Gtk.Box {
     }
   }
 
-  get_state() {
+  get state() {
     return this._dynamic_image.state;
   }
 
-  set_state(state: DynamicActionState) {
+  set state(state: DynamicActionState) {
     this._dynamic_image.state = state;
   }
 }
