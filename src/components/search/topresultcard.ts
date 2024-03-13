@@ -10,7 +10,7 @@ import {
   TopResultSong,
 } from "../../muse.js";
 import { load_thumbnails } from "../webimage.js";
-import {
+import type {
   TopResultPlaylist,
   TopResultVideo,
 } from "libmuse/types/parsers/search.js";
@@ -19,6 +19,7 @@ import { pretty_subtitles } from "src/util/text.js";
 import { get_player } from "src/application.js";
 import { SignalListeners } from "src/util/signal-listener.js";
 import { MenuHelper } from "src/util/menu.js";
+import { setup_link_label } from "src/util/label.js";
 
 GObject.type_ensure(DynamicImage.$gtype);
 
@@ -85,16 +86,7 @@ export class TopResultCard extends Adw.Bin {
   constructor() {
     super();
 
-    this._subtitle.connect("activate-link", (_, uri) => {
-      if (uri && uri.startsWith("muzika:")) {
-        this.activate_action(
-          "navigator.visit",
-          GLib.Variant.new_string(uri),
-        );
-
-        return true;
-      }
-    });
+    setup_link_label(this._subtitle);
 
     const click = new Gtk.GestureClick();
 

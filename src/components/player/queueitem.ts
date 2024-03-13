@@ -1,12 +1,10 @@
 import Gtk from "gi://Gtk?version=4.0";
-import Gdk from "gi://Gdk?version=4.0";
 import GObject from "gi://GObject";
-import GLib from "gi://GLib";
 
-import { ArtistRun } from "../../muse.js";
 import { load_thumbnails } from "../webimage.js";
-import { QueueTrack } from "libmuse/types/parsers/queue.js";
+import type { QueueTrack } from "libmuse";
 import { pretty_subtitles } from "src/util/text.js";
+import { setup_link_label } from "src/util/label.js";
 
 export class QueueItem extends Gtk.Box {
   static {
@@ -33,16 +31,7 @@ export class QueueItem extends Gtk.Box {
   constructor() {
     super({});
 
-    this._subtitle.connect("activate-link", (_, uri) => {
-      if (uri && uri.startsWith("muzika:")) {
-        this.activate_action(
-          "navigator.visit",
-          GLib.Variant.new_string(uri),
-        );
-
-        return true;
-      }
-    });
+    setup_link_label(this._subtitle);
   }
 
   set_track(item: QueueTrack) {

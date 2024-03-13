@@ -34,6 +34,10 @@ export class Application extends Adw.Application {
         name: "preferences",
         activate: this.show_preferences.bind(this),
       },
+      {
+        name: "about",
+        activate: this.show_about_dialog_cb.bind(this)
+      }
     ]);
 
     this.set_accels_for_action("app.quit", ["<primary>q"]);
@@ -72,24 +76,6 @@ export class Application extends Adw.Application {
 
     this.init_actions();
 
-    const show_about_action = new Gio.SimpleAction({ name: "about" });
-    show_about_action.connect("activate", () => {
-      const aboutDialog = Adw.AboutDialog.new_from_appdata(
-        "/com/vixalien/muzika/com.vixalien.muzika.appdata.xml",
-        "0.1.0",
-      );
-
-      aboutDialog.set_developers([
-        "Angelo Verlain <hey@vixalien.com>",
-        "Christopher Davis <christopherdavis@gnome.org>",
-        "Kian-Meng Ang <kianmeng@cpan.org>",
-      ]);
-      aboutDialog.set_debug_info(this.get_debug_info());
-
-      aboutDialog.present(this.get_active_window());
-    });
-    this.add_action(show_about_action);
-
     GLib.unix_signal_add(
       GLib.PRIORITY_DEFAULT,
       // SIGINT
@@ -119,6 +105,22 @@ export class Application extends Adw.Application {
       null,
       2,
     );
+  }
+
+  private show_about_dialog_cb() {
+    const aboutDialog = Adw.AboutDialog.new_from_appdata(
+      "/com/vixalien/muzika/com.vixalien.muzika.appdata.xml",
+      "0.1.0",
+    );
+
+    aboutDialog.set_developers([
+      "Angelo Verlain <hey@vixalien.com>",
+      "Christopher Davis <christopherdavis@gnome.org>",
+      "Kian-Meng Ang <kianmeng@cpan.org>",
+    ]);
+    aboutDialog.set_debug_info(this.get_debug_info());
+
+    aboutDialog.present(this.get_active_window());
   }
 
   public vfunc_shutdown(): void {

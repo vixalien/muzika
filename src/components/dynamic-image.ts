@@ -4,7 +4,7 @@ import Adw from "gi://Adw";
 
 import { Thumbnail } from "libmuse";
 import { load_thumbnails } from "./webimage";
-import { DynamicAction, DynamicActionState } from "./dynamic-action";
+import { DynamicAction, DynamicActionState, get_state_pspec } from "./dynamic-action";
 import { SignalListeners } from "src/util/signal-listener";
 import { get_player } from "src/application";
 import { FixedRatioThumbnail } from "./fixed-ratio-thumbnail";
@@ -63,15 +63,7 @@ export class DynamicImage extends Gtk.Overlay {
           1000000,
           0,
         ),
-        "state": GObject.ParamSpec.uint(
-          "state",
-          "State",
-          "The current state of the dynamic action",
-          GObject.ParamFlags.READWRITE,
-          DynamicActionState.DEFAULT,
-          DynamicActionState.PAUSED,
-          DynamicActionState.DEFAULT,
-        ),
+        "state": get_state_pspec(),
         "storage-type": GObject.ParamSpec.uint(
           "storage-type",
           "Storage Type",
