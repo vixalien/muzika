@@ -36,7 +36,7 @@ import {
 } from "./components/player/now-playing/details.js";
 import { LoginDialog } from "./pages/login.js";
 import { AddActionEntries } from "./util/action.js";
-import { get_current_user, get_option } from "libmuse";
+import { get_option, LikeStatus, rate_song } from "libmuse";
 import { PlayerView } from "./components/player/view.js";
 import "./components/player/video/view.js";
 import { VideoPlayerView } from "./components/player/video/view.js";
@@ -223,6 +223,19 @@ export class Window extends Adw.ApplicationWindow {
           SaveToPlaylistDialog.new_playlist(
             parameter.get_string()[0].split(",")[0],
           );
+        },
+      },
+      {
+        name: "rate-song",
+        parameter_type: "as",
+        activate: (_, parameter) => {
+          if (!parameter) return;
+
+          const [videoId, status] = parameter.get_strv();
+
+          if (!videoId || !status) return;
+
+          this.rate_song(videoId, status as LikeStatus);
         },
       },
     ]);
@@ -415,5 +428,34 @@ export class Window extends Adw.ApplicationWindow {
   private on_breakpoint_unapply() {
     this.large_viewport = false;
     this.update_show_player_controls();
+  }
+
+  private rate_song(videoId: string, status: LikeStatus) {
+    rate_song(videoId, status as LikeStatus)
+      .then(() => {
+        const toast = new Adw.Toast();
+
+        switch (status as LikeStatus) {
+          case "DISLIKE":
+            toast.title = _("Added to disliked songs");
+            break;
+          case "LIKE":
+            toast.title = _("Added to liked songs");
+            toast.button_label = _("Liked songs");
+            toast.action_name = "navigator.visit";
+            toast.action_target = GLib.Variant.new_string("muzika:playlist:LM");
+            break;
+          case "INDIFFERENT":
+            toast.title = _("Removed from disliked songs");
+            break;
+        }
+
+        this.add_toast_full(toast);
+      })
+      .catch((error) => {
+        this.add_toast(_("An error happened while rating song"));
+
+        console.log("An error happened while rating song", error);
+      });
   }
 }
