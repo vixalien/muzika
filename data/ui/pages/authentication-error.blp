@@ -15,7 +15,7 @@ template $AuthenticationErrorPage : Adw.Bin {
     Adw.StatusPage status {
       hexpand: true;
       icon-name: 'system-lock-screen-symbolic';
-      title: _('Authentication Is Required');
+      title: _("Authentication Is Required");
 
       Box more {
         orientation: vertical;
@@ -27,7 +27,7 @@ template $AuthenticationErrorPage : Adw.Bin {
           spacing: 6;
 
           Button {
-            label: _('Log In');
+            label: _("Log In");
             action-name: 'win.login';
 
             styles [
@@ -37,7 +37,7 @@ template $AuthenticationErrorPage : Adw.Bin {
           }
 
           Button home_button {
-            label: _('Go to Home');
+            label: _("Go to Home");
 
             styles [
               "pill",
@@ -46,7 +46,7 @@ template $AuthenticationErrorPage : Adw.Bin {
         }
 
         Expander expander {
-          label: _('Error Details');
+          label: _("Error Details");
           halign: center;
         }
 

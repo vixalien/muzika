@@ -389,9 +389,9 @@ export class Queue extends GObject.Object {
 
             add_toast(
               params.has("next")
-                ? vprintf(_('Playing "%s" next'), [normalized_title])
+                ? vprintf(_("Playing “%s” next"), [normalized_title])
                 // Translators: %s is a playlist name
-                : vprintf(_('Added "%s" to queue'), [normalized_title]),
+                : vprintf(_("Added “%s” to queue"), [normalized_title]),
             );
           });
         },
@@ -444,13 +444,13 @@ export class Queue extends GObject.Object {
               params.has("next")
                 ? ngettext(
                   // Translators: %s is a song's name
-                  vprintf(_('Playing "%s" next'), [normalized_title]),
+                  vprintf(_("Playing “%s” next"), [normalized_title]),
                   vprintf(_("Playing %d songs next"), [tracks.length]),
                   tracks.length,
                 )
                 : ngettext(
                   // Translators: %s is a song's name
-                  vprintf(_('Added "%s" to queue'), [normalized_title]),
+                  vprintf(_("Added “%s” to queue"), [normalized_title]),
                   vprintf(_("Added %d songs to queue"), [tracks.length]),
                   tracks.length,
                 ),
