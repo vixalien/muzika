@@ -211,6 +211,11 @@ export class ArtistPage extends Adw.Bin
     promise
       .then(() => {
         this.artist!.subscribed = !old_subscribed;
+        add_toast(
+          old_subscribed
+            ? _("Unsubscribed from artist")
+            : _("Subscribed to artist"),
+        );
       })
       .catch(() => {
         this.artist!.subscribed = old_subscribed;
