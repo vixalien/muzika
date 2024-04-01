@@ -8,6 +8,7 @@ import { pretty_subtitles } from "src/util/text.js";
 import { DynamicImage, DynamicImageStorageType } from "../dynamic-image";
 import { SignalListeners } from "src/util/signal-listener.js";
 import { MenuHelper } from "src/util/menu/index.js";
+import { menuLikeRow } from "src/util/menu/like";
 
 export class PlaylistListItem extends Gtk.Box {
   static {
@@ -77,7 +78,12 @@ export class PlaylistListItem extends Gtk.Box {
     this.menu_helper = MenuHelper.new(this);
   }
 
-  set_item(position: number, item: PlaylistItem, playlistId?: string, editable = false) {
+  set_item(
+    position: number,
+    item: PlaylistItem,
+    playlistId?: string,
+    editable = false,
+  ) {
     this.item = item;
     this.playlistId = playlistId;
 
@@ -121,25 +127,34 @@ export class PlaylistListItem extends Gtk.Box {
 
     this.dynamic_image.setup_video(item.videoId, playlistId);
 
-    this.menu_helper.props = [
-      [_("Start radio"), `queue.play-song("${item.videoId}?radio=true")`],
-      [_("Play next"), `queue.add-song("${item.videoId}?next=true")`],
-      [_("Add to queue"), `queue.add-song("${item.videoId}")`],
-      [_("Save to playlist"), `win.add-to-playlist("${item.videoId}")`],
-      editable ? [_("Remove from playlist"), `playlist.remove-tracks([${position}])`] : null,
-      item.album
-        ? [
-          _("Go to album"),
-          `navigator.visit("muzika:album:${item.album.id}")`,
-        ]
-        : null,
-      item.artists.length > 1
-        ? [
-          _("Go to artist"),
-          `navigator.visit("muzika:artist:${item.artists[0].id}")`,
-        ]
-        : null,
-    ];
+    this.menu_helper.set_builder(() => {
+      return [
+        menuLikeRow(
+          item.likeStatus,
+          item.videoId,
+          (likeStatus) => item.likeStatus = likeStatus,
+        ),
+        [_("Start radio"), `queue.play-song("${item.videoId}?radio=true")`],
+        [_("Play next"), `queue.add-song("${item.videoId}?next=true")`],
+        [_("Add to queue"), `queue.add-song("${item.videoId}")`],
+        [_("Save to playlist"), `win.add-to-playlist("${item.videoId}")`],
+        editable
+          ? [_("Remove from playlist"), `playlist.remove-tracks([${position}])`]
+          : null,
+        item.album
+          ? [
+            _("Go to album"),
+            `navigator.visit("muzika:album:${item.album.id}")`,
+          ]
+          : null,
+        item.artists.length > 1
+          ? [
+            _("Go to artist"),
+            `navigator.visit("muzika:artist:${item.artists[0].id}")`,
+          ]
+          : null,
+      ];
+    });
   }
 
   // property: show-add

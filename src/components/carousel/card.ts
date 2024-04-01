@@ -277,18 +277,25 @@ export class CarouselCard extends Gtk.Box {
     this.setup_image(CarouselImageType.DYNAMIC_PICTURE, video.thumbnails);
     this.setup_video(video.videoId);
 
-    this.menu_helper.props = [
-      [_("Start radio"), `queue.play-song("${video.videoId}?radio=true")`],
-      [_("Play next"), `queue.add-song("${video.videoId}?next=true")`],
-      [_("Add to queue"), `queue.add-song("${video.videoId}")`],
-      [_("Save to playlist"), `win.add-to-playlist("${video.videoId}")`],
-      video.artists && video.artists.length > 1
-        ? [
-          _("Go to artist"),
-          `navigator.visit("muzika:artist:${video.artists[0].id}")`,
-        ]
-        : null,
-    ];
+    this.menu_helper.set_builder(() => {
+      return [
+        menuLikeRow(
+          video.likeStatus,
+          video.videoId,
+          (likeStatus) => video.likeStatus = likeStatus,
+        ),
+        [_("Start radio"), `queue.play-song("${video.videoId}?radio=true")`],
+        [_("Play next"), `queue.add-song("${video.videoId}?next=true")`],
+        [_("Add to queue"), `queue.add-song("${video.videoId}")`],
+        [_("Save to playlist"), `win.add-to-playlist("${video.videoId}")`],
+        video.artists && video.artists.length > 1
+          ? [
+            _("Go to artist"),
+            `navigator.visit("muzika:artist:${video.artists[0].id}")`,
+          ]
+          : null,
+      ];
+    });
   }
 
   show_inline_video(video: ParsedSong) {
@@ -300,24 +307,31 @@ export class CarouselCard extends Gtk.Box {
     this.setup_image(CarouselImageType.DYNAMIC_PICTURE, video.thumbnails);
     this.setup_video(video.videoId);
 
-    this.menu_helper.props = [
-      [_("Start radio"), `queue.play-song("${video.videoId}?radio=true")`],
-      [_("Play next"), `queue.add-song("${video.videoId}?next=true")`],
-      [_("Add to queue"), `queue.add-song("${video.videoId}")`],
-      [_("Save to playlist"), `win.add-to-playlist("${video.videoId}")`],
-      video.album
-        ? [
-          _("Go to album"),
-          `navigator.visit("muzika:album:${video.album.id}")`,
-        ]
-        : null,
-      video.artists.length > 1
-        ? [
-          _("Go to artist"),
-          `navigator.visit("muzika:artist:${video.artists[0].id}")`,
-        ]
-        : null,
-    ];
+    this.menu_helper.set_builder(() => {
+      return [
+        menuLikeRow(
+          video.likeStatus,
+          video.videoId,
+          (likeStatus) => video.likeStatus = likeStatus,
+        ),
+        [_("Start radio"), `queue.play-song("${video.videoId}?radio=true")`],
+        [_("Play next"), `queue.add-song("${video.videoId}?next=true")`],
+        [_("Add to queue"), `queue.add-song("${video.videoId}")`],
+        [_("Save to playlist"), `win.add-to-playlist("${video.videoId}")`],
+        video.album
+          ? [
+            _("Go to album"),
+            `navigator.visit("muzika:album:${video.album.id}")`,
+          ]
+          : null,
+        video.artists.length > 1
+          ? [
+            _("Go to artist"),
+            `navigator.visit("muzika:artist:${video.artists[0].id}")`,
+          ]
+          : null,
+      ];
+    });
   }
 
   show_playlist(playlist: ParsedPlaylist) {
