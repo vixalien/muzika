@@ -1171,19 +1171,29 @@ function get_song_formats<
   Video extends true | false,
   Quality extends Video extends true ? VideoQuality : AudioQuality,
   FormatType extends Video extends true ? VideoFormat : AudioFormat,
->(video: Video, formats: FormatType[], quality: Quality) {
+>(video: Video, formats: FormatType[], quality: Quality, force_mp4?: boolean) {
   return formats
     .filter(
       // get requested formats
       video ? format_has_video : format_has_audio,
     )
     .filter((format) => {
-      // only use mp4 if format is auto
-      const mime_type = video
-        ? quality === VideoQuality.auto ? "video/mp4" : "video/webm"
-        : quality === AudioQuality.auto
-        ? "audio/mp4"
-        : "audio/webm";
+      // only use mp4 if format is auto or we're currently playing a video
+      let mime_type;
+
+      if (video) {
+        if (force_mp4 || quality === VideoQuality.auto) {
+          mime_type = "video/mp4";
+        } else {
+          mime_type = "video/webm";
+        }
+      } else {
+        if (force_mp4 || quality === AudioQuality.auto) {
+          mime_type = "audio/mp4";
+        } else {
+          mime_type = "audio/webm";
+        }
+      }
 
       return format.mime_type.startsWith(mime_type);
     })
@@ -1217,8 +1227,9 @@ function get_best_formats(
   video: boolean,
   formats: Format[],
   quality: VideoQuality | AudioQuality,
+  force_mp4 = false,
 ) {
-  const correct_formats = get_song_formats(video, formats, quality);
+  const correct_formats = get_song_formats(video, formats, quality, force_mp4);
 
   // if the requested format is auto, no further processing
   if (video && quality === VideoQuality.auto) {
@@ -1253,6 +1264,11 @@ function get_song_uri(song: Song) {
 
   const is_video = song.videoDetails.musicVideoType !== "MUSIC_VIDEO_TYPE_ATV";
 
+  // for music videos, no video formats are necessary
+  const video_formats = is_video
+    ? get_best_formats(true, formats, Settings.get_enum("video-quality"))
+    : [];
+
   const audio_formats = get_best_formats(
     false,
     formats,
@@ -1260,6 +1276,7 @@ function get_song_uri(song: Song) {
     // ive never seen a video with a high audio quality, and using multiple
     // video & audio formats causes dashdemux2 issues
     is_video ? AudioQuality.medium : Settings.get_enum("audio-quality"),
+    video_formats.length > 0,
   )
     // TODO: there's a GStreamer bug that causes weird problems with audio files.
     // In this section, we only get one audio track unless audio quality
@@ -1270,11 +1287,6 @@ function get_song_uri(song: Song) {
         ? 1
         : undefined,
     );
-
-  // for music videos, no video formats are necessary
-  const video_formats = is_video
-    ? get_best_formats(true, formats, Settings.get_enum("video-quality"))
-    : [];
 
   const total_formats = [...video_formats, ...audio_formats];
 
