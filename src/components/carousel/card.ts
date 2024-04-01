@@ -205,14 +205,14 @@ export class CarouselCard extends Gtk.Box {
 
     this.menu_helper.set_builder(() => {
       return [
-        [_("Start radio"), `queue.play-song("${song.videoId}?radio=true")`],
-        [_("Play next"), `queue.add-song("${song.videoId}?next=true")`],
-        [_("Add to queue"), `queue.add-song("${song.videoId}")`],
         menuLikeRow(
           song.likeStatus,
           song.videoId,
           (likeStatus) => song.likeStatus = likeStatus,
         ),
+        [_("Start radio"), `queue.play-song("${song.videoId}?radio=true")`],
+        [_("Play next"), `queue.add-song("${song.videoId}?next=true")`],
+        [_("Add to queue"), `queue.add-song("${song.videoId}")`],
         [_("Save to playlist"), `win.add-to-playlist("${song.videoId}")`],
         song.album
           ? [
