@@ -1,11 +1,13 @@
 [Desktop Entry]
 Name=Muzika
+Comment=Stream music online
 Exec=com.vixalien.muzika
 Icon=com.vixalien.muzika
 Terminal=false
 Type=Application
-Categories=GTK;
 StartupNotify=true
 Categories=GNOME;GTK;Music;Audio;Video;AudioVideo;Player;
+# Translators: Search terms to find this application. Do NOT translate or localize the semicolons! The list MUST also end with a semicolon!
 Keywords=music;player;media;audio;playlists;youtube;artists;
 X-Purism-FormFactor=Workstation;Mobile;
+X-SingleMainWindow=true
