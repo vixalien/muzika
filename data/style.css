@@ -53,7 +53,7 @@ label.link:hover {
   padding: 10px;
 }
 
-menubutton.small-pill > button {
+menubutton.small-pill>button {
   padding: 10px;
 }
 
@@ -126,10 +126,8 @@ scale.buffering trough {
   }
 
   to {
-    background-image: cross-fade(
-      40% -gtk-recolor(url("resource:///com/vixalien/muzika/icons/scalable/actions/progress-symbolic.svg")),
-      transparent
-    );
+    background-image: cross-fade(40% -gtk-recolor(url("resource:///com/vixalien/muzika/icons/scalable/actions/progress-symbolic.svg")),
+        transparent);
   }
 }
 
@@ -183,10 +181,10 @@ label.bold-link link {
   padding-right: 6px;
 }
 
-.carousel-list-view > row,
-.playlist-list-view > row,
-.carousel-grid-view > child,
-.carousel-flat-list-view > row {
+.carousel-list-view>row,
+.playlist-list-view>row,
+.carousel-grid-view>child,
+.carousel-flat-list-view>row {
   border-radius: 12px;
   padding: 6px;
 }
@@ -206,8 +204,8 @@ label.bold-link link {
   border-spacing: 6px;
 }
 
-.playlist-column-view listview > row,
-.playlist-list-view > row {
+.playlist-column-view listview>row,
+.playlist-list-view>row {
   border-radius: 9px;
 }
 
@@ -220,25 +218,23 @@ label.bold-link link {
   background-color: alpha(@window_fg_color, 0.03);
 }
 
-.insights-clamp > .insights-box > *:first-child {
+.insights-clamp>.insights-box>*:first-child {
   margin-top: 12px;
 }
 
-.insights-clamp > .insights-box > *:last-child {
+.insights-clamp>.insights-box>*:last-child {
   margin-bottom: 12px;
 }
 
 .playlist-item:not(:hover):not(:selected):nth-child(2n + 1),
-.playlist-column-view
-  listview
-  > row:not(:hover):not(:selected):nth-child(2n + 1),
-.playlist-list-view > row:not(:hover):not(:selected):nth-child(2n + 1) {
+.playlist-column-view listview>row:not(:hover):not(:selected):nth-child(2n + 1),
+.playlist-list-view>row:not(:hover):not(:selected):nth-child(2n + 1) {
   background-color: alpha(@window_fg_color, 0.05);
 }
 
 .playlist-item:not(:hover):not(:selected):nth-child(2n + 1),
-.playlist-column-view listview > row:hover:not(:selected),
-.playlist-list-view > row:hover:not(:selected) {
+.playlist-column-view listview>row:hover:not(:selected),
+.playlist-list-view>row:hover:not(:selected) {
   background-color: alpha(@window_fg_color, 0.15);
 }
 
@@ -252,7 +248,7 @@ label.bold-link link {
   padding-right: 6px;
 }
 
-.carousel-mood-view > child {
+.carousel-mood-view>child {
   padding: 0;
   border-radius: 6px;
 }
@@ -269,7 +265,7 @@ label.bold-link link {
   padding-bottom: 18px;
 }
 
-.inline-song-list-view > row {
+.inline-song-list-view>row {
   border-radius: 12px;
 }
 
@@ -297,7 +293,7 @@ label.bold-link link {
   opacity: 1;
 }
 
-.navigation-sidebar > header {
+.navigation-sidebar>header {
   padding: 0;
 }
 
@@ -315,7 +311,7 @@ button.large {
   min-width: 80px;
 }
 
-.pad-last-child > *:last-child {
+.pad-last-child>*:last-child {
   padding-bottom: 6px;
 }
 
@@ -327,4 +323,24 @@ button.large {
 .song-title,
 .song-artists {
   min-height: 1.5em;
+}
+
+.pill.outline {
+  border: 2px solid;
+  border-color: @borders;
+  padding-top: 8px;
+  padding-bottom: 8px;
+}
+
+.pill.outline label {
+  color: inherit;
+}
+
+.pill.outline.subscribe {
+  color: @destructive_color;
+  border-color: currentColor;
+}
+
+.thin-label {
+  font-weight: 500;
 }
