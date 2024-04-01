@@ -75,14 +75,16 @@ class CustomFetch extends FetchClient {
 
       if (cache && cached_json) {
         console.debug("CACHED", options.method, path);
-        return new GResponse(JSON.stringify(cached_json));
+        return new GResponse(
+          JSON.stringify(cached_json),
+        ) as unknown as Response;
       }
     } catch (error) {
       // console.error("Failed to load cache", error);
     }
     // end caching
 
-    const response = await super.request(path, options) as GResponse;
+    const response = await super.request(path, options);
 
     // store into cache
     if (cache && response.ok) {
@@ -95,7 +97,7 @@ class CustomFetch extends FetchClient {
 
         cached_file.replace_contents(
           JSON.stringify(
-            await response.clone().then((response) => response.json()),
+            await response.clone().json(),
             null,
             2,
           ),

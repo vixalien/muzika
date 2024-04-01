@@ -129,7 +129,7 @@ export class GResponse {
     return this._url;
   }
 
-  async clone() {
+  clone() {
     const streams = this.body.tee();
 
     this._body = streams[0];
@@ -273,6 +273,7 @@ export async function fetch(url: string | URL, options: FetchOptions = {}) {
       return;
     }
 
+    // @ts-expect-error allow iterating the inputStream
     inputStream[Symbol.asyncIterator] = async function* () {
       const outputStream = Gio.MemoryOutputStream.new_resizable();
       await outputStream.splice_async(
@@ -292,6 +293,7 @@ export async function fetch(url: string | URL, options: FetchOptions = {}) {
       headers.append(name, value);
     });
 
+    // @ts-expect-error ReadableStream types
     const stream = new ReadableStream.from(inputStream);
 
     const response = new GResponse(stream, {
