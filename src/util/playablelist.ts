@@ -2,7 +2,8 @@ import Gio from "gi://Gio";
 import GObject from "gi://GObject";
 import Gtk from "gi://Gtk?version=4.0";
 
-import { PlaylistItem, SearchContent } from "src/muse";
+import type { PlaylistItem, SearchContent } from "libmuse";
+
 import { DynamicActionState } from "src/components/dynamic-image";
 import { SignalListeners } from "./signal-listener";
 import { get_player } from "src/application";

@@ -6,7 +6,8 @@ import GLib from "gi://GLib";
 
 import { ngettext } from "gettext";
 
-import { PlaylistItem } from "src/muse";
+import type { PlaylistItem } from "libmuse";
+
 import { ObjectContainer } from "src/util/objectcontainer";
 import { get_selected } from "src/util/list";
 

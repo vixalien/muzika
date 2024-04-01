@@ -1,4 +1,5 @@
-import { AudioFormat, Format, Song } from "src/muse";
+import type { AudioFormat, Format, Song } from "libmuse";
+
 import { format_has_audio } from ".";
 import { languages } from "src/components/player/video/languages";
 

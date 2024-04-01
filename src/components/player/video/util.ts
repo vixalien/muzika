@@ -2,9 +2,10 @@ import Gio from "gi://Gio";
 import GstPlay from "gi://GstPlay";
 import GLib from "gi://GLib";
 
-import { Song } from "src/muse";
+import type { Song } from "libmuse";
+
 import { languages } from "./languages";
-import { VideoQualities, format_has_video } from "src/player";
+import { format_has_video, VideoQualities } from "src/player";
 
 export function generate_subtitles_menu(
   song: Song,

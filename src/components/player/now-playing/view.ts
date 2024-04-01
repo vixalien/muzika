@@ -4,7 +4,8 @@ import GObject from "gi://GObject";
 import GLib from "gi://GLib";
 import Adw from "gi://Adw";
 
-import { QueueTrack } from "src/muse";
+import type { QueueTrack } from "libmuse";
+
 import { get_player } from "src/application";
 import { MuzikaPlayer } from "src/player";
 import { escape_label, pretty_subtitles } from "src/util/text";

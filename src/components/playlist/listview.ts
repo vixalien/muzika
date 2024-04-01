@@ -2,12 +2,13 @@ import Gtk from "gi://Gtk?version=4.0";
 import GObject from "gi://GObject";
 import GLib from "gi://GLib";
 
+import type { PlaylistItem } from "libmuse";
+
 import { PlaylistListItem } from "./listitem";
 import { SignalListeners } from "src/util/signal-listener";
 import { PlayableContainer } from "src/util/playablelist";
 import { DynamicImage } from "../dynamic-image";
 import { ObjectContainer } from "src/util/objectcontainer";
-import { PlaylistItem } from "src/muse";
 
 interface PlaylistListItemWithSignals extends PlaylistListItem {
   signals: SignalListeners;
