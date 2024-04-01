@@ -5,13 +5,13 @@ import GObject from "gi://GObject";
 import Gio from "gi://Gio";
 import Adw from "gi://Adw";
 
-import { MixedContent, MixedItem } from "../../muse.js";
+import type { MixedContent, MixedItem, ParsedMoodOrGenre } from "libmuse";
+
 import { MixedCardItem } from "../library/mixedcard.js";
 import { PlayableContainer } from "src/util/playablelist.js";
 import { CarouselListView } from "./view/list.js";
 import { FlatGridView } from "./view/flatgrid.js";
 import { CarouselMoodView } from "./view/mood.js";
-import { ParsedMoodOrGenre } from "libmuse/types/parsers/browsing.js";
 
 export type RequiredMixedItem = NonNullable<MixedItem>;
 

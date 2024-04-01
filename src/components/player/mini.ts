@@ -2,8 +2,9 @@ import Gtk from "gi://Gtk?version=4.0";
 import GObject from "gi://GObject";
 import GLib from "gi://GLib";
 
+import type { QueueTrack } from "libmuse";
+
 import { PlayerProgressBar } from "./progress.js";
-import { QueueTrack } from "libmuse/types/parsers/queue.js";
 import { MuzikaPlayer } from "src/player";
 import { SignalListeners } from "src/util/signal-listener.js";
 import { get_player } from "src/application.js";

@@ -1,4 +1,5 @@
 import Pango from "gi://Pango";
+
 import { set_option } from "libmuse";
 import locales from "libmuse/locales/locales";
 

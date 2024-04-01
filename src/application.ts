@@ -4,14 +4,16 @@ import Adw from "gi://Adw";
 import GLib from "gi://GLib";
 import Gtk from "gi://Gtk?version=4.0";
 
+import "src/muse.js";
+import { get_option } from "libmuse";
+
 import { Window } from "./window.js";
 import { cache } from "./polyfills/fetch.js";
 import { AddActionEntries } from "./util/action.js";
 import { MuzikaPlayer } from "./player/index.js";
 import { MPRIS } from "./mpris.js";
-import { get_option } from "src/muse";
 import { MuzikaPreferencesDialog } from "./pages/preferences.js";
-import { get_default_muse_lang, get_language_string, set_muse_lang } from "./util/language.js";
+import { get_language_string, set_muse_lang } from "./util/language.js";
 
 export const Settings = new Gio.Settings({ schema: pkg.name });
 

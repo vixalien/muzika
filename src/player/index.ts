@@ -8,6 +8,9 @@ import Gtk from "gi://Gtk?version=4.0";
 import Gdk from "gi://Gdk?version=4.0";
 import GstAudio from "gi://GstAudio";
 
+import { add_history_item, get_option, get_song } from "libmuse";
+import type { AudioFormat, Format, Song, VideoFormat } from "libmuse";
+
 import {
   Queue,
   QueueMeta,
@@ -15,15 +18,7 @@ import {
   RepeatMode,
   tracks_to_meta,
 } from "./queue";
-import {
-  add_history_item,
-  AudioFormat,
-  Format,
-  get_option,
-  get_song,
-  Song,
-  VideoFormat,
-} from "src/muse";
+
 import { Application, Settings } from "../application.js";
 import { ObjectContainer } from "../util/objectcontainer.js";
 import { AddActionEntries } from "src/util/action.js";

@@ -2,12 +2,12 @@ import Gtk from "gi://Gtk?version=4.0";
 import GObject from "gi://GObject";
 import Adw from "gi://Adw";
 
-import { get_explore } from "../muse.js";
+import { get_explore } from "libmuse";
 import type {
   Category,
   ExploreContents,
   ParsedMoodOrGenre,
-} from "libmuse/types/parsers/browsing.js";
+} from "libmuse";
 
 import { Carousel } from "../components/carousel/index.js";
 import { Loading } from "../components/loading.js";

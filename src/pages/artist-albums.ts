@@ -3,9 +3,10 @@ import Adw from "gi://Adw";
 import GLib from "gi://GLib";
 import Gtk from "gi://Gtk?version=4.0";
 
-import { ArtistAlbums, get_artist_albums } from "src/muse.js";
+import { get_artist_albums } from "libmuse";
+import type { ArtistAlbums } from "libmuse";
 
-import { PageLoadContext, MuzikaPageWidget } from "src/navigation.js";
+import { MuzikaPageWidget, PageLoadContext } from "src/navigation.js";
 import { CarouselGridView } from "src/components/carousel/view/grid";
 import { PlayableContainer } from "src/util/playablelist";
 import { MixedCardItem } from "src/components/library/mixedcard";

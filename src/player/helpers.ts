@@ -1,11 +1,12 @@
 import GObject from "gi://GObject";
 import Gtk from "gi://Gtk?version=4.0";
 
-import { get_queue, get_queue_ids, QueueOptions } from "src/muse";
+import { get_queue, get_queue_ids } from "libmuse";
+import type { QueueTrack, QueueOptions } from "libmuse";
+
 import { omit } from "lodash-es";
 
 import { QueueSettings, RepeatMode } from "./queue";
-import type { QueueTrack } from "libmuse/types/parsers/queue";
 import { get_player } from "src/application";
 
 function create_cache_map<T extends any>() {

@@ -2,7 +2,8 @@ import Gtk from "gi://Gtk?version=4.0";
 import GObject from "gi://GObject";
 import Adw from "gi://Adw";
 
-import { get_song_related } from "src/muse";
+import { get_song_related } from "libmuse";
+
 import { Carousel } from "../carousel";
 import { MuzikaPlayer } from "src/player";
 import { get_player } from "src/application";

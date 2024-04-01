@@ -2,7 +2,8 @@ import Gtk from "gi://Gtk?version=4.0";
 import GObject from "gi://GObject";
 import GLib from "gi://GLib";
 
-import { PlaylistItem } from "../../muse.js";
+import type { PlaylistItem } from "libmuse";
+
 import { pretty_subtitles } from "src/util/text.js";
 import { DynamicImage, DynamicImageStorageType } from "../dynamic-image";
 import { SignalListeners } from "src/util/signal-listener.js";

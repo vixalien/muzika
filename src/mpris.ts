@@ -3,9 +3,10 @@ import GLib from "gi://GLib";
 import Gtk from "gi://Gtk?version=4.0";
 import GstPlay from "gi://GstPlay";
 
+import type { LikeStatus } from "libmuse";
+
 import { Application } from "./application";
 import { RepeatMode } from "./player/queue";
-import type { LikeStatus } from "libmuse/types/parsers/songs";
 import { MuzikaPlayer } from "./player";
 
 // bus_get

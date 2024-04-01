@@ -3,7 +3,9 @@ import GObject from "gi://GObject";
 import Adw from "gi://Adw";
 import GLib from "gi://GLib";
 
-import { get_lyrics, Lyrics, TimedLyrics } from "src/muse";
+import { get_lyrics } from "libmuse";
+import type { Lyrics, TimedLyrics } from "libmuse";
+
 import { escape_label } from "src/util/text";
 import { MuzikaPlayer } from "src/player";
 import { SignalListeners } from "src/util/signal-listener";

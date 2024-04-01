@@ -6,8 +6,8 @@ import Adw from "gi://Adw";
 /// @ts-expect-error
 import QRCode from "@lemaik/qrcode-svg";
 
-import { get_option } from "../muse.js";
-import type { LoginCode } from "libmuse/types/auth.js";
+import { get_option } from "libmuse";
+import type { LoginCode } from "libmuse";
 
 export class LoginDialog extends Adw.Dialog {
   static {

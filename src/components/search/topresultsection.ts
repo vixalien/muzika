@@ -3,7 +3,8 @@ import GObject from "gi://GObject";
 import GLib from "gi://GLib";
 import Adw from "gi://Adw";
 
-import { SearchContent, TopResult } from "../../muse.js";
+import type { SearchContent, TopResult } from "libmuse";
+
 import { TopResultCard } from "./topresultcard.js";
 import { FlatListView } from "../carousel/view/flatlist.js";
 import { PlayableContainer } from "src/util/playablelist.js";

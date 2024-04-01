@@ -2,11 +2,12 @@ import Gtk from "gi://Gtk?version=4.0";
 import GObject from "gi://GObject";
 import Adw from "gi://Adw";
 
-import { get_mood_playlists, MoodPlaylists } from "../muse.js";
+import { get_mood_playlists } from "libmuse";
+import type { MoodPlaylists } from "libmuse";
 
 import { Carousel } from "../components/carousel/index.js";
 import { Loading } from "../components/loading.js";
-import { PageLoadContext, MuzikaPageWidget } from "src/navigation.js";
+import { MuzikaPageWidget, PageLoadContext } from "src/navigation.js";
 import {
   set_scrolled_window_initial_vscroll,
   VScrollState,

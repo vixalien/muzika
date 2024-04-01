@@ -4,10 +4,11 @@ import GLib from "gi://GLib";
 import Adw from "gi://Adw";
 import Gio from "gi://Gio";
 
-import { Artist, Category, get_artist, MixedItem } from "../muse.js";
+import { get_artist } from "libmuse";
+import type { Artist, Category, MixedItem } from "libmuse";
 
 import { Carousel } from "../components/carousel/index.js";
-import { PageLoadContext, MuzikaPageWidget } from "src/navigation.js";
+import { MuzikaPageWidget, PageLoadContext } from "src/navigation.js";
 import { PlaylistListView } from "src/components/playlist/listview.js";
 import { PlaylistItemView } from "src/components/playlist/itemview.js";
 import { PlayableContainer, PlayableList } from "src/util/playablelist.js";

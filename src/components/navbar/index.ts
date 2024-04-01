@@ -1,13 +1,12 @@
 import GLib from "gi://GLib";
 import GObject from "gi://GObject";
 import Gtk from "gi://Gtk?version=4.0";
-import Adw from "gi://Adw";
 import Gio from "gi://Gio";
 
 import { match } from "path-to-regexp";
 
-import { get_library_playlists, get_option } from "../../muse";
-import { Window } from "../../window";
+import { get_library_playlists, get_option } from "libmuse";
+
 import { NavbarButton, NavbarButtonContructorProperties } from "./button";
 import { ObjectContainer } from "src/util/objectcontainer";
 import { ListView } from "gi-types/gtk4";

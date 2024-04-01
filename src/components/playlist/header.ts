@@ -3,10 +3,9 @@ import GObject from "gi://GObject";
 import Adw from "gi://Adw";
 import GLib from "gi://GLib";
 
-import { load_thumbnails } from "../webimage.js";
+import type { ArtistRun, Thumbnail } from "libmuse";
 
-import { ArtistRun, Thumbnail } from "../../muse.js";
-import { omit } from "lodash-es";
+import { load_thumbnails } from "../webimage.js";
 import { pretty_subtitles } from "src/util/text.js";
 
 interface ButtonProps extends Partial<Gtk.Button.ConstructorProperties> {

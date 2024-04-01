@@ -3,10 +3,10 @@ import GObject from "gi://GObject";
 import GLib from "gi://GLib";
 import Adw from "gi://Adw";
 
-import { LibraryItems } from "../../muse.js";
+import type { LibraryItems, LibraryOrder, Order } from "libmuse";
+
 import { LibraryView } from "../../components/library/view.js";
 
-import type { LibraryOrder, Order } from "libmuse/types/mixins/utils.js";
 import { MixedCardItem } from "src/components/library/mixedcard.js";
 import { MuzikaPageWidget, PageLoadContext } from "src/navigation.js";
 import {

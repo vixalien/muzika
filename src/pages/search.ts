@@ -3,15 +3,9 @@ import GObject from "gi://GObject";
 import GLib from "gi://GLib";
 import Adw from "gi://Adw";
 
-import {
-  Filter,
-  get_more_search_results,
-  get_option,
-  search,
-  SearchOptions,
-  SearchResults,
-  SearchRuns,
-} from "../muse.js";
+import { get_more_search_results, get_option, search } from "libmuse";
+import type { Filter, SearchOptions, SearchResults, SearchRuns } from "libmuse";
+
 import { SearchSection } from "../components/search/section.js";
 import { TopResultSection } from "../components/search/topresultsection.js";
 import { Paginator } from "../components/paginator.js";

@@ -3,15 +3,12 @@ import GObject from "gi://GObject";
 import Adw from "gi://Adw";
 import GLib from "gi://GLib";
 
-import { Charts, get_charts } from "../muse.js";
-import type {
-  Category,
-  ParsedMoodOrGenre,
-} from "libmuse/types/parsers/browsing.js";
+import { get_charts } from "libmuse";
+import type { Category, Charts, ParsedMoodOrGenre } from "libmuse";
 
 import { Carousel } from "../components/carousel/index.js";
 import { Loading } from "../components/loading.js";
-import { PageLoadContext, MuzikaPageWidget } from "src/navigation.js";
+import { MuzikaPageWidget, PageLoadContext } from "src/navigation.js";
 import { MixedCardItem } from "src/components/library/mixedcard.js";
 import {
   set_scrolled_window_initial_vscroll,

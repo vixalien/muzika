@@ -3,11 +3,11 @@ import GLib from "gi://GLib";
 import Adw from "gi://Adw";
 import Gtk from "gi://Gtk?version=4.0";
 
-import { get_library_songs, LibrarySongs } from "../../muse.js";
+import { get_library_songs, LibrarySongs } from "libmuse";
+import type { Order } from "libmuse";
 
 import { alphabetical_orders, order_id_to_name } from "./base.js";
 import { Paginator } from "src/components/paginator.js";
-import type { Order } from "libmuse/types/mixins/utils.js";
 import { MuzikaPageWidget, PageLoadContext } from "src/navigation.js";
 import { PlayableContainer, PlayableList } from "src/util/playablelist.js";
 import { PlaylistItemView } from "src/components/playlist/itemview.js";

@@ -1,6 +1,6 @@
 import GLib from "gi://GLib";
 
-import { ArtistRun } from "../muse";
+import type { ArtistRun } from "libmuse";
 
 export function escape_label(label: string) {
   return GLib.markup_escape_text(label, -1);

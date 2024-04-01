@@ -2,12 +2,12 @@ import GObject from "gi://GObject";
 import Gio from "gi://Gio";
 import GLib from "gi://GLib";
 
-import { get_queue, Queue as MuseQueue } from "../muse.js";
+import { get_queue } from "libmuse";
+import type { Queue as MuseQueue, QueueTrack } from "libmuse";
+
 import { ObjectContainer } from "../util/objectcontainer.js";
-import { QueueTrack } from "libmuse/types/parsers/queue.js";
 import { AddActionEntries, build_action } from "src/util/action.js";
 import { Application } from "src/application.js";
-import { Window } from "src/window.js";
 import { list_model_to_array } from "src/util/list.js";
 import { ngettext } from "gettext";
 import {

@@ -3,17 +3,16 @@ import GObject from "gi://GObject";
 import Adw from "gi://Adw";
 import GLib from "gi://GLib";
 
-import {
+import type {
   TopResult,
   TopResultAlbum,
   TopResultArtist,
-  TopResultSong,
-} from "../../muse.js";
-import { load_thumbnails } from "../webimage.js";
-import {
   TopResultPlaylist,
+  TopResultSong,
   TopResultVideo,
-} from "libmuse/types/parsers/search.js";
+} from "libmuse";
+
+import { load_thumbnails } from "../webimage.js";
 import { DynamicActionState, DynamicImage } from "../dynamic-image";
 import { pretty_subtitles } from "src/util/text.js";
 import { get_player } from "src/application.js";

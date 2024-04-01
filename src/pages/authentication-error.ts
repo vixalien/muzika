@@ -3,7 +3,8 @@ import GObject from "gi://GObject";
 import GLib from "gi://GLib";
 import Adw from "gi://Adw";
 
-import { get_option } from "../muse.js";
+import { get_option } from "libmuse";
+
 import { error_to_string, ErrorPageOptions } from "./error.js";
 
 export class AuthenticationErrorPage extends Adw.Bin {

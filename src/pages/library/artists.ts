@@ -1,6 +1,7 @@
 import GObject from "gi://GObject";
 
-import { get_library_artists } from "../../muse.js";
+import { get_library_artists } from "libmuse";
+
 import { AbstractLibraryPage } from "./base";
 
 export class LibraryArtistsPage extends AbstractLibraryPage {

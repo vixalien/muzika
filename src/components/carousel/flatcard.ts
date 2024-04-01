@@ -2,10 +2,16 @@ import Gtk from "gi://Gtk?version=4.0";
 import GObject from "gi://GObject";
 import GLib from "gi://GLib";
 
-import {
+import type {
   ArtistRun,
   FlatSong,
+  ParsedAlbum,
   ParsedLibraryArtist,
+  ParsedPlaylist,
+  ParsedSong,
+  ParsedVideo,
+  Ranked,
+  RelatedArtist,
   SearchAlbum,
   SearchArtist,
   SearchContent,
@@ -15,19 +21,10 @@ import {
   SearchSong,
   SearchVideo,
   Thumbnail,
-} from "../../muse.js";
-
-// first register the DynamicImage class
-import { pretty_subtitles } from "src/util/text.js";
-import {
-  ParsedAlbum,
-  ParsedPlaylist,
-  ParsedSong,
-  ParsedVideo,
-  Ranked,
-  RelatedArtist,
   WatchPlaylist,
-} from "libmuse/types/parsers/browsing.js";
+} from "libmuse";
+
+import { pretty_subtitles } from "src/util/text.js";
 import { DynamicImage, DynamicImageStorageType } from "../dynamic-image.js";
 import { DynamicActionState } from "../dynamic-action.js";
 import { MixedCardItem } from "../library/mixedcard.js";

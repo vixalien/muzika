@@ -1,8 +1,8 @@
 import Gtk from "gi://Gtk?version=4.0";
 import GObject from "gi://GObject";
-import GLib from "gi://GLib";
 
-import { MixedItem } from "src/muse.js";
+import type { MixedItem } from "libmuse";
+
 import { CarouselCard } from "../card.js";
 import { MixedCardItem } from "src/components/library/mixedcard.js";
 import { PlayableContainer, PlayableList } from "src/util/playablelist.js";

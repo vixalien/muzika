@@ -3,8 +3,6 @@ import GObject from "gi://GObject";
 import GLib from "gi://GLib";
 import Gio from "gi://Gio";
 
-import { MixedItem } from "../../muse.js";
-
 import { ObjectContainer } from "../../util/objectcontainer.js";
 
 import { RequiredMixedItem } from "../carousel/index.js";

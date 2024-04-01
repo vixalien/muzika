@@ -4,13 +4,8 @@ import Gio from "gi://Gio";
 import Adw from "gi://Adw";
 import GLib from "gi://GLib";
 
-import {
-  AlbumResult,
-  get_album,
-  ParsedAlbum,
-  Playlist,
-  PlaylistItem,
-} from "../muse.js";
+import { get_album } from "libmuse";
+import type { AlbumResult, ParsedAlbum, PlaylistItem } from "libmuse";
 
 import { Carousel } from "../components/carousel/index.js";
 import { MuzikaPageWidget, PageLoadContext } from "src/navigation.js";

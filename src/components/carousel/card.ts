@@ -2,18 +2,19 @@ import Gtk from "gi://Gtk?version=4.0";
 import GObject from "gi://GObject";
 import GLib from "gi://GLib";
 
-import {
+import type {
   ArtistRun,
   ParsedAlbum,
+  ParsedLibraryArtist,
   ParsedPlaylist,
   ParsedSong,
   ParsedVideo,
   RelatedArtist,
   Thumbnail,
   WatchPlaylist,
-} from "../../muse.js";
+} from "libmuse";
+
 import { get_thumbnail_with_size } from "../webimage.js";
-import { ParsedLibraryArtist } from "libmuse/types/parsers/library.js";
 import { pretty_subtitles } from "src/util/text.js";
 import { MixedCardItem } from "../library/mixedcard.js";
 import { DynamicActionState, DynamicImage } from "../dynamic-image";

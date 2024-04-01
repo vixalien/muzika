@@ -2,7 +2,9 @@ import Gtk from "gi://Gtk?version=4.0";
 import GObject from "gi://GObject";
 import GLib from "gi://GLib";
 
-import { filters, search, SearchContent, SearchResults } from "../../muse.js";
+import { filters, search } from "libmuse";
+import type { SearchContent, SearchResults } from "libmuse";
+
 import { search_args_to_url } from "../../pages/search.js";
 import { FlatListView } from "../carousel/view/flatlist.js";
 import { PlayableContainer } from "src/util/playablelist.js";

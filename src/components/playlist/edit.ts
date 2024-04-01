@@ -3,8 +3,10 @@ import Adw from "gi://Adw";
 import Gio from "gi://Gio";
 import Gtk from "gi://Gtk?version=4.0";
 
+import { edit_playlist } from "libmuse";
+import type { Playlist } from "libmuse";
+
 import { ObjectContainer } from "src/util/objectcontainer";
-import { edit_playlist, Playlist } from "src/muse";
 import { add_toast } from "src/util/window";
 
 export class PrivacyStatus extends GObject.Object {

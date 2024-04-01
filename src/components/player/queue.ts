@@ -3,8 +3,9 @@ import GObject from "gi://GObject";
 import Adw from "gi://Adw";
 import GLib from "gi://GLib";
 
+import type { QueueTrack } from "libmuse";
+
 import { ObjectContainer } from "src/util/objectcontainer";
-import type { QueueTrack } from "libmuse/types/parsers/queue";
 import { QueueItem } from "./queueitem";
 import { MuzikaPlayer } from "src/player";
 import { escape_label } from "src/util/text";
@@ -183,10 +184,8 @@ export class QueueView extends Gtk.Stack {
   activate_cb() {}
 
   vfunc_map(): void {
-    // @ts-expect-error outdated types
     this._list_view.scroll_to(
       this.player.queue.position,
-      // @ts-expect-error outdated types
       Gtk.ListScrollFlags.NONE,
       null,
     );

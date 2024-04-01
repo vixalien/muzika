@@ -1,10 +1,10 @@
 import GObject from "gi://GObject";
 
-import { get_library } from "../../muse.js";
+import { get_library } from "libmuse";
+import type { LibraryOrder } from "libmuse";
 
 import { AbstractLibraryPage, library_orders, LibraryLoader } from "./base";
 import { RequiredMixedItem } from "src/components/carousel/index.js";
-import { LibraryOrder } from "libmuse/types/mixins/utils.js";
 
 export class LibraryPage extends AbstractLibraryPage {
   static {

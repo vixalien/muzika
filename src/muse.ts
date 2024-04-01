@@ -18,16 +18,11 @@ import "./polyfills/base64.js";
 // abortcontroller
 import "./polyfills/abortcontroller.js";
 
-//////////// libmuse
-
-export * from "libmuse";
-
 //////////// store
 
 // types
 
-/// @ts-expect-error
-import { FetchClient, RequestInit } from "libmuse/request.js";
+import { FetchClient, RequestInit } from "libmuse";
 import { setup } from "libmuse";
 import { GResponse } from "./polyfills/fetch.js";
 import { hash } from "./util/hash.js";
@@ -121,6 +116,5 @@ class CustomFetch extends FetchClient {
 
 setup({
   store: store,
-  /// @ts-expect-error
   client: new CustomFetch(),
 });

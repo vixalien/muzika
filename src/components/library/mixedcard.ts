@@ -1,5 +1,5 @@
 import { RequiredMixedItem } from "../carousel";
 
-import type { ParsedLibraryArtist } from "src/muse";
+import type { ParsedLibraryArtist } from "libmuse";
 
 export type MixedCardItem = RequiredMixedItem | ParsedLibraryArtist;

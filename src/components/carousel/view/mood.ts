@@ -2,8 +2,9 @@ import Gtk from "gi://Gtk?version=4.0";
 import GObject from "gi://GObject";
 import Adw from "gi://Adw";
 
+import type { ParsedMoodOrGenre } from "libmuse";
+
 import { PlayableContainer, PlayableList } from "src/util/playablelist.js";
-import { ParsedMoodOrGenre } from "libmuse/types/parsers/browsing";
 import { mood_activate_cb } from "./util";
 
 export class MoodBox extends Adw.Bin {

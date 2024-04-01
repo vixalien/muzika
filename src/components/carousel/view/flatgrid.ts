@@ -1,9 +1,9 @@
 import Gtk from "gi://Gtk?version=4.0";
 import GObject from "gi://GObject";
-import GLib from "gi://GLib";
+
+import type { SearchContent } from "libmuse";
 
 import { PlayableContainer, PlayableList } from "src/util/playablelist.js";
-import { SearchContent } from "src/muse";
 import { FlatCard, FlatCardItem, InlineSong } from "../flatcard";
 import { MixedCardItem } from "src/components/library/mixedcard";
 import { flat_view_activate_cb, FlatViewChildType } from "./util";

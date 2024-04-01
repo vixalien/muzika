@@ -3,16 +3,11 @@ import GObject from "gi://GObject";
 import Adw from "gi://Adw";
 import Gio from "gi://Gio";
 
-import {
-  Category,
-  Channel,
-  get_channel,
-  MixedItem,
-  PlaylistItem,
-} from "src/muse.js";
+import { get_channel } from "libmuse";
+import type { Category, Channel, MixedItem, PlaylistItem } from "libmuse";
 
 import { Carousel } from "../components/carousel/index.js";
-import { PageLoadContext, MuzikaPageWidget } from "src/navigation.js";
+import { MuzikaPageWidget, PageLoadContext } from "src/navigation.js";
 import { PlaylistListView } from "src/components/playlist/listview.js";
 import { PlaylistItemView } from "src/components/playlist/itemview.js";
 import { PlayableContainer, PlayableList } from "src/util/playablelist.js";

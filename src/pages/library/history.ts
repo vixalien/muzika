@@ -2,9 +2,10 @@ import GObject from "gi://GObject";
 import Adw from "gi://Adw";
 import Gtk from "gi://Gtk?version=4.0";
 
-import { get_history, History, PlaylistItem } from "../../muse.js";
+import { get_history } from "libmuse";
+import type { History, PlaylistItem } from "libmuse";
 
-import { PageLoadContext, MuzikaPageWidget } from "src/navigation.js";
+import { MuzikaPageWidget, PageLoadContext } from "src/navigation.js";
 import { PlaylistItemView } from "src/components/playlist/itemview.js";
 import {
   SectionedPlayableContainer,

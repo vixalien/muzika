@@ -2,8 +2,9 @@ import Gtk from "gi://Gtk?version=4.0";
 import GObject from "gi://GObject";
 import GLib from "gi://GLib";
 
+import type { QueueTrack } from "libmuse";
+
 import { PlayerScale } from "./scale.js";
-import { QueueTrack } from "libmuse/types/parsers/queue.js";
 import { escape_label, pretty_subtitles } from "src/util/text.js";
 import { MuzikaPlayer } from "src/player";
 import { micro_to_string, seconds_to_string } from "src/util/time.js";

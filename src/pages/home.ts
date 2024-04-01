@@ -5,7 +5,8 @@ import GLib from "gi://GLib";
 
 import { Paginator } from "../components/paginator.js";
 
-import { get_home, Home, MixedContent } from "../muse.js";
+import { get_home } from "libmuse";
+import type { Home, MixedContent, Mood } from "libmuse";
 
 import { Carousel } from "../components/carousel/index.js";
 import { Loading } from "../components/loading.js";
@@ -14,7 +15,6 @@ import {
   set_scrolled_window_initial_vscroll,
   VScrollState,
 } from "src/util/scrolled.js";
-import { Mood } from "libmuse/types/parsers/browsing.js";
 import { add_toast } from "src/util/window.js";
 
 GObject.type_ensure(Loading.$gtype);

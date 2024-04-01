@@ -14,11 +14,9 @@ import {
   get_more_playlist_tracks,
   get_playlist,
   get_playlist_suggestions,
-  ParsedPlaylist,
-  Playlist,
-  PlaylistItem,
   remove_playlist_items,
-} from "../muse.js";
+} from "libmuse";
+import type { ParsedPlaylist, Playlist, PlaylistItem } from "libmuse";
 
 import { Carousel } from "../components/carousel/index.js";
 import { PlaylistHeader } from "../components/playlist/header.js";

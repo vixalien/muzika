@@ -9,7 +9,7 @@
   "license": "MIT",
   "dependencies": {
     "@lemaik/qrcode-svg": "^1.2.0",
-    "libmuse": "^0.0.91",
+    "libmuse": "^0.0.94",
     "lodash-es": "^4.17.21",
     "path-to-regexp": "^6.2.1",
     "typescript": "^5.3.3",

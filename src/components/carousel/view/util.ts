@@ -1,8 +1,7 @@
 import GLib from "gi://GLib";
 import Gtk from "gi://Gtk?version=4.0";
-import Gio from "gi://Gio";
 
-import { ParsedMoodOrGenre, SearchContent } from "src/muse";
+import type { SearchContent } from "libmuse";
 
 import { MixedCardItem } from "src/components/library/mixedcard";
 import { FlatGridView } from "./flatgrid";

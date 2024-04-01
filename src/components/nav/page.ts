@@ -2,9 +2,10 @@ import Gtk from "gi://Gtk?version=4.0";
 import Adw from "gi://Adw";
 import GObject from "gi://GObject";
 
+import { ERROR_CODE, MuseError } from "libmuse";
+
 import { Loading } from "../loading";
 import { MuzikaPageMeta, MuzikaPageWidget } from "src/navigation";
-import { ERROR_CODE, MuseError } from "src/muse";
 import { AuthenticationErrorPage } from "src/pages/authentication-error";
 import { ErrorPage } from "src/pages/error";
 import { MatchResult } from "path-to-regexp";
