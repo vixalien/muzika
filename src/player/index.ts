@@ -27,6 +27,7 @@ import { list_model_to_array } from "src/util/list.js";
 import { get_track_settings, get_tracklist } from "./helpers.js";
 import { convert_formats_to_dash } from "./mpd";
 import { throttle } from "lodash-es";
+import { add_toast } from "src/util/window";
 
 if (!Gst.is_initialized()) {
   GLib.setenv("GST_PLAY_USE_PLAYBIN3", "1", false);
@@ -425,16 +426,19 @@ export class MuzikaMediaStream extends Gtk.MediaStream {
   // error functions
 
   gerror(error: GLib.Error): void {
-    if (this.refreshed_uri === false) {
-      this.refresh_uri();
+    // TODO: reconsider if this is necessary
+    // if (this.refreshed_uri === false) {
+    //   this.refresh_uri();
 
-      return;
-    }
+    //   return;
+    // }
 
     this._error = error;
     this.notify("error");
 
-    console.error("error during playback", error.message);
+    add_toast("An error happened during playback");
+
+    console.error(error);
 
     // TODO: cancel pending seeks
     this.unprepare();
