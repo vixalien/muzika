@@ -17,53 +17,20 @@ export function menuLikeRow(
   menu.set_attribute_value("custom", GLib.Variant.new_string("rate-button"));
 
   (menu as any)["__child"] = (popover: Gtk.Popover) => {
-    const change_rating = (newStatus: LikeStatus) => {
-      cb?.(newStatus);
-      popover.activate_action(
-        "win.rate-song",
-        GLib.Variant.new_array(GLib.VariantType.new("s"), [
-          GLib.Variant.new_string(videoId),
-          GLib.Variant.new_string(newStatus),
-          GLib.Variant.new_string(status),
-        ]),
-      );
-      popover.popdown();
-    };
-
     const box = new Gtk.Box({
       orientation: Gtk.Orientation.HORIZONTAL,
       spacing: 3,
       margin_bottom: 3,
     });
 
-    const liked = status === "LIKE";
-    const like_button = new Gtk.ToggleButton({
-      icon_name: "thumbs-up-symbolic",
-      css_classes: ["flat"],
-      hexpand: true,
-      active: liked,
-      tooltip_text: liked
-        ? _("Remove from liked songs")
-        : _("Add to liked songs"),
-    });
-
-    like_button.connect("toggled", () => {
-      change_rating(liked ? "INDIFFERENT" : "LIKE");
-    });
-
-    const disliked = status === "DISLIKE";
-    const dislike_button = new Gtk.ToggleButton({
-      icon_name: "thumbs-down-symbolic",
-      css_classes: ["flat"],
-      hexpand: true,
-      active: disliked,
-      tooltip_text: disliked
-        ? _("Remove from liked songs")
-        : _("Add to disliked songs"),
-    });
-
-    dislike_button.connect("toggled", () => {
-      change_rating(disliked ? "INDIFFERENT" : "DISLIKE");
+    const { like_button, dislike_button } = create_like_buttons({
+      status,
+      parent: popover,
+      cb: ((newStatus) => {
+        popover.popdown();
+        cb?.(newStatus);
+      }),
+      videoId,
     });
 
     box.append(like_button);
@@ -73,4 +40,73 @@ export function menuLikeRow(
   };
 
   return menu;
+}
+
+export interface CreateLikeButtonsProps {
+  videoId: string;
+  status: LikeStatus;
+  parent: Gtk.Widget;
+  cb?: LikeRowCallback;
+}
+
+export function create_like_buttons(
+  { status, parent, videoId, cb }: CreateLikeButtonsProps,
+) {
+  const change_rating = (newStatus: LikeStatus) => {
+    cb?.(newStatus);
+    parent.activate_action(
+      "win.rate-song",
+      GLib.Variant.new_array(GLib.VariantType.new("s"), [
+        GLib.Variant.new_string(videoId),
+        GLib.Variant.new_string(newStatus),
+        GLib.Variant.new_string(status),
+      ]),
+    );
+  };
+
+  const props = get_button_props(status);
+
+  const like_button = new Gtk.ToggleButton({
+    icon_name: "thumbs-up-symbolic",
+    css_classes: ["flat"],
+    hexpand: true,
+    ...props.like,
+  });
+
+  like_button.connect("toggled", () => {
+    change_rating(props.like.active ? "INDIFFERENT" : "LIKE");
+  });
+
+  const dislike_button = new Gtk.ToggleButton({
+    icon_name: "thumbs-down-symbolic",
+    css_classes: ["flat"],
+    hexpand: true,
+    ...props.like,
+  });
+
+  dislike_button.connect("toggled", () => {
+    change_rating(props.dislike.active ? "INDIFFERENT" : "DISLIKE");
+  });
+
+  return { like_button, dislike_button };
+}
+
+export function get_button_props(likeStatus: LikeStatus) {
+  const liked = likeStatus === "LIKE";
+  const disliked = likeStatus === "DISLIKE";
+
+  return {
+    like: {
+      active: liked,
+      tooltip_text: liked
+        ? _("Remove from liked songs")
+        : _("Add to liked songs"),
+    },
+    dislike: {
+      active: disliked,
+      tooltip_text: disliked
+        ? _("Remove from liked songs")
+        : _("Add to disliked songs"),
+    },
+  };
 }

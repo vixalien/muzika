@@ -11,6 +11,7 @@ import { escape_label, pretty_subtitles } from "src/util/text";
 import { PlayableContainer } from "src/util/playablelist";
 import { DynamicImage, DynamicImageStorageType } from "../dynamic-image";
 import { generate_menu } from "src/util/menu";
+import { get_button_props } from "src/util/menu/like";
 
 class ImageColumn extends Gtk.ColumnViewColumn {
   static {
@@ -549,17 +550,10 @@ class ExtraMenuButtons extends Adw.Bin {
     // in an infinite loop
     this.updating_buttons = true;
 
-    const liked = this.item.likeStatus === "LIKE";
-    this.like.active = liked;
-    this.like.tooltip_text = liked
-      ? _("Remove from liked songs")
-      : _("Add to liked songs");
+    const props = get_button_props(this.item.likeStatus);
 
-    const disliked = this.item.likeStatus === "DISLIKE";
-    this.dislike.active = disliked;
-    this.dislike.tooltip_text = disliked
-      ? _("Remove from liked songs")
-      : _("Add to disliked songs");
+    Object.assign(this.like, props.like);
+    Object.assign(this.dislike, props.dislike);
 
     this.updating_buttons = false;
   }

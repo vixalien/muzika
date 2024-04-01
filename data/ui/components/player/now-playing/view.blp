@@ -119,10 +119,33 @@ template $PlayerNowPlayingView : Adw.NavigationPage {
                   pressed => $toggle_fullscreen_button();
                 }
               }
+            }
+
+            Adw.Clamp {
+
+            Box {
+            orientation: vertical;
+            spacing: 12;
+
+            Box {
+              orientation: horizontal;
+
+              ToggleButton like_button {
+                icon-name: "thumbs-up-symbolic";
+                valign: center;
+                toggled => $like_cb();
+
+                styles [
+                  "circular",
+                  "large",
+                  "flat",
+                ]
+              }
 
               Box {
                 orientation: vertical;
                 spacing: 3;
+                hexpand: true;
 
                 Label title {
                   justify: center;
@@ -140,13 +163,19 @@ template $PlayerNowPlayingView : Adw.NavigationPage {
                   styles ["song-artist", "flat-links", "dim-label"]
                 }
               }
+
+              ToggleButton dislike_button {
+                icon-name: "thumbs-down-symbolic";
+                valign: center;
+                toggled => $dislike_cb();
+
+                styles [
+                  "circular",
+                  "large",
+                  "flat",
+                ]
+              }
             }
-
-            Adw.Clamp {
-
-            Box {
-            orientation: vertical;
-            spacing: 12;
 
             Box controls {
               orientation: vertical;
