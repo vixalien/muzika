@@ -3,8 +3,9 @@ import GObject from "gi://GObject";
 import Pango from "gi://Pango";
 import GLib from "gi://GLib";
 
+import type { PlaylistItem } from "libmuse";
+
 import { ObjectContainer } from "src/util/objectcontainer";
-import { PlaylistItem } from "src/muse";
 import { escape_label, pretty_subtitles } from "src/util/text";
 import { PlayableContainer } from "src/util/playablelist";
 import { DynamicImage, DynamicImageStorageType } from "../dynamic-image";
