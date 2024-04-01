@@ -231,11 +231,15 @@ export class Window extends Adw.ApplicationWindow {
         activate: (_, parameter) => {
           if (!parameter) return;
 
-          const [videoId, status] = parameter.get_strv();
+          const [videoId, status, oldStatus] = parameter.get_strv();
 
           if (!videoId || !status) return;
 
-          this.rate_song(videoId, status as LikeStatus);
+          this.rate_song(
+            videoId,
+            status as LikeStatus,
+            oldStatus as LikeStatus | undefined,
+          );
         },
       },
     ]);
@@ -335,7 +339,9 @@ export class Window extends Adw.ApplicationWindow {
           return;
         }
 
-        this.add_toast(_("An error happened while logging you in. Please try again later."));
+        this.add_toast(
+          _("An error happened while logging you in. Please try again later."),
+        );
 
         console.log("An error happened while logging in", error);
       })
@@ -408,7 +414,7 @@ export class Window extends Adw.ApplicationWindow {
 
   private fullscreen_video() {
     if (!get_player().queue.current_is_video) return;
-    
+
     this.show_view("video");
 
     if (this.is_fullscreen()) {
@@ -430,7 +436,11 @@ export class Window extends Adw.ApplicationWindow {
     this.update_show_player_controls();
   }
 
-  private rate_song(videoId: string, status: LikeStatus) {
+  private rate_song(
+    videoId: string,
+    status: LikeStatus,
+    oldStatus?: LikeStatus,
+  ) {
     rate_song(videoId, status as LikeStatus)
       .then(() => {
         const toast = new Adw.Toast();
@@ -446,7 +456,11 @@ export class Window extends Adw.ApplicationWindow {
             toast.action_target = GLib.Variant.new_string("muzika:playlist:LM");
             break;
           case "INDIFFERENT":
-            toast.title = _("Removed from disliked songs");
+            if (oldStatus === "LIKE") {
+              toast.title = _("Removed from liked songs");
+            } else {
+              toast.title = _("Removed from disliked songs");
+            }
             break;
         }
 

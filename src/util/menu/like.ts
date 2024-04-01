@@ -24,6 +24,7 @@ export function menuLikeRow(
         GLib.Variant.new_array(GLib.VariantType.new("s"), [
           GLib.Variant.new_string(videoId),
           GLib.Variant.new_string(newStatus),
+          GLib.Variant.new_string(status),
         ]),
       );
       popover.popdown();
