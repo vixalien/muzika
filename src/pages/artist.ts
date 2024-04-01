@@ -25,6 +25,8 @@ import {
 import { PlaylistHeader } from "src/components/playlist/header.js";
 import { add_toast } from "src/util/window.js";
 
+const { vprintf } = imports.format;
+
 interface ArtistState extends VScrollState {
   artist: Artist;
 }
@@ -208,21 +210,25 @@ export class ArtistPage extends Adw.Bin
     this.artist!.subscribed = !old_subscribed;
     this.update_subscribe_button();
 
+    const vprint_artist = (string: string) => {
+      return vprintf(string, [this.artist!.name]);
+    };
+
     promise
       .then(() => {
         this.artist!.subscribed = !old_subscribed;
         add_toast(
           old_subscribed
-            ? _("Unsubscribed from artist")
-            : _("Subscribed to artist"),
+            ? vprint_artist(_("Unsubscribed from %s"))
+            : vprint_artist(_("Subscribed to %s")),
         );
       })
       .catch(() => {
         this.artist!.subscribed = old_subscribed;
         add_toast(
           old_subscribed
-            ? _("Couldn't unsubscribe from artist. Try again later")
-            : _("Couldn't subscribe to artist. Try again later"),
+            ? vprint_artist(_("Couldn't unsubscribe from %s. Try again later"))
+            : vprint_artist(_("Couldn't subscribe to %s%ist. Try again later")),
         );
       })
       .finally(() => {
