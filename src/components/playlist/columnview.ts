@@ -2,8 +2,9 @@ import Gtk from "gi://Gtk?version=4.0";
 import GObject from "gi://GObject";
 import Pango from "gi://Pango";
 import GLib from "gi://GLib";
+import Adw from "gi://Adw";
 
-import type { PlaylistItem } from "libmuse";
+import type { LikeStatus, PlaylistItem } from "libmuse";
 
 import { ObjectContainer } from "src/util/objectcontainer";
 import { escape_label, pretty_subtitles } from "src/util/text";
@@ -454,6 +455,145 @@ class AddColumn extends Gtk.ColumnViewColumn {
   }
 }
 
+class ExtraMenuButtons extends Adw.Bin {
+  static {
+    GObject.registerClass({
+      GTypeName: "MenuButtons",
+    }, this);
+  }
+
+  private item?: PlaylistItem;
+  private position = -1;
+
+  private updating_buttons = false;
+
+  private more: Gtk.MenuButton;
+  private like: Gtk.ToggleButton;
+  private dislike: Gtk.ToggleButton;
+
+  constructor() {
+    super();
+    this.more = new Gtk.MenuButton({
+      icon_name: "view-more-symbolic",
+      css_classes: ["flat"],
+    });
+
+    this.like = new Gtk.ToggleButton({
+      icon_name: "thumbs-up-symbolic",
+      css_classes: ["flat"],
+    });
+
+    this.like.connect("toggled", () => {
+      this.like_button_toggled();
+    });
+
+    this.dislike = new Gtk.ToggleButton({
+      icon_name: "thumbs-down-symbolic",
+      css_classes: ["flat"],
+    });
+
+    this.dislike.connect("toggled", () => {
+      this.like_button_toggled(false);
+    });
+
+    const box = Gtk.Box.new(Gtk.Orientation.HORIZONTAL, 3);
+
+    box.append(this.like);
+    box.append(this.dislike);
+    box.append(this.more);
+
+    this.set_child(box);
+  }
+
+  show_item(position: number, item: PlaylistItem) {
+    this.item = item;
+    this.position = position;
+
+    this.update_menu_model();
+    this.update_like_buttons();
+  }
+
+  private update_menu_model() {
+    if (!this.item) return;
+
+    this.more.menu_model = generate_menu([
+      [_("Start radio"), `queue.play-song("${this.item.videoId}?radio=true")`],
+      [_("Play next"), `queue.add-song("${this.item.videoId}?next=true")`],
+      [_("Add to queue"), `queue.add-song("${this.item.videoId}")`],
+      [_("Save to playlist"), `win.add-to-playlist("${this.item.videoId}")`],
+      this.position > 0
+        ? [
+          _("Remove from playlist"),
+          `playlist.remove-tracks([${this.position}])`,
+        ]
+        : null,
+      this.item.album
+        ? [
+          _("Go to album"),
+          `navigator.visit("muzika:album:${this.item.album.id}")`,
+        ]
+        : null,
+      this.item.artists.length > 1
+        ? [
+          _("Go to artist"),
+          `navigator.visit("muzika:artist:${this.item.artists[0].id}")`,
+        ]
+        : null,
+    ]);
+  }
+
+  private update_like_buttons() {
+    if (!this.item) return;
+
+    // prevent `like_button_toggled` and `update_like_buttons` to be executed
+    // in an infinite loop
+    this.updating_buttons = true;
+
+    const liked = this.item.likeStatus === "LIKE";
+    this.like.active = liked;
+    this.like.tooltip_text = liked
+      ? _("Remove from liked songs")
+      : _("Add to liked songs");
+
+    const disliked = this.item.likeStatus === "DISLIKE";
+    this.dislike.active = disliked;
+    this.dislike.tooltip_text = disliked
+      ? _("Remove from liked songs")
+      : _("Add to disliked songs");
+
+    this.updating_buttons = false;
+  }
+
+  private like_button_toggled(like = true) {
+    if (!this.item || this.updating_buttons) return;
+
+    let newStatus: LikeStatus;
+
+    if (like) {
+      newStatus = this.item.likeStatus === "LIKE" ? "INDIFFERENT" : "LIKE";
+    } else {
+      newStatus = this.item.likeStatus === "DISLIKE"
+        ? "INDIFFERENT"
+        : "DISLIKE";
+    }
+
+    if (newStatus === this.item.likeStatus) return;
+
+    this.activate_action(
+      "win.rate-song",
+      GLib.Variant.new_array(GLib.VariantType.new("s"), [
+        GLib.Variant.new_string(this.item.videoId),
+        GLib.Variant.new_string(newStatus),
+        GLib.Variant.new_string(this.item.likeStatus),
+      ]),
+    );
+
+    this.item.likeStatus = newStatus;
+
+    this.update_like_buttons();
+  }
+}
+
 class MenuColumn extends Gtk.ColumnViewColumn {
   static {
     GObject.registerClass({
@@ -475,43 +615,16 @@ class MenuColumn extends Gtk.ColumnViewColumn {
   }
 
   setup_cb(_factory: Gtk.SignalListItemFactory, list_item: Gtk.ListItem) {
-    const button = new Gtk.MenuButton({
-      icon_name: "view-more-symbolic",
-    });
+    const extras = new ExtraMenuButtons();
 
-    button.add_css_class("flat");
-
-    list_item.set_child(button);
+    list_item.set_child(extras);
   }
 
   bind_cb(_factory: Gtk.SignalListItemFactory, list_item: Gtk.ListItem) {
-    const button = list_item.child as Gtk.MenuButton;
+    const extras = list_item.child as ExtraMenuButtons;
     const item = (list_item.item as PlayableContainer).object;
 
-    button.menu_model = generate_menu([
-      [_("Start radio"), `queue.play-song("${item.videoId}?radio=true")`],
-      [_("Play next"), `queue.add-song("${item.videoId}?next=true")`],
-      [_("Add to queue"), `queue.add-song("${item.videoId}")`],
-      [_("Save to playlist"), `win.add-to-playlist("${item.videoId}")`],
-      this.editable
-        ? [
-          _("Remove from playlist"),
-          `playlist.remove-tracks([${list_item.position}])`,
-        ]
-        : null,
-      item.album
-        ? [
-          _("Go to album"),
-          `navigator.visit("muzika:album:${item.album.id}")`,
-        ]
-        : null,
-      item.artists.length > 1
-        ? [
-          _("Go to artist"),
-          `navigator.visit("muzika:artist:${item.artists[0].id}")`,
-        ]
-        : null,
-    ]);
+    extras.show_item(this.editable ? list_item.position : -1, item);
   }
 
   unbind_cb(_factory: Gtk.SignalListItemFactory, list_item: Gtk.ListItem) {
