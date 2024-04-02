@@ -54,6 +54,7 @@ jobs:
           upload-bundles: true
       
       - name: Deploy Repository
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         uses: JamesIves/github-pages-deploy-action@releases/v4
         with:
           folder: ${{ steps.build.outputs.repository }}
