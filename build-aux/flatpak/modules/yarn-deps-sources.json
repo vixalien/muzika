@@ -846,9 +846,9 @@
     },
     {
         "type": "file",
-        "url": "https://registry.yarnpkg.com/jsonpath-plus/-/jsonpath-plus-7.2.0.tgz#7ad94e147b3ed42f7939c315d2b9ce490c5a3899",
-        "sha512": "cc17e250f3399c3d18652053fe8fdf6c252509c7a930874fd02259c4cd7e2a00387f64f6d3a7fa54083d7bb997df9f8a94c688739a975b7e1fdc19f0277c3e44",
-        "dest-filename": "jsonpath-plus-7.2.0.tgz",
+        "url": "https://registry.yarnpkg.com/jsonpath-plus/-/jsonpath-plus-8.1.0.tgz#68c92281215672d1d6c785b3c1bdc8acc097ba3f",
+        "sha512": "a954e2b8aced146c347468588b758daaf75dc77fd21edc834f4c4969ecb3e2e3f4775b64a46fb4cb9b9843839c228d532c0cf73c4fea0ce5bd174b83b77f824f",
+        "dest-filename": "jsonpath-plus-8.1.0.tgz",
         "dest": "flatpak-node/yarn-mirror"
     },
     {
@@ -867,9 +867,9 @@
     },
     {
         "type": "file",
-        "url": "https://registry.yarnpkg.com/libmuse/-/libmuse-0.0.96.tgz#c123bd5bca33363efe750ee79e0a167ae1c86235",
-        "sha512": "d91941beb88364b7c0f2d7a0f8d13d6bc520192a045691910efcf4a21f69ba61c35ae6c999d502082b20a072dab32cc5a663cd30a8cb38448432dcfa9b3c3557",
-        "dest-filename": "libmuse-0.0.96.tgz",
+        "url": "https://registry.yarnpkg.com/libmuse/-/libmuse-0.0.97.tgz#b132d11f558e37f77a0814f28fa7f298e81aa1bc",
+        "sha512": "f594478c6c5863b10d9f610e88fb7ba826ff7f904c21db10789434b0af772d0baccb1694b7398833804b3b0586fa473501fbc963e57dc71baf9b4af29ea291ac",
+        "dest-filename": "libmuse-0.0.97.tgz",
         "dest": "flatpak-node/yarn-mirror"
     },
     {
