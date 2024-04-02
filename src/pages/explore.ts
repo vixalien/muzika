@@ -51,6 +51,7 @@ export class ExplorePage extends Adw.Bin
     this.add_carousel(_("Top songs"), explore.songs, true);
     this.add_mood_carousel(_("Moods and genres"), explore.moods);
     this.add_carousel(_("Trending"), explore.trending, true);
+    this.add_carousel(_("New music videos"), explore.videos, false, false);
 
     this.contents = explore;
   }
