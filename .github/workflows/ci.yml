@@ -54,6 +54,6 @@ jobs:
       - name: Deploy Repository
         uses: JamesIves/github-pages-deploy-action@releases/v4
         with:
-          folder: ${{ steps.flatpak.outputs.repository }}
+          folder: ${{ steps.build.outputs.repository }}
           target-folder: repo
           single-commit: true
