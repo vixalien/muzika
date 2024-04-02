@@ -41,7 +41,6 @@ jobs:
         run: |
           flatpak --system install -y --noninteractive flathub org.freedesktop.Sdk.Extension.node18/${{ matrix.arch }}/23.08
           flatpak --system install -y --noninteractive flathub org.freedesktop.Sdk.Extension.rust-stable/${{ matrix.arch }}/23.08
-      - uses: flatpak/flatpak-github-actions/flatpak-builder@v6
 
       - name: Build
         id: build
