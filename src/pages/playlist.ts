@@ -33,7 +33,7 @@ import {
 import { Window } from "src/window.js";
 import { PlayableContainer, PlayableList } from "src/util/playablelist.js";
 import { AddActionEntries } from "src/util/action.js";
-import { generate_menu } from "src/util/menu.js";
+import { generate_menu } from "src/util/menu/index.js";
 import {
   set_scrolled_window_initial_vscroll,
   VScrollState,

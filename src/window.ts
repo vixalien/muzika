@@ -36,7 +36,7 @@ import {
 } from "./components/player/now-playing/details.js";
 import { LoginDialog } from "./pages/login.js";
 import { AddActionEntries } from "./util/action.js";
-import { get_current_user, get_option } from "libmuse";
+import { get_option, LikeStatus, rate_song } from "libmuse";
 import { PlayerView } from "./components/player/view.js";
 import "./components/player/video/view.js";
 import { VideoPlayerView } from "./components/player/video/view.js";
@@ -225,6 +225,23 @@ export class Window extends Adw.ApplicationWindow {
           );
         },
       },
+      {
+        name: "rate-song",
+        parameter_type: "as",
+        activate: (_, parameter) => {
+          if (!parameter) return;
+
+          const [videoId, status, oldStatus] = parameter.get_strv();
+
+          if (!videoId || !status) return;
+
+          this.rate_song(
+            videoId,
+            status as LikeStatus,
+            oldStatus as LikeStatus | undefined,
+          );
+        },
+      },
     ]);
 
     const login_action = Gio.SimpleAction.new("login", null);
@@ -322,7 +339,9 @@ export class Window extends Adw.ApplicationWindow {
           return;
         }
 
-        this.add_toast(_("An error happened while logging you in. Please try again later."));
+        this.add_toast(
+          _("An error happened while logging you in. Please try again later."),
+        );
 
         console.log("An error happened while logging in", error);
       })
@@ -395,7 +414,7 @@ export class Window extends Adw.ApplicationWindow {
 
   private fullscreen_video() {
     if (!get_player().queue.current_is_video) return;
-    
+
     this.show_view("video");
 
     if (this.is_fullscreen()) {
@@ -415,5 +434,42 @@ export class Window extends Adw.ApplicationWindow {
   private on_breakpoint_unapply() {
     this.large_viewport = false;
     this.update_show_player_controls();
+  }
+
+  private rate_song(
+    videoId: string,
+    status: LikeStatus,
+    oldStatus?: LikeStatus,
+  ) {
+    rate_song(videoId, status as LikeStatus)
+      .then(() => {
+        const toast = new Adw.Toast();
+
+        switch (status as LikeStatus) {
+          case "DISLIKE":
+            toast.title = _("Added to disliked songs");
+            break;
+          case "LIKE":
+            toast.title = _("Added to liked songs");
+            toast.button_label = _("Liked songs");
+            toast.action_name = "navigator.visit";
+            toast.action_target = GLib.Variant.new_string("muzika:playlist:LM");
+            break;
+          case "INDIFFERENT":
+            if (oldStatus === "LIKE") {
+              toast.title = _("Removed from liked songs");
+            } else {
+              toast.title = _("Removed from disliked songs");
+            }
+            break;
+        }
+
+        this.add_toast_full(toast);
+      })
+      .catch((error) => {
+        this.add_toast(_("An error happened while rating song"));
+
+        console.log("An error happened while rating song", error);
+      });
   }
 }

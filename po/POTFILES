@@ -62,5 +62,6 @@ src/player/helpers.ts
 src/player/index.ts
 src/player/queue.ts
 src/sidebar.ts
+src/util/menu/like.ts
 src/util/language.ts
 src/window.ts

@@ -30,7 +30,11 @@ interface MenuSection {
  * MenuItemProps can either be an array of label and action or a full blown
  * object of properties
  */
-export type MenuItemProps = MenuItemPropsObject | MenuItemPropsArray | null;
+export type MenuItemProps =
+  | Gio.MenuItem
+  | MenuItemPropsObject
+  | MenuItemPropsArray
+  | null;
 
 export type MenuArraySection = MenuItemProps[];
 
@@ -39,6 +43,10 @@ export type MenuProp =
   | MenuArraySection
   | MenuSubmenu
   | MenuSection;
+
+function is_gio_menu_item(item: any): item is Gio.MenuItem {
+  return typeof item === "object" && item instanceof Gio.MenuItem;
+}
 
 function is_submenu(
   item: NonNullable<MenuProp>,
@@ -86,11 +94,24 @@ function filter_null<T extends any>(menu_props: T[]) {
   return menu_props.filter((prop) => prop !== null) as NonNullable<T>[];
 }
 
+type PopoverChildren = Record<string, (popover: Gtk.Popover) => Gtk.Widget>;
+
 export function generate_menu(props: MenuProp[]) {
   const menu = new Gio.Menu();
 
+  const children: PopoverChildren = {};
+
+  (menu as any).children = children;
+
   filter_null(props).forEach((item) => {
-    if (is_submenu(item)) {
+    if (is_gio_menu_item(item)) {
+      menu.append_item(item);
+
+      if (item.get_attribute_value("custom", GLib.VariantType.new("s"))) {
+        const child = item.get_attribute_value("custom", null)!.get_string()[0];
+        children[child] = (item as any)["__child"];
+      }
+    } else if (is_submenu(item)) {
       const submenu = new Gio.Menu();
 
       filter_null(item.items).forEach((item) => {
@@ -151,11 +172,12 @@ export class MenuHelper {
     });
 
     click.connect("pressed", (click, _n, x, y) => {
-      if (!this.props) return;
+      const props = this.get_props();
+      if (!props) return;
 
       click.set_state(Gtk.EventSequenceState.CLAIMED);
 
-      this.show_popover_menu(x, y);
+      this.show_popover_menu(x, y, props);
     });
 
     this.widget.add_controller(click);
@@ -165,11 +187,12 @@ export class MenuHelper {
     });
 
     long_press.connect("pressed", (long_press, x, y) => {
-      if (!this.props) return;
+      const props = this.get_props();
+      if (!props) return;
 
       long_press.set_state(Gtk.EventSequenceState.CLAIMED);
 
-      this.show_popover_menu(x, y);
+      this.show_popover_menu(x, y, props);
     });
 
     this.widget.add_controller(long_press);
@@ -177,26 +200,52 @@ export class MenuHelper {
 
   props: MenuProp[] | null = null;
 
-  private show_popover_menu(x: number, y: number) {
-    if (!this.props) return;
-
-    let popover: Gtk.PopoverMenu = this.widget.get_data(MenuHelper.POPOVER_KEY);
-
-    if (!popover) {
-      popover = new Gtk.PopoverMenu({
-        has_arrow: false,
-        valign: Gtk.Align.START,
-        position: Gtk.PositionType.RIGHT,
-        menu_model: generate_menu(this.props),
-      });
-
-      this.widget.set_data(MenuHelper.POPOVER_KEY, popover);
+  private get_props() {
+    if (this._builder) {
+      return this._builder();
     }
 
-    popover.set_parent(this.widget);
-    popover.set_pointing_to(new Gdk.Rectangle({ x, y }));
-    popover.popup();
+    return this.props;
   }
 
-  private static POPOVER_KEY = "muzika-menu-helper-popover";
+  popover_menu: Gtk.PopoverMenu | null = null;
+
+  private show_popover_menu(x: number, y: number, props: MenuProp[]) {
+    if (!props) return;
+
+    if (this.popover_menu) {
+      this.popover_menu.popdown();
+      this.popover_menu.unparent();
+      this.popover_menu = null;
+    }
+
+    const menu = generate_menu(props);
+
+    this.popover_menu = new Gtk.PopoverMenu({
+      has_arrow: false,
+      valign: Gtk.Align.START,
+      position: Gtk.PositionType.RIGHT,
+      menu_model: menu,
+    });
+
+    // generate and set custom popover children
+    const children = (menu as any).children as PopoverChildren;
+    if (children && Object.keys(children).length > 0) {
+      for (const [name, child] of Object.entries(children)) {
+        this.popover_menu.add_child(child(this.popover_menu), name);
+      }
+    }
+
+    this.popover_menu.set_parent(this.widget);
+    this.popover_menu.set_pointing_to(new Gdk.Rectangle({ x, y }));
+    this.popover_menu.popup();
+  }
+
+  private _builder: PropsBuilder | null = null;
+
+  set_builder(builder: PropsBuilder) {
+    this._builder = builder;
+  }
 }
+
+export type PropsBuilder = () => MenuProp[];

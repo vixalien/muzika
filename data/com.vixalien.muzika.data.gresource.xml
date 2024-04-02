@@ -93,6 +93,8 @@
     <file preprocess="xml-stripblanks">icons/scalable/actions/sonar-symbolic.svg</file>
     <file preprocess="xml-stripblanks">icons/scalable/actions/sound-wave-symbolic.svg</file>
     <file preprocess="xml-stripblanks">icons/scalable/actions/subtitles-symbolic.svg</file>
+    <file preprocess="xml-stripblanks">icons/scalable/actions/thumbs-down-symbolic.svg</file>
+    <file preprocess="xml-stripblanks">icons/scalable/actions/thumbs-up-symbolic.svg</file>
     <file preprocess="xml-stripblanks">icons/scalable/actions/trend-down-symbolic.svg</file>
     <file preprocess="xml-stripblanks">icons/scalable/actions/trend-neutral-symbolic.svg</file>
     <file preprocess="xml-stripblanks">icons/scalable/actions/trend-up-symbolic.svg</file>

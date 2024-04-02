@@ -4,7 +4,7 @@ import GObject from "gi://GObject";
 import GLib from "gi://GLib";
 import Adw from "gi://Adw";
 
-import type { QueueTrack } from "libmuse";
+import type { LikeStatus, QueueTrack } from "libmuse";
 
 import { get_player } from "src/application";
 import { MuzikaPlayer } from "src/player";
@@ -15,6 +15,7 @@ import { micro_to_string } from "src/util/time";
 import { FixedRatioThumbnail } from "src/components/fixed-ratio-thumbnail";
 import { bind_play_icon, bind_repeat_button } from "src/player/helpers";
 import { list_model_to_array } from "src/util/list";
+import { get_button_props } from "src/util/menu/like";
 
 export class PlayerNowPlayingView extends Adw.NavigationPage {
   static {
@@ -36,6 +37,8 @@ export class PlayerNowPlayingView extends Adw.NavigationPage {
         "expand_button",
         "fullscreen_button",
         "switchers",
+        "like_button",
+        "dislike_button",
       ],
       Properties: {
         switcher_stack: GObject.param_spec_object(
@@ -74,6 +77,8 @@ export class PlayerNowPlayingView extends Adw.NavigationPage {
   private _expand_button!: Gtk.Button;
   private _fullscreen_button!: Gtk.Button;
   private _switchers!: Gtk.Box;
+  private _like_button!: Gtk.ToggleButton;
+  private _dislike_button!: Gtk.ToggleButton;
 
   private construct_switcher(
     stack: Adw.ViewStack,
@@ -287,6 +292,8 @@ export class PlayerNowPlayingView extends Adw.NavigationPage {
     this._subtitle.set_markup(subtitle.markup);
     this._subtitle.tooltip_text = subtitle.plain;
 
+    this.update_like_buttons();
+
     // this._duration_label.label = track.duration_seconds
     //   ? seconds_to_string(track.duration_seconds)
     //   : track.duration ?? "00:00";
@@ -371,5 +378,63 @@ export class PlayerNowPlayingView extends Adw.NavigationPage {
         return GLib.SOURCE_REMOVE;
       });
     }
+  }
+
+  private updating_like_buttons = false;
+
+  private update_like_buttons() {
+    const song = this.player.queue.current?.object;
+    if (!song) return;
+
+    this.updating_like_buttons = true;
+
+    if (song.likeStatus) {
+      this._like_button.sensitive = this._dislike_button.sensitive = true;
+
+      const props = get_button_props(song.likeStatus || "INDIFFERENT");
+
+      Object.assign(this._like_button, props.like);
+      Object.assign(this._dislike_button, props.dislike);
+    } else {
+      this._like_button.sensitive = this._dislike_button.sensitive = false;
+    }
+
+    this.updating_like_buttons = false;
+  }
+
+  private like_button_toggled(like = true) {
+    const song = this.player.queue.current?.object;
+    if (!song || this.updating_like_buttons) return;
+
+    let newStatus: LikeStatus;
+
+    if (like) {
+      newStatus = song.likeStatus === "LIKE" ? "INDIFFERENT" : "LIKE";
+    } else {
+      newStatus = song.likeStatus === "DISLIKE" ? "INDIFFERENT" : "DISLIKE";
+    }
+
+    if (newStatus === song.likeStatus) return;
+
+    this.activate_action(
+      "win.rate-song",
+      GLib.Variant.new_array(GLib.VariantType.new("s"), [
+        GLib.Variant.new_string(song.videoId),
+        GLib.Variant.new_string(newStatus),
+        GLib.Variant.new_string(song.likeStatus ?? ""),
+      ]),
+    );
+
+    song.likeStatus = newStatus;
+
+    this.update_like_buttons();
+  }
+
+  private like_cb() {
+    this.like_button_toggled();
+  }
+
+  private dislike_cb() {
+    this.like_button_toggled(false);
   }
 }
