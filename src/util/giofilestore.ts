@@ -32,7 +32,13 @@ export class GioFileStore extends Store {
         this.map = new Map(Object.entries(json));
       }
     } catch (error) {
-      console.error("Failed to load store, resetting", error);
+      // create the file if it's missing
+      if (
+        !(error instanceof GLib.Error &&
+          error.matches(Gio.IOErrorEnum, Gio.IOErrorEnum.NOT_FOUND))
+      ) {
+        console.error("Failed to load store, resetting", error);
+      }
 
       this.map = new Map();
       this.set("version", this.version);
