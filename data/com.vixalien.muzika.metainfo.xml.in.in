@@ -25,7 +25,7 @@
 		</screenshot>
 	</screenshots>
 	<releases>
-    <release version="0.1.0" date="2023-09-22">
+    <release version="nightly" date="2024-04-02">
     </release>
   </releases>
 	<launchable type="desktop-id">@app-id@.desktop</launchable>

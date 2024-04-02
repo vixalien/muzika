@@ -1,8 +1,10 @@
 [Desktop Entry]
 Name=Muzika
+GenericName=Music Streaming
 Comment=Stream music online
-Exec=com.vixalien.muzika
-Icon=com.vixalien.muzika
+TryExec=@app-id@
+Exec=@app-id@ %U
+Icon=@app-id@
 Terminal=false
 Type=Application
 StartupNotify=true

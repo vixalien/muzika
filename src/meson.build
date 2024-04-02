@@ -1,48 +1,53 @@
 gnome = import('gnome')
 
-sources = [
-  'main.ts',
-]
+yarn_args = ['--cwd', meson.project_source_root()]
+yarnrc = get_option('yarnrc')
 
-outputs = []
-foreach source : sources
-	outputs += source.replace('.ts', '.js')
-endforeach
+if yarnrc != ''
+  yarn_args += ['--offline', '--use-yarnrc', yarnrc]
+endif
+
+yarn_deps = custom_target(
+  'yarn-deps',
+  command: [ yarn, yarn_args, 'install' ],
+  output: ['node_modules']
+)
 
 typescript = custom_target(
   'typescript-compile',
-  input: files(sources),
+  input: ['main.ts'],
   build_by_default: true,
   build_always_stale: true,
   command: [ yarn, yarn_args, 'run', 'build', '--out', meson.project_build_root() / '@OUTDIR@', '--cwd', meson.project_build_root(), '@INPUT@' ],
   depends: yarn_deps,
-  output: outputs,
+  output: ['main.js'],
 )
 
 src_res = gnome.compile_resources(
-  'com.vixalien.muzika.src',
-  'com.vixalien.muzika.src.gresource.xml',
+  application_id + '.src',
+  '@0@.src.gresource.xml'.format(base_name),
   dependencies: typescript,
   gresource_bundle: true,
   install: true,
-  install_dir: pkgdatadir,
+  install_dir: muzika_pkgdatadir,
 )
 
 bin_conf = configuration_data()
 bin_conf.set('GJS', gjs_console)
-bin_conf.set('PACKAGE_VERSION', meson.project_version())
-bin_conf.set('PACKAGE_NAME', meson.project_name())
-bin_conf.set('prefix', get_option('prefix'))
-bin_conf.set('libdir', join_paths(get_option('prefix'), get_option('libdir')))
-bin_conf.set('datadir', join_paths(get_option('prefix'), get_option('datadir')))
+bin_conf.set('PACKAGE_VERSION', '@0@@1@'.format(meson.project_version(), version_suffix))
+bin_conf.set('APPLICATION_ID', application_id)
+bin_conf.set('prefix', muzika_prefix)
+bin_conf.set('libdir', muzika_libdir)
+bin_conf.set('datadir', muzika_datadir)
 bin_conf.set('resource_path', '/com/vixalien/muzika')
+bin_conf.set('profile', profile)
 
 app_launcher = configure_file(
-  input: 'com.vixalien.muzika.in',
-  output: 'com.vixalien.muzika',
+  input: '@0@.in'.format(base_name),
+  output: application_id,
   configuration: bin_conf,
   install: true,
-  install_dir: get_option('bindir')
+  install_dir: muzika_bindir
 )
 
 run_target(

@@ -1,5 +1,5 @@
 {
-  "id": "com.vixalien.muzika",
+  "id": "com.vixalien.muzika.Devel",
   "runtime": "org.gnome.Platform",
   "runtime-version": "master",
   "sdk": "org.gnome.Sdk",
@@ -16,7 +16,7 @@
     },
     "append-path": "/usr/lib/sdk/node18/bin:/usr/lib/sdk/rust-stable/bin:/app/bin"
   },
-  "command": "com.vixalien.muzika",
+  "command": "com.vixalien.muzika.Devel",
   "finish-args": [
     "--share=ipc",
     "--share=network",
@@ -48,8 +48,10 @@
       "name": "muzika",
       "buildsystem": "meson",
       "config-opts": [
-        "-Dyarnrc=/app/.yarnrc"
+        "-Dyarnrc=/app/.yarnrc",
+        "-Dprofile=development"
       ],
+      "run-tests": true,
       "sources": [
         {
           "type": "git",

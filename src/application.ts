@@ -77,8 +77,9 @@ export class Application extends Adw.Application {
     const show_about_action = new Gio.SimpleAction({ name: "about" });
     show_about_action.connect("activate", () => {
       const aboutDialog = Adw.AboutDialog.new_from_appdata(
-        "/com/vixalien/muzika/com.vixalien.muzika.appdata.xml",
-        "0.1.0",
+        "/com/vixalien/muzika/com.vixalien.muzika.metainfo.xml",
+        // remove commit tag
+        pkg.version.split("-")[0],
       );
 
       aboutDialog.set_developers([
@@ -136,6 +137,7 @@ export class Application extends Adw.Application {
   public vfunc_activate(): void {
     if (!this.window) {
       this.window = new Window({ application: this });
+      if (pkg.name.endsWith("Devel")) this.window.add_css_class("devel");
     }
 
     this.window.present();

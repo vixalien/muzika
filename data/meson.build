@@ -1,10 +1,17 @@
+desktop_conf = configuration_data()
+desktop_conf.set('app-id', application_id)
+
 desktop_file = i18n.merge_file(
-  input: 'com.vixalien.muzika.desktop.in',
-  output: 'com.vixalien.muzika.desktop',
+  input: configure_file(
+    input: base_name + '.desktop.in.in',
+    output: '@BASENAME@',
+    configuration: desktop_conf
+  ),
+  output: application_id + '.desktop',
   type: 'desktop',
   po_dir: '../po',
   install: true,
-  install_dir: join_paths(get_option('datadir'), 'applications')
+  install_dir: join_paths(muzika_datadir, 'applications')
 )
 
 desktop_utils = find_program('desktop-file-validate', required: false)
@@ -12,43 +19,47 @@ if desktop_utils.found()
   test('Validate desktop file', desktop_utils, args: [desktop_file])
 endif
 
-appdata_conf = configuration_data()
-appdata_conf.set('app-id', 'com.vixalien.muzika')
+appstream_conf = configuration_data()
+appstream_conf.set('app-id', application_id)
+appstream_conf.set('gettext-package', gettext_package)
 
 appstream_file = i18n.merge_file(
   input: configure_file(
-    input: 'com.vixalien.muzika.appdata.xml.in.in',
-    output: 'com.vixalien.muzika.appdata.xml.in',
-    configuration: appdata_conf
+    input: base_name + '.metainfo.xml.in.in',
+    output: base_name + '.metainfo.xml.in',
+    configuration: appstream_conf
   ),
-  output: 'com.vixalien.muzika.appdata.xml',
+  output: base_name + '.metainfo.xml',
   po_dir: '../po',
   install: true,
-  install_dir: join_paths(get_option('datadir'), 'appdata'),
+  install_dir: join_paths(muzika_datadir, 'appdata'),
 )
 
-appstream_util = find_program('appstream-util', required: false)
-if appstream_util.found()
-  test('Validate appstream file', appstream_util, args: ['validate', appstream_file])
+appstreamcli = find_program('appstreamcli', required: false)
+if (appstreamcli.found())
+  test('Validate appdata file',
+    appstreamcli,
+    args: ['validate', '--no-net', '--explain', appstream_file],
+    workdir: meson.current_build_dir()
+  )
 endif
 
-gsettings_schema = 'com.vixalien.muzika.gschema.xml'
-
-local_schemas = configure_file(
-  copy: true,
-  input: gsettings_schema,
-  output: gsettings_schema
-)
-
-install_data(gsettings_schema,
-  install_dir: join_paths(get_option('datadir'), 'glib-2.0/schemas')
+gsettings_conf = configuration_data()
+gsettings_conf.set('app-id', application_id)
+gsettings_conf.set('gettext-package', gettext_package)
+gsettings_schema = configure_file(
+  input: base_name + '.gschema.xml.in',
+  output: application_id + '.gschema.xml',
+  configuration: gsettings_conf,
+  install: true,
+  install_dir: muzika_schemadir
 )
 
 compile_schemas = find_program('glib-compile-schemas', required: false)
 
 compile_local_schemas = custom_target(
   'compile_local_schemas',
-  input: local_schemas,
+  input: gsettings_schema,
   output: 'gschemas.compiled',
   command: [compile_schemas, meson.current_build_dir()]
 )
@@ -62,11 +73,11 @@ endif
 subdir('ui')
 
 data_res = gnome.compile_resources(
-  'com.vixalien.muzika.data',
-  'com.vixalien.muzika.data.gresource.xml',
+  application_id + '.data',
+  base_name + '.data.gresource.xml',
   gresource_bundle: true,
   install: true,
-  install_dir: pkgdatadir,
+  install_dir: muzika_pkgdatadir,
   dependencies: [blueprints, appstream_file],
 )
 

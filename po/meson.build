@@ -1,1 +1,1 @@
-i18n.gettext('muzika', preset: 'glib')
+i18n.gettext(application_id, preset: 'glib')

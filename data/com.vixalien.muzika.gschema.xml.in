@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?xml-model href="https://gitlab.gnome.org/GNOME/glib/-/raw/HEAD/gio/gschema.dtd" type="application/xml-dtd"?>
 <schemalist gettext-domain="muzika">
-	<enum id="com.vixalien.muzika.AudioQuality">
+	<enum id="@app-id@.AudioQuality">
 		<value nick='auto' value='0' />
 		<value nick='tiny' value='1' />
 		<value nick='low' value='2' />
 		<value nick='medium' value='3' />
 		<value nick='high' value='4' />
 	</enum>
-	<enum id="com.vixalien.muzika.VideoQuality">
+	<enum id="@app-id@.VideoQuality">
 		<value nick='auto' value='0' />
 		<value nick='tiny' value='1' />
 		<value nick='small' value='2' />
@@ -20,7 +20,7 @@
 		<value nick='hd2160' value='8' />
 		<value nick='highres' value='9' />
 	</enum>
-	<schema id="com.vixalien.muzika" path="/com/vixalien/muzika/">
+	<schema id="@app-id@" path="/com/vixalien/muzika/" gettext-domain="@gettext-package@">
 		<key name="prefer-list" type="b">
 			<default>false</default>
 			<summary>Whether lists are preferred to grids</summary>
@@ -49,12 +49,12 @@
 		<key name="is-fullscreen" type="b">
 			<default>false</default>
 		</key>
-		<key name="audio-quality" enum="com.vixalien.muzika.AudioQuality">
+		<key name="audio-quality" enum="@app-id@.AudioQuality">
 			<default>'auto'</default>
 			<summary>Audio Quality</summary>
 			<description>Preferred audio quality.</description>
 		</key>
-		<key name="video-quality" enum="com.vixalien.muzika.VideoQuality">
+		<key name="video-quality" enum="@app-id@.VideoQuality">
 			<default>'auto'</default>
 			<summary>Video Quality</summary>
 			<description>Preferred video quality.</description>
