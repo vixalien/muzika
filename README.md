@@ -19,13 +19,13 @@ Muzika is an elegant music streaming app.
 
 ## Installation
 
-### Using the latest CI build
+### Using the latest Nightly Flatpak
 
-You can download a Flatpak bundle from the latest CI build.
+You can download a Flatpak bundle from the latest CI build. You will get updates
+automatically when new code is pushed to main.
 
-Visit
-[the CI build page](https://github.com/vixalien/muzika/actions/workflows/build-nightly.yml?query=branch%3Amain),
-select the latest build and download the `com.vixalien.muzika.flatpak` artifact.
+- [Download x86-64 Nightly Flatpak](https://nightly.link/vixalien/muzika/workflows/build-nighly/main/com.vixalien.muzika.nightly-x86_64.zip)
+- [Download ARM Nightly Flatpak](https://nightly.link/vixalien/muzika/workflows/build-nighly/main/com.vixalien.muzika.nightly-aarch64.zip)
 
 Install it with:
 
