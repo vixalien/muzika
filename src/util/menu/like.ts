@@ -77,7 +77,7 @@ export function create_like_buttons(
     icon_name: "thumbs-down-symbolic",
     css_classes: ["flat"],
     hexpand: true,
-    ...props.like,
+    ...props.dislike,
   });
 
   dislike_button.connect("toggled", () => {
