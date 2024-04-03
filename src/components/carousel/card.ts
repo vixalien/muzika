@@ -1,6 +1,5 @@
 import Gtk from "gi://Gtk?version=4.0";
 import GObject from "gi://GObject";
-import GLib from "gi://GLib";
 
 import type {
   ArtistRun,
@@ -18,11 +17,11 @@ import { get_thumbnail_with_size } from "../webimage.js";
 import { pretty_subtitles } from "src/util/text.js";
 import { MixedCardItem } from "../library/mixedcard.js";
 import { DynamicActionState, DynamicImage } from "../dynamic-image";
-import { SignalListeners } from "src/util/signal-listener.js";
 import { MenuHelper } from "src/util/menu/index.js";
 import { menuLikeRow } from "src/util/menu/like.js";
 import { setup_link_label } from "src/util/label.js";
 import { get_state_pspec } from "../dynamic-action.js";
+import { menuLibraryRow } from "src/util/menu/library.js";
 
 enum CarouselImageType {
   AVATAR,
@@ -184,6 +183,10 @@ export class CarouselCard extends Gtk.Box {
         [_("Start radio"), `queue.play-song("${song.videoId}?radio=true")`],
         [_("Play next"), `queue.add-song("${song.videoId}?next=true")`],
         [_("Add to queue"), `queue.add-song("${song.videoId}")`],
+        menuLibraryRow(
+          song.feedbackTokens,
+          (tokens) => song.feedbackTokens = tokens,
+        ),
         [_("Save to playlist"), `win.add-to-playlist("${song.videoId}")`],
         song.album
           ? [

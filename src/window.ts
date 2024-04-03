@@ -29,6 +29,9 @@ import Adw from "gi://Adw";
 import GLib from "gi://GLib";
 import Gio from "gi://Gio";
 
+import { edit_song_library_status, get_option, rate_song } from "libmuse";
+import type { LikeStatus } from "libmuse";
+
 import { Navigator } from "./navigation.js";
 import { get_player } from "./application.js";
 import { Settings } from "./util/settings.js";
@@ -37,7 +40,6 @@ import {
 } from "./components/player/now-playing/details.js";
 import { LoginDialog } from "./pages/login.js";
 import { AddActionEntries } from "./util/action.js";
-import { get_option, LikeStatus, rate_song } from "libmuse";
 import { PlayerView } from "./components/player/view.js";
 import { VideoPlayerView } from "./components/player/video/view.js";
 import { SaveToPlaylistDialog } from "./components/playlist/save-to-playlist.js";
@@ -277,6 +279,20 @@ export class Window extends Adw.ApplicationWindow {
           }
         },
       },
+      {
+        name: "edit-library",
+        parameter_type: "(ss)",
+        activate: (_, parameter) => {
+          if (!parameter) return;
+
+          const [action, token] = parameter.deep_unpack() as [
+            "add" | "remove",
+            string,
+          ];
+
+          this.edit_library(action, token);
+        },
+      },
     ]);
 
     get_option("auth").addEventListener("token-changed", () => {
@@ -491,7 +507,27 @@ export class Window extends Adw.ApplicationWindow {
       .catch((error) => {
         this.add_toast(_("An error happened while rating song"));
 
-        console.log("An error happened while rating song", error);
+        console.error("An error happened while rating song", error);
+      });
+  }
+
+  private edit_library(
+    action: "add" | "remove",
+    token: string,
+  ) {
+    edit_song_library_status([token])
+      .then(() => {
+        this.add_toast(
+          action === "add" ? _("Added to library") : _("Removed from library"),
+        );
+      }).catch((error) => {
+        console.error("An error happened while rating song", action, error);
+
+        this.add_toast(
+          action === "add"
+            ? _("Couldn't add to library")
+            : _("Couldn't remove from library"),
+        );
       });
   }
 }
