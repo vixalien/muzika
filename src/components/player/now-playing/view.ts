@@ -418,10 +418,10 @@ export class PlayerNowPlayingView extends Adw.NavigationPage {
 
     this.activate_action(
       "win.rate-song",
-      GLib.Variant.new_array(GLib.VariantType.new("s"), [
-        GLib.Variant.new_string(song.videoId),
-        GLib.Variant.new_string(newStatus),
-        GLib.Variant.new_string(song.likeStatus ?? ""),
+      GLib.Variant.new("(sss)", [
+        song.videoId,
+        newStatus,
+        song.likeStatus ?? "",
       ]),
     );
 

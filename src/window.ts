@@ -227,18 +227,22 @@ export class Window extends Adw.ApplicationWindow {
       },
       {
         name: "rate-song",
-        parameter_type: "as",
+        parameter_type: "(sss)",
         activate: (_, parameter) => {
           if (!parameter) return;
 
-          const [videoId, status, oldStatus] = parameter.get_strv();
+          const [videoId, status, oldStatus] = parameter.deep_unpack() as [
+            string,
+            string,
+            string,
+          ];
 
           if (!videoId || !status) return;
 
           this.rate_song(
             videoId,
             status as LikeStatus,
-            oldStatus as LikeStatus | undefined,
+            oldStatus as LikeStatus || undefined,
           );
         },
       },

@@ -575,10 +575,10 @@ class ExtraMenuButtons extends Adw.Bin {
 
     this.activate_action(
       "win.rate-song",
-      GLib.Variant.new_array(GLib.VariantType.new("s"), [
-        GLib.Variant.new_string(this.item.videoId),
-        GLib.Variant.new_string(newStatus),
-        GLib.Variant.new_string(this.item.likeStatus),
+      GLib.Variant.new("(sss)", [
+        this.item.videoId,
+        newStatus,
+        this.item.likeStatus ?? "",
       ]),
     );
 

@@ -56,11 +56,7 @@ export function create_like_buttons(
     cb?.(newStatus);
     parent.activate_action(
       "win.rate-song",
-      GLib.Variant.new_array(GLib.VariantType.new("s"), [
-        GLib.Variant.new_string(videoId),
-        GLib.Variant.new_string(newStatus),
-        GLib.Variant.new_string(status),
-      ]),
+      GLib.Variant.new("(sss)", [videoId, newStatus, status ?? ""]),
     );
   };
 
