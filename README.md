@@ -22,10 +22,11 @@ Muzika is an elegant music streaming app.
 ### Using the latest Nightly Flatpak
 
 You can download a Flatpak bundle from the latest CI build. You will get updates
-automatically when new code is pushed to main.
+automatically when new code is pushed to main thanks to
+[Flatter](https://github.com/andyhomes/flatter)
 
-- [Download x86-64 Nightly Flatpak](https://nightly.link/vixalien/muzika/workflows/build-nighly/main/com.vixalien.muzika.nightly-x86_64.zip)
-- [Download ARM Nightly Flatpak](https://nightly.link/vixalien/muzika/workflows/build-nighly/main/com.vixalien.muzika.nightly-aarch64.zip)
+- [Download x86-64 Nightly Flatpak](https://nightly.link/vixalien/muzika/workflows/ci/main/com.vixalien.muzika.Devel-x86_64.zip)
+- [Download ARM Nightly Flatpak](https://nightly.link/vixalien/muzika/workflows/ci/main/com.vixalien.muzika.Devel-aarch64.zip)
 
 Install it with:
 
