@@ -52,23 +52,12 @@ jobs:
           arch: ${{ matrix.arch }}
           gpg-sign: ${{ steps.gpg.outputs.fingerprint }}
           upload-bundles: true
-          upload-pages-artifact: ${{ matrix.arch == 'aarch64' }}
           flatpak-build-bundle-args: |
-            --repo-url=https://vixalien.github.io/muzika
+            --repo-url=https://vixalien.github.io/muzika/repo
 
-  deploy:
-    name: Deploy
-    runs-on: ubuntu-latest
-    needs: flatpak
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-    permissions:
-      pages: write
-      id-token: write
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-
-    steps:
-      - name: GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
+      - name: Deploy
+        uses: JamesIves/github-pages-deploy-action@releases/v4
+        with:
+          folder: ${{ steps.build.outputs.repository }}
+          target-folder: repo
+          single-commit: true
