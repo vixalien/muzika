@@ -60,7 +60,11 @@ The muzika URI has the form `muzika:endpoint:data`. URIs can also have query
 parameters. For example, `muzika:library?view=grid` will open the library page
 with the grid view.
 
-To navigate to a given endpoint:
+You can navigate to a muzika URI by directly typing it in the search bar and
+muzika will visit that page directly instead of searching it.
+
+You can also navigate to a given endpoint by triggering the navigator action
+manually:
 
 1. Open the GTK inspector by pressing `Ctrl+Shift+I`.
 2. Click on the `Actions` tab on the right.
