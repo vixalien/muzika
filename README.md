@@ -73,7 +73,7 @@ manually:
 
 ### Endpoints
 
-A list of all endpoints are [here](src/endpoints.ts).
+A list of all endpoints are [here](src/pages.ts).
 
 - `muzika:home` - Home page
 - `muzika:playlist:<playlistId>` - Playlist page. eg:
