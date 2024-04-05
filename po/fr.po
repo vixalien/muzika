@@ -25,7 +25,7 @@ msgstr "Muzika"
 
 #: data/com.vixalien.muzika.desktop.in:11
 msgid "music;player;media;audio;playlists;youtube;artists;"
-msgstr "musique;lecteur;média;audio;playlist;lecture;youtube;artistes;."
+msgstr "musique;lecteur;média;audio;playlist;lecture;youtube;artistes;"
 
 #: data/com.vixalien.muzika.appdata.xml.in.in:7
 msgid "Elegant music streaming application"
