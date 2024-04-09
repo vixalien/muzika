@@ -21,6 +21,13 @@ Muzika is an elegant music streaming app.
 
 ### Using the latest Nightly Flatpak
 
+First, make sure the latest GNOME Nightly runtime is installed:
+
+```sh
+flatpak remote-add --if-not-exists --user gnome-nightly https://nightly.gnome.org/gnome-nightly.flatpakrepo
+flatpak install --user org.gnome.Platform//master
+```
+
 You can download a Flatpak bundle from the latest CI build. You will get updates
 automatically when new code is pushed to main thanks to
 [Flatter](https://github.com/andyhomes/flatter)
