@@ -34,6 +34,7 @@ jobs:
 
       - name: Setup GPG
         id: gpg
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         uses: crazy-max/ghaction-import-gpg@v6
         with:
           gpg_private_key: ${{ secrets.GPG_PRIVATE_KEY }}
@@ -57,7 +58,7 @@ jobs:
 
       - name: Deploy
         uses: JamesIves/github-pages-deploy-action@releases/v4
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         with:
           folder: ${{ steps.build.outputs.repository }}
           target-folder: repo
-          single-commit: true
