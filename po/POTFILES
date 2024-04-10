@@ -1,6 +1,6 @@
-data/com.vixalien.muzika.desktop.in
-data/com.vixalien.muzika.appdata.xml.in.in
-data/com.vixalien.muzika.gschema.xml
+data/com.vixalien.muzika.desktop.in.in
+data/com.vixalien.muzika.metainfo.xml.in.in
+data/com.vixalien.muzika.gschema.xml.in
 
 data/ui/components/carousel/carousel.blp
 data/ui/components/navbar/index.blp
