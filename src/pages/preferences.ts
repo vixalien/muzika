@@ -15,18 +15,27 @@ export class MuzikaPreferencesDialog extends Adw.PreferencesDialog {
       InternalChildren: [
         "audio_quality",
         "video_quality",
+        "background_play",
       ],
     }, this);
   }
 
   private _video_quality!: Adw.ComboRow;
   private _audio_quality!: Adw.ComboRow;
+  private _background_play!: Adw.SwitchRow;
 
   constructor() {
     super();
 
     this.prepare_quality(this._audio_quality, AudioQualities, "audio-quality");
     this.prepare_quality(this._video_quality, VideoQualities, "video-quality");
+
+    Settings.bind(
+      "background-play",
+      this._background_play,
+      "active",
+      Gio.SettingsBindFlags.DEFAULT,
+    );
   }
 
   private prepare_quality(
