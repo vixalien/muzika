@@ -1,14 +1,14 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
-# This file is distributed under the same license as the muzika package.
+# This file is distributed under the same license as the com.vixalien.muzika package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: muzika\n"
+"Project-Id-Version: com.vixalien.muzika\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-04-01 17:29+0200\n"
+"POT-Creation-Date: 2024-04-10 04:36+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,90 +17,99 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: data/com.vixalien.muzika.desktop.in:3
-#: data/com.vixalien.muzika.appdata.xml.in.in:6
+#: data/com.vixalien.muzika.desktop.in.in:3
+#: data/com.vixalien.muzika.metainfo.xml.in.in:6
 msgid "Muzika"
 msgstr ""
 
-#: data/com.vixalien.muzika.desktop.in:11
+#: data/com.vixalien.muzika.desktop.in.in:4
+msgid "Music Streaming"
+msgstr ""
+
+#: data/com.vixalien.muzika.desktop.in.in:5
+msgid "Stream music online"
+msgstr ""
+
+#. Translators: Search terms to find this application. Do NOT translate or localize the semicolons! The list MUST also end with a semicolon!
+#: data/com.vixalien.muzika.desktop.in.in:14
 msgid "music;player;media;audio;playlists;youtube;artists;"
 msgstr ""
 
-#: data/com.vixalien.muzika.appdata.xml.in.in:7
+#: data/com.vixalien.muzika.metainfo.xml.in.in:7
 msgid "Elegant music streaming application"
 msgstr ""
 
-#: data/com.vixalien.muzika.appdata.xml.in.in:9
+#: data/com.vixalien.muzika.metainfo.xml.in.in:9
 msgid ""
 "Play music from millions of songs available on the internet for free. Search "
 "for songs, albums, artists, and more. Discover new music from playlists and "
 "get a personalized &amp; curated experience."
 msgstr ""
 
-#: data/com.vixalien.muzika.appdata.xml.in.in:14
+#: data/com.vixalien.muzika.metainfo.xml.in.in:14
 msgid "Current features:"
 msgstr ""
 
-#: data/com.vixalien.muzika.appdata.xml.in.in:16
+#: data/com.vixalien.muzika.metainfo.xml.in.in:16
 msgid "play any music from YouTube Music"
 msgstr ""
 
-#: data/com.vixalien.muzika.appdata.xml.in.in:17
+#: data/com.vixalien.muzika.metainfo.xml.in.in:17
 msgid ""
 "allows sign in through OAuth with Google to play your playlists and more "
 "from your library or uploads"
 msgstr ""
 
-#: data/com.vixalien.muzika.appdata.xml.in.in:18
+#: data/com.vixalien.muzika.metainfo.xml.in.in:18
 msgid ""
 "search for songs, albums, artists, radios, community &amp; featured "
 "playlists and more"
 msgstr ""
 
-#: data/com.vixalien.muzika.appdata.xml.in.in:19
+#: data/com.vixalien.muzika.metainfo.xml.in.in:19
 msgid "access personalised music radios &amp; mixes"
 msgstr ""
 
-#: data/com.vixalien.muzika.gschema.xml:26
+#: data/com.vixalien.muzika.gschema.xml.in:26
 msgid "Whether lists are preferred to grids"
 msgstr ""
 
-#: data/com.vixalien.muzika.gschema.xml:27
+#: data/com.vixalien.muzika.gschema.xml.in:27
 msgid ""
 "If this option is enabled, the library view will show a list instead of the "
 "default grid."
 msgstr ""
 
-#: data/com.vixalien.muzika.gschema.xml:32
+#: data/com.vixalien.muzika.gschema.xml.in:32
 msgid "Volume"
 msgstr ""
 
-#: data/com.vixalien.muzika.gschema.xml:33
+#: data/com.vixalien.muzika.gschema.xml.in:33
 msgid "The volume of the player"
 msgstr ""
 
-#: data/com.vixalien.muzika.gschema.xml:37
+#: data/com.vixalien.muzika.gschema.xml.in:37
 #: src/components/player/video/volume-controls.ts:104
 msgid "Muted"
 msgstr ""
 
-#: data/com.vixalien.muzika.gschema.xml:38
+#: data/com.vixalien.muzika.gschema.xml.in:38
 msgid "Whether to mute all media"
 msgstr ""
 
-#: data/com.vixalien.muzika.gschema.xml:54 data/ui/pages/preferences.blp:23
+#: data/com.vixalien.muzika.gschema.xml.in:54 data/ui/pages/preferences.blp:23
 msgid "Audio Quality"
 msgstr ""
 
-#: data/com.vixalien.muzika.gschema.xml:55
+#: data/com.vixalien.muzika.gschema.xml.in:55
 msgid "Preferred audio quality."
 msgstr ""
 
-#: data/com.vixalien.muzika.gschema.xml:59 data/ui/pages/preferences.blp:14
+#: data/com.vixalien.muzika.gschema.xml.in:59 data/ui/pages/preferences.blp:14
 msgid "Video Quality"
 msgstr ""
 
-#: data/com.vixalien.muzika.gschema.xml:60
+#: data/com.vixalien.muzika.gschema.xml.in:60
 msgid "Preferred video quality."
 msgstr ""
 
@@ -951,6 +960,10 @@ msgstr ""
 msgid "New albums & singles"
 msgstr ""
 
+#: src/pages/explore.ts:54
+msgid "New music videos"
+msgstr ""
+
 #: src/pages/home.ts:197
 msgid "Couldn't get more items from your home feed. Please try again later."
 msgstr ""
@@ -999,7 +1012,7 @@ msgstr ""
 msgid "Are you sure you want to delete this playlist?"
 msgstr ""
 
-#: src/pages/playlist.ts:178 src/pages/playlist.ts:240 src/window.ts:296
+#: src/pages/playlist.ts:178 src/pages/playlist.ts:240 src/window.ts:300
 msgid "Cancel"
 msgstr ""
 
@@ -1161,7 +1174,7 @@ msgstr ""
 msgid "Added %d songs to queue"
 msgstr ""
 
-#: src/sidebar.ts:75 src/window.ts:295 src/window.ts:297
+#: src/sidebar.ts:75 src/window.ts:299 src/window.ts:301
 msgid "Logout"
 msgstr ""
 
@@ -1169,15 +1182,15 @@ msgstr ""
 msgid "Change rating of track"
 msgstr ""
 
-#: src/util/menu/like.ts:102 src/util/menu/like.ts:108
+#: src/util/menu/like.ts:98 src/util/menu/like.ts:104
 msgid "Remove from liked songs"
 msgstr ""
 
-#: src/util/menu/like.ts:103
+#: src/util/menu/like.ts:99
 msgid "Add to liked songs"
 msgstr ""
 
-#: src/util/menu/like.ts:109
+#: src/util/menu/like.ts:105
 msgid "Add to disliked songs"
 msgstr ""
 
@@ -1189,38 +1202,38 @@ msgstr ""
 msgid "Copied URL to clipboard"
 msgstr ""
 
-#: src/window.ts:295
+#: src/window.ts:299
 msgid "Are you sure?"
 msgstr ""
 
-#: src/window.ts:334
+#: src/window.ts:338
 msgid "Successfully logged in!"
 msgstr ""
 
-#: src/window.ts:343
+#: src/window.ts:347
 msgid "An error happened while logging you in. Please try again later."
 msgstr ""
 
-#: src/window.ts:450
+#: src/window.ts:454
 msgid "Added to disliked songs"
 msgstr ""
 
-#: src/window.ts:453
+#: src/window.ts:457
 msgid "Added to liked songs"
 msgstr ""
 
-#: src/window.ts:454
+#: src/window.ts:458
 msgid "Liked songs"
 msgstr ""
 
-#: src/window.ts:460
+#: src/window.ts:464
 msgid "Removed from liked songs"
 msgstr ""
 
-#: src/window.ts:462
+#: src/window.ts:466
 msgid "Removed from disliked songs"
 msgstr ""
 
-#: src/window.ts:470
+#: src/window.ts:474
 msgid "An error happened while rating song"
 msgstr ""
