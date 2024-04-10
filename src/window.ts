@@ -30,7 +30,8 @@ import GLib from "gi://GLib";
 import Gio from "gi://Gio";
 
 import { Navigator } from "./navigation.js";
-import { get_player, Settings } from "./application.js";
+import { get_player } from "./application.js";
+import { Settings } from "./util/settings.js";
 import {
   PlayerNowPlayingDetails,
 } from "./components/player/now-playing/details.js";

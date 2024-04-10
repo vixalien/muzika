@@ -16,8 +16,6 @@ import { MuzikaPreferencesDialog } from "./pages/preferences.js";
 import { get_language_string, set_muse_lang } from "./util/language.js";
 import { request_background } from "./util/portals.js";
 
-export const Settings = new Gio.Settings({ schema: pkg.name });
-
 export class Application extends Adw.Application {
   window?: Window;
 

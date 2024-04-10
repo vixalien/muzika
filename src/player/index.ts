@@ -19,7 +19,8 @@ import {
   tracks_to_meta,
 } from "./queue";
 
-import { Application, Settings } from "../application.js";
+import { Application } from "../application.js";
+import { Settings } from "../util/settings";
 import { ObjectContainer } from "../util/objectcontainer.js";
 import { AddActionEntries } from "src/util/action.js";
 import { store } from "src/util/giofilestore.js";

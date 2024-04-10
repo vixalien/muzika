@@ -5,7 +5,7 @@ import Adw from "gi://Adw";
 
 import { ObjectContainer } from "src/util/objectcontainer";
 import { AudioQualities, VideoQualities } from "src/player";
-import { Settings } from "src/application";
+import { Settings } from "src/util/settings.js";
 
 export class MuzikaPreferencesDialog extends Adw.PreferencesDialog {
   static {

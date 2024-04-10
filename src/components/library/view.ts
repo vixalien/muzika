@@ -2,11 +2,11 @@ import Gtk from "gi://Gtk?version=4.0";
 import GObject from "gi://GObject";
 
 import { MixedCardItem } from "./mixedcard.js";
-import { Settings } from "../../application.js";
 import { Paginator } from "../paginator.js";
 import { FlatListView } from "../carousel/view/flatlist.js";
 import { CarouselGridView } from "../carousel/view/grid.js";
 import { PlayableContainer, PlayableList } from "src/util/playablelist.js";
+import { Settings } from "src/util/settings.js";
 
 export interface LibraryViewOptions {
   filters?: string[];
