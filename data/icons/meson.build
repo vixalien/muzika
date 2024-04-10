@@ -8,5 +8,5 @@ symbolic_dir = join_paths('hicolor', 'symbolic', 'apps')
 install_data(
   join_paths(symbolic_dir, base_name + '-symbolic.svg'),
   install_dir: join_paths(muzika_datadir, 'icons', symbolic_dir),
-  rename: '@0@-symbolic.svg'.format(application_id)
+  rename: application_id + '-symbolic.svg'
 )
