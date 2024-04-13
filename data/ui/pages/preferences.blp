@@ -5,20 +5,22 @@ template $MuzikaPreferencesDialog : Adw.PreferencesDialog {
   Adw.PreferencesPage sound_page {
     title: _("Sound");
     icon-name: "multimedia-volume-control-symbolic";
-
+  
     Adw.PreferencesGroup {
-      title: _("Preffered Video Quality");
-      description: _("The selected quality will be played if available");
+      title: _("General");
 
-      Adw.ComboRow video_quality {
-        title: _("Video Quality");
+      Adw.SwitchRow background_play {
+        title: _("Background Playback");
       }
     }
 
     Adw.PreferencesGroup {
-      title: _("Preffered Audio Quality");
-      description: _("Higher audio qualities are not available for music videos and can only be played by logged in YouTube Premium users");
-      
+      title: _("Preferred Playback Quality");
+
+      Adw.ComboRow video_quality {
+        title: _("Video Quality");
+      }
+
       Adw.ComboRow audio_quality {
         title: _("Audio Quality");
       }

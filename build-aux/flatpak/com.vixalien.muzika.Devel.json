@@ -43,6 +43,7 @@
   "modules": [
     "modules/yarn-deps.json",
     "modules/blueprint-compiler.json",
+    "modules/libportal.json",
     "modules/gst-plugin-gtk4.json",
     {
       "name": "muzika",

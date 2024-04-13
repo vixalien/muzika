@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: com.vixalien.muzika\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-04-10 04:36+0200\n"
+"POT-Creation-Date: 2024-04-10 04:48+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -97,19 +97,27 @@ msgstr ""
 msgid "Whether to mute all media"
 msgstr ""
 
-#: data/com.vixalien.muzika.gschema.xml.in:54 data/ui/pages/preferences.blp:23
+#: data/com.vixalien.muzika.gschema.xml.in:42 data/ui/pages/preferences.blp:13
+msgid "Background Playback"
+msgstr ""
+
+#: data/com.vixalien.muzika.gschema.xml.in:43
+msgid "Keep playing in the background after the main window is closed"
+msgstr ""
+
+#: data/com.vixalien.muzika.gschema.xml.in:59 data/ui/pages/preferences.blp:25
 msgid "Audio Quality"
 msgstr ""
 
-#: data/com.vixalien.muzika.gschema.xml.in:55
+#: data/com.vixalien.muzika.gschema.xml.in:60
 msgid "Preferred audio quality."
 msgstr ""
 
-#: data/com.vixalien.muzika.gschema.xml.in:59 data/ui/pages/preferences.blp:14
+#: data/com.vixalien.muzika.gschema.xml.in:64 data/ui/pages/preferences.blp:21
 msgid "Video Quality"
 msgstr ""
 
-#: data/com.vixalien.muzika.gschema.xml.in:60
+#: data/com.vixalien.muzika.gschema.xml.in:65
 msgid "Preferred video quality."
 msgstr ""
 
@@ -229,7 +237,7 @@ msgstr ""
 msgid "Edit Playlist"
 msgstr ""
 
-#: data/ui/components/playlist/edit.blp:11
+#: data/ui/components/playlist/edit.blp:11 data/ui/pages/preferences.blp:10
 msgid "General"
 msgstr ""
 
@@ -431,22 +439,8 @@ msgstr ""
 msgid "Sound"
 msgstr ""
 
-#: data/ui/pages/preferences.blp:10
-msgid "Preffered Video Quality"
-msgstr ""
-
-#: data/ui/pages/preferences.blp:11
-msgid "The selected quality will be played if available"
-msgstr ""
-
-#: data/ui/pages/preferences.blp:19
-msgid "Preffered Audio Quality"
-msgstr ""
-
-#: data/ui/pages/preferences.blp:20
-msgid ""
-"Higher audio qualities are not available for music videos and can only be "
-"played by logged in YouTube Premium users"
+#: data/ui/pages/preferences.blp:18
+msgid "Preferred Playback Quality"
 msgstr ""
 
 #: data/ui/pages/search.blp:94
@@ -677,8 +671,8 @@ msgstr ""
 msgid "Auto-translate"
 msgstr ""
 
-#: src/components/player/video/util.ts:72 src/player/index.ts:1312
-#: src/player/index.ts:1338
+#: src/components/player/video/util.ts:72 src/player/index.ts:1317
+#: src/player/index.ts:1343
 msgid "Auto"
 msgstr ""
 
@@ -1012,7 +1006,7 @@ msgstr ""
 msgid "Are you sure you want to delete this playlist?"
 msgstr ""
 
-#: src/pages/playlist.ts:178 src/pages/playlist.ts:240 src/window.ts:300
+#: src/pages/playlist.ts:178 src/pages/playlist.ts:240 src/window.ts:308
 msgid "Cancel"
 msgstr ""
 
@@ -1127,23 +1121,23 @@ msgstr ""
 msgid "Enable Repeat"
 msgstr ""
 
-#: src/player/index.ts:1321
+#: src/player/index.ts:1326
 msgid "High Resolution"
 msgstr ""
 
-#: src/player/index.ts:1339
+#: src/player/index.ts:1344
 msgid "Very Low"
 msgstr ""
 
-#: src/player/index.ts:1340
+#: src/player/index.ts:1345
 msgid "Low"
 msgstr ""
 
-#: src/player/index.ts:1341
+#: src/player/index.ts:1346
 msgid "Medium"
 msgstr ""
 
-#: src/player/index.ts:1342
+#: src/player/index.ts:1347
 msgid "High"
 msgstr ""
 
@@ -1174,7 +1168,7 @@ msgstr ""
 msgid "Added %d songs to queue"
 msgstr ""
 
-#: src/sidebar.ts:75 src/window.ts:299 src/window.ts:301
+#: src/sidebar.ts:75 src/window.ts:307 src/window.ts:309
 msgid "Logout"
 msgstr ""
 
@@ -1198,42 +1192,50 @@ msgstr ""
 msgid "Invalid language selected"
 msgstr ""
 
-#: src/window.ts:187
+#: src/util/portals.ts:29
+msgid "Muzika needs to run in the background to play music"
+msgstr ""
+
+#: src/util/portals.ts:39
+msgid "Playing in the background"
+msgstr ""
+
+#: src/window.ts:195
 msgid "Copied URL to clipboard"
 msgstr ""
 
-#: src/window.ts:299
+#: src/window.ts:307
 msgid "Are you sure?"
 msgstr ""
 
-#: src/window.ts:338
+#: src/window.ts:346
 msgid "Successfully logged in!"
 msgstr ""
 
-#: src/window.ts:347
+#: src/window.ts:355
 msgid "An error happened while logging you in. Please try again later."
 msgstr ""
 
-#: src/window.ts:454
+#: src/window.ts:462
 msgid "Added to disliked songs"
 msgstr ""
 
-#: src/window.ts:457
+#: src/window.ts:465
 msgid "Added to liked songs"
 msgstr ""
 
-#: src/window.ts:458
+#: src/window.ts:466
 msgid "Liked songs"
 msgstr ""
 
-#: src/window.ts:464
+#: src/window.ts:472
 msgid "Removed from liked songs"
 msgstr ""
 
-#: src/window.ts:466
+#: src/window.ts:474
 msgid "Removed from disliked songs"
 msgstr ""
 
-#: src/window.ts:474
+#: src/window.ts:482
 msgid "An error happened while rating song"
 msgstr ""

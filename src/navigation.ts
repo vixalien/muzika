@@ -103,12 +103,14 @@ export class Navigator extends GObject.Object {
       this.last_binding = null;
     }
 
-    this.last_binding = current_page.bind_property(
-      "title",
-      get_window(),
-      "title",
-      GObject.BindingFlags.SYNC_CREATE,
-    );
+    if (get_window()) {
+      this.last_binding = current_page.bind_property(
+        "title",
+        get_window(),
+        "title",
+        GObject.BindingFlags.SYNC_CREATE,
+      );
+    }
   }
 
   get_action_group() {

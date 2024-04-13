@@ -19,7 +19,8 @@ import {
   tracks_to_meta,
 } from "./queue";
 
-import { Application, Settings } from "../application.js";
+import { Application } from "../application.js";
+import { Settings } from "../util/settings";
 import { ObjectContainer } from "../util/objectcontainer.js";
 import { AddActionEntries } from "src/util/action.js";
 import { store } from "src/util/giofilestore.js";
@@ -28,6 +29,7 @@ import { get_track_settings, get_tracklist } from "./helpers.js";
 import { convert_formats_to_dash } from "./mpd";
 import { throttle } from "lodash-es";
 import { add_toast } from "src/util/window";
+import { hold_application, release_application } from "src/util/hold";
 
 if (!Gst.is_initialized()) {
   GLib.setenv("GST_PLAY_USE_PLAYBIN3", "1", false);
@@ -395,9 +397,9 @@ export class MuzikaMediaStream extends Gtk.MediaStream {
 
   resume() {
     if (this.playing) {
-      this._play.play();
+      this.play();
     } else {
-      this._play.pause();
+      this.pause();
     }
   }
 
@@ -534,6 +536,8 @@ export class MuzikaMediaStream extends Gtk.MediaStream {
     this.refreshed_uri = false;
 
     if (!this.prepared) {
+      hold_application();
+
       this.stream_prepared(
         info.get_number_of_audio_streams() > 0,
         info.get_number_of_video_streams() > 0,
@@ -578,6 +582,7 @@ export class MuzikaMediaStream extends Gtk.MediaStream {
     }
 
     this.stop();
+    release_application();
   }
 }
 

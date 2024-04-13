@@ -30,7 +30,8 @@ import GLib from "gi://GLib";
 import Gio from "gi://Gio";
 
 import { Navigator } from "./navigation.js";
-import { get_player, Settings } from "./application.js";
+import { get_player } from "./application.js";
+import { Settings } from "./util/settings.js";
 import {
   PlayerNowPlayingDetails,
 } from "./components/player/now-playing/details.js";
@@ -38,17 +39,18 @@ import { LoginDialog } from "./pages/login.js";
 import { AddActionEntries } from "./util/action.js";
 import { get_option, LikeStatus, rate_song } from "libmuse";
 import { PlayerView } from "./components/player/view.js";
-import "./components/player/video/view.js";
 import { VideoPlayerView } from "./components/player/video/view.js";
 import { SaveToPlaylistDialog } from "./components/playlist/save-to-playlist.js";
 import { PlayerNowPlayingView } from "./components/player/now-playing/view.js";
 import { WindowSidebar } from "./sidebar.js";
+import { set_background_status } from "./util/portals.js";
 
 // make sure to first register PlayerSidebar
 GObject.type_ensure(PlayerNowPlayingDetails.$gtype);
 GObject.type_ensure(PlayerNowPlayingView.$gtype);
 GObject.type_ensure(PlayerView.$gtype);
 GObject.type_ensure(WindowSidebar.$gtype);
+GObject.type_ensure(VideoPlayerView.$gtype);
 
 Gio._promisify(Adw.AlertDialog.prototype, "choose", "choose_finish");
 
@@ -157,6 +159,12 @@ export class Window extends Adw.ApplicationWindow {
 
     this._now_playing_view.connect("bottom-bar-clicked", () => {
       this._now_playing_split_view.show_content = true;
+    });
+
+    this.connect("notify::visible", () => {
+      if (!this.visible) {
+        set_background_status();
+      }
     });
   }
 

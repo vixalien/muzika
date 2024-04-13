@@ -14,11 +14,10 @@ import { MuzikaPlayer } from "./player/index.js";
 import { MPRIS } from "./mpris.js";
 import { MuzikaPreferencesDialog } from "./pages/preferences.js";
 import { get_language_string, set_muse_lang } from "./util/language.js";
-
-export const Settings = new Gio.Settings({ schema: pkg.name });
+import { request_background } from "./util/portals.js";
 
 export class Application extends Adw.Application {
-  private window?: Window;
+  window?: Window;
 
   static {
     GObject.registerClass(this);
@@ -63,9 +62,9 @@ export class Application extends Adw.Application {
 
   constructor(argv: string[]) {
     super({
-      application_id: "com.vixalien.muzika",
-      flags: Gio.ApplicationFlags.DEFAULT_FLAGS |
-        Gio.ApplicationFlags.NON_UNIQUE,
+      application_id: pkg.name,
+      resource_base_path: "/com/vixalien/muzika/",
+      flags: Gio.ApplicationFlags.FLAGS_NONE,
     });
 
     this.set_argv(argv);
@@ -135,12 +134,20 @@ export class Application extends Adw.Application {
   }
 
   public vfunc_activate(): void {
+    super.vfunc_activate();
+
+    this.present_main_window();
+  }
+
+  private present_main_window() {
     if (!this.window) {
       this.window = new Window({ application: this });
       if (pkg.name.endsWith("Devel")) this.window.add_css_class("devel");
     }
 
     this.window.present();
+
+    request_background();
   }
 }
 
