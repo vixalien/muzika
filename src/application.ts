@@ -77,10 +77,10 @@ export class Application extends Adw.Application {
     show_about_action.connect("activate", () => {
       const aboutDialog = Adw.AboutDialog.new_from_appdata(
         "/com/vixalien/muzika/com.vixalien.muzika.metainfo.xml",
-        // remove commit tag
-        pkg.version.split("-")[0],
+        null,
       );
 
+      aboutDialog.set_version(pkg.version);
       aboutDialog.set_developers([
         "Angelo Verlain <hey@vixalien.com>",
         "Christopher Davis <christopherdavis@gnome.org>",
