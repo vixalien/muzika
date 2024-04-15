@@ -499,6 +499,10 @@ class ExtraMenuButtons extends Adw.Bin {
     this.update_like_buttons();
   }
 
+  clear() {
+    this.more.set_menu_model(null);
+  }
+
   private update_menu_model() {
     if (!this.item) return;
 
@@ -607,9 +611,9 @@ class MenuColumn extends Gtk.ColumnViewColumn {
   }
 
   unbind_cb(_factory: Gtk.SignalListItemFactory, list_item: Gtk.ListItem) {
-    const button = list_item.child as Gtk.MenuButton;
+    const button = list_item.child as ExtraMenuButtons;
 
-    button.set_menu_model(null);
+    button.clear();
   }
 }
 
