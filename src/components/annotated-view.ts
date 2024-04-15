@@ -29,10 +29,10 @@ import {
   orientedPair,
 } from "src/util/orientation";
 
-export class ScrolledView extends Gtk.Widget {
+export class AnnotatedView extends Gtk.Widget {
   static {
     GObject.registerClass({
-      GTypeName: "ScrolledView",
+      GTypeName: "AnnotatedView",
       Implements: [
         Gtk.Buildable,
         Gtk.Scrollable,

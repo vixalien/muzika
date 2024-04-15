@@ -39,7 +39,7 @@ import {
   VScrollState,
 } from "src/util/scrolled.js";
 import { add_toast, get_window } from "src/util/window.js";
-import { ScrolledView } from "src/components/scrolled-view.js";
+import { AnnotatedView } from "src/components/annotated-view.js";
 import { PlaylistListView } from "src/components/playlist/listview.js";
 import { Rectangle } from "gi-types/gdk4.js";
 
@@ -51,7 +51,7 @@ GObject.type_ensure(Paginator.$gtype);
 GObject.type_ensure(PlaylistHeader.$gtype);
 GObject.type_ensure(PlaylistItemView.$gtype);
 GObject.type_ensure(PlaylistBar.$gtype);
-GObject.type_ensure(ScrolledView.$gtype);
+GObject.type_ensure(AnnotatedView.$gtype);
 
 export class PlaylistPage extends Adw.Bin
   implements MuzikaPageWidget<Playlist, PlaylistState> {
