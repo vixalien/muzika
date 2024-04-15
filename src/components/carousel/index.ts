@@ -60,21 +60,14 @@ export class Carousel<
 
   constructor(params?: Partial<Gtk.Box.ConstructorProperties>) {
     super(params);
+  }
 
-    const adjustment = this._scrolled.get_hadjustment();
-    adjustment.connect("changed", this.sync_scroll_buttons.bind(this));
-    adjustment.connect("value-changed", this.sync_scroll_buttons.bind(this));
+  left_button_clicked_cb() {
+    this.begin_scroll_animation(Gtk.DirectionType.LEFT);
+  }
 
-    Gtk.DirectionType.RIGHT;
-
-    this._left_button.connect(
-      "clicked",
-      () => this.begin_scroll_animation(Gtk.DirectionType.LEFT),
-    );
-    this._right_button.connect(
-      "clicked",
-      () => this.begin_scroll_animation(Gtk.DirectionType.RIGHT),
-    );
+  right_button_clicked_cb() {
+    this.begin_scroll_animation(Gtk.DirectionType.RIGHT);
   }
 
   setup_more_button(more: string | null) {
