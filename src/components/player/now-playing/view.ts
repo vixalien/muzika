@@ -402,7 +402,10 @@ export class PlayerNowPlayingView extends Adw.NavigationPage {
     this.updating_like_buttons = false;
   }
 
-  private like_button_toggled(like = true) {
+  private like_button_toggled(
+    like = true,
+    cb?: (newStatus: LikeStatus) => void,
+  ) {
     const song = this.player.queue.current?.object;
     if (!song || this.updating_like_buttons) return;
 
@@ -428,6 +431,8 @@ export class PlayerNowPlayingView extends Adw.NavigationPage {
     song.likeStatus = newStatus;
 
     this.update_like_buttons();
+
+    cb?.(newStatus);
   }
 
   private like_cb() {
@@ -435,6 +440,10 @@ export class PlayerNowPlayingView extends Adw.NavigationPage {
   }
 
   private dislike_cb() {
-    this.like_button_toggled(false);
+    this.like_button_toggled(false, (status) => {
+      if (status === "DISLIKE") {
+        this.player.queue.next();
+      }
+    });
   }
 }
