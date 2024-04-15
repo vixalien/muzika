@@ -293,7 +293,10 @@ export class Window extends Adw.ApplicationWindow {
         visible_child &&
         visible_child != this.get_action_state("visible-child")?.get_string()[0]
       ) {
-        this.change_action_state("visible-view", GLib.Variant.new_string(visible_child))
+        this.change_action_state(
+          "visible-view",
+          GLib.Variant.new_string(visible_child),
+        );
       }
     });
   }
@@ -337,7 +340,7 @@ export class Window extends Adw.ApplicationWindow {
 
     const controller = new AbortController();
 
-    loginDialog.connect("closed", () => {
+    const listener = loginDialog.connect("closed", () => {
       controller.abort();
     });
 
@@ -359,6 +362,7 @@ export class Window extends Adw.ApplicationWindow {
       })
       .finally(() => {
         loginDialog.close();
+        loginDialog.disconnect(listener);
       });
   }
 
