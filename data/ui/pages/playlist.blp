@@ -109,26 +109,24 @@ template $PlaylistPage : Adw.Bin {
                   activate => $load_more();
                 }
 
-                Box more {
+                Box data {
                   margin-start: 12;
                   margin-end: 12;
 
-                  Box data {
-                    styles [
-                      "dim-label",
-                    ]
+                  styles [
+                    "dim-label",
+                  ]
 
-                    spacing: 6;
+                  spacing: 6;
 
-                    Label trackCount {
-                    }
+                  Label trackCount {
+                  }
 
-                    Label separator {
-                      label: "·";
-                    }
+                  Label separator {
+                    label: "·";
+                  }
 
-                    Label duration {
-                    }
+                  Label duration {
                   }
                 }
               }

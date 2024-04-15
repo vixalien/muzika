@@ -31,99 +31,101 @@ template $AlbumPage : Adw.Bin {
       }
 
       ScrolledWindow scrolled {
-        vexpand: true;
-        hexpand: true;
-        hscrollbar-policy: never;
+        $AnnotatedView {
+          spacing: 24;
+          vexpand: true;
+          hexpand: true;
 
-        Box {
-          orientation: vertical;
-
+          [header]
           Adw.Clamp {
             margin-top: 24;
             tightening-threshold: 1200;
             maximum-size: 1400;
 
-            Box {
-              spacing: 24;
-              orientation: vertical;
+            $PlaylistHeader header {
+              show-large-header: true;
 
-              $PlaylistHeader header {
-                show-large-header: true;
+              [primary-button]
+              Button play_button {
+                action-name: "queue.play-playlist";
 
-                [primary-button]
-                Button play_button {
-                  action-name: "queue.play-playlist";
+                styles ["suggested-action", "pill"]
 
-                  styles ["suggested-action", "pill"]
-
-                  Adw.ButtonContent {
-                    label: _("Play");
-                    icon-name: "media-playback-start-symbolic";
-                  }
-                }
-
-                [primary-button]
-                Button shuffle_button {
-                  action-name: "queue.play-playlist";
-
-                  styles ["pill"]
-
-                  Adw.ButtonContent {
-                    label: _("Shuffle");
-                    icon-name: "media-playlist-shuffle-symbolic";
-                  }
+                Adw.ButtonContent {
+                  label: _("Play");
+                  icon-name: "media-playback-start-symbolic";
                 }
               }
 
-              Box {
-                orientation: vertical;
+              [primary-button]
+              Button shuffle_button {
+                action-name: "queue.play-playlist";
 
-                $PlaylistItemView playlist_item_view {
-                  album: true;
-                  show-column: true;
-                }
+                styles ["pill"]
 
-                Box more {
-                  margin-top: 12;
-                  margin-start: 12;
-                  margin-end: 12;
-                  margin-bottom: 24;
-
-                  Box data {
-                    styles [
-                      "dim-label",
-                    ]
-
-                    spacing: 6;
-
-                    Label trackCount {
-                    }
-
-                    Label {
-                      label: "·";
-                    }
-
-                    Label duration {
-                    }
-                  }
+                Adw.ButtonContent {
+                  label: _("Shuffle");
+                  icon-name: "media-playlist-shuffle-symbolic";
                 }
               }
             }
           }
 
-          Adw.Clamp insights_clamp {
+          Adw.ClampScrollable {
             tightening-threshold: 1200;
             maximum-size: 1400;
-            vexpand: true;
-            visible: false;
 
-            styles ["insights-clamp"]
+            $PlaylistItemView playlist_item_view {
+              album: true;
+              show-column: true;
+            }
+          }
 
-            Box insights {
-              orientation: vertical;
-              spacing: 12;
+          [footer]
+          Box {
+            orientation: vertical;
+            spacing: 24;
 
-              styles ["insights-box"]
+            Adw.Clamp {
+              tightening-threshold: 1200;
+              maximum-size: 1400;
+
+              Box data {
+                margin-start: 12;
+                margin-end: 12;
+
+                styles [
+                  "dim-label",
+                ]
+
+                spacing: 6;
+
+                Label trackCount {
+                }
+
+                Label {
+                  label: "·";
+                }
+
+                Label duration {
+                }
+              }
+            }
+
+            Adw.Clamp insights_clamp {
+              tightening-threshold: 1200;
+              maximum-size: 1400;
+              vexpand: true;
+              visible: false;
+
+              styles ["insights-clamp"]
+
+              Box insights {
+                orientation: vertical;
+                spacing: 12;
+
+                styles ["insights-box"]
+              }
             }
           }
         }
