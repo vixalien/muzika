@@ -26,10 +26,11 @@ import type {
 
 import { pretty_subtitles } from "src/util/text.js";
 import { DynamicImage, DynamicImageStorageType } from "../dynamic-image.js";
-import { DynamicActionState } from "../dynamic-action.js";
+import { DynamicActionState, get_state_pspec } from "../dynamic-action.js";
 import { MixedCardItem } from "../library/mixedcard.js";
 import { MenuHelper } from "src/util/menu/index.js";
 import { menuLikeRow } from "src/util/menu/like.js";
+import { setup_link_label } from "src/util/label.js";
 
 GObject.type_ensure(DynamicImage.$gtype);
 
@@ -52,6 +53,9 @@ export class FlatCard extends Gtk.Box {
         "subtitle",
         "dynamic_image",
       ],
+      Properties: {
+        state: get_state_pspec(),
+      },
     }, this);
   }
 
@@ -67,16 +71,7 @@ export class FlatCard extends Gtk.Box {
   constructor() {
     super();
 
-    this._subtitle.connect("activate-link", (_, uri) => {
-      if (uri && uri.startsWith("muzika:")) {
-        this.activate_action(
-          "navigator.visit",
-          GLib.Variant.new_string(uri),
-        );
-
-        return true;
-      }
-    });
+    setup_link_label(this._subtitle);
 
     this.menu_helper = MenuHelper.new(this);
   }
@@ -817,7 +812,11 @@ export class FlatCard extends Gtk.Box {
     }
   }
 
-  set_state(state: DynamicActionState) {
+  get state() {
+    return this._dynamic_image.state;
+  }
+
+  set state(state: DynamicActionState) {
     this._dynamic_image.state = state;
   }
 }

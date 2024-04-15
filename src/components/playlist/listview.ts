@@ -98,7 +98,6 @@ export class PlaylistListView extends Gtk.ListView {
     factory.connect("setup", this.setup_cb.bind(this));
     factory.connect("bind", this.bind_cb.bind(this));
     factory.connect("unbind", this.unbind_cb.bind(this));
-    factory.connect("teardown", this.teardown_cb.bind(this));
 
     this.factory = factory;
 
@@ -194,10 +193,6 @@ export class PlaylistListView extends Gtk.ListView {
 
     item.signals.clear();
     item.clear();
-  }
-
-  teardown_cb(_factory: Gtk.SignalListItemFactory, list_item: Gtk.ListItem) {
-    list_item.set_child(null);
   }
 
   private selection_mode_toggled(position: number, value: boolean) {

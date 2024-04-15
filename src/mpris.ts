@@ -8,6 +8,7 @@ import type { LikeStatus } from "libmuse";
 import { Application } from "./application";
 import { RepeatMode } from "./player/queue";
 import { MuzikaPlayer } from "./player";
+import { SignalListeners } from "./util/signal-listener";
 
 // bus_get
 Gio._promisify(Gio, "bus_get", "bus_get_finish");
@@ -242,66 +243,70 @@ export class MPRIS extends DBusInterface {
   MEDIA_PLAYER2_IFACE = "org.mpris.MediaPlayer2";
   MEDIA_PLAYER2_PLAYER_IFACE = "org.mpris.MediaPlayer2.Player";
 
+  private listeners = new SignalListeners();
+
   constructor(public app: Application) {
     super("org.mpris.MediaPlayer2.Muzika", "/org/mpris/MediaPlayer2", app);
 
     this.player = app.player;
 
-    this.player.queue.connect(
-      "notify::current",
-      this._on_current_song_changed.bind(this),
-    );
-    this.player.connect(
-      "notify::playing",
-      this._on_player_state_changed.bind(this),
-    );
-    this.player.queue.connect(
-      "notify::repeat",
-      this._on_repeat_mode_changed.bind(this),
-    );
-    this.player.queue.connect(
-      "notify::shuffle",
-      this._on_shuffle_changed.bind(this),
-    );
+    this.listeners.add(this.player, [
+      this.player.queue.connect(
+        "notify::current",
+        this._on_current_song_changed.bind(this),
+      ),
+      this.player.connect(
+        "notify::playing",
+        this._on_player_state_changed.bind(this),
+      ),
+      this.player.queue.connect(
+        "notify::repeat",
+        this._on_repeat_mode_changed.bind(this),
+      ),
+      this.player.queue.connect(
+        "notify::shuffle",
+        this._on_shuffle_changed.bind(this),
+      ),
 
-    this.player.queue.connect(
-      "notify::can-play-next",
-      () => {
-        this._properties_changed(
-          this.MEDIA_PLAYER2_PLAYER_IFACE,
-          {
-            CanGoNext: GLib.Variant.new_boolean(
-              this.player.queue.can_play_next,
-            ),
-          },
-          [],
-        );
-      },
-    );
+      this.player.queue.connect(
+        "notify::can-play-next",
+        () => {
+          this._properties_changed(
+            this.MEDIA_PLAYER2_PLAYER_IFACE,
+            {
+              CanGoNext: GLib.Variant.new_boolean(
+                this.player.queue.can_play_next,
+              ),
+            },
+            [],
+          );
+        },
+      ),
 
-    this.player.queue.connect(
-      "notify::can-play-previous",
-      () => {
-        this._properties_changed(
-          this.MEDIA_PLAYER2_PLAYER_IFACE,
-          {
-            CanGoPrevious: GLib.Variant.new_boolean(
-              this.player.queue.can_play_previous,
-            ),
-          },
-          [],
-        );
-      },
-    );
+      this.player.queue.connect(
+        "notify::can-play-previous",
+        () => {
+          this._properties_changed(
+            this.MEDIA_PLAYER2_PLAYER_IFACE,
+            {
+              CanGoPrevious: GLib.Variant.new_boolean(
+                this.player.queue.can_play_previous,
+              ),
+            },
+            [],
+          );
+        },
+      ),
 
-    this.player.connect(
-      "notify::seeking",
-      () => {
-        if (!this.player.seeking) {
-          this._on_seek_finished(this as any, this.player.timestamp);
-        }
-      },
-    );
+      this.player.connect(
+        "notify::seeking",
+        () => {
+          if (!this.player.seeking) {
+            this._on_seek_finished(this as any, this.player.timestamp);
+          }
+        },
+      ),
+    ]);
   }
 
   _get_playback_status() {
@@ -713,6 +718,10 @@ export class MPRIS extends DBusInterface {
 
   _introspect() {
     return MPRIS_XML;
+  }
+
+  destroy() {
+    this.listeners.clear();
   }
 }
 

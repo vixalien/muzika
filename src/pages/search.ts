@@ -17,6 +17,7 @@ import {
   VScrollState,
 } from "src/util/scrolled.js";
 import { add_toast } from "src/util/window.js";
+import { setup_link_label } from "src/util/label.js";
 
 const vprintf = imports.format.vprintf;
 
@@ -72,16 +73,7 @@ export class SearchPage extends Adw.Bin
   constructor() {
     super();
 
-    this._context_label.connect("activate-link", (_, uri) => {
-      if (uri && uri.startsWith("muzika:")) {
-        this.activate_action(
-          "navigator.replace",
-          GLib.Variant.new_string(uri),
-        );
-
-        return true;
-      }
-    });
+    setup_link_label(this._context_label);
   }
 
   show_scope_tabs() {

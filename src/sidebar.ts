@@ -79,11 +79,24 @@ export class WindowSidebar extends Adw.NavigationPage {
     this._account.menu_model = menu;
   }
 
+  private _search_changed_signal?: number;
+
   vfunc_realize(): void {
     super.vfunc_realize();
 
-    get_navigator(this).connect("search-changed", (_, search: string) => {
-      this._navbar.set_search(search);
-    });
+    this._search_changed_signal = get_navigator(this).connect(
+      "search-changed",
+      (_, search: string) => {
+        this._navbar.set_search(search);
+      },
+    );
+  }
+
+  vfunc_unrealize(): void {
+    if (this._search_changed_signal) {
+      get_navigator(this).disconnect(this._search_changed_signal);
+    }
+
+    super.vfunc_unrealize();
   }
 }

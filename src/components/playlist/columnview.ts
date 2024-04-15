@@ -12,6 +12,7 @@ import { PlayableContainer } from "src/util/playablelist";
 import { DynamicImage, DynamicImageStorageType } from "../dynamic-image";
 import { generate_menu } from "src/util/menu";
 import { get_button_props } from "src/util/menu/like";
+import { setup_link_label } from "src/util/label";
 
 class ImageColumn extends Gtk.ColumnViewColumn {
   static {
@@ -150,7 +151,6 @@ class ChartRankColumn extends Gtk.ColumnViewColumn {
     const factory = Gtk.SignalListItemFactory.new();
     factory.connect("setup", this.setup_cb.bind(this));
     factory.connect("bind", this.bind_cb.bind(this));
-    factory.connect("teardown", this.teardown_cb.bind(this));
 
     this.factory = factory;
   }
@@ -182,10 +182,6 @@ class ChartRankColumn extends Gtk.ColumnViewColumn {
           break;
       }
     }
-  }
-
-  teardown_cb(_factory: Gtk.SignalListItemFactory, list_item: Gtk.ListItem) {
-    list_item.set_child(null);
   }
 }
 
@@ -280,13 +276,7 @@ class ArtistColumn extends Gtk.ColumnViewColumn {
       css_classes: ["flat-links", "dim-label"],
     });
 
-    label.connect("activate-link", (_, uri) => {
-      if (uri && uri.startsWith("muzika:")) {
-        label.activate_action("navigator.visit", GLib.Variant.new_string(uri));
-
-        return true;
-      }
-    });
+    setup_link_label(label);
 
     list_item.set_child(label);
   }
@@ -330,13 +320,7 @@ class AlbumColumn extends Gtk.ColumnViewColumn {
       css_classes: ["flat-links", "dim-label"],
     });
 
-    label.connect("activate-link", (_, uri) => {
-      if (uri && uri.startsWith("muzika:")) {
-        label.activate_action("navigator.visit", GLib.Variant.new_string(uri));
-
-        return true;
-      }
-    });
+    setup_link_label(label);
 
     list_item.set_child(label);
   }

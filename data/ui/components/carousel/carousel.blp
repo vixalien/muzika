@@ -51,6 +51,7 @@ template $Carousel : Box {
       Button left_button {
         icon-name: "go-previous-symbolic";
         overflow: hidden;
+        clicked => $left_button_clicked_cb();
 
         styles [
           "rounded",
@@ -60,6 +61,7 @@ template $Carousel : Box {
       Button right_button {
         icon-name: "go-next-symbolic";
         overflow: hidden;
+        clicked => $right_button_clicked_cb();
 
         styles [
           "rounded",
@@ -81,6 +83,10 @@ template $Carousel : Box {
       hexpand: true;
       propagate-natural-height: true;
       vscrollbar-policy: never;
+      hadjustment: Adjustment {
+        changed => $sync_scroll_buttons();
+        value-changed => $sync_scroll_buttons();
+      };
 
       styles [
         "undershoot-start",

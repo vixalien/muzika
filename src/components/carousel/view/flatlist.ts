@@ -58,7 +58,7 @@ export class FlatListView extends Gtk.ListView {
     const factory = Gtk.SignalListItemFactory.new();
     factory.connect("bind", this.bind_cb.bind(this));
     factory.connect("setup", this.setup_cb.bind(this));
-    factory.connect("teardown", this.teardown_cb.bind(this));
+    factory.connect("unbind", this.unbind_cb.bind(this));
 
     this.factory = factory;
     this.items = new PlayableList<FlatCardItem>();
@@ -88,14 +88,21 @@ export class FlatListView extends Gtk.ListView {
           break;
       }
 
-      container.connect("notify::state", () => {
-        card.set_state(container.state);
-      });
+      (container as any).binding = container.bind_property(
+        "state",
+        card,
+        "state",
+        GObject.BindingFlags.SYNC_CREATE,
+      );
     }
   }
 
-  teardown_cb(_factory: Gtk.ListItemFactory, list_item: Gtk.ListItem) {
-    list_item.child = null as any;
+  unbind_cb(_factory: Gtk.ListItemFactory, list_item: Gtk.ListItem) {
+    const container = list_item.item as PlayableContainer<
+      InlineSong | SearchContent
+    >;
+
+    ((container as any).binding as GObject.Binding)?.unbind();
   }
 
   vfunc_map(): void {

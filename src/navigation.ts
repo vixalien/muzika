@@ -72,6 +72,8 @@ export class Navigator extends GObject.Object {
     }, this);
   }
 
+  private _visible_page_signal: number;
+
   constructor(stack: Adw.NavigationView) {
     super();
 
@@ -85,7 +87,7 @@ export class Navigator extends GObject.Object {
     }
 
     // track when the current page changes
-    this._view.connect(
+    this._visible_page_signal = this._view.connect(
       "notify::visible-page",
       this.visible_page_changed_cb.bind(this),
     );
@@ -342,6 +344,10 @@ export class Navigator extends GObject.Object {
       this._view.replace([]);
       this.navigate(uri);
     }
+  }
+
+  destroy() {
+    this._view.disconnect(this._visible_page_signal);
   }
 }
 

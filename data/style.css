@@ -153,11 +153,11 @@ flowboxchild {
   padding: 6px 10px;
 }
 
-label.flat-links:not(.hover) link {
+label.flat-links:not(:hover) link {
   color: inherit;
 }
 
-label.flat-links.hover link {
+label.flat-links:hover link {
   color: @accent_color;
 }
 

@@ -9,6 +9,7 @@ import { DynamicImage, DynamicImageStorageType } from "../dynamic-image";
 import { SignalListeners } from "src/util/signal-listener.js";
 import { MenuHelper } from "src/util/menu/index.js";
 import { menuLikeRow } from "src/util/menu/like";
+import { setup_link_label } from "src/util/label.js";
 
 export class PlaylistListItem extends Gtk.Box {
   static {
@@ -64,16 +65,7 @@ export class PlaylistListItem extends Gtk.Box {
   constructor() {
     super({});
 
-    this.listeners.connect(this._subtitle, "activate-link", (_, uri) => {
-      if (uri && uri.startsWith("muzika:")) {
-        this.activate_action(
-          "navigator.visit",
-          GLib.Variant.new_string(uri),
-        );
-
-        return true;
-      }
-    });
+    setup_link_label(this._subtitle);
 
     this.menu_helper = MenuHelper.new(this);
   }
