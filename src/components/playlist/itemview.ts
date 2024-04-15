@@ -135,9 +135,10 @@ export class PlaylistItemView extends Gtk.Widget {
   get hadjustment(): Gtk.Adjustment {
     return this.adjustment[Gtk.Orientation.HORIZONTAL];
   }
-  set hadjustment(v: Gtk.Adjustment) {
-    this.adjustment[Gtk.Orientation.HORIZONTAL] = v;
-    v.connect("value-changed", () => this.queue_resize());
+  set hadjustment(value: Gtk.Adjustment) {
+    if (!value) return;
+    this.adjustment[Gtk.Orientation.HORIZONTAL] = value;
+    value.connect("value-changed", () => this.queue_resize());
     this.queue_resize();
     this.notify("hadjustment");
   }
@@ -145,9 +146,10 @@ export class PlaylistItemView extends Gtk.Widget {
   get vadjustment(): Gtk.Adjustment {
     return this.adjustment[Gtk.Orientation.VERTICAL];
   }
-  set vadjustment(v: Gtk.Adjustment) {
-    this.adjustment[Gtk.Orientation.VERTICAL] = v;
-    v.connect("value-changed", () => this.queue_resize());
+  set vadjustment(value: Gtk.Adjustment) {
+    if (!value) return;
+    this.adjustment[Gtk.Orientation.VERTICAL] = value;
+    value.connect("value-changed", () => this.queue_resize());
     this.notify("vadjustment");
     this.queue_resize();
   }
@@ -186,7 +188,7 @@ export class PlaylistItemView extends Gtk.Widget {
     return this.show_column ? this.listview : this.columnview;
   }
 
-  private listview = new PlaylistListView({ visible: false });
+  private listview = new PlaylistListView({ visible: true });
   private columnview = new PlaylistColumnView({ visible: false });
 
   // private get_current_child() {
@@ -215,7 +217,7 @@ export class PlaylistItemView extends Gtk.Widget {
     this.listview.selection_mode = this.columnview.selection_mode = value;
 
     if (value == false) {
-      this.multi_selection_model?.unselect_all();
+      this.model?.unselect_all();
     }
 
     this.notify("selection-mode");
@@ -246,28 +248,25 @@ export class PlaylistItemView extends Gtk.Widget {
 
   // property: model
 
-  private _model: Gio.ListModel | null = null;
-
   get model() {
-    return this._model as PlayableList;
+    return this.listview.model as Gtk.MultiSelection | null;
   }
 
-  multi_selection_model: Gtk.MultiSelection<PlayableContainer> | null = null;
-
-  set model(value: PlayableList | null) {
-    if (this.model === value) return;
+  set model(value: Gtk.MultiSelection | null) {
+    if (!value || this.model === value) return;
 
     this.clear_listeners();
 
-    this._model = value;
+    this.listview.model = this.columnview.model = value;
 
-    this.multi_selection_model = Gtk.MultiSelection.new(
-      value!,
-    ) as Gtk.MultiSelection<PlayableContainer>;
-
-    this.listview.model = this.columnview.model = this.multi_selection_model!;
+    this.notify("model");
 
     this.setup_listeners();
+  }
+
+  get playable_list() {
+    if (!this.model) return null;
+    return this.model.model as PlayableList;
   }
 
   // property: show-rank
@@ -388,10 +387,12 @@ export class PlaylistItemView extends Gtk.Widget {
   }
 
   update() {
-    if (!this._model) return;
+    console.warn("the update method is deprecated!!");
 
-    for (let i = 0; i < this._model.get_n_items(); i++) {
-      const item = this._model.get_item(i);
+    if (!this.playable_list) return;
+
+    for (let i = 0; i < this.playable_list.get_n_items(); i++) {
+      const item = this.playable_list.get_item(i);
       if (item) item.notify("object");
     }
   }
@@ -399,9 +400,9 @@ export class PlaylistItemView extends Gtk.Widget {
   add_cb(index: number) {
     const item = this.model?.get_item(index);
 
-    if (!item || !this.model) return;
+    if (!item || !this.model || !this.playable_list) return;
 
-    this.model.remove(index);
+    this.playable_list.remove(index);
 
     this.emit("add", item);
   }
@@ -412,22 +413,19 @@ export class PlaylistItemView extends Gtk.Widget {
     }
 
     if (index < 0) {
-      this.multi_selection_model?.unselect_all();
+      this.model?.unselect_all();
       return;
     }
 
     const container = this.model?.get_item(index);
 
-    if (!container || !this.multi_selection_model) return;
+    if (!container || !this.model) return;
 
-    if (
-      this.selection_mode ||
-      this.multi_selection_model.get_selection().get_size() > 1
-    ) {
+    if (this.selection_mode || this.model.get_selection().get_size() > 1) {
       return;
     }
 
-    this.multi_selection_model.select_item(index, true);
+    this.model.select_item(index, true);
   }
 
   /**
@@ -440,7 +438,9 @@ export class PlaylistItemView extends Gtk.Widget {
     const now_playing = player.queue.current?.object.videoId;
 
     this.select_track(
-      now_playing ? this.model?.find_by_video_id(now_playing) ?? null : null,
+      now_playing
+        ? this.playable_list?.find_by_video_id(now_playing) ?? null
+        : null,
     );
   }
 
@@ -449,7 +449,11 @@ export class PlaylistItemView extends Gtk.Widget {
   private setup_listeners() {
     this.clear_listeners();
 
-    this.model?.setup_listeners();
+    const model = this.model?.model;
+
+    if (!(model instanceof PlayableList)) return;
+
+    model.setup_listeners();
 
     const player = get_player();
 
@@ -464,7 +468,7 @@ export class PlaylistItemView extends Gtk.Widget {
   }
 
   private clear_listeners() {
-    this.model?.clear_listeners();
+    this.playable_list?.clear_listeners();
     this.signals.clear();
   }
 
@@ -566,7 +570,7 @@ export class PlaylistItemView extends Gtk.Widget {
       height,
     );
 
-    child_adjustment.value = y + 20;
+    child_adjustment.value = y;
     child_adjustment.page_size = visible_height;
 
     allocation.width = widget_width;
@@ -604,6 +608,6 @@ export class PlaylistItemView extends Gtk.Widget {
 }
 
 export interface PlaylistItemViewOptions {
-  model: PlayableList;
+  model: Gtk.MultiSelection<PlayableContainer>;
   show_column: boolean;
 }

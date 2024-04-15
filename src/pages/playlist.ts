@@ -88,7 +88,7 @@ export class PlaylistPage extends Adw.Bin
   private _separator!: Gtk.Label;
   // private _scrolled!: Gtk.ScrolledWindow;
   private _data!: Gtk.Box;
-  private _playlist_item_view!: PlaylistListView;
+  private _playlist_item_view!: PlaylistItemView;
   private _paginator!: Paginator;
   private _header!: PlaylistHeader;
   private _bar!: PlaylistBar;
@@ -118,10 +118,12 @@ export class PlaylistPage extends Adw.Bin
       this.model,
     ) as Gtk.MultiSelection<ObjectContainer<PlaylistItem>>;
 
-    this._playlist_item_view.model = selection_model
-    this._bar.model = selection_model
+    this._playlist_item_view.model = selection_model;
+    this._bar.model = selection_model;
 
-    this._suggestions_item_view.model = this.suggestions_model;
+    this._suggestions_item_view.model = Gtk.MultiSelection.new(
+      this.suggestions_model,
+    );
 
     this._suggestions_item_view.connect("add", this.add_cb.bind(this));
 
@@ -271,7 +273,7 @@ export class PlaylistPage extends Adw.Bin
             this.model.remove(position);
           });
 
-        this._playlist_item_view.multi_selection_model!.unselect_all();
+        this._playlist_item_view.model?.unselect_all();
       } else {
         error_toast();
       }
@@ -565,7 +567,5 @@ export class PlaylistPage extends Adw.Bin
   }
 
   size_allocate(allocation: Rectangle, baseline: number): void {
-    
   }
-  
 }
