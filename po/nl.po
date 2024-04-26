@@ -1,0 +1,1258 @@
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the com.vixalien.muzika package.
+#
+# Heimen Stoffels <vistausss@fastmail.com>, 2024.
+msgid ""
+msgstr ""
+"Project-Id-Version: com.vixalien.muzika\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-04-10 04:48+0200\n"
+"PO-Revision-Date: 2024-04-24 18:16+0200\n"
+"Last-Translator: Heimen Stoffels <vistausss@fastmail.com>\n"
+"Language-Team: Dutch <>\n"
+"Language: nl\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: Poedit 3.4.2\n"
+
+#: data/com.vixalien.muzika.desktop.in.in:3
+#: data/com.vixalien.muzika.metainfo.xml.in.in:6
+msgid "Muzika"
+msgstr "Muzika"
+
+#: data/com.vixalien.muzika.desktop.in.in:4
+msgid "Music Streaming"
+msgstr "Muziekstreaming"
+
+#: data/com.vixalien.muzika.desktop.in.in:5
+msgid "Stream music online"
+msgstr "Stream online-muziek"
+
+#. Translators: Search terms to find this application. Do NOT translate or localize the semicolons! The list MUST also end with a semicolon!
+#: data/com.vixalien.muzika.desktop.in.in:14
+msgid "music;player;media;audio;playlists;youtube;artists;"
+msgstr "muziek;speler;media;audio;playlists;afspeellijsten;youtube;artiesten;"
+
+#: data/com.vixalien.muzika.metainfo.xml.in.in:7
+msgid "Elegant music streaming application"
+msgstr "Een elegante muziekstreamingstoepassing"
+
+#: data/com.vixalien.muzika.metainfo.xml.in.in:9
+msgid ""
+"Play music from millions of songs available on the internet for free. Search "
+"for songs, albums, artists, and more. Discover new music from playlists and "
+"get a personalized &amp; curated experience."
+msgstr ""
+"Luister naar miljoenen gratis nummers van het internet. Zoek naar nummers, "
+"albums, artiesten en nog veel meer. Ontdek nieuwe muziek via afspeellijsten "
+"en ontvang persoonlijke aanbevelingen."
+
+#: data/com.vixalien.muzika.metainfo.xml.in.in:14
+msgid "Current features:"
+msgstr "Huidige mogelijkheden:"
+
+#: data/com.vixalien.muzika.metainfo.xml.in.in:16
+msgid "play any music from YouTube Music"
+msgstr "Luister naar muziek van YouTube Music"
+
+#: data/com.vixalien.muzika.metainfo.xml.in.in:17
+msgid ""
+"allows sign in through OAuth with Google to play your playlists and more from "
+"your library or uploads"
+msgstr ""
+"Log in met je Google-account om reeds bestaande afspeellijsten, uploads en "
+"andere zaken op te halen"
+
+#: data/com.vixalien.muzika.metainfo.xml.in.in:18
+msgid ""
+"search for songs, albums, artists, radios, community &amp; featured playlists "
+"and more"
+msgstr ""
+"Zoek naar nummers, albums, artiesten, radiostations, door de gemeenschap "
+"samengestelde afspeellijsten en nog veel meer"
+
+#: data/com.vixalien.muzika.metainfo.xml.in.in:19
+msgid "access personalised music radios &amp; mixes"
+msgstr "Ontvang persoonlijke aanbevelingen"
+
+#: data/com.vixalien.muzika.gschema.xml.in:26
+msgid "Whether lists are preferred to grids"
+msgstr "Geef aan of lijsten als roosters moeten worden getoond"
+
+#: data/com.vixalien.muzika.gschema.xml.in:27
+msgid ""
+"If this option is enabled, the library view will show a list instead of the "
+"default grid."
+msgstr ""
+"Schakel in om de verzameling als een lijst in plaats van een rooster te tonen."
+
+#: data/com.vixalien.muzika.gschema.xml.in:32
+msgid "Volume"
+msgstr "Volumeniveau"
+
+#: data/com.vixalien.muzika.gschema.xml.in:33
+msgid "The volume of the player"
+msgstr "Het volumeniveau van de speler"
+
+#: data/com.vixalien.muzika.gschema.xml.in:37
+#: src/components/player/video/volume-controls.ts:104
+msgid "Muted"
+msgstr "Gedempt"
+
+#: data/com.vixalien.muzika.gschema.xml.in:38
+msgid "Whether to mute all media"
+msgstr "Geef aan of alle media gedempt moet worden"
+
+#: data/com.vixalien.muzika.gschema.xml.in:42 data/ui/pages/preferences.blp:13
+msgid "Background Playback"
+msgstr "Afspelen of de achtergrond"
+
+#: data/com.vixalien.muzika.gschema.xml.in:43
+msgid "Keep playing in the background after the main window is closed"
+msgstr "Speel muziek af op de achtergrond als het hoofdvenster wordt gesloten"
+
+#: data/com.vixalien.muzika.gschema.xml.in:59 data/ui/pages/preferences.blp:25
+msgid "Audio Quality"
+msgstr "Audiokwaliteit"
+
+#: data/com.vixalien.muzika.gschema.xml.in:60
+msgid "Preferred audio quality."
+msgstr "De gewenste audiokwaliteit."
+
+#: data/com.vixalien.muzika.gschema.xml.in:64 data/ui/pages/preferences.blp:21
+msgid "Video Quality"
+msgstr "Videokwaliteit"
+
+#: data/com.vixalien.muzika.gschema.xml.in:65
+msgid "Preferred video quality."
+msgstr "De gewenste videokwaliteit."
+
+#: data/ui/components/carousel/carousel.blp:44
+#: data/ui/components/search/section.blp:23 data/ui/pages/artist.blp:132
+msgid "More"
+msgstr "Meer"
+
+#: data/ui/components/navbar/index.blp:7
+msgid "Search…"
+msgstr "Zoeken…"
+
+#: data/ui/components/paginator.blp:18
+msgid "Load More"
+msgstr "Meer laden"
+
+#: data/ui/components/player/full.blp:71
+#: data/ui/components/player/now-playing/view.blp:208
+msgid "Toggle Shuffle"
+msgstr "Willekeurig aan/uit"
+
+#: data/ui/components/player/full.blp:83
+#: data/ui/components/player/now-playing/view.blp:221
+msgid "Previous"
+msgstr "Vorige"
+
+#: data/ui/components/player/full.blp:93 data/ui/components/player/mini.blp:58
+#: data/ui/components/player/mini.blp:62
+#: data/ui/components/player/now-playing/view.blp:233
+msgid "Toggle Play/Pause"
+msgstr "Afspelen/Pauzeren"
+
+#: data/ui/components/player/full.blp:107
+#: data/ui/components/player/now-playing/view.blp:248
+msgid "Next"
+msgstr "Volgende"
+
+#: data/ui/components/player/full.blp:118
+#: data/ui/components/player/now-playing/view.blp:261
+msgid "Toggle Repeat State"
+msgstr "Herhalen aan/uit"
+
+#: data/ui/components/player/full.blp:162
+msgid "Adjust Volume"
+msgstr "Volumeniveau aanpassen"
+
+#: data/ui/components/player/lyrics.blp:7
+msgid "Lyrics are not available"
+msgstr "Er is geen songtekst beschikbaar"
+
+#: data/ui/components/player/lyrics.blp:8
+msgid "If the song has lyrics, they'll appear here when they become available"
+msgstr "De songtekst zal hier worden getoond zodra deze beschikbaar is"
+
+#: data/ui/components/player/mini.blp:68 data/ui/components/player/mini.blp:72
+#: src/pages/album.ts:172 src/pages/playlist.ts:465
+msgid "Play Next"
+msgstr "Volgende afspelen"
+
+#: data/ui/components/player/now-playing/details.blp:6
+#: data/ui/components/player/now-playing/details.blp:26
+#: src/components/player/queue.ts:116 src/components/player/queue.ts:126
+msgid "Queue"
+msgstr "Wachtrij"
+
+#: data/ui/components/player/now-playing/details.blp:33
+msgid "Lyrics"
+msgstr "Songtekst"
+
+#: data/ui/components/player/now-playing/details.blp:40
+msgid "Related"
+msgstr "Gerelateerd"
+
+#: data/ui/components/player/now-playing/view.blp:5
+msgid "Now Playing"
+msgstr "Je luistert naar"
+
+#: data/ui/components/player/now-playing/view.blp:40
+#: src/components/carousel/flatcard.ts:167
+#: src/components/carousel/flatcard.ts:198
+#: src/components/carousel/flatcard.ts:267
+#: src/components/carousel/flatcard.ts:475
+#: src/components/playlist/columnview.ts:229
+msgid "Song"
+msgstr "Nummer"
+
+#: data/ui/components/player/now-playing/view.blp:46
+#: src/components/carousel/flatcard.ts:234
+#: src/components/carousel/flatcard.ts:303
+#: src/components/carousel/flatcard.ts:563
+#: src/components/carousel/flatcard.ts:596
+msgid "Video"
+msgstr "Video"
+
+#: data/ui/components/player/queue.blp:7
+msgid "The Queue is empty"
+msgstr "De wachtrij is leeg"
+
+#: data/ui/components/player/queue.blp:8
+msgid "Play some tracks to see the queue"
+msgstr "Voeg nummers toe aan de wachtrij"
+
+#: data/ui/components/player/queue.blp:24
+msgid "Playing From"
+msgstr "Nummers worden afgespeeld van"
+
+#: data/ui/components/player/related.blp:7
+msgid "No related music"
+msgstr "Geen gerelateerde muziek"
+
+#: data/ui/components/player/related.blp:8
+msgid "We couldn't find any music related to this track."
+msgstr "Er zijn geen gerelateerde nummers gevonden."
+
+#: data/ui/components/playlist/edit.blp:5 data/ui/components/playlist/edit.blp:8
+#: data/ui/pages/playlist.blp:75
+msgid "Edit Playlist"
+msgstr "Afspeellijst bewerken"
+
+#: data/ui/components/playlist/edit.blp:11 data/ui/pages/preferences.blp:10
+msgid "General"
+msgstr "Algemeen"
+
+#: data/ui/components/playlist/edit.blp:14
+msgid "Title"
+msgstr "Titel"
+
+#: data/ui/components/playlist/edit.blp:18
+msgid "Description"
+msgstr "Beschrijving"
+
+#: data/ui/components/playlist/edit.blp:22
+msgid "Privacy"
+msgstr "Privacy"
+
+#: data/ui/components/playlist/edit.blp:30
+msgid "Save"
+msgstr "Opslaan"
+
+#: data/ui/components/playlist/header.blp:118
+msgid "Read more"
+msgstr "Meer lezen"
+
+#: data/ui/components/playlist/save-to-playlist.blp:5
+#: src/components/carousel/card.ts:216 src/components/carousel/card.ts:290
+#: src/components/carousel/card.ts:320 src/components/carousel/card.ts:365
+#: src/components/carousel/card.ts:399 src/components/carousel/card.ts:434
+#: src/components/carousel/flatcard.ts:183
+#: src/components/carousel/flatcard.ts:213
+#: src/components/carousel/flatcard.ts:252
+#: src/components/carousel/flatcard.ts:282
+#: src/components/carousel/flatcard.ts:323
+#: src/components/carousel/flatcard.ts:403
+#: src/components/carousel/flatcard.ts:465
+#: src/components/carousel/flatcard.ts:491
+#: src/components/carousel/flatcard.ts:581
+#: src/components/carousel/flatcard.ts:614
+#: src/components/carousel/flatcard.ts:656
+#: src/components/carousel/flatcard.ts:694
+#: src/components/carousel/flatcard.ts:728 src/components/playlist/bar.ts:160
+#: src/components/playlist/columnview.ts:524
+#: src/components/playlist/listitem.ts:140
+#: src/components/search/topresultcard.ts:243
+#: src/components/search/topresultcard.ts:276
+#: src/components/search/topresultcard.ts:429
+msgid "Save to playlist"
+msgstr "Bewaren op afspeellijst"
+
+#: data/ui/components/playlist/save-to-playlist.blp:16
+msgid "New playlist"
+msgstr "Nieuwe afspeellijst"
+
+#: data/ui/components/search/topresult.blp:103 data/ui/pages/album.blp:60
+#: src/components/search/topresultcard.ts:391
+msgid "Play"
+msgstr "Afspelen"
+
+#: data/ui/components/search/topresult.blp:115 data/ui/pages/album.blp:72
+#: data/ui/pages/artist.blp:28 data/ui/pages/artist.blp:40
+#: data/ui/pages/artist.blp:87 data/ui/pages/playlist.blp:63
+#: src/components/search/topresultcard.ts:342
+#: src/components/search/topresultcard.ts:397
+msgid "Shuffle"
+msgstr "Willekeurig"
+
+#: data/ui/components/search/topresultsection.blp:14
+msgid "Top Result"
+msgstr "Beste resultaat"
+
+#: data/ui/gtk/help-overlay.blp:11
+msgctxt "shortcut window"
+msgid "General"
+msgstr "Algemeen"
+
+#: data/ui/gtk/help-overlay.blp:14
+msgctxt "shortcut window"
+msgid "Show Shortcuts"
+msgstr "Sneltoetsen tonen"
+
+#: data/ui/gtk/help-overlay.blp:19
+msgctxt "shortcut window"
+msgid "Quit"
+msgstr "Afsluiten"
+
+#: data/ui/gtk/help-overlay.blp:25
+msgctxt "shortcut window"
+msgid "Video Player"
+msgstr "Videospeler"
+
+#: data/ui/gtk/help-overlay.blp:28
+msgctxt "shortcut window"
+msgid "Play/Pause"
+msgstr "Afspelen/Pauzeren"
+
+#: data/ui/gtk/help-overlay.blp:33
+msgctxt "shortcut window"
+msgid "Close Video Player"
+msgstr "Videospeler sluiten"
+
+#: data/ui/gtk/help-overlay.blp:38
+msgctxt "shortcut window"
+msgid "Increase Volume"
+msgstr "Volumeniveau verhogen"
+
+#: data/ui/gtk/help-overlay.blp:43
+msgctxt "shortcut window"
+msgid "Decrease Volume"
+msgstr "Volumeniveau verlagen"
+
+#: data/ui/pages/artist.blp:29 data/ui/pages/artist.blp:41
+#: data/ui/pages/artist.blp:99 src/components/carousel/flatcard.ts:453
+#: src/components/carousel/flatcard.ts:668
+#: src/components/search/topresultcard.ts:353
+msgid "Radio"
+msgstr "Radio"
+
+#: data/ui/pages/artist.blp:75 src/pages/artist.ts:169
+msgid "Subscribe"
+msgstr "Abonneren"
+
+#: data/ui/pages/artist.blp:119
+msgid "Top Songs"
+msgstr "Topnummers"
+
+#: data/ui/pages/authentication-error.blp:18
+msgid "Authentication Is Required"
+msgstr "Verificatie vereist"
+
+#: data/ui/pages/authentication-error.blp:30 data/ui/sidebar.blp:23
+msgid "Log In"
+msgstr "Inloggen"
+
+#: data/ui/pages/authentication-error.blp:40
+msgid "Go to Home"
+msgstr "Ga naar startscherm"
+
+#: data/ui/pages/authentication-error.blp:49 data/ui/pages/error.blp:26
+msgid "Error Details"
+msgstr "Foutmeldingsinformatie"
+
+#: data/ui/pages/channel.blp:70 src/pages/channel.ts:99 src/pages/channel.ts:104
+msgid "Last 7 days"
+msgstr "Afgelopen 7 dagen"
+
+#: data/ui/pages/channel.blp:78
+msgid "Songs on Repeat"
+msgstr "Herhaalde nummers"
+
+#: data/ui/pages/error.blp:18
+msgid "An error occurred"
+msgstr "Er is een fout opgetreden"
+
+#: data/ui/pages/explore.blp:46 src/pages.ts:141
+msgid "New Releases"
+msgstr "Nieuwe uitgaven"
+
+#: data/ui/pages/explore.blp:58 src/pages.ts:123
+msgid "Charts"
+msgstr "Hitlijsten"
+
+#: data/ui/pages/explore.blp:70
+msgid "Moods and Genres"
+msgstr "Stemmingen en genres"
+
+#: data/ui/pages/login.blp:5
+msgid "Login"
+msgstr "Inloggen"
+
+#: data/ui/pages/login.blp:49
+msgid "Scan with phone or go to"
+msgstr "Scan met je telefoon of ga naar"
+
+#: data/ui/pages/login.blp:62
+msgid "Enter the code"
+msgstr "Voer de code in"
+
+#: data/ui/pages/login.blp:78
+msgid "Copy Code"
+msgstr "Code kopiëren"
+
+#: data/ui/pages/login.blp:86
+msgid "Refresh Code"
+msgstr "Nieuwe code"
+
+#: data/ui/pages/playlist.blp:85
+msgid "Add to Library"
+msgstr "Toevoegen aan verzameling"
+
+#: data/ui/pages/playlist.blp:161
+msgid "Suggestions"
+msgstr "Suggesties"
+
+#: data/ui/pages/playlist.blp:176
+msgid "Refresh"
+msgstr "Herladen"
+
+#: data/ui/pages/preferences.blp:6
+msgid "Sound"
+msgstr "Geluid"
+
+#: data/ui/pages/preferences.blp:18
+msgid "Preferred Playback Quality"
+msgstr "Voorkeurskwaliteit voor afspelen"
+
+#: data/ui/pages/search.blp:94
+msgid "No Results"
+msgstr "Geen resultaten"
+
+#: data/ui/pages/search.blp:97
+msgid "Try a different search"
+msgstr "Probeer een andere zoekopdracht"
+
+#: data/ui/sidebar.blp:15
+msgid "Account"
+msgstr "Account"
+
+#: data/ui/sidebar.blp:49
+msgid "_Preferences"
+msgstr "_Voorkeuren"
+
+#: data/ui/sidebar.blp:54
+msgid "_Keyboard Shortcuts"
+msgstr "_Sneltoetsen tonen"
+
+#: data/ui/sidebar.blp:59
+msgid "_About Muzika"
+msgstr "Over Muzik_a"
+
+#: src/components/carousel/card.ts:213 src/components/carousel/card.ts:251
+#: src/components/carousel/card.ts:287 src/components/carousel/card.ts:317
+#: src/components/carousel/card.ts:355 src/components/carousel/card.ts:389
+#: src/components/carousel/card.ts:424 src/components/carousel/flatcard.ts:180
+#: src/components/carousel/flatcard.ts:210
+#: src/components/carousel/flatcard.ts:249
+#: src/components/carousel/flatcard.ts:279
+#: src/components/carousel/flatcard.ts:320
+#: src/components/carousel/flatcard.ts:352
+#: src/components/carousel/flatcard.ts:393
+#: src/components/carousel/flatcard.ts:428
+#: src/components/carousel/flatcard.ts:488
+#: src/components/carousel/flatcard.ts:526
+#: src/components/carousel/flatcard.ts:552
+#: src/components/carousel/flatcard.ts:578
+#: src/components/carousel/flatcard.ts:611
+#: src/components/carousel/flatcard.ts:646
+#: src/components/carousel/flatcard.ts:684
+#: src/components/carousel/flatcard.ts:718
+#: src/components/playlist/columnview.ts:521
+#: src/components/playlist/listitem.ts:137
+#: src/components/search/topresultcard.ts:240
+#: src/components/search/topresultcard.ts:273
+#: src/components/search/topresultcard.ts:309
+#: src/components/search/topresultcard.ts:373
+#: src/components/search/topresultcard.ts:419
+msgid "Start radio"
+msgstr "Radio beluisteren"
+
+#: src/components/carousel/card.ts:214 src/components/carousel/card.ts:288
+#: src/components/carousel/card.ts:318 src/components/carousel/card.ts:360
+#: src/components/carousel/card.ts:394 src/components/carousel/card.ts:429
+#: src/components/carousel/flatcard.ts:181
+#: src/components/carousel/flatcard.ts:211
+#: src/components/carousel/flatcard.ts:250
+#: src/components/carousel/flatcard.ts:280
+#: src/components/carousel/flatcard.ts:321
+#: src/components/carousel/flatcard.ts:398
+#: src/components/carousel/flatcard.ts:460
+#: src/components/carousel/flatcard.ts:489
+#: src/components/carousel/flatcard.ts:579
+#: src/components/carousel/flatcard.ts:612
+#: src/components/carousel/flatcard.ts:651
+#: src/components/carousel/flatcard.ts:689
+#: src/components/carousel/flatcard.ts:723 src/components/playlist/bar.ts:158
+#: src/components/playlist/columnview.ts:522
+#: src/components/playlist/listitem.ts:138
+#: src/components/search/topresultcard.ts:241
+#: src/components/search/topresultcard.ts:274
+#: src/components/search/topresultcard.ts:424
+msgid "Play next"
+msgstr "Volgende afspelen"
+
+#: src/components/carousel/card.ts:215 src/components/carousel/card.ts:289
+#: src/components/carousel/card.ts:319 src/components/carousel/card.ts:363
+#: src/components/carousel/card.ts:397 src/components/carousel/card.ts:432
+#: src/components/carousel/flatcard.ts:182
+#: src/components/carousel/flatcard.ts:212
+#: src/components/carousel/flatcard.ts:251
+#: src/components/carousel/flatcard.ts:281
+#: src/components/carousel/flatcard.ts:322
+#: src/components/carousel/flatcard.ts:401
+#: src/components/carousel/flatcard.ts:463
+#: src/components/carousel/flatcard.ts:490
+#: src/components/carousel/flatcard.ts:580
+#: src/components/carousel/flatcard.ts:613
+#: src/components/carousel/flatcard.ts:654
+#: src/components/carousel/flatcard.ts:692
+#: src/components/carousel/flatcard.ts:726 src/components/playlist/bar.ts:159
+#: src/components/playlist/columnview.ts:523
+#: src/components/playlist/listitem.ts:139
+#: src/components/search/topresultcard.ts:242
+#: src/components/search/topresultcard.ts:275
+#: src/components/search/topresultcard.ts:427 src/pages/album.ts:176
+#: src/pages/playlist.ts:466
+msgid "Add to queue"
+msgstr "Toevoegen aan wachtrij"
+
+#: src/components/carousel/card.ts:219 src/components/carousel/card.ts:323
+#: src/components/carousel/flatcard.ts:186
+#: src/components/carousel/flatcard.ts:216
+#: src/components/carousel/flatcard.ts:285
+#: src/components/carousel/flatcard.ts:494
+#: src/components/playlist/columnview.ts:533
+#: src/components/playlist/listitem.ts:146
+#: src/components/search/topresultcard.ts:246
+msgid "Go to album"
+msgstr "Ga naar album"
+
+#: src/components/carousel/card.ts:225 src/components/carousel/card.ts:293
+#: src/components/carousel/card.ts:329 src/components/carousel/card.ts:439
+#: src/components/carousel/flatcard.ts:222
+#: src/components/carousel/flatcard.ts:255
+#: src/components/carousel/flatcard.ts:291
+#: src/components/carousel/flatcard.ts:326
+#: src/components/carousel/flatcard.ts:368
+#: src/components/carousel/flatcard.ts:500
+#: src/components/carousel/flatcard.ts:584
+#: src/components/carousel/flatcard.ts:617
+#: src/components/carousel/flatcard.ts:733
+#: src/components/playlist/columnview.ts:539
+#: src/components/playlist/listitem.ts:152
+#: src/components/search/topresultcard.ts:252
+#: src/components/search/topresultcard.ts:279
+#: src/components/search/topresultcard.ts:325 src/pages/album.ts:182
+msgid "Go to artist"
+msgstr "Ga naar artiest"
+
+#: src/components/carousel/card.ts:245 src/components/carousel/card.ts:349
+#: src/components/carousel/card.ts:383 src/components/carousel/card.ts:418
+#: src/components/carousel/flatcard.ts:346
+#: src/components/carousel/flatcard.ts:387
+#: src/components/carousel/flatcard.ts:422
+#: src/components/carousel/flatcard.ts:520
+#: src/components/carousel/flatcard.ts:546
+#: src/components/carousel/flatcard.ts:640
+#: src/components/carousel/flatcard.ts:678
+#: src/components/carousel/flatcard.ts:712
+#: src/components/search/topresultcard.ts:303
+#: src/components/search/topresultcard.ts:367
+#: src/components/search/topresultcard.ts:413
+msgid "Shuffle play"
+msgstr "Willekeurig afspelen"
+
+#: src/components/carousel/card.ts:375 src/components/carousel/flatcard.ts:669
+#: src/pages/album.ts:168 src/pages/playlist.ts:462
+msgid "Start Radio"
+msgstr "Radio beluisteren"
+
+#: src/components/carousel/flatcard.ts:379
+#: src/components/carousel/flatcard.ts:415
+#: src/components/carousel/flatcard.ts:630
+#: src/components/search/topresultcard.ts:389 src/pages.ts:33
+msgid "Playlist"
+msgstr "Afspeellijst"
+
+#: src/components/carousel/flatcard.ts:441
+msgid "Profile"
+msgstr "Profiel"
+
+#: src/components/carousel/flatcard.ts:513
+#: src/components/carousel/flatcard.ts:538
+#: src/components/playlist/columnview.ts:264
+#: src/components/search/topresultcard.ts:340 src/pages.ts:45
+msgid "Artist"
+msgstr "Artiest"
+
+#: src/components/carousel/flatcard.ts:705
+#: src/components/playlist/columnview.ts:314 src/pages.ts:39
+msgid "Album"
+msgstr "Album"
+
+#: src/components/navbar/index.ts:151 src/pages.ts:27
+msgid "Home"
+msgstr "Startscherm"
+
+#: src/components/navbar/index.ts:156 src/pages.ts:117
+msgid "Explore"
+msgstr "Verkennen"
+
+#: src/components/navbar/index.ts:161 src/components/navbar/index.ts:163
+#: src/pages.ts:57 src/pages/search.ts:97
+msgid "Library"
+msgstr "Verzameling"
+
+#: src/components/navbar/index.ts:168 src/pages/album.ts:195
+#: src/pages/search.ts:327
+msgid "Artists"
+msgstr "Artiesten"
+
+#: src/components/navbar/index.ts:174
+msgid "Subscriptions"
+msgstr "Abonnementen"
+
+#: src/components/navbar/index.ts:180 src/pages/artist.ts:148
+#: src/pages/search.ts:325
+msgid "Albums"
+msgstr "Albums"
+
+#: src/components/navbar/index.ts:186 src/pages/search.ts:331
+msgid "Songs"
+msgstr "Nummers"
+
+#: src/components/navbar/index.ts:192 src/pages.ts:93
+msgid "History"
+msgstr "Geschiedenis"
+
+#: src/components/navbar/index.ts:197 src/pages/artist.ts:153
+#: src/pages/channel.ts:107 src/pages/search.ts:329
+msgid "Playlists"
+msgstr "Afspeellijsten"
+
+#: src/components/navbar/index.ts:199
+msgid "All Playlists"
+msgstr "Alle afspeellijsten"
+
+#: src/components/player/video/util.ts:26
+msgid "Off"
+msgstr "Uit"
+
+#: src/components/player/video/util.ts:50
+msgid "Auto-translate"
+msgstr "Automatisch vertalen"
+
+#: src/components/player/video/util.ts:72 src/player/index.ts:1317
+#: src/player/index.ts:1343
+msgid "Auto"
+msgstr "Automatisch"
+
+#: src/components/player/video/util.ts:104
+msgid "Subtitles"
+msgstr "Ondertiteling"
+
+#: src/components/player/video/util.ts:109
+msgid "Quality"
+msgstr "Kwaliteit"
+
+#: src/components/player/video/volume-controls.ts:106
+msgid "Full volume"
+msgstr "100% volume"
+
+#: src/components/playlist/bar.ts:175
+msgid "No song selected"
+msgstr "Geen nummer gekozen"
+
+#: src/components/playlist/bar.ts:176
+#, c-format
+msgid "%d song selected"
+msgstr "%d nummer gekozen"
+
+#: src/components/playlist/bar.ts:177
+#, c-format
+msgid "%d songs selected"
+msgstr "%d nummers gekozen"
+
+#: src/components/playlist/columnview.ts:376
+msgid "Time"
+msgstr "Tijdstip"
+
+#: src/components/playlist/columnview.ts:527
+#: src/components/playlist/listitem.ts:142 src/pages/playlist.ts:236
+msgid "Remove from playlist"
+msgstr "Verwijderen van afspeellijst"
+
+#: src/components/playlist/edit.ts:68
+msgid "Public"
+msgstr "Openbaar"
+
+#: src/components/playlist/edit.ts:69
+msgid "Anyone can search for and view"
+msgstr "Iedereen kan ernaar zoeken en de afspeellijst bekijken"
+
+#: src/components/playlist/edit.ts:76
+msgid "Unlisted"
+msgstr "Niet-vermeld"
+
+#: src/components/playlist/edit.ts:77
+msgid "Anyone with the link can view"
+msgstr "Alleen personen met de link kunnen de afspeellijst bekijken"
+
+#: src/components/playlist/edit.ts:84
+msgid "Private"
+msgstr "Privé"
+
+#: src/components/playlist/edit.ts:85
+msgid "Only you can view"
+msgstr "Alleen jij kan de afspeellijst bekijken"
+
+#: src/components/playlist/edit.ts:201
+msgid "Playlist saved"
+msgstr "De afspeellijst is opgeslagen"
+
+#: src/components/playlist/save-to-playlist.ts:117
+msgid "Couldn't get your playlists. Please try again later."
+msgstr ""
+"De afspeellijsten kunnen niet worden opgehaald. Probeer het later opnieuw."
+
+#: src/components/playlist/save-to-playlist.ts:189
+msgid "Duplicates"
+msgstr "Duplicaten"
+
+#: src/components/playlist/save-to-playlist.ts:190
+msgid "One or more of the songs are already in your playlist"
+msgstr "Een of meerdere nummers staan al op je afspeellijst"
+
+#: src/components/playlist/save-to-playlist.ts:193
+msgid "Skip duplicates"
+msgstr "Duplicaten overslaan"
+
+#: src/components/playlist/save-to-playlist.ts:194
+#: src/components/playlist/save-to-playlist.ts:206
+msgid "Add anyway"
+msgstr "Duplicaten toevoegen"
+
+#: src/components/playlist/save-to-playlist.ts:205
+msgid "This song is already in the playlist"
+msgstr "Dit nummer staat al op de afspeellijst"
+
+#: src/components/playlist/save-to-playlist.ts:248
+msgid "Recents"
+msgstr "Nieuw"
+
+#: src/components/playlist/save-to-playlist.ts:249
+msgid "All playlists"
+msgstr "Alle afspeellijsten"
+
+#: src/components/playlist/save-to-playlist.ts:266
+#, c-format
+msgid "Saved to %s"
+msgstr "Toegevoegd aan %s"
+
+#. Translators: %s is a playlist name
+#: src/components/playlist/save-to-playlist.ts:281
+#, c-format
+msgid "Couldn't add playlist to %s"
+msgstr "De afspeellijst kan niet worden toegevoegd aan %s"
+
+#: src/components/playlist/save-to-playlist.ts:285
+#, c-format
+msgid "Couldn't add songs to %s"
+msgstr "De nummers kunnen niet worden toegevoegd aan %s"
+
+#: src/components/playlist/save-to-playlist.ts:286
+#, c-format
+msgid "Couldn't add song to %s"
+msgstr "Het nummer kan niet worden toegevoegd aan %s"
+
+#: src/components/search/section.ts:47
+msgid "Results"
+msgstr "Resultaten"
+
+#: src/components/search/topresultcard.ts:223
+msgid "Add"
+msgstr "Toevoegen"
+
+#: src/pages.ts:51
+msgid "Search Results"
+msgstr "Zoekresultaten"
+
+#: src/pages.ts:63
+msgid "Library Playlists"
+msgstr "Afspeellijsten in verzameling"
+
+#: src/pages.ts:69
+msgid "Library Albums"
+msgstr "Albums in verzameling"
+
+#: src/pages.ts:75
+msgid "Library Artists"
+msgstr "Artiesten in verzameling"
+
+#: src/pages.ts:81
+msgid "Library Subscriptions"
+msgstr "Abonnementen in verzameling"
+
+#: src/pages.ts:87
+msgid "Library Songs"
+msgstr "Nummers in verzameling"
+
+#: src/pages.ts:99
+msgid "Artist Albums"
+msgstr "Albums van artiest"
+
+#: src/pages.ts:105
+msgid "Channel"
+msgstr "Kanaal"
+
+#: src/pages.ts:111
+msgid "Channel Playlists"
+msgstr "Kanaalafspeellijsten"
+
+#: src/pages.ts:129 src/pages/explore.ts:52
+msgid "Moods and genres"
+msgstr "Stemmingen en genres"
+
+#: src/pages.ts:135
+msgid "Mood"
+msgstr "Stemming"
+
+#: src/pages/album.ts:97
+msgid "Other versions"
+msgstr "Andere versies"
+
+#: src/pages/album.ts:120
+msgid "Unknown year"
+msgstr "Onbekend jaartal"
+
+#: src/pages/album.ts:201 src/pages/artist.ts:248 src/pages/channel.ts:120
+#: src/pages/playlist.ts:483
+msgid "Copy Link"
+msgstr "Link kopiëren"
+
+#: src/pages/artist.ts:149
+msgid "Singles"
+msgstr "Singles"
+
+#: src/pages/artist.ts:150 src/pages/channel.ts:96 src/pages/search.ts:333
+msgid "Videos"
+msgstr "Video's"
+
+#: src/pages/artist.ts:151
+msgid "From your library"
+msgstr "Uit je verzameling"
+
+#: src/pages/artist.ts:152
+msgid "Featured on"
+msgstr "Uitgelicht op"
+
+#: src/pages/artist.ts:154
+msgid "Fans might also like"
+msgstr "Fans zijn mogelijk ook geïnteresseerd in"
+
+#: src/pages/artist.ts:165
+msgid "Subscribed"
+msgstr "Geabonneerd"
+
+#: src/pages/artist.ts:222
+#, c-format
+msgid "Unsubscribed from %s"
+msgstr "Uitgeschreven van %s"
+
+#: src/pages/artist.ts:223
+#, c-format
+msgid "Subscribed to %s"
+msgstr "Geabonneerd op %s"
+
+#: src/pages/artist.ts:230
+#, c-format
+msgid "Couldn't unsubscribe from %s. Try again later"
+msgstr "Het uitschrijven van ‘%s’ is niet mogelijk. Probeer het later opnieuw."
+
+#: src/pages/artist.ts:231
+#, c-format
+msgid "Couldn't subscribe to %s%ist. Try again later"
+msgstr "Het abonneren op ‘%s’ is niet mogelijk. Probeer het later opnieuw."
+
+#: src/pages/authentication-error.ts:72
+msgid ""
+"Your authentication details have expired. Please log in again or go to home."
+msgstr "Je verificatie is verlopen. Log opnieuw in of ga naar het startscherm."
+
+#: src/pages/authentication-error.ts:76
+msgid "The page you were trying to access requires you to log in."
+msgstr "De pagina die je wilde openen vereist dat je inlogt."
+
+#: src/pages/channel.ts:98
+msgid "Artists on repeat"
+msgstr "Herhaalde artiesten"
+
+#: src/pages/channel.ts:103
+msgid "Playlists on repeat"
+msgstr "Herhaalde afspeellijsten"
+
+#: src/pages/charts.ts:76 src/pages/explore.ts:51
+msgid "Top songs"
+msgstr "Topnummers"
+
+#: src/pages/charts.ts:78
+msgid "Top music videos"
+msgstr "Topvideoclips"
+
+#. TODO: Top artists
+#. this.add_carousel(_("Top artists"), charts.results.artists, true);
+#: src/pages/charts.ts:85
+msgid "Genres"
+msgstr "Genres"
+
+#: src/pages/charts.ts:86 src/pages/explore.ts:53
+msgid "Trending"
+msgstr "Populair"
+
+#: src/pages/error.ts:71
+msgid "Connect to the internet"
+msgstr "Maak verbinding met het internet"
+
+#: src/pages/error.ts:73
+msgid "You're offline. Check your connection and try again."
+msgstr ""
+"Je bent niet verbonden. Controleer je internetverbinding en probeer het "
+"opnieuw."
+
+#: src/pages/error.ts:84
+msgid "Unknown error"
+msgstr "Onbekende foutmelding"
+
+#. TODO: New albums & singles more
+#: src/pages/explore.ts:50
+msgid "New albums & singles"
+msgstr "Nieuwe albums en singles"
+
+#: src/pages/explore.ts:54
+msgid "New music videos"
+msgstr "Nieuwe videoclips"
+
+#: src/pages/home.ts:197
+msgid "Couldn't get more items from your home feed. Please try again later."
+msgstr ""
+"Er kunnen geen items meer op het startscherm worden geladen. Probeer het "
+"later opnieuw."
+
+#: src/pages/library/base.ts:19
+msgid "Recent activity"
+msgstr "Recente activiteit"
+
+#: src/pages/library/base.ts:20 src/pages/library/base.ts:25
+msgid "Recently added"
+msgstr "Onlangs toegevoegd"
+
+#: src/pages/library/base.ts:21
+msgid "Recently played"
+msgstr "Onlangs beluisterd"
+
+#: src/pages/library/base.ts:26
+msgid "A to Z"
+msgstr "A tot Z"
+
+#: src/pages/library/base.ts:27
+msgid "Z to A"
+msgstr "Z tot A"
+
+#: src/pages/library/base.ts:175
+msgid "Couldn't get more library items"
+msgstr "Er kunnen geen items meer worden opgehaald"
+
+#: src/pages/library/songs.ts:92
+msgid "Couldn't get more library songs"
+msgstr "Er kunnen geen nummers meer worden opgehaald"
+
+#: src/pages/login.ts:73
+msgid "Copied to clipboard"
+msgstr "Gekopieerd naar het klembord"
+
+#: src/pages/login.ts:104
+msgid "An Error happened while trying to log you in. Generating a new code…"
+msgstr ""
+"Er is een fout opgetreden tijdens het inloggen. Er wordt een nieuwe code "
+"gegenereerd…"
+
+#: src/pages/playlist.ts:174
+msgid "Delete playlist"
+msgstr "Afspeellijst verwijderen"
+
+#: src/pages/playlist.ts:175
+msgid "Are you sure you want to delete this playlist?"
+msgstr "Weet je zeker dat je deze afspeellijst wilt verwijderen?"
+
+#: src/pages/playlist.ts:178 src/pages/playlist.ts:240 src/window.ts:308
+msgid "Cancel"
+msgstr "Annuleren"
+
+#: src/pages/playlist.ts:179
+msgid "Delete"
+msgstr "Verwijderen"
+
+#: src/pages/playlist.ts:191
+msgid "Playlist deleted"
+msgstr "De afspeellijst is verwijderd"
+
+#: src/pages/playlist.ts:194
+msgid "Couldn't delete playlist"
+msgstr "De afspeellijst kan niet worden verwijderd"
+
+#: src/pages/playlist.ts:220
+msgid "Couldn't remove songs from playlist"
+msgstr "De nummers kunnen niet van de afspeellijst worden gewist"
+
+#: src/pages/playlist.ts:221
+msgid "Couldn't remove song from playlist"
+msgstr "Het nummer kan niet van de afspeellijst worden gewist"
+
+#: src/pages/playlist.ts:228
+#, c-format
+msgid "%d song removed from playlist"
+msgstr "%d nummer gewist van afspeellijst"
+
+#: src/pages/playlist.ts:229
+#, c-format
+msgid "%d songs removed from playlist"
+msgstr "%d nummers gewist van afspeellijst"
+
+#: src/pages/playlist.ts:237
+msgid ""
+" Are you sure that you want to remove the selected content from the playlist? "
+msgstr " Weet je zeker dat je alle afspeellijstinhoud wilt wissen? "
+
+#: src/pages/playlist.ts:241
+msgid "Remove"
+msgstr "Wissen"
+
+#: src/pages/playlist.ts:302
+msgid "Failed to add suggestion"
+msgstr "De suggestie kan niet worden toegevoegd"
+
+#: src/pages/playlist.ts:348
+msgid "Related playlists"
+msgstr "Gerelateerde afspeellijsten"
+
+#: src/pages/playlist.ts:449
+msgid "Couldn't refresh playlist suggestions"
+msgstr "De afspeellijstsuggesties kunnen niet worden herladen"
+
+#: src/pages/playlist.ts:471
+msgid "Select tracks…"
+msgstr "Nummers kiezen…"
+
+#: src/pages/playlist.ts:475
+msgid "Delete Playlist…"
+msgstr "Afspeellijst verwijderen…"
+
+#: src/pages/search.ts:96
+msgid "Catalog"
+msgstr "Catalogus"
+
+#: src/pages/search.ts:98
+msgid "Uploads"
+msgstr "Uploads"
+
+#: src/pages/search.ts:178
+#, c-format
+msgid "Did you mean: %s"
+msgstr "Bedoelde je ‘%s’"
+
+#: src/pages/search.ts:204
+#, c-format
+msgid "Showing results for: %s"
+msgstr "Zoekresultaten voor ‘%s’"
+
+#: src/pages/search.ts:205
+#, c-format
+msgid "Search instead for: %s"
+msgstr "Zoek in plaats daarvan naar ‘%s’"
+
+#: src/pages/search.ts:266
+msgid "Couldn't get more search results. Try again later."
+msgstr ""
+"Er kunnen geen zoekresultaten meer worden geladen Probeer het later opnieuw."
+
+#: src/pages/search.ts:335
+msgid "Community Playlists"
+msgstr "Afspeellijsten van de gemeenschap"
+
+#: src/pages/search.ts:337
+msgid "Featured Playlists"
+msgstr "Uitgelichte afspeellijsten"
+
+#: src/pages/search.ts:339
+msgid "Profiles"
+msgstr "Profielen"
+
+#: src/player/helpers.ts:131
+msgid "Repeat All Songs"
+msgstr "Alle nummers herhalen"
+
+#: src/player/helpers.ts:134
+msgid "Repeat the Current Song"
+msgstr "Huidig nummer herhalen"
+
+#: src/player/helpers.ts:137
+msgid "Enable Repeat"
+msgstr "Herhalen inschakelen"
+
+#: src/player/index.ts:1326
+msgid "High Resolution"
+msgstr "Hoge resolutie"
+
+#: src/player/index.ts:1344
+msgid "Very Low"
+msgstr "Erg laag"
+
+#: src/player/index.ts:1345
+msgid "Low"
+msgstr "Laag"
+
+#: src/player/index.ts:1346
+msgid "Medium"
+msgstr "Gemiddeld"
+
+#: src/player/index.ts:1347
+msgid "High"
+msgstr "Hoog"
+
+#. Translators: %s is a song's name
+#: src/player/queue.ts:392 src/player/queue.ts:447
+#, c-format
+msgid "Playing “%s” next"
+msgstr "‘%s’ wordt hierna afgespeeld"
+
+#. Translators: %s is a playlist name
+#. Translators: %s is a song's name
+#: src/player/queue.ts:394 src/player/queue.ts:453
+#, c-format
+msgid "Added “%s” to queue"
+msgstr "‘%s’ toevoegen aan wachtrij"
+
+#: src/player/queue.ts:415
+msgid "Starting Radio"
+msgstr "De radio wordt gestart"
+
+#: src/player/queue.ts:448
+#, c-format
+msgid "Playing %d songs next"
+msgstr "%d nummers worden hierna afgespeeld"
+
+#: src/player/queue.ts:454
+#, c-format
+msgid "Added %d songs to queue"
+msgstr "Er zijn %d nummers toegevoegd aan de wachtrij"
+
+#: src/sidebar.ts:75 src/window.ts:307 src/window.ts:309
+msgid "Logout"
+msgstr "Uitloggen"
+
+#: src/util/menu/like.ts:16
+msgid "Change rating of track"
+msgstr "Nummerwaardering wĳzigen"
+
+#: src/util/menu/like.ts:98 src/util/menu/like.ts:104
+msgid "Remove from liked songs"
+msgstr "Verwijderen uit leuke nummers"
+
+#: src/util/menu/like.ts:99
+msgid "Add to liked songs"
+msgstr "Toevoegen aan leuke nummers"
+
+#: src/util/menu/like.ts:105
+msgid "Add to disliked songs"
+msgstr "Toevoegen aan niet-leuke nummers"
+
+#: src/util/language.ts:52
+msgid "Invalid language selected"
+msgstr "Er is een ongeldige taal gekozen"
+
+#: src/util/portals.ts:29
+msgid "Muzika needs to run in the background to play music"
+msgstr ""
+"Muzika dient op de achtergrond te worden uitgevoerd om muziek af te kunnen "
+"spelen"
+
+#: src/util/portals.ts:39
+msgid "Playing in the background"
+msgstr "Wordt uitgevoerd op de achtergrond"
+
+#: src/window.ts:195
+msgid "Copied URL to clipboard"
+msgstr "De url is gekopieerd naar het klembord"
+
+#: src/window.ts:307
+msgid "Are you sure?"
+msgstr "Weet je het zeker?"
+
+#: src/window.ts:346
+msgid "Successfully logged in!"
+msgstr "Je bent ingelogd!"
+
+#: src/window.ts:355
+msgid "An error happened while logging you in. Please try again later."
+msgstr ""
+"Er is een fout opgetreden tijdens het inloggen. Probeer het later opnieuw."
+
+#: src/window.ts:462
+msgid "Added to disliked songs"
+msgstr "Toegevoegd aan niet-leuke nummers"
+
+#: src/window.ts:465
+msgid "Added to liked songs"
+msgstr "Toegevoegd aan leuke nummers"
+
+#: src/window.ts:466
+msgid "Liked songs"
+msgstr "Leuke nummers"
+
+#: src/window.ts:472
+msgid "Removed from liked songs"
+msgstr "Verwijderen uit leuke nummers"
+
+#: src/window.ts:474
+msgid "Removed from disliked songs"
+msgstr "Verwijderen uit niet-leuke nummers"
+
+#: src/window.ts:482
+msgid "An error happened while rating song"
+msgstr "Er is een fout opgetreden tijdens het waarderen"
