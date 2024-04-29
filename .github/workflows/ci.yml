@@ -19,6 +19,7 @@ jobs:
     strategy:
       matrix:
         arch: [x86_64, aarch64]
+      max-parallel: 1
       fail-fast: false
 
     steps:
