@@ -138,8 +138,8 @@ export class PlaylistItemView extends Gtk.Widget {
   set hadjustment(value: Gtk.Adjustment) {
     if (!value) return;
     this.adjustment[Gtk.Orientation.HORIZONTAL] = value;
-    value.connect("value-changed", () => this.queue_resize());
-    this.queue_resize();
+    value.connect("value-changed", () => this.queue_allocate());
+    this.queue_allocate();
     this.notify("hadjustment");
   }
 
@@ -149,9 +149,9 @@ export class PlaylistItemView extends Gtk.Widget {
   set vadjustment(value: Gtk.Adjustment) {
     if (!value) return;
     this.adjustment[Gtk.Orientation.VERTICAL] = value;
-    value.connect("value-changed", () => this.queue_resize());
+    value.connect("value-changed", () => this.queue_allocate());
     this.notify("vadjustment");
-    this.queue_resize();
+    this.queue_allocate();
   }
 
   // scroll policy
