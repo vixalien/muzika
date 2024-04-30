@@ -98,13 +98,6 @@ export class CoverArtColumn extends Gtk.ColumnViewColumn {
       listeners.add(
         dynamic_image,
         dynamic_image.connect("notify::selected", () => {
-          console.log(
-            "item number is",
-            list_item.position,
-            "selected",
-            dynamic_image.selected,
-          );
-
           if (dynamic_image.selected) {
             model.select_item(list_item.position, false);
           } else {

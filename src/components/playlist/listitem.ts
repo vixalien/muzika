@@ -27,7 +27,7 @@ export class PlaylistListItem extends Gtk.Box {
         "add",
       ],
       Children: [
-        // "dynamic_image",
+        "dynamic_image",
       ],
       Properties: {
         "show-add": GObject.param_spec_boolean(
@@ -46,7 +46,7 @@ export class PlaylistListItem extends Gtk.Box {
 
   item?: PlaylistItem;
 
-  // dynamic_image!: DynamicImage;
+  dynamic_image!: DynamicImage;
 
   private _title!: Gtk.Inscription;
   private _explicit!: Gtk.Image;
@@ -111,13 +111,13 @@ export class PlaylistListItem extends Gtk.Box {
 
     this._explicit.set_visible(item.isExplicit);
 
-    // if (
-    //   this.dynamic_image.storage_type !== DynamicImageStorageType.TRACK_NUMBER
-    // ) {
-    //   this.dynamic_image.cover_thumbnails = item.thumbnails;
-    // }
+    if (
+      this.dynamic_image.storage_type !== DynamicImageStorageType.TRACK_NUMBER
+    ) {
+      this.dynamic_image.cover_thumbnails = item.thumbnails;
+    }
 
-    // this.dynamic_image.setup_video(item.videoId, playlistId);
+    this.dynamic_image.setup_video(item.videoId, playlistId);
 
     this.menu_helper.set_builder(() => {
       return [

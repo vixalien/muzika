@@ -7,11 +7,11 @@ import type { PlaylistItem } from "libmuse";
 import { PlaylistListItem } from "./listitem";
 import { SignalListeners } from "src/util/signal-listener";
 import { PlayableContainer } from "src/util/playablelist";
-import { DynamicImage } from "../dynamic-image";
 import { ObjectContainer } from "src/util/objectcontainer";
 
 interface PlaylistListItemWithSignals extends PlaylistListItem {
-  signals: SignalListeners;
+  setup_signals?: SignalListeners;
+  bind_signals?: SignalListeners;
 }
 
 export class PlaylistListView extends Gtk.ListView {
@@ -45,7 +45,8 @@ export class PlaylistListView extends Gtk.ListView {
           "Show Add",
           "Show the Save to playlist button",
           false,
-          GObject.ParamFlags.READWRITE,
+          GObject.ParamFlags.READWRITE | GObject.ParamFlags.CONSTRUCT |
+            GObject.ParamFlags.CONSTRUCT_ONLY,
         ),
         selection_mode: GObject.param_spec_boolean(
           "selection-mode",
@@ -80,13 +81,11 @@ export class PlaylistListView extends Gtk.ListView {
       Gtk.ListView.ConstructorProperties
     > = {},
   ) {
-    super({ single_click_activate: true, ...props });
+    super(props);
 
     if (album != null) this.album = album;
 
     if (model !== undefined) this.model = model!;
-
-    if (selection_mode != null) this.selection_mode = selection_mode;
 
     if (show_add != null) this.show_add = show_add;
 
@@ -100,6 +99,14 @@ export class PlaylistListView extends Gtk.ListView {
     factory.connect("unbind", this.unbind_cb.bind(this));
 
     this.factory = factory;
+
+    this.bind_property(
+      "selection-mode",
+      this,
+      "single-click-activate",
+      GObject.BindingFlags.DEFAULT | GObject.BindingFlags.INVERT_BOOLEAN |
+        GObject.BindingFlags.SYNC_CREATE,
+    );
 
     this.connect("activate", (_, position) => {
       const container = this.model.get_item(position) as ObjectContainer<
@@ -125,7 +132,21 @@ export class PlaylistListView extends Gtk.ListView {
   setup_cb(_factory: Gtk.SignalListItemFactory, list_item: Gtk.ListItem) {
     const item = new PlaylistListItem() as PlaylistListItemWithSignals;
 
-    item.signals = new SignalListeners();
+    item.show_add = this.show_add;
+
+    // change the item's selection mode based on the model's selection mode
+
+    const listeners = new SignalListeners();
+    listeners.add_binding(
+      this.bind_property(
+        "selection-mode",
+        item.dynamic_image,
+        "selection-mode",
+        GObject.BindingFlags.DEFAULT | GObject.BindingFlags.SYNC_CREATE,
+      ),
+    );
+
+    item.setup_signals = listeners;
 
     list_item.set_child(item);
   }
@@ -136,10 +157,7 @@ export class PlaylistListView extends Gtk.ListView {
 
     const playlist_item = container.object;
 
-    item.show_add = this.show_add;
-
-    // item.dynamic_image.selection_mode = this.selection_mode;
-    // item.dynamic_image.selected = list_item.selected;
+    item.dynamic_image.selected = list_item.selected;
 
     item.set_item(
       list_item.position,
@@ -148,51 +166,55 @@ export class PlaylistListView extends Gtk.ListView {
       this.editable,
     );
 
-    // if (this.album) {
-    //   item.dynamic_image.track_number = list_item.position + 1;
-    // }
+    const listeners = new SignalListeners();
 
-    // item.signals.connect(
-    //   item.dynamic_image,
-    //   "notify::selected",
-    //   (dynamic_image: DynamicImage) => {
-    //     this.selection_mode_toggled(
-    //       list_item.position,
-    //       dynamic_image.selected,
-    //     );
-    //   },
-    // );
-
-    // item.signals.add(
-    //   container,
-    //   container.connect("notify::state", () => {
-    //     item.dynamic_image.state = container.state;
-    //   }),
-    // );
-
-    // item.dynamic_image.state = container.state;
-
-    // item.signals.add(
-    //   container,
-    //   container.connect("notify", () => {
-    //     item.dynamic_image.selection_mode = this.selection_mode;
-    //     item.show_add = this.show_add;
-    //   }),
-    // );
-
-    item.signals.add(
+    listeners.add(
       item,
       item.connect("add", (_) => {
         this.emit("add", list_item.position);
       }),
     );
+
+    // select the item when the user toggles the selection check button
+
+    listeners.add(
+      item.dynamic_image,
+      item.dynamic_image.connect("notify::selected", () => {
+        if (item.dynamic_image.selected) {
+          this.model.select_item(list_item.position, false);
+        } else {
+          this.model.unselect_item(list_item.position);
+        }
+      }),
+    );
+
+    // bind the dynamic image's state (playing, paused, etc..)
+
+    listeners.add_binding(
+      container.bind_property(
+        "state",
+        item.dynamic_image,
+        "state",
+        GObject.BindingFlags.DEFAULT | GObject.BindingFlags.SYNC_CREATE,
+      ),
+    );
+
+    item.bind_signals = listeners;
   }
 
   unbind_cb(_factory: Gtk.SignalListItemFactory, list_item: Gtk.ListItem) {
     const item = list_item.child as PlaylistListItemWithSignals;
 
-    item.signals.clear();
+    item.bind_signals?.clear();
+    item.bind_signals = undefined;
     item.clear();
+  }
+
+  teardown_cb(_factory: Gtk.SignalListItemFactory, list_item: Gtk.ListItem) {
+    const item = list_item.child as PlaylistListItemWithSignals;
+
+    item.bind_signals?.clear();
+    item.bind_signals = undefined;
   }
 
   private selection_mode_toggled(position: number, value: boolean) {
