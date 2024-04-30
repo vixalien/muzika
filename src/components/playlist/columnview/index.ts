@@ -60,7 +60,8 @@ export class PlaylistColumnView extends Gtk.ColumnView {
           "Show Add",
           "Show the Save to playlist button",
           false,
-          GObject.ParamFlags.READWRITE,
+          GObject.ParamFlags.READWRITE | GObject.ParamFlags.CONSTRUCT |
+            GObject.ParamFlags.CONSTRUCT_ONLY,
         ),
         selection_mode: GObject.param_spec_boolean(
           "selection-mode",
@@ -187,7 +188,6 @@ export class PlaylistColumnView extends Gtk.ColumnView {
     {
       selection_mode,
       show_rank,
-      show_add,
       show_artists,
       album,
       playlistId,
@@ -214,10 +214,6 @@ export class PlaylistColumnView extends Gtk.ColumnView {
 
     if (show_artists != null) {
       this.show_artists = show_artists;
-    }
-
-    if (show_add != null) {
-      this.show_add = show_add;
     }
 
     if (album != null) {
