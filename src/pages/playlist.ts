@@ -78,6 +78,15 @@ export class PlaylistPage extends Adw.Bin
         "edit_playlist_button",
         "add_to_library_button",
       ],
+      Properties: {
+        "selection-mode": GObject.ParamSpec.boolean(
+          "selection-mode",
+          "Selection Mode",
+          "Whether this view is in selection mode",
+          GObject.ParamFlags.READWRITE | GObject.ParamFlags.EXPLICIT_NOTIFY,
+          false,
+        ),
+      },
     }, this);
   }
 
@@ -130,6 +139,24 @@ export class PlaylistPage extends Adw.Bin
     this.add_actions();
   }
 
+  // property: selection-mode
+
+  private _selection_mode = false;
+
+  get selection_mode() {
+    return this._selection_mode;
+  }
+
+  set selection_mode(value: boolean) {
+    if (this.selection_mode == value) return;
+
+    this._selection_mode = value;
+    this._bar.selection_mode = value;
+    this._playlist_item_view.selection_mode = value;
+
+    this.notify("selection-mode");
+  }
+
   add_actions() {
     const group = new Gio.SimpleActionGroup();
 
@@ -137,13 +164,13 @@ export class PlaylistPage extends Adw.Bin
       {
         name: "delete",
         activate: (__) => {
-          this.delete_playlist();
+          this.delete_playlist_cb();
         },
       },
       {
         name: "select",
         activate: () => {
-          this.toggle_selection_mode();
+          this.selection_mode = !this.selection_mode;
         },
       },
       {
@@ -168,16 +195,7 @@ export class PlaylistPage extends Adw.Bin
     this.insert_action_group("playlist", group);
   }
 
-  private toggle_selection_mode() {
-    const selection_mode = this._playlist_item_view.selection_mode;
-
-    this._playlist_item_view.selection_mode = !selection_mode;
-    this._bar.selection_mode = !selection_mode;
-    this._bar.update_selection();
-    // this._playlist_item_view.update();
-  }
-
-  private async delete_playlist() {
+  private async delete_playlist_cb() {
     if (this.playlist?.editable !== true) return;
 
     const dialog = Adw.AlertDialog.new(

@@ -386,17 +386,6 @@ export class PlaylistItemView extends Gtk.Widget {
       .child_adjustment[Gtk.Orientation.HORIZONTAL];
   }
 
-  update() {
-    console.warn("the update method is deprecated!!");
-
-    if (!this.playable_list) return;
-
-    for (let i = 0; i < this.playable_list.get_n_items(); i++) {
-      const item = this.playable_list.get_item(i);
-      if (item) item.notify("object");
-    }
-  }
-
   add_cb(index: number) {
     const item = this.model?.get_item(index);
 

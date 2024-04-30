@@ -97,6 +97,7 @@ export class PlaylistBar extends Adw.Bin {
   set selection_mode(value: boolean) {
     this._selection_mode = value;
     this._select_all.active = false;
+    this.update_selection();
   }
 
   // property: editable
