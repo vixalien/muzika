@@ -6,15 +6,25 @@ import {
   DynamicImageStorageType,
 } from "src/components/dynamic-image";
 import { PlayableContainer } from "src/util/playablelist";
+import { SignalListeners } from "src/util/signal-listener";
+
+interface DynamicImageWithListeners extends DynamicImage {
+  setup_signals?: SignalListeners;
+  bind_signals?: SignalListeners;
+}
 
 export class CoverArtColumn extends Gtk.ColumnViewColumn {
   static {
     GObject.registerClass({
       GTypeName: "ImageColumn",
-      Signals: {
-        "selection-mode-toggled": {
-          param_types: [GObject.TYPE_UINT64, GObject.TYPE_BOOLEAN],
-        },
+      Properties: {
+        "selection-mode": GObject.param_spec_boolean(
+          "selection-mode",
+          "Selection Mode",
+          "Whether the user can currently select the tracks",
+          false,
+          GObject.ParamFlags.READWRITE,
+        ),
       },
     }, this);
   }
@@ -28,6 +38,8 @@ export class CoverArtColumn extends Gtk.ColumnViewColumn {
     const factory = Gtk.SignalListItemFactory.new();
     factory.connect("setup", this.setup_cb.bind(this));
     factory.connect("bind", this.bind_cb.bind(this));
+    factory.connect("unbind", this.unbind_cb.bind(this));
+    factory.connect("teardown", this.teardown_cb.bind(this));
 
     this.factory = factory;
   }
@@ -40,35 +52,32 @@ export class CoverArtColumn extends Gtk.ColumnViewColumn {
         ? DynamicImageStorageType.TRACK_NUMBER
         : DynamicImageStorageType.COVER_THUMBNAIL,
       persistent_play_button: false,
-    });
+    }) as DynamicImageWithListeners;
 
-    dynamic_image.add_css_class("br-6");
+    const listeners = new SignalListeners();
+    listeners.add_binding(
+      this.bind_property(
+        "selection-mode",
+        dynamic_image,
+        "selection-mode",
+        GObject.BindingFlags.DEFAULT | GObject.BindingFlags.SYNC_CREATE,
+      ),
+    );
+
+    dynamic_image.setup_signals = listeners;
+
+    // dynamic_image.add_css_class("br-6");
 
     list_item.set_child(dynamic_image);
   }
 
   bind_cb(_factory: Gtk.SignalListItemFactory, list_item: Gtk.ListItem) {
-    const dynamic_image = list_item.child as DynamicImage;
+    const dynamic_image = list_item.child as DynamicImageWithListeners;
     const container = list_item.item as PlayableContainer;
 
     const playlist_item = container.object;
 
-    dynamic_image.connect(
-      "notify::selected",
-      (dynamic_image: DynamicImage) => {
-        this.emit(
-          "selection-mode-toggled",
-          list_item.position,
-          dynamic_image.selected,
-        );
-      },
-    );
-
-    container.connect("notify::state", () => {
-      dynamic_image.state = container.state;
-    });
-
-    dynamic_image.state = container.state;
+    // populate the dynamic image
 
     if (this.album) {
       dynamic_image.track_number = list_item.position + 1;
@@ -76,13 +85,60 @@ export class CoverArtColumn extends Gtk.ColumnViewColumn {
       dynamic_image.cover_thumbnails = playlist_item.thumbnails;
     }
 
-    dynamic_image.selection_mode = this.selection_mode;
     dynamic_image.selected = list_item.selected;
 
     dynamic_image.setup_video(playlist_item.videoId, this.playlistId);
 
-    container.connect("notify", () => {
-      dynamic_image.selection_mode = this.selection_mode;
-    });
+    const listeners = new SignalListeners();
+
+    // select the item when the user toggles the selection check button
+
+    const model = this.get_column_view()?.model;
+    if (model) {
+      listeners.add(
+        dynamic_image,
+        dynamic_image.connect("notify::selected", () => {
+          console.log(
+            "item number is",
+            list_item.position,
+            "selected",
+            dynamic_image.selected,
+          );
+
+          if (dynamic_image.selected) {
+            model.select_item(list_item.position, false);
+          } else {
+            model.unselect_item(list_item.position);
+          }
+        }),
+      );
+    }
+
+    // bind the dynamic image's state (playing, paused, etc..)
+
+    listeners.add_binding(
+      container.bind_property(
+        "state",
+        dynamic_image,
+        "state",
+        GObject.BindingFlags.DEFAULT | GObject.BindingFlags.SYNC_CREATE,
+      ),
+    );
+
+    dynamic_image.bind_signals = listeners;
+  }
+
+  unbind_cb(_factory: Gtk.SignalListItemFactory, list_item: Gtk.ListItem) {
+    const dynamic_image = list_item.child as DynamicImageWithListeners;
+
+    dynamic_image.bind_signals?.clear();
+    dynamic_image.bind_signals = undefined;
+  }
+
+  teardown_cb(_factory: Gtk.SignalListItemFactory, list_item: Gtk.ListItem) {
+    const dynamic_image = list_item.child as DynamicImageWithListeners;
+
+    dynamic_image.setup_signals?.clear();
+    dynamic_image.setup_signals = undefined;
   }
 }

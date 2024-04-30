@@ -4,7 +4,11 @@ import Adw from "gi://Adw";
 
 import { Thumbnail } from "libmuse";
 import { load_thumbnails } from "./webimage";
-import { DynamicAction, DynamicActionState, get_state_pspec } from "./dynamic-action";
+import {
+  DynamicAction,
+  DynamicActionState,
+  get_state_pspec,
+} from "./dynamic-action";
 import { SignalListeners } from "src/util/signal-listener";
 import { get_player } from "src/application";
 import { FixedRatioThumbnail } from "./fixed-ratio-thumbnail";

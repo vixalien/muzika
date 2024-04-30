@@ -174,7 +174,7 @@ export class PlaylistPage extends Adw.Bin
     this._playlist_item_view.selection_mode = !selection_mode;
     this._bar.selection_mode = !selection_mode;
     this._bar.update_selection();
-    this._playlist_item_view.update();
+    // this._playlist_item_view.update();
   }
 
   private async delete_playlist() {

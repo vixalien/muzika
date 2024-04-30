@@ -186,7 +186,6 @@ export class PlaylistColumnView extends Gtk.ColumnView {
 
   constructor(
     {
-      selection_mode,
       show_rank,
       show_artists,
       album,
@@ -202,10 +201,6 @@ export class PlaylistColumnView extends Gtk.ColumnView {
 
     if (playlistId != null) {
       this.playlistId = playlistId;
-    }
-
-    if (selection_mode != null) {
-      this.selection_mode = selection_mode;
     }
 
     if (show_rank != null) {
@@ -227,19 +222,6 @@ export class PlaylistColumnView extends Gtk.ColumnView {
     if (editable != null) {
       this.editable = editable;
     }
-
-    this._cover_column.connect(
-      "selection-mode-toggled",
-      (_: CoverArtColumn, position: number, value: boolean) => {
-        const selection_model = this.model as Gtk.SelectionModel;
-
-        if (value) {
-          selection_model.select_item(position, false);
-        } else {
-          selection_model.unselect_item(position);
-        }
-      },
-    );
 
     this.add_css_class("playlist-column-view");
 
