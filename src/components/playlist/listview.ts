@@ -19,34 +19,26 @@ export class PlaylistListView extends Gtk.ListView {
     GObject.registerClass({
       GTypeName: "PlaylistListView",
       Properties: {
-        "show-rank": GObject.param_spec_boolean(
-          "show-rank",
-          "Show Rank",
-          "Whether to show chart rank and trend change",
+        is_album: GObject.param_spec_boolean(
+          "is-album",
+          "Represents an album",
+          "Whether this playlist represents an album",
           false,
           GObject.ParamFlags.READWRITE,
         ),
-        playlistId: GObject.param_spec_string(
+        is_editable: GObject.param_spec_boolean(
+          "is-editable",
+          "Is editable",
+          "Whether the playlist items can be edited (or deleted)",
+          false,
+          GObject.ParamFlags.READWRITE,
+        ),
+        playlist_id: GObject.param_spec_string(
           "playlist-id",
           "Playlist ID",
           "The playlist ID",
-          null as any,
+          null,
           GObject.ParamFlags.READWRITE,
-        ),
-        album: GObject.param_spec_boolean(
-          "album",
-          "Album",
-          "Whether this is currently displaying an album",
-          false,
-          GObject.ParamFlags.READWRITE,
-        ),
-        show_add: GObject.param_spec_boolean(
-          "show-add",
-          "Show Add",
-          "Show the Save to playlist button",
-          false,
-          GObject.ParamFlags.READWRITE | GObject.ParamFlags.CONSTRUCT |
-            GObject.ParamFlags.CONSTRUCT_ONLY,
         ),
         selection_mode: GObject.param_spec_boolean(
           "selection-mode",
@@ -55,12 +47,12 @@ export class PlaylistListView extends Gtk.ListView {
           false,
           GObject.ParamFlags.READWRITE,
         ),
-        editable: GObject.param_spec_boolean(
-          "editable",
-          "Editable",
-          "Whether the playlist items can be edited",
+        show_add_button: GObject.param_spec_boolean(
+          "show-add-button",
+          "Show the add button",
+          "Show a button to trigger the 'Save to playlist' action",
           false,
-          GObject.ParamFlags.READWRITE,
+          GObject.ParamFlags.READWRITE | GObject.ParamFlags.CONSTRUCT,
         ),
       },
       Signals: {
@@ -71,25 +63,14 @@ export class PlaylistListView extends Gtk.ListView {
     }, this);
   }
 
-  album = false;
-  selection_mode = false;
-  playlistId?: string;
-  editable = false;
+  is_album!: boolean;
+  is_editable!: boolean;
+  playlist_id?: string;
+  selection_mode!: boolean;
+  show_add_button!: boolean;
 
-  constructor(
-    { model, album, selection_mode, show_add, editable, ...props }: Partial<
-      Gtk.ListView.ConstructorProperties
-    > = {},
-  ) {
+  constructor(props: Partial<PlaylistListViewConstructorProperties> = {}) {
     super(props);
-
-    if (album != null) this.album = album;
-
-    if (model !== undefined) this.model = model!;
-
-    if (show_add != null) this.show_add = show_add;
-
-    if (editable != null) this.editable = editable;
 
     this.add_css_class("playlist-list-view");
 
@@ -113,11 +94,11 @@ export class PlaylistListView extends Gtk.ListView {
         PlaylistItem
       >;
 
-      if (this.playlistId) {
+      if (this.playlist_id) {
         this.activate_action(
           "queue.play-playlist",
           GLib.Variant.new_string(
-            `${this.playlistId}?video=${container.object.videoId}`,
+            `${this.playlist_id}?video=${container.object.videoId}`,
           ),
         );
       } else {
@@ -130,9 +111,9 @@ export class PlaylistListView extends Gtk.ListView {
   }
 
   setup_cb(_factory: Gtk.SignalListItemFactory, list_item: Gtk.ListItem) {
-    const item = new PlaylistListItem() as PlaylistListItemWithSignals;
-
-    item.show_add = this.show_add;
+    const item = new PlaylistListItem({
+      show_add_button: this.show_add_button,
+    }) as PlaylistListItemWithSignals;
 
     // change the item's selection mode based on the model's selection mode
 
@@ -162,8 +143,8 @@ export class PlaylistListView extends Gtk.ListView {
     item.set_item(
       list_item.position,
       playlist_item,
-      this.playlistId,
-      this.editable,
+      this.playlist_id,
+      this.is_editable,
     );
 
     const listeners = new SignalListeners();
@@ -224,6 +205,14 @@ export class PlaylistListView extends Gtk.ListView {
       this.model.unselect_item(position);
     }
   }
+}
 
-  show_add = false;
+interface PlaylistListViewConstructorProperties
+  extends Gtk.ListView.ConstructorProperties {
+  is_album: boolean;
+  is_editable: boolean;
+  playlist_id: string;
+  selection_mode: boolean;
+  show_add_column: boolean;
+  show_rank_column: boolean;
 }

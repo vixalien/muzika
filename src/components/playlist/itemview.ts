@@ -16,6 +16,27 @@ export class PlaylistItemView extends Gtk.Widget {
     GObject.registerClass({
       GTypeName: "PlaylistItemView",
       Properties: {
+        is_album: GObject.ParamSpec.boolean(
+          "is-album",
+          "Album",
+          "Whether this view represents an album",
+          GObject.ParamFlags.READWRITE,
+          false,
+        ),
+        is_editable: GObject.param_spec_boolean(
+          "is-editable",
+          "Is editable",
+          "Whether the playlist items can be edited (or deleted)",
+          false,
+          GObject.ParamFlags.READWRITE,
+        ),
+        header_factory: GObject.param_spec_object(
+          "header_factory",
+          "Header factory",
+          "The header factory to use for the view",
+          Gtk.SignalListItemFactory.$gtype,
+          GObject.ParamFlags.READWRITE,
+        ),
         model: GObject.ParamSpec.object(
           "model",
           "Model",
@@ -23,55 +44,56 @@ export class PlaylistItemView extends Gtk.Widget {
           GObject.ParamFlags.READWRITE,
           Gio.ListModel.$gtype,
         ),
-        "show-rank": GObject.ParamSpec.boolean(
-          "show-rank",
-          "Show Rank",
-          "Whether to show the rank of the playlist item",
-          GObject.ParamFlags.READWRITE | GObject.ParamFlags.EXPLICIT_NOTIFY,
-          false,
+        playlist_id: GObject.param_spec_string(
+          "playlist-id",
+          "Playlist ID",
+          "The playlist ID",
+          null,
+          GObject.ParamFlags.READWRITE,
         ),
-        "show-artists": GObject.ParamSpec.boolean(
-          "show-artists",
-          "Show Artists",
-          "Whether to show the artists of each track",
-          GObject.ParamFlags.READWRITE | GObject.ParamFlags.EXPLICIT_NOTIFY,
-          true,
-        ),
-        "show-time": GObject.ParamSpec.boolean(
-          "show-time",
-          "Show Time",
-          "Whether to show the duration of each track",
-          GObject.ParamFlags.READWRITE | GObject.ParamFlags.EXPLICIT_NOTIFY,
-          true,
-        ),
-        "show-column": GObject.ParamSpec.boolean(
-          "show-column",
-          "Show Column",
-          "Whether to show the column view",
-          GObject.ParamFlags.READWRITE | GObject.ParamFlags.EXPLICIT_NOTIFY,
-          false,
-        ),
-        album: GObject.ParamSpec.boolean(
-          "album",
-          "Album",
-          "Whether this view is displaying an album",
-          GObject.ParamFlags.READWRITE | GObject.ParamFlags.EXPLICIT_NOTIFY,
-          false,
-        ),
-        "selection-mode": GObject.ParamSpec.boolean(
+        selection_mode: GObject.ParamSpec.boolean(
           "selection-mode",
           "Selection Mode",
           "Whether this view is in selection mode",
-          GObject.ParamFlags.READWRITE | GObject.ParamFlags.EXPLICIT_NOTIFY,
+          GObject.ParamFlags.READWRITE,
           false,
         ),
-        "show-add": GObject.param_spec_boolean(
-          "show-add",
-          "Show Add",
-          "Show Add button",
+        show_add_button: GObject.param_spec_boolean(
+          "show-add-button",
+          "Show add button",
+          "Show a button to trigger the 'Save to playlist' action",
           true,
-          GObject.ParamFlags.READWRITE | GObject.ParamFlags.EXPLICIT_NOTIFY,
+          GObject.ParamFlags.READWRITE,
         ),
+        show_artists: GObject.ParamSpec.boolean(
+          "show-artists",
+          "Show Artists",
+          "Whether to show the artists of each track",
+          GObject.ParamFlags.READWRITE,
+          true,
+        ),
+        show_column_view: GObject.ParamSpec.boolean(
+          "show-column-view",
+          "Show column view",
+          "Whether to show the column view instead of the list view",
+          GObject.ParamFlags.READWRITE,
+          false,
+        ),
+        show_duration: GObject.ParamSpec.boolean(
+          "show-duration",
+          "Show duration",
+          "Whether to show the duration of each track",
+          GObject.ParamFlags.READWRITE,
+          true,
+        ),
+        show_rank: GObject.ParamSpec.boolean(
+          "show-rank",
+          "Show Rank",
+          "Whether to show the rank of the playlist item",
+          GObject.ParamFlags.READWRITE,
+          false,
+        ),
+        // scrollable
         hadjustment: GObject.param_spec_object(
           "hadjustment",
           "Hadjustment",
@@ -122,6 +144,8 @@ export class PlaylistItemView extends Gtk.Widget {
       ],
     }, this);
   }
+
+  // scrollable interface
 
   // adjustments
 
@@ -181,11 +205,11 @@ export class PlaylistItemView extends Gtk.Widget {
   }
 
   public get child(): PlaylistListView | PlaylistColumnView {
-    return this.show_column ? this.columnview : this.listview;
+    return this.show_column_view ? this.columnview : this.listview;
   }
 
   private get hidden_child(): PlaylistListView | PlaylistColumnView {
-    return this.show_column ? this.listview : this.columnview;
+    return this.show_column_view ? this.listview : this.columnview;
   }
 
   private listview = new PlaylistListView({ visible: true });
@@ -206,46 +230,6 @@ export class PlaylistItemView extends Gtk.Widget {
   //   return this.get_current_child()[property] = value;
   // }
 
-  // property: selection-mode
-  get selection_mode() {
-    return this.listview.selection_mode;
-  }
-
-  set selection_mode(value: boolean) {
-    if (this.selection_mode === value) return;
-
-    this.listview.selection_mode = this.columnview.selection_mode = value;
-
-    if (value == false) {
-      this.model?.unselect_all();
-    }
-
-    this.notify("selection-mode");
-  }
-
-  // property: playlistId
-
-  get playlistId() {
-    return this.listview.playlistId;
-  }
-
-  set playlistId(value: string | undefined) {
-    if (this.playlistId === value) return;
-
-    this.listview.playlistId = this.columnview.playlistId = value;
-  }
-
-  // property: album
-  get album() {
-    return this.listview.album;
-  }
-
-  set album(value: boolean) {
-    if (this.album === value) return;
-
-    this.listview.album = this.columnview.album = value;
-  }
-
   // property: model
 
   get model() {
@@ -264,111 +248,166 @@ export class PlaylistItemView extends Gtk.Widget {
     this.setup_listeners();
   }
 
-  get playable_list() {
-    if (!this.model) return null;
-    return this.model.model as PlayableList;
-  }
-
-  // property: show-rank
-  get show_rank() {
-    return this.columnview.show_rank;
-  }
-
-  set show_rank(value: boolean) {
-    if (value === this.show_rank) return;
-
-    this.columnview.show_rank = value;
-
-    this.notify("show-rank");
-  }
-
-  // property: show-artists
-  get show_artists() {
-    return this.columnview.show_artists;
-  }
-
-  set show_artists(value: boolean) {
-    if (value === this.show_artists) return;
-
-    this.columnview.show_artists = value;
-
-    this.notify("show-artists");
-  }
-
-  // property: show-time
-  get show_time() {
-    return this.columnview.show_time;
-  }
-  set show_time(value: boolean) {
-    if (value === this.show_time) return;
-
-    this.columnview.show_time = value;
-
-    this.notify("show-time");
-  }
+  is_album!: boolean;
+  is_editable!: boolean;
+  header_factory?: Gtk.SignalListItemFactory;
+  playlist_id?: string;
+  selection_mode!: boolean;
+  show_add_button!: boolean;
+  show_artists!: boolean;
+  show_duration!: boolean;
+  show_rank!: boolean;
 
   // property: show-column
 
-  private _show_column = false;
-  get show_column() {
-    return this._show_column;
+  get show_column_view() {
+    return this.columnview.visible;
   }
-  set show_column(value: boolean) {
-    if (this.show_column === value) return;
 
-    this._show_column = value;
+  set show_column_view(value: boolean) {
+    if (this.show_column_view === value) return;
 
-    this.child.visible = true;
-    this.hidden_child.visible = false;
+    this.columnview.visible = value;
+    this.listview.visible = !value;
 
     // this can apparently be set on construct time
     if (!this.adjustment || !this.get_mapped()) return;
 
-    this.notify("show-column");
+    this.notify("show-column-view");
     this.queue_resize();
   }
 
-  // property: editable
-  get editable() {
-    return this.listview.editable;
-  }
-  set editable(value: boolean) {
-    if (this.editable === value) return;
-
-    this.listview.editable = this.columnview.editable = value;
-
-    this.notify("editable");
-  }
-
-  // property: show-add
-  get show_add() {
-    return this.listview.show_add;
-  }
-  set show_add(value: boolean) {
-    if (this.show_add === value) return;
-
-    this.listview.show_add = this.columnview.show_add = value;
-
-    this.notify("show-add");
-  }
-
-  // property: header-factory
-  get header_factory() {
-    return this.listview.header_factory;
-  }
-  set header_factory(value: Gtk.ListItemFactory | null) {
-    if (this.header_factory === value) return;
-
-    this.listview.header_factory = this.columnview.header_factory = value!;
-
-    // TODO: this should be a property
-    // this.notify("header-factory");
-  }
-
   constructor(options: Partial<PlaylistItemViewOptions> = {}) {
-    super();
+    super(options);
 
-    if (options.model) this.model = options.model;
+    // is-album
+
+    this.bind_property(
+      "is-album",
+      this.listview,
+      "is-album",
+      GObject.BindingFlags.SYNC_CREATE,
+    );
+
+    this.bind_property(
+      "is-album",
+      this.columnview,
+      "is-album",
+      GObject.BindingFlags.SYNC_CREATE,
+    );
+
+    // is-editable
+
+    this.bind_property(
+      "is-editable",
+      this.listview,
+      "is-editable",
+      GObject.BindingFlags.SYNC_CREATE,
+    );
+
+    this.bind_property(
+      "is-editable",
+      this.columnview,
+      "is-editable",
+      GObject.BindingFlags.SYNC_CREATE,
+    );
+
+    // header-factory
+
+    this.bind_property(
+      "header-factory",
+      this.listview,
+      "header-factory",
+      GObject.BindingFlags.SYNC_CREATE,
+    );
+
+    this.bind_property(
+      "header-factory",
+      this.columnview,
+      "header-factory",
+      GObject.BindingFlags.SYNC_CREATE,
+    );
+
+    // playlist-id
+
+    this.bind_property(
+      "playlist-id",
+      this.listview,
+      "playlist-id",
+      GObject.BindingFlags.SYNC_CREATE,
+    );
+
+    this.bind_property(
+      "playlist-id",
+      this.columnview,
+      "playlist-id",
+      GObject.BindingFlags.SYNC_CREATE,
+    );
+
+    // selection-mode
+
+    this.bind_property(
+      "selection-mode",
+      this.listview,
+      "selection-mode",
+      GObject.BindingFlags.SYNC_CREATE,
+    );
+
+    this.bind_property(
+      "selection-mode",
+      this.columnview,
+      "selection-mode",
+      GObject.BindingFlags.SYNC_CREATE,
+    );
+
+    this.connect("notify::selection-mode", () => {
+      if (this.selection_mode === false) {
+        this.model?.unselect_all();
+      }
+    });
+
+    // show-add-button
+
+    this.bind_property(
+      "show_add-button",
+      this.listview,
+      "show_add-button",
+      GObject.BindingFlags.SYNC_CREATE,
+    );
+
+    this.bind_property(
+      "show_add-button",
+      this.columnview,
+      "show_add-column",
+      GObject.BindingFlags.SYNC_CREATE,
+    );
+
+    // show-artists
+
+    this.bind_property(
+      "show-artists",
+      this.columnview,
+      "show-artists-column",
+      GObject.BindingFlags.SYNC_CREATE,
+    );
+
+    // show-duration
+
+    this.bind_property(
+      "show-duration",
+      this.columnview,
+      "show-duration-column",
+      GObject.BindingFlags.SYNC_CREATE,
+    );
+
+    // show-rank
+
+    this.bind_property(
+      "show-rank",
+      this.columnview,
+      "show-rank-column",
+      GObject.BindingFlags.SYNC_CREATE,
+    );
 
     this.listview.set_parent(this);
     this.listview.connect("add", (_list, index) => {
@@ -386,7 +425,12 @@ export class PlaylistItemView extends Gtk.Widget {
       .child_adjustment[Gtk.Orientation.HORIZONTAL];
   }
 
-  add_cb(index: number) {
+  private get playable_list() {
+    if (!this.model) return null;
+    return this.model.model as PlayableList;
+  }
+
+  private add_cb(index: number) {
     const item = this.model?.get_item(index);
 
     if (!item || !this.model || !this.playable_list) return;
@@ -396,7 +440,7 @@ export class PlaylistItemView extends Gtk.Widget {
     this.emit("add", item);
   }
 
-  select_track(index: number | null) {
+  private select_track(index: number | null) {
     if (index == null) {
       return;
     }
@@ -425,6 +469,8 @@ export class PlaylistItemView extends Gtk.Widget {
     const player = get_player();
 
     const now_playing = player.queue.current?.object.videoId;
+
+    if (this.selection_mode) return;
 
     this.select_track(
       now_playing
@@ -598,5 +644,5 @@ export class PlaylistItemView extends Gtk.Widget {
 
 export interface PlaylistItemViewOptions {
   model: Gtk.MultiSelection<PlayableContainer>;
-  show_column: boolean;
+  show_column_view: boolean;
 }

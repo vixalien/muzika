@@ -26,7 +26,7 @@ template $AlbumPage : Adw.Bin {
 
         setters {
           header.show_large_header: false;
-          playlist_item_view.show_column: false;
+          playlist_item_view.show-column-view: false;
         }
       }
 
@@ -76,8 +76,8 @@ template $AlbumPage : Adw.Bin {
             maximum-size: 1400;
 
             $PlaylistItemView playlist_item_view {
-              album: true;
-              show-column: true;
+              is-album: true;
+              show-column-view: true;
             }
           }
 

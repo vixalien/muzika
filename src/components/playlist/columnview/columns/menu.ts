@@ -149,10 +149,19 @@ export class MenuColumn extends Gtk.ColumnViewColumn {
   static {
     GObject.registerClass({
       GTypeName: "MenuColumn",
+      Properties: {
+        is_editable: GObject.param_spec_boolean(
+          "is-editable",
+          "Is editable",
+          "Whether the playlist items can be edited (or deleted)",
+          false,
+          GObject.ParamFlags.READWRITE,
+        ),
+      },
     }, this);
   }
 
-  editable = false;
+  is_editable = false;
 
   constructor() {
     super();
@@ -175,7 +184,7 @@ export class MenuColumn extends Gtk.ColumnViewColumn {
     const extras = list_item.child as ExtraMenuButtons;
     const item = (list_item.item as PlayableContainer).object;
 
-    extras.show_item(this.editable ? list_item.position : -1, item);
+    extras.show_item(this.is_editable ? list_item.position : -1, item);
   }
 
   unbind_cb(_factory: Gtk.SignalListItemFactory, list_item: Gtk.ListItem) {

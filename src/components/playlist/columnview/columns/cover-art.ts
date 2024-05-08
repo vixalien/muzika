@@ -18,6 +18,13 @@ export class CoverArtColumn extends Gtk.ColumnViewColumn {
     GObject.registerClass({
       GTypeName: "ImageColumn",
       Properties: {
+        is_album: GObject.param_spec_boolean(
+          "is-album",
+          "Represents an album",
+          "Show the track number instead of the cover art",
+          false,
+          GObject.ParamFlags.READWRITE,
+        ),
         "selection-mode": GObject.param_spec_boolean(
           "selection-mode",
           "Selection Mode",
@@ -29,7 +36,7 @@ export class CoverArtColumn extends Gtk.ColumnViewColumn {
     }, this);
   }
 
-  album = false;
+  is_album = false;
   selection_mode = false;
 
   constructor(public playlistId?: string) {
@@ -48,7 +55,7 @@ export class CoverArtColumn extends Gtk.ColumnViewColumn {
     const dynamic_image = new DynamicImage({
       size: 36,
       action_size: 16,
-      storage_type: this.album
+      storage_type: this.is_album
         ? DynamicImageStorageType.TRACK_NUMBER
         : DynamicImageStorageType.COVER_THUMBNAIL,
       persistent_play_button: false,
@@ -79,7 +86,7 @@ export class CoverArtColumn extends Gtk.ColumnViewColumn {
 
     // populate the dynamic image
 
-    if (this.album) {
+    if (this.is_album) {
       dynamic_image.track_number = list_item.position + 1;
     } else {
       dynamic_image.cover_thumbnails = playlist_item.thumbnails;

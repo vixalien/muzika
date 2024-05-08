@@ -27,8 +27,8 @@ template $PlaylistPage : Adw.Bin {
         condition ("max-width: 700sp")
 
         setters {
-          playlist_item_view.show_column: false;
-          suggestions_item_view.show_column: false;
+          playlist_item_view.show-column-view: false;
+          suggestions_item_view.show-column-view: false;
           header.show_large_header: false;
         }
       }
@@ -89,7 +89,7 @@ template $PlaylistPage : Adw.Bin {
             maximum-size: 1400;
 
             $PlaylistItemView playlist_item_view {
-              show-column: true;
+              show-column-view: true;
             }
           }
 
@@ -188,8 +188,8 @@ template $PlaylistPage : Adw.Bin {
                   }
 
                   $PlaylistItemView suggestions_item_view {
-                    show-add: true;
-                    show-column: true;
+                    show-add-button: true;
+                    show-column-view: true;
                   }
                 }
               }

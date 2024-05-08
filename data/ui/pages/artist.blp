@@ -35,7 +35,7 @@ template $ArtistPage : Adw.Bin {
 
         setters {
           header.show_large_header: false;
-          playlist_item_view.show_column: false;
+          playlist_item_view.show-column-view: false;
 
           shuffle_content.label: _("Shuffle");
           radio_content.label: _("Radio");
@@ -139,7 +139,7 @@ template $ArtistPage : Adw.Bin {
               }
 
               $PlaylistItemView playlist_item_view {
-                show-column: true;
+                show-column-view: true;
               }
             }
 

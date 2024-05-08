@@ -20,60 +20,59 @@ export class PlaylistColumnView extends Gtk.ColumnView {
     GObject.registerClass({
       GTypeName: "PlaylistColumnView",
       Properties: {
-        "show-rank": GObject.param_spec_boolean(
-          "show-rank",
-          "Show Rank",
-          "Whether to show chart rank and trend change",
+        is_album: GObject.param_spec_boolean(
+          "is-album",
+          "Represents an album",
+          "Whether this playlist represents an album",
           false,
           GObject.ParamFlags.READWRITE,
         ),
-        "show-artists": GObject.ParamSpec.boolean(
-          "show-artists",
-          "Show Artists",
-          "Whether to show the artists of each track",
+        is_editable: GObject.param_spec_boolean(
+          "is-editable",
+          "Is editable",
+          "Whether the playlist items can be edited (or deleted)",
+          false,
           GObject.ParamFlags.READWRITE,
-          true,
         ),
-        "show-time": GObject.ParamSpec.boolean(
-          "show-time",
-          "Show Time",
-          "Whether to show the duration of each track",
-          GObject.ParamFlags.READWRITE,
-          true,
-        ),
-        playlistId: GObject.param_spec_string(
+        playlist_id: GObject.param_spec_string(
           "playlist-id",
           "Playlist ID",
           "The playlist ID",
-          null as any,
+          null,
           GObject.ParamFlags.READWRITE,
-        ),
-        album: GObject.param_spec_boolean(
-          "album",
-          "Album",
-          "Whether this is currently displaying an album",
-          false,
-          GObject.ParamFlags.READWRITE,
-        ),
-        show_add: GObject.param_spec_boolean(
-          "show-add",
-          "Show Add",
-          "Show the Save to playlist button",
-          false,
-          GObject.ParamFlags.READWRITE | GObject.ParamFlags.CONSTRUCT |
-            GObject.ParamFlags.CONSTRUCT_ONLY,
         ),
         selection_mode: GObject.param_spec_boolean(
           "selection-mode",
-          "Selection Mode",
+          "Selection mode",
           "Whether the selection mode is toggled on",
           false,
           GObject.ParamFlags.READWRITE,
         ),
-        editable: GObject.param_spec_boolean(
-          "editable",
-          "Editable",
-          "Whether the playlist items can be edited",
+        show_add_column: GObject.param_spec_boolean(
+          "show-add-column",
+          "Show the add column",
+          "Show a button to trigger the 'Save to playlist' action",
+          false,
+          GObject.ParamFlags.READWRITE | GObject.ParamFlags.CONSTRUCT,
+        ),
+        show_artists_column: GObject.ParamSpec.boolean(
+          "show-artists-column",
+          "Show the artists column",
+          "Whether to show the artists of each track",
+          GObject.ParamFlags.READWRITE,
+          true,
+        ),
+        show_duration_column: GObject.ParamSpec.boolean(
+          "show-duration-column",
+          "Show the duration column",
+          "Whether to show the duration of each track",
+          GObject.ParamFlags.READWRITE,
+          true,
+        ),
+        show_rank_column: GObject.param_spec_boolean(
+          "show-rank-column",
+          "Show the rank column",
+          "Whether to show chart rank and trend change",
           false,
           GObject.ParamFlags.READWRITE,
         ),
@@ -86,142 +85,109 @@ export class PlaylistColumnView extends Gtk.ColumnView {
     }, this);
   }
 
+  private _add_column = new AddColumn();
+  private _album_column = new AlbumColumn();
+  private _artist_column = new ArtistColumn();
   private _cover_column = new CoverArtColumn();
+  private _duration_column = new DurationColumn();
+  private _menu_column = new MenuColumn();
   private _rank_column = new ChartRankColumn();
   private _title_column = new TitleColumn();
-  private _artist_column = new ArtistColumn();
-  private _album_column = new AlbumColumn();
-  private _duration_column = new DurationColumn();
-  private _add_column = new AddColumn();
-  private _menu_column = new MenuColumn();
 
-  // property: show-add
+  // properties
 
-  get show_add() {
-    return this._add_column.visible;
-  }
+  is_album!: boolean;
+  is_editable?: boolean;
+  playlist_id?: string;
+  selection_mode!: boolean;
+  show_add_column!: boolean;
+  show_artists_column!: boolean;
+  show_duration_column!: boolean;
+  show_rank_column!: boolean;
 
-  set show_add(value: boolean) {
-    this._add_column.visible = value;
-  }
-
-  // property: selection-mode
-
-  get selection_mode() {
-    return this._cover_column.selection_mode;
-  }
-
-  set selection_mode(value: boolean) {
-    this._cover_column.selection_mode = value;
-  }
-
-  // property: show-rank
-
-  get show_rank() {
-    return this._rank_column.visible;
-  }
-
-  set show_rank(value: boolean) {
-    this._rank_column.visible = value;
-  }
-
-  // property: show-artists
-
-  get show_artists() {
-    return this._artist_column.visible;
-  }
-
-  set show_artists(value: boolean) {
-    this._artist_column.visible = value;
-  }
-
-  // property: show-times
-
-  get show_time() {
-    return this._duration_column.visible;
-  }
-
-  set show_time(value: boolean) {
-    this._duration_column.visible = value;
-  }
-
-  // property: playlistId
-
-  private _playlistId?: string;
-
-  get playlistId() {
-    return this._playlistId;
-  }
-
-  set playlistId(value: string | undefined) {
-    this._playlistId = value;
-    this._cover_column.playlistId = value;
-  }
-
-  // property: album
-
-  private _album = false;
-
-  get album() {
-    return this._album;
-  }
-
-  set album(value: boolean) {
-    this._album = value;
-    this._album_column.visible = !value;
-    this._cover_column.album = value;
-  }
-
-  // property: editable
-
-  private _editable = false;
-
-  get editable() {
-    return this._editable;
-  }
-
-  set editable(value: boolean) {
-    this._menu_column.editable = value;
-  }
-
-  constructor(
-    {
-      show_rank,
-      show_artists,
-      album,
-      playlistId,
-      show_time,
-      editable,
-      ...options
-    }: Partial<
-      PlaylistColumnViewOptions
-    > = {},
-  ) {
+  constructor(options: Partial<PlaylistColumnViewOptions> = {}) {
     super(options);
 
-    if (playlistId != null) {
-      this.playlistId = playlistId;
-    }
+    // binding properties
 
-    if (show_rank != null) {
-      this.show_rank = show_rank;
-    }
+    // is-album
 
-    if (show_artists != null) {
-      this.show_artists = show_artists;
-    }
+    this.bind_property(
+      "is-album",
+      this._cover_column,
+      "is-album",
+      GObject.BindingFlags.SYNC_CREATE,
+    );
 
-    if (album != null) {
-      this.album = album;
-    }
+    this.bind_property(
+      "is-album",
+      this._album_column,
+      "visible",
+      GObject.BindingFlags.SYNC_CREATE | GObject.BindingFlags.INVERT_BOOLEAN,
+    );
 
-    if (show_time != null) {
-      this.show_time = show_time;
-    }
+    // is-editable
 
-    if (editable != null) {
-      this.editable = editable;
-    }
+    this.bind_property(
+      "is-editable",
+      this._menu_column,
+      "is-editable",
+      GObject.BindingFlags.SYNC_CREATE,
+    );
+
+    // playlist-id
+
+    // this.bind_property(
+    //   "playlist-id",
+    //   this._cover_column,
+    //   "playlist-id",
+    //   GObject.BindingFlags.SYNC_CREATE,
+    // );
+
+    // selection-mode
+
+    this.bind_property(
+      "selection-mode",
+      this._cover_column,
+      "selection-mode",
+      GObject.BindingFlags.SYNC_CREATE,
+    );
+
+    // show-add-column
+
+    this.bind_property(
+      "show-add-column",
+      this._add_column,
+      "visible",
+      GObject.BindingFlags.SYNC_CREATE,
+    );
+
+    // show-artists-column
+
+    this.bind_property(
+      "show-artists-column",
+      this._artist_column,
+      "visible",
+      GObject.BindingFlags.SYNC_CREATE,
+    );
+
+    // show-duration-column
+
+    this.bind_property(
+      "show-duration-column",
+      this._duration_column,
+      "visible",
+      GObject.BindingFlags.SYNC_CREATE,
+    );
+
+    // show-rank-column
+
+    this.bind_property(
+      "show-rank-column",
+      this._rank_column,
+      "visible",
+      GObject.BindingFlags.SYNC_CREATE,
+    );
 
     this.add_css_class("playlist-column-view");
 
@@ -243,11 +209,11 @@ export class PlaylistColumnView extends Gtk.ColumnView {
         PlaylistItem
       >;
 
-      if (this.playlistId) {
+      if (this.playlist_id) {
         this.activate_action(
           "queue.play-playlist",
           GLib.Variant.new_string(
-            `${this.playlistId}?video=${container.object.videoId}`,
+            `${this.playlist_id}?video=${container.object.videoId}`,
           ),
         );
       } else {
@@ -267,8 +233,9 @@ export class PlaylistColumnView extends Gtk.ColumnView {
 export interface PlaylistColumnViewOptions
   extends Gtk.ColumnView.ConstructorProperties {
   playlistId: string;
-  show_rank: boolean;
-  album: boolean;
+  is_album: boolean;
   show_add: boolean;
+  show_rank: boolean;
+  show_artists: boolean;
   show_time: boolean;
 }

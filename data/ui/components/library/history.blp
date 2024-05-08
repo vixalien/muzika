@@ -20,7 +20,7 @@ template $HistoryPage : Adw.Bin {
         condition ("max-width: 700sp")
 
         setters {
-          item_view.show_column: false;
+          item_view.show-column-view: false;
         }
       }
       
@@ -29,7 +29,7 @@ template $HistoryPage : Adw.Bin {
         hscrollbar-policy: never;
 
         $PlaylistItemView item_view {
-          show-column: true;
+          show-column-view: true;
         }
       }
     };

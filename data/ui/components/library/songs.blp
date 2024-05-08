@@ -20,7 +20,7 @@ template $LibrarySongsPage : Adw.Bin {
         condition ("max-width: 700sp")
 
         setters {
-          item_view.show_column: false;
+          item_view.show-column-view: false;
         }
       }
       
@@ -42,7 +42,7 @@ template $LibrarySongsPage : Adw.Bin {
           }
 
           $PlaylistItemView item_view {
-            show-column: true;
+            show-column-view: true;
           }
 
           $Paginator paginator {
