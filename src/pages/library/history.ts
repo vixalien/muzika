@@ -84,7 +84,7 @@ export class HistoryPage extends Adw.Bin
   constructor() {
     super();
 
-    this._item_view.model = this.model;
+    this._item_view.model = Gtk.MultiSelection.new(this.model);
 
     // TODO: see https://gitlab.gnome.org/GNOME/gjs/-/issues/570
     const factory = new Gtk.SignalListItemFactory();

@@ -47,7 +47,7 @@ export class LibrarySongsPage extends Adw.Bin
   constructor() {
     super();
 
-    this._item_view.model = this.items;
+    this._item_view.model = Gtk.MultiSelection.new(this.items);
 
     if (this.filters && this.filters.length >= 0) {
       const string_list = Gtk.StringList.new(this.filters);
