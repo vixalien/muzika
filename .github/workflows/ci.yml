@@ -63,3 +63,21 @@ jobs:
         with:
           folder: ${{ steps.build.outputs.repository }}
           target-folder: repo
+
+  lint:
+    name: ESLint
+    runs-on: ubuntu-latest # on which machine to run
+    steps: # list of steps
+      - name: Install NodeJS
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Code Checkout
+        uses: actions/checkout@v4
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Code Linting
+        run: npm run lint
