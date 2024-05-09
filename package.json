@@ -3,7 +3,6 @@
   "version": "1.0.0",
   "description": "An elegant music streaming app",
   "main": "src/main.ts",
-  "type": "module",
   "repository": "https://github.com/vixalien/muzika",
   "author": "Angelo Verlain <hey@vixalien.com>",
   "license": "MIT",
@@ -23,13 +22,17 @@
     "core-js": "^3.37.0",
     "esbuild": "^0.21.1",
     "eslint": "^8.57.0",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-prettier": "^5.1.3",
     "event-target-polyfill": "^0.0.4",
     "headers-polyfill": "^4.0.3",
-    "minimist": "^1.2.8"
+    "minimist": "^1.2.8",
+    "prettier": "^3.2.5"
   },
   "scripts": {
     "build": "node lib/build.js",
     "typecheck": "tsc --strict --noEmit",
-    "generate-sources": "flatpak-node-generator yarn yarn.lock -o build-aux/flatpak/modules/yarn-deps-sources.json"
+    "generate-sources": "flatpak-node-generator yarn yarn.lock -o build-aux/flatpak/modules/yarn-deps-sources.json",
+    "lint": "eslint src types"
   }
 }

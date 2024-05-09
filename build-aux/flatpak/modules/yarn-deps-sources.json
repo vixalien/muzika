@@ -279,6 +279,13 @@
     },
     {
         "type": "file",
+        "url": "https://registry.yarnpkg.com/@pkgr/core/-/core-0.1.1.tgz#1ec17e2edbec25c8306d424ecfbf13c7de1aaa31",
+        "sha512": "72af28e1c587d226d787d5468b93f6d13bbd5c5ff47c55e5f445229ebf507d333b6bba74a13038889442416a695d1d4f83c75233450222d0a43f0b24f6a59660",
+        "dest-filename": "@pkgr-core-0.1.1.tgz",
+        "dest": "flatpak-node/yarn-mirror"
+    },
+    {
+        "type": "file",
         "url": "https://registry.yarnpkg.com/@types/core-js/-/core-js-2.5.8.tgz#d5c6ec44f2f3328653dce385ae586bd8261f8e85",
         "sha512": "5609c08fab4802126165d27cfc8a7175ab4cf06e0e0f75561a5a7ac48c541843599696e86fd4f2e1555d0b5148129d1a2ba0c1b1c0c38f2cf2e4507ad13b8daa",
         "dest-filename": "@types-core-js-2.5.8.tgz",
@@ -545,6 +552,20 @@
     },
     {
         "type": "file",
+        "url": "https://registry.yarnpkg.com/eslint-config-prettier/-/eslint-config-prettier-9.1.0.tgz#31af3d94578645966c082fcb71a5846d3c94867f",
+        "sha512": "3525a5e411505843e2d63e138d5348b73615edd65767ec0fe88e9986b046a42850859454684962844f6e45191c6d19cd6fbe9430a0c5debf964e635c18f2acab",
+        "dest-filename": "eslint-config-prettier-9.1.0.tgz",
+        "dest": "flatpak-node/yarn-mirror"
+    },
+    {
+        "type": "file",
+        "url": "https://registry.yarnpkg.com/eslint-plugin-prettier/-/eslint-plugin-prettier-5.1.3.tgz#17cfade9e732cef32b5f5be53bd4e07afd8e67e1",
+        "sha512": "0bd182540b3812aed90bf5c54072132e21c9c509e076dada5da33e2e8505a05a7f947365d999fc7f75906def47bd304143d627285074ff602376ac28e43d4403",
+        "dest-filename": "eslint-plugin-prettier-5.1.3.tgz",
+        "dest": "flatpak-node/yarn-mirror"
+    },
+    {
+        "type": "file",
         "url": "https://registry.yarnpkg.com/eslint-scope/-/eslint-scope-7.2.2.tgz#deb4f92563390f32006894af62a22dba1c46423f",
         "sha512": "74eb76d4eee54cc84333e5fd981e065fe0d9ad9b425093cbff095c4eac72af1e48bced0862d20b76dad0190a7ef27e52d20c1256639ff4d42b8cc3a07d066522",
         "dest-filename": "eslint-scope-7.2.2.tgz",
@@ -611,6 +632,13 @@
         "url": "https://registry.yarnpkg.com/fast-deep-equal/-/fast-deep-equal-3.1.3.tgz#3a7d56b559d6cbc3eb512325244e619a65c6c525",
         "sha512": "7f7a90f68432f63d808417bf1fd542f75c0b98a042094fe00ce9ca340606e61b303bb04b2a3d3d1dce4760dcfd70623efb19690c22200da8ad56cd3701347ce1",
         "dest-filename": "fast-deep-equal-3.1.3.tgz",
+        "dest": "flatpak-node/yarn-mirror"
+    },
+    {
+        "type": "file",
+        "url": "https://registry.yarnpkg.com/fast-diff/-/fast-diff-1.3.0.tgz#ece407fa550a64d638536cd727e129c61616e0f0",
+        "sha512": "5713cfe0da9b5238fa31a00e69f59e527d9c5d62dc0ad96392552d65fd089dde1743e40fb660346f5f33672d23210c7e131455091fd94290668a4e655ec84db3",
+        "dest-filename": "fast-diff-1.3.0.tgz",
         "dest": "flatpak-node/yarn-mirror"
     },
     {
@@ -1021,6 +1049,20 @@
     },
     {
         "type": "file",
+        "url": "https://registry.yarnpkg.com/prettier-linter-helpers/-/prettier-linter-helpers-1.0.0.tgz#d23d41fe1375646de2d0104d3454a3008802cf7b",
+        "sha512": "19b2b670ff67ada492505f4dd97c14c2a7f394016530d61897e4a113f57e1fc6bdb8d97fa14a81d70d842f9e098743a5c9149df117d6609ddca154b84d138fdb",
+        "dest-filename": "prettier-linter-helpers-1.0.0.tgz",
+        "dest": "flatpak-node/yarn-mirror"
+    },
+    {
+        "type": "file",
+        "url": "https://registry.yarnpkg.com/prettier/-/prettier-3.2.5.tgz#e52bc3090586e824964a8813b09aba6233b28368",
+        "sha512": "dff1966bd68e0b461e0fb2d47ef386d8d883ca139646fb7593eadc2a13ae627318db88a20a98609de51f243c855ddeab642027b8b06fe9478050bb6b853fc5e0",
+        "dest-filename": "prettier-3.2.5.tgz",
+        "dest": "flatpak-node/yarn-mirror"
+    },
+    {
+        "type": "file",
         "url": "https://registry.yarnpkg.com/punycode/-/punycode-2.3.1.tgz#027422e2faec0b25e1549c3e1bd8309b9133b6e5",
         "sha512": "bd8b7b503d54f5683ad77f2c84bb4b3af740bbef03b02fe2945b44547707fb0c9d712a4d136d007d239db9fe8c91115a84be4563b5f5a14ee7295645b5fabc16",
         "dest-filename": "punycode-2.3.1.tgz",
@@ -1112,6 +1154,13 @@
     },
     {
         "type": "file",
+        "url": "https://registry.yarnpkg.com/synckit/-/synckit-0.8.8.tgz#fe7fe446518e3d3d49f5e429f443cf08b6edfcd7",
+        "sha512": "1f038a00fed673969119874a1fe770d0f451a5b3bce35bf60c4341b639d1e47156a22341c8097bbebc77a741bfac2c985d0b2bc6ab57e3c4c8985b4f7081d2a5",
+        "dest-filename": "synckit-0.8.8.tgz",
+        "dest": "flatpak-node/yarn-mirror"
+    },
+    {
+        "type": "file",
         "url": "https://registry.yarnpkg.com/text-table/-/text-table-0.2.0.tgz#7f5ee823ae805207c00af2df4a84ec3fcfa570b4",
         "sha512": "37ef148ac0170c693c3c55cfe07033551f676df995277cd82c05a24c8a2a0b9bf98ac8a786bfabe6e68ef3eeebdc131fb8d22e7c8b00ed176956069c0b6712a7",
         "dest-filename": "text-table-0.2.0.tgz",
@@ -1129,6 +1178,13 @@
         "url": "https://registry.yarnpkg.com/ts-api-utils/-/ts-api-utils-1.3.0.tgz#4b490e27129f1e8e686b45cc4ab63714dc60eea1",
         "sha512": "510308a3ba5bf1646898a475ffe30554b4eba08bc356d317dcae8e522afcca72f2cc1f097ab8a89edd9b4c0b6634f6b57a402037b60f0f27fa57eca0add53e79",
         "dest-filename": "ts-api-utils-1.3.0.tgz",
+        "dest": "flatpak-node/yarn-mirror"
+    },
+    {
+        "type": "file",
+        "url": "https://registry.yarnpkg.com/tslib/-/tslib-2.6.2.tgz#703ac29425e7b37cd6fd456e92404d46d1f3e4ae",
+        "sha512": "0046311fdde31853e7fdada2540c16f3b56e508911d45554281efb370305ee70530e40ebad3fc7a6dfc8ac2274417856dbb8d304371fe5963bc3a462a93330d9",
+        "dest-filename": "tslib-2.6.2.tgz",
         "dest": "flatpak-node/yarn-mirror"
     },
     {
