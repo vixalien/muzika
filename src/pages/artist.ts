@@ -34,8 +34,10 @@ interface ArtistState extends VScrollState {
 GObject.type_ensure(PlaylistHeader.$gtype);
 GObject.type_ensure(PlaylistListView.$gtype);
 
-export class ArtistPage extends Adw.Bin
-  implements MuzikaPageWidget<Artist, ArtistState> {
+export class ArtistPage
+  extends Adw.Bin
+  implements MuzikaPageWidget<Artist, ArtistState>
+{
   static {
     GObject.registerClass(
       {
@@ -100,7 +102,7 @@ export class ArtistPage extends Adw.Bin
         n > 0 ? n - 1 : 0,
         0,
         songs.results.map((track) =>
-          PlayableContainer.new_from_playlist_item(track)
+          PlayableContainer.new_from_playlist_item(track),
         ),
       );
     } else {
@@ -190,7 +192,7 @@ export class ArtistPage extends Adw.Bin
 
     this.subscribe_controller = new AbortController();
 
-    const old_subscribed = this.artist!.subscribed;
+    const old_subscribed = this.artist.subscribed;
 
     const options = [
       [this.artist.channelId],
@@ -207,7 +209,7 @@ export class ArtistPage extends Adw.Bin
     }
 
     // being optimistic...
-    this.artist!.subscribed = !old_subscribed;
+    this.artist.subscribed = !old_subscribed;
     this.update_subscribe_button();
 
     const vprint_artist = (string: string) => {

@@ -15,11 +15,7 @@ export class WindowSidebar extends Adw.NavigationPage {
       {
         GTypeName: "WindowSidebar",
         Template: "resource:///com/vixalien/muzika/ui/sidebar.ui",
-        InternalChildren: [
-          "account",
-          "login",
-          "navbar",
-        ],
+        InternalChildren: ["account", "login", "navbar"],
         Properties: {},
         Signals: {
           "show-content": {},
@@ -58,10 +54,9 @@ export class WindowSidebar extends Adw.NavigationPage {
       return;
     }
 
-    const account = await get_current_user()
-      .catch(() => {
-        console.error("Couldn't get logged in user");
-      });
+    const account = await get_current_user().catch(() => {
+      console.error("Couldn't get logged in user");
+    });
 
     if (!account) return;
 
@@ -71,10 +66,7 @@ export class WindowSidebar extends Adw.NavigationPage {
       account.name,
       `navigator.visit("muzika:channel:${account.channel_id}")`,
     );
-    menu.append(
-      _("Logout"),
-      "win.logout",
-    );
+    menu.append(_("Logout"), "win.logout");
 
     this._account.menu_model = menu;
   }

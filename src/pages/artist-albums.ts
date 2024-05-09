@@ -21,14 +21,19 @@ interface ArtistAlbumsState extends VScrollState {
 
 GObject.type_ensure(CarouselGridView.$gtype);
 
-export class ArtistAlbumsPage extends Adw.Bin
-  implements MuzikaPageWidget<ArtistAlbums, ArtistAlbumsState> {
+export class ArtistAlbumsPage
+  extends Adw.Bin
+  implements MuzikaPageWidget<ArtistAlbums, ArtistAlbumsState>
+{
   static {
-    GObject.registerClass({
-      GTypeName: "ArtistAlbumsPage",
-      Template: "resource:///com/vixalien/muzika/ui/pages/artist-albums.ui",
-      InternalChildren: ["view", "scrolled"],
-    }, this);
+    GObject.registerClass(
+      {
+        GTypeName: "ArtistAlbumsPage",
+        Template: "resource:///com/vixalien/muzika/ui/pages/artist-albums.ui",
+        InternalChildren: ["view", "scrolled"],
+      },
+      this,
+    );
   }
 
   private _view!: CarouselGridView;
@@ -68,9 +73,7 @@ export class ArtistAlbumsPage extends Adw.Bin
         if (item.videoId) {
           this.activate_action(
             "queue.play-song",
-            GLib.Variant.new_string(
-              item.videoId,
-            ),
+            GLib.Variant.new_string(item.videoId),
           );
         }
         break;

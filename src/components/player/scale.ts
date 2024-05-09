@@ -7,24 +7,27 @@ import { get_player } from "src/application";
 
 export class PlayerScale extends Gtk.Scale {
   static {
-    GObject.registerClass({
-      GTypeName: "PlayerScale",
-      Properties: {
-        buffering: GObject.ParamSpec.boolean(
-          "buffering",
-          "Buffering",
-          "Whether the player is buffering",
-          GObject.ParamFlags.READWRITE,
-          false,
-        ),
-      },
-      Signals: {
-        // this signal is deprecated
-        "user-changed-value": {
-          param_types: [GObject.TYPE_DOUBLE],
+    GObject.registerClass(
+      {
+        GTypeName: "PlayerScale",
+        Properties: {
+          buffering: GObject.ParamSpec.boolean(
+            "buffering",
+            "Buffering",
+            "Whether the player is buffering",
+            GObject.ParamFlags.READWRITE,
+            false,
+          ),
+        },
+        Signals: {
+          // this signal is deprecated
+          "user-changed-value": {
+            param_types: [GObject.TYPE_DOUBLE],
+          },
         },
       },
-    }, this);
+      this,
+    );
   }
 
   constructor() {
@@ -46,7 +49,7 @@ export class PlayerScale extends Gtk.Scale {
       get_player().seek(value);
     });
 
-    this.connect("value-changed", (_) => {
+    this.connect("value-changed", () => {
       this.emit("user-changed-value", this.adjustment.value);
     });
   }
@@ -79,7 +82,7 @@ export class PlayerScale extends Gtk.Scale {
         this.adjustment,
         "upper",
         GObject.BindingFlags.DEFAULT | GObject.BindingFlags.SYNC_CREATE,
-        (_, __) => {
+        () => {
           // the `|| 10` is to prevent the scale being invisible when the upper
           // adjustment value is set to 0
           return [true, player.duration || 10];
@@ -106,7 +109,7 @@ export class PlayerScale extends Gtk.Scale {
         this,
         "buffering",
         GObject.BindingFlags.DEFAULT | GObject.BindingFlags.SYNC_CREATE,
-        (_, __) => {
+        () => {
           return [true, player.is_buffering && player.playing];
         },
         null,
@@ -117,7 +120,7 @@ export class PlayerScale extends Gtk.Scale {
         this,
         "buffering",
         GObject.BindingFlags.DEFAULT | GObject.BindingFlags.SYNC_CREATE,
-        (_, __) => {
+        () => {
           return [true, player.playing && player.is_buffering];
         },
         null,

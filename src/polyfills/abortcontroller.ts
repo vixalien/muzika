@@ -20,12 +20,14 @@ export class AbortSignal extends EventTarget implements globalThis.AbortSignal {
     return this._aborted;
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private _reason: any = null;
 
   get reason() {
     return this._reason;
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private _onabort: ((this: globalThis.AbortSignal, ev: Event) => any) | null =
     null;
 

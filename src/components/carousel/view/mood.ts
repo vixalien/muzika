@@ -9,12 +9,15 @@ import { mood_activate_cb } from "./util";
 
 export class MoodBox extends Adw.Bin {
   static {
-    GObject.registerClass({
-      GTypeName: "MoodBox",
-      Template:
-        "resource:///com/vixalien/muzika/ui/components/carousel/moodbox.ui",
-      InternalChildren: ["label"],
-    }, this);
+    GObject.registerClass(
+      {
+        GTypeName: "MoodBox",
+        Template:
+          "resource:///com/vixalien/muzika/ui/components/carousel/moodbox.ui",
+        InternalChildren: ["label"],
+      },
+      this,
+    );
   }
 
   private _label!: Gtk.Label;
@@ -32,16 +35,21 @@ export class MoodBox extends Adw.Bin {
       -1,
     );
 
-    this.get_style_context()
-      .add_provider(provider, Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION);
+    this.get_style_context().add_provider(
+      provider,
+      Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION,
+    );
   }
 }
 
 export class CarouselMoodView extends Gtk.GridView {
   static {
-    GObject.registerClass({
-      GTypeName: "CarouselMoodView",
-    }, this);
+    GObject.registerClass(
+      {
+        GTypeName: "CarouselMoodView",
+      },
+      this,
+    );
   }
 
   items = new PlayableList<ParsedMoodOrGenre>();

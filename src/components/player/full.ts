@@ -18,23 +18,27 @@ GObject.type_ensure(PlayerPreview.$gtype);
 
 export class FullPlayerView extends Gtk.ActionBar {
   static {
-    GObject.registerClass({
-      GTypeName: "FullPlayerView",
-      Template: "resource:///com/vixalien/muzika/ui/components/player/full.ui",
-      InternalChildren: [
-        "title",
-        "subtitle",
-        "shuffle_button",
-        "prev_button",
-        "play_image",
-        "next_button",
-        "repeat_button",
-        "progress_label",
-        "duration_label",
-        "volume_button",
-        "scale_and_timer",
-      ],
-    }, this);
+    GObject.registerClass(
+      {
+        GTypeName: "FullPlayerView",
+        Template:
+          "resource:///com/vixalien/muzika/ui/components/player/full.ui",
+        InternalChildren: [
+          "title",
+          "subtitle",
+          "shuffle_button",
+          "prev_button",
+          "play_image",
+          "next_button",
+          "repeat_button",
+          "progress_label",
+          "duration_label",
+          "volume_button",
+          "scale_and_timer",
+        ],
+      },
+      this,
+    );
   }
 
   _title!: Gtk.Label;
@@ -74,7 +78,7 @@ export class FullPlayerView extends Gtk.ActionBar {
     const song = this.player.queue.current?.object;
 
     if (song) {
-      this.show_song(song!);
+      this.show_song(song);
     }
   }
 
@@ -90,9 +94,7 @@ export class FullPlayerView extends Gtk.ActionBar {
       this.song_changed.bind(this),
     );
 
-    this.listeners.add_bindings(
-      bind_play_icon(this._play_image),
-    );
+    this.listeners.add_bindings(bind_play_icon(this._play_image));
 
     this.listeners.connect(this.player, "notify::duration", () => {
       this._duration_label.label = micro_to_string(this.player.duration);
@@ -100,9 +102,7 @@ export class FullPlayerView extends Gtk.ActionBar {
 
     // buttons
 
-    this.listeners.add_bindings(
-      ...bind_repeat_button(this._repeat_button),
-    );
+    this.listeners.add_bindings(...bind_repeat_button(this._repeat_button));
 
     // setting up volume button
 
@@ -116,18 +116,22 @@ export class FullPlayerView extends Gtk.ActionBar {
       this.player.cubic_volume = this._volume_button.adjustment.value;
     });
 
-    this.listeners.connect(this._volume_button, "query-tooltip", (
-      _widget: Gtk.VolumeButton,
-      _x: number,
-      _y: number,
-      _keyboard_mode: boolean,
-      tooltip: Gtk.Tooltip,
-    ) => {
-      tooltip.set_text(
-        `${Math.round(this._volume_button.adjustment.value * 100)}%`,
-      );
-      return true;
-    });
+    this.listeners.connect(
+      this._volume_button,
+      "query-tooltip",
+      (
+        _widget: Gtk.VolumeButton,
+        _x: number,
+        _y: number,
+        _keyboard_mode: boolean,
+        tooltip: Gtk.Tooltip,
+      ) => {
+        tooltip.set_text(
+          `${Math.round(this._volume_button.adjustment.value * 100)}%`,
+        );
+        return true;
+      },
+    );
 
     this.listeners.connect(this.player, "notify::timestamp", () => {
       this._progress_label.label = micro_to_string(this.player.timestamp);
@@ -147,9 +151,9 @@ export class FullPlayerView extends Gtk.ActionBar {
 
     if (track.album) {
       this._title.set_markup(
-        `<a href="muzika:album:${track.album.id}?track=${track.videoId}">${
-          escape_label(track.title)
-        }</a>`,
+        `<a href="muzika:album:${track.album.id}?track=${track.videoId}">${escape_label(
+          track.title,
+        )}</a>`,
       );
       this._title.tooltip_text = track.title;
     } else {

@@ -22,19 +22,21 @@ export type AddToPlaylistItemWithTitle = AddToPlaylistItem & {
 };
 
 class AddToPlaylistListStore extends Gio.ListStore<
-  ObjectContainer<
-    AddToPlaylistItemWithTitle
-  >
+  ObjectContainer<AddToPlaylistItemWithTitle>
 > {
   static {
-    GObject.registerClass({
-      GTypeName: "AddToPlaylistListStore",
-      Implements: [Gtk.SectionModel],
-    }, this);
+    GObject.registerClass(
+      {
+        GTypeName: "AddToPlaylistListStore",
+        Implements: [Gtk.SectionModel],
+      },
+      this,
+    );
   }
 
   vfunc_get_section(position: number) {
-    let start = -1, end = -1;
+    let start = -1,
+      end = -1;
 
     for (let i = position; i >= 0; i--) {
       if (this.get_item(i)?.object.section_title != null) {
@@ -71,14 +73,15 @@ export interface GetAddToPlaylistOptions {
 
 export class SaveToPlaylistDialog extends Adw.Dialog {
   static {
-    GObject.registerClass({
-      GTypeName: "SaveToPlaylistDialog",
-      Template:
-        "resource:///com/vixalien/muzika/ui/components/playlist/save-to-playlist.ui",
-      InternalChildren: [
-        "list_view",
-      ],
-    }, this);
+    GObject.registerClass(
+      {
+        GTypeName: "SaveToPlaylistDialog",
+        Template:
+          "resource:///com/vixalien/muzika/ui/components/playlist/save-to-playlist.ui",
+        InternalChildren: ["list_view"],
+      },
+      this,
+    );
   }
 
   private _list_view!: Gtk.ListView;
@@ -112,10 +115,9 @@ export class SaveToPlaylistDialog extends Adw.Dialog {
       .then((result) => {
         this.show_add_to_playlist(result);
         this.present(get_window());
-      }).catch(() => {
-        add_toast(
-          _("Couldn't get your playlists. Please try again later."),
-        );
+      })
+      .catch(() => {
+        add_toast(_("Couldn't get your playlists. Please try again later."));
       });
   }
 
@@ -133,9 +135,8 @@ export class SaveToPlaylistDialog extends Adw.Dialog {
     list_item: Gtk.ListItem,
   ) {
     const card = list_item.child as AddToPlaylistItemCard;
-    const container = list_item.item as ObjectContainer<
-      AddToPlaylistItemWithTitle
-    >;
+    const container =
+      list_item.item as ObjectContainer<AddToPlaylistItemWithTitle>;
 
     const item = container.object;
 
@@ -159,9 +160,8 @@ export class SaveToPlaylistDialog extends Adw.Dialog {
     list_item: Gtk.ListHeader,
   ) {
     const title = list_item.child as Gtk.Label;
-    const container = list_item.item as ObjectContainer<
-      AddToPlaylistItemWithTitle
-    >;
+    const container =
+      list_item.item as ObjectContainer<AddToPlaylistItemWithTitle>;
 
     const label = container.object?.section_title;
 
@@ -179,44 +179,47 @@ export class SaveToPlaylistDialog extends Adw.Dialog {
       add_videos: this.videoIds ?? undefined,
       add_source_playlists: this.playlistId ? [this.playlistId] : undefined,
       dedupe: "check",
-    }).then(async (result) => {
-      if (result.status === "STATUS_SUCCEEDED") {
-        this.success_toast(playlist);
-      } else {
-        // try to provide an option to dedupe or add anyways
-        if (this.playlistId || this.videoIds && this.videoIds.length > 1) {
-          const dialog = Adw.AlertDialog.new(
-            _("Duplicates"),
-            _("One or more of the songs are already in your playlist"),
-          );
-
-          dialog.add_response("drop_duplicate", _("Skip duplicates"));
-          dialog.add_response("skip", _("Add anyway"));
-
-          const response = await dialog.choose(window, null)
-            .catch(console.error);
-
-          this.add_to_playlist_with_dedupe(
-            playlist,
-            response as EditPlaylistOptions["dedupe"],
-          );
+    })
+      .then(async (result) => {
+        if (result.status === "STATUS_SUCCEEDED") {
+          this.success_toast(playlist);
         } else {
-          const toast = new Adw.Toast({
-            title: _("This song is already in the playlist"),
-            button_label: _("Add anyway"),
-          });
+          // try to provide an option to dedupe or add anyways
+          if (this.playlistId || (this.videoIds && this.videoIds.length > 1)) {
+            const dialog = Adw.AlertDialog.new(
+              _("Duplicates"),
+              _("One or more of the songs are already in your playlist"),
+            );
 
-          toast.connect("button-clicked", (toast) => {
-            toast.dismiss();
-            this.add_to_playlist_with_dedupe(playlist, "skip");
-          });
+            dialog.add_response("drop_duplicate", _("Skip duplicates"));
+            dialog.add_response("skip", _("Add anyway"));
 
-          window.add_toast_full(toast);
+            const response = await dialog
+              .choose(window, null)
+              .catch(console.error);
+
+            this.add_to_playlist_with_dedupe(
+              playlist,
+              response as EditPlaylistOptions["dedupe"],
+            );
+          } else {
+            const toast = new Adw.Toast({
+              title: _("This song is already in the playlist"),
+              button_label: _("Add anyway"),
+            });
+
+            toast.connect("button-clicked", (toast) => {
+              toast.dismiss();
+              this.add_to_playlist_with_dedupe(playlist, "skip");
+            });
+
+            window.add_toast_full(toast);
+          }
         }
-      }
-    }).catch(() => {
-      this.error_toast(playlist);
-    });
+      })
+      .catch(() => {
+        this.error_toast(playlist);
+      });
 
     this.close();
   }
@@ -229,15 +232,17 @@ export class SaveToPlaylistDialog extends Adw.Dialog {
       add_videos: this.videoIds ?? undefined,
       add_source_playlists: this.playlistId ? [this.playlistId] : undefined,
       dedupe,
-    }).then((result) => {
-      if (result.status === "STATUS_SUCCEEDED") {
-        this.success_toast(playlist);
-      } else {
+    })
+      .then((result) => {
+        if (result.status === "STATUS_SUCCEEDED") {
+          this.success_toast(playlist);
+        } else {
+          this.error_toast(playlist);
+        }
+      })
+      .catch(() => {
         this.error_toast(playlist);
-      }
-    }).catch(() => {
-      this.error_toast(playlist);
-    });
+      });
   }
 
   show_add_to_playlist(add: AddToPlaylist) {
@@ -277,15 +282,15 @@ export class SaveToPlaylistDialog extends Adw.Dialog {
     get_window().add_toast_full(
       new Adw.Toast({
         title: this.playlistId
-          // Translators: %s is a playlist name
-          ? vprintf(_("Couldn't add playlist to %s"), [playlist.title])
-          // Translators: %s is a playlist name
-          : vprintf(
-            this.videoIds && this.videoIds.length > 1
-              ? _("Couldn't add songs to %s")
-              : _("Couldn't add song to %s"),
-            [playlist.title],
-          ),
+          ? // Translators: %s is a playlist name
+            vprintf(_("Couldn't add playlist to %s"), [playlist.title])
+          : // Translators: %s is a playlist name
+            vprintf(
+              this.videoIds && this.videoIds.length > 1
+                ? _("Couldn't add songs to %s")
+                : _("Couldn't add song to %s"),
+              [playlist.title],
+            ),
       }),
     );
   }

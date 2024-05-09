@@ -11,7 +11,5 @@ export function btoa(string: string) {
   return GLib.base64_encode(encoder.encode(string));
 }
 
-// @ts-ignore
 globalThis.atob = atob;
-// @ts-ignore
 globalThis.btoa = btoa;

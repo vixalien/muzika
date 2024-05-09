@@ -1,4 +1,3 @@
-import GLib from "gi://GLib";
 import GObject from "gi://GObject";
 import Gtk from "gi://Gtk?version=4.0";
 
@@ -9,10 +8,7 @@ export class NavbarButton extends Gtk.Box {
         GTypeName: "NavbarButton",
         Template:
           "resource:///com/vixalien/muzika/ui/components/navbar/button.ui",
-        InternalChildren: [
-          "image",
-          "label",
-        ],
+        InternalChildren: ["image", "label"],
         Properties: {
           "icon-name": GObject.ParamSpec.string(
             "icon-name",
@@ -61,7 +57,7 @@ export class NavbarButton extends Gtk.Box {
   link: string | null = null;
   title: string | null = null;
 
-  constructor(args?: any) {
+  constructor(args?: Partial<NavbarButtonContructorProperties>) {
     super(args);
   }
 

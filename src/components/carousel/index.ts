@@ -17,28 +17,31 @@ export type RequiredMixedItem = NonNullable<MixedItem>;
 
 export class Carousel<
   Content extends Partial<Omit<MixedContent, "contents" | "display">> & {
-    contents: string | (MixedCardItem | null)[];
+    contents: string | (MixedCardItem | ParsedMoodOrGenre | null)[];
     display?: null | "list" | "mood";
   },
 > extends Gtk.Box {
   static {
-    GObject.registerClass({
-      GTypeName: "Carousel",
-      Template:
-        "resource:///com/vixalien/muzika/ui/components/carousel/carousel.ui",
-      InternalChildren: [
-        "title",
-        "subtitle",
-        "text",
-        "text_view",
-        "scrolled",
-        "buttons",
-        "left_button",
-        "right_button",
-        "carousel_stack",
-        "more_button",
-      ],
-    }, this);
+    GObject.registerClass(
+      {
+        GTypeName: "Carousel",
+        Template:
+          "resource:///com/vixalien/muzika/ui/components/carousel/carousel.ui",
+        InternalChildren: [
+          "title",
+          "subtitle",
+          "text",
+          "text_view",
+          "scrolled",
+          "buttons",
+          "left_button",
+          "right_button",
+          "carousel_stack",
+          "more_button",
+        ],
+      },
+      this,
+    );
   }
 
   content?: Content;
@@ -89,9 +92,9 @@ export class Carousel<
     const animation = Adw.TimedAnimation.new(
       this._scrolled,
       hadjustment.value,
-      (direction === Gtk.DirectionType.RIGHT)
-        ? (hadjustment.value + hadjustment.page_size)
-        : (hadjustment.value - hadjustment.page_size),
+      direction === Gtk.DirectionType.RIGHT
+        ? hadjustment.value + hadjustment.page_size
+        : hadjustment.value - hadjustment.page_size,
       400,
       target,
     );
@@ -103,8 +106,8 @@ export class Carousel<
     const hadjustment = this._scrolled.get_hadjustment();
 
     if (
-      (hadjustment.get_upper() - hadjustment.get_lower()) ==
-        hadjustment.page_size
+      hadjustment.get_upper() - hadjustment.get_lower() ==
+      hadjustment.page_size
     ) {
       this._left_button.hide();
       this._right_button.hide();
@@ -116,7 +119,8 @@ export class Carousel<
         this._left_button.set_sensitive(false);
         this._right_button.set_sensitive(true);
       } else if (
-        hadjustment.value >= (hadjustment.get_upper() - hadjustment.page_size)
+        hadjustment.value >=
+        hadjustment.get_upper() - hadjustment.page_size
       ) {
         this._left_button.set_sensitive(true);
         this._right_button.set_sensitive(false);
@@ -163,15 +167,13 @@ export class Carousel<
       0,
       contents
         .filter((content) => content != null)
-        .map((content) => PlayableContainer.new(content!)),
+        .map((content) => PlayableContainer.new(content)),
     );
 
     this._scrolled.child = moodview;
   }
 
-  show_content(
-    content: Content,
-  ) {
+  show_content(content: Content) {
     this._title.set_label(content.title ?? "");
 
     if (content.subtitle) {
@@ -192,11 +194,11 @@ export class Carousel<
       this._carousel_stack.visible_child = this._scrolled;
 
       if (content.display == "list") {
-        this.show_gridview(content.contents);
+        this.show_gridview(content.contents as MixedCardItem[]);
       } else if (content.display == "mood") {
-        this.show_moodview(content.contents as any[]);
+        this.show_moodview(content.contents as ParsedMoodOrGenre[]);
       } else {
-        this.show_listview(content.contents);
+        this.show_listview(content.contents as MixedCardItem[]);
       }
     }
   }

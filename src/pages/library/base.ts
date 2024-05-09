@@ -37,13 +37,12 @@ export function order_id_to_name(string: string, orders: Map<string, string>) {
 
 type LibraryResults = LibraryItems<MixedCardItem>;
 
-export type LibraryLoader<PageOrder extends LibraryOrder | Order = Order> = (
-  options?: {
+export type LibraryLoader<PageOrder extends LibraryOrder | Order = Order> =
+  (options?: {
     continuation?: string;
     signal?: AbortSignal;
     order?: PageOrder;
-  },
-) => Promise<LibraryResults>;
+  }) => Promise<LibraryResults>;
 
 export interface LibraryPageOptions {
   orders?: Map<string, string>;
@@ -57,11 +56,15 @@ interface LibraryState extends VScrollState {
 
 export class AbstractLibraryPage<PageOrder extends LibraryOrder | Order = Order>
   extends Adw.Bin
-  implements MuzikaPageWidget<LoadedLibrary, LibraryState> {
+  implements MuzikaPageWidget<LoadedLibrary, LibraryState>
+{
   static {
-    GObject.registerClass({
-      GTypeName: "AbstractLibraryPage",
-    }, this);
+    GObject.registerClass(
+      {
+        GTypeName: "AbstractLibraryPage",
+      },
+      this,
+    );
   }
 
   private view: LibraryView;
@@ -106,7 +109,7 @@ export class AbstractLibraryPage<PageOrder extends LibraryOrder | Order = Order>
   handle_order_changed(_: Gtk.Widget, order_name: string) {
     const order = this.orders.get(order_name);
 
-    this.order = order as PageOrder ?? undefined;
+    this.order = (order as PageOrder) ?? undefined;
 
     if (!order) return;
 
@@ -162,9 +165,10 @@ export class AbstractLibraryPage<PageOrder extends LibraryOrder | Order = Order>
   load_more() {
     if (this.loading || !this.results?.continuation) return;
 
-    (this.constructor as typeof AbstractLibraryPage).loader({
-      continuation: this.results.continuation,
-    })
+    (this.constructor as typeof AbstractLibraryPage)
+      .loader({
+        continuation: this.results.continuation,
+      })
       .then((library) => {
         this.results!.items.push(...library.items);
         this.results!.continuation = library.continuation;
@@ -187,8 +191,8 @@ export class AbstractLibraryPage<PageOrder extends LibraryOrder | Order = Order>
     return function (context: PageLoadContext) {
       return (loader as LibraryLoader<LibraryOrder>)({
         signal: context.signal,
-        order: context.url.searchParams.get("order") as LibraryOrder ??
-          undefined,
+        order:
+          (context.url.searchParams.get("order") as LibraryOrder) ?? undefined,
       }).then((results) => {
         return {
           results,

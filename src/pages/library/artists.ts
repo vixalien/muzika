@@ -6,9 +6,12 @@ import { AbstractLibraryPage } from "./base";
 
 export class LibraryArtistsPage extends AbstractLibraryPage {
   static {
-    GObject.registerClass({
-      GTypeName: "LibraryArtistsPage",
-    }, this);
+    GObject.registerClass(
+      {
+        GTypeName: "LibraryArtistsPage",
+      },
+      this,
+    );
   }
 
   constructor() {

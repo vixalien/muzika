@@ -13,12 +13,15 @@ GObject.type_ensure(TopResultCard.$gtype);
 
 export class TopResultSection extends Gtk.Box {
   static {
-    GObject.registerClass({
-      GTypeName: "TopResultSection",
-      Template:
-        "resource:///com/vixalien/muzika/ui/components/search/topresultsection.ui",
-      InternalChildren: ["box", "card", "list_view"],
-    }, this);
+    GObject.registerClass(
+      {
+        GTypeName: "TopResultSection",
+        Template:
+          "resource:///com/vixalien/muzika/ui/components/search/topresultsection.ui",
+        InternalChildren: ["box", "card", "list_view"],
+      },
+      this,
+    );
   }
 
   private _box!: Gtk.Box;
@@ -93,9 +96,7 @@ export class TopResultSection extends Gtk.Box {
         // row.dynamic_image.state = DynamicActionState.LOADING;
         this.activate_action(
           "queue.play-song",
-          GLib.Variant.new_string(
-            content.videoId,
-          ),
+          GLib.Variant.new_string(content.videoId),
         );
         break;
     }

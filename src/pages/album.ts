@@ -27,25 +27,30 @@ interface AlbumProps {
 
 interface AlbumState extends VScrollState, AlbumProps {}
 
-export class AlbumPage extends Adw.Bin
-  implements MuzikaPageWidget<AlbumProps, AlbumState> {
+export class AlbumPage
+  extends Adw.Bin
+  implements MuzikaPageWidget<AlbumProps, AlbumState>
+{
   static {
-    GObject.registerClass({
-      GTypeName: "AlbumPage",
-      Template: "resource:///com/vixalien/muzika/ui/pages/album.ui",
-      InternalChildren: [
-        "trackCount",
-        "duration",
-        "insights_clamp",
-        "insights",
-        "playlist_item_view",
-        "header",
-        "menu",
-        "scrolled",
-        "play_button",
-        "shuffle_button",
-      ],
-    }, this);
+    GObject.registerClass(
+      {
+        GTypeName: "AlbumPage",
+        Template: "resource:///com/vixalien/muzika/ui/pages/album.ui",
+        InternalChildren: [
+          "trackCount",
+          "duration",
+          "insights_clamp",
+          "insights",
+          "playlist_item_view",
+          "header",
+          "menu",
+          "scrolled",
+          "play_button",
+          "shuffle_button",
+        ],
+      },
+      this,
+    );
   }
 
   album?: AlbumResult;
@@ -108,8 +113,8 @@ export class AlbumPage extends Adw.Bin
     this.album = album;
 
     this._playlist_item_view.playlistId = album.audioPlaylistId ?? undefined;
-    this._playlist_item_view.show_artists = album.tracks.some((track) =>
-      track.artists.length > 0
+    this._playlist_item_view.show_artists = album.tracks.some(
+      (track) => track.artists.length > 0,
     );
 
     this._header.load_thumbnails(album.thumbnails);

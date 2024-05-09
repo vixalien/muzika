@@ -21,14 +21,20 @@ interface ChannelPlaylistsState extends VScrollState {
 
 GObject.type_ensure(CarouselGridView.$gtype);
 
-export class ChannelPlaylistsPage extends Adw.Bin
-  implements MuzikaPageWidget<ChannelPlaylists, ChannelPlaylistsState> {
+export class ChannelPlaylistsPage
+  extends Adw.Bin
+  implements MuzikaPageWidget<ChannelPlaylists, ChannelPlaylistsState>
+{
   static {
-    GObject.registerClass({
-      GTypeName: "ChannelPlaylistsPage",
-      Template: "resource:///com/vixalien/muzika/ui/pages/channel-playlists.ui",
-      InternalChildren: ["view", "scrolled"],
-    }, this);
+    GObject.registerClass(
+      {
+        GTypeName: "ChannelPlaylistsPage",
+        Template:
+          "resource:///com/vixalien/muzika/ui/pages/channel-playlists.ui",
+        InternalChildren: ["view", "scrolled"],
+      },
+      this,
+    );
   }
 
   private _view!: CarouselGridView;
@@ -68,9 +74,7 @@ export class ChannelPlaylistsPage extends Adw.Bin
         if (item.videoId) {
           this.activate_action(
             "queue.play-song",
-            GLib.Variant.new_string(
-              item.videoId,
-            ),
+            GLib.Variant.new_string(item.videoId),
           );
         }
         break;

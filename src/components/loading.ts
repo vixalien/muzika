@@ -3,19 +3,22 @@ import GObject from "gi://GObject";
 
 export class Loading extends Gtk.Box {
   static {
-    GObject.registerClass({
-      GTypeName: "Loading",
-      Template: "resource:///com/vixalien/muzika/ui/components/loading.ui",
-      Properties: {
-        loading: GObject.ParamSpec.boolean(
-          "loading",
-          "Loading",
-          "Whether the loading spinner is visible",
-          GObject.ParamFlags.READWRITE,
-          false,
-        ),
+    GObject.registerClass(
+      {
+        GTypeName: "Loading",
+        Template: "resource:///com/vixalien/muzika/ui/components/loading.ui",
+        Properties: {
+          loading: GObject.ParamSpec.boolean(
+            "loading",
+            "Loading",
+            "Whether the loading spinner is visible",
+            GObject.ParamFlags.READWRITE,
+            false,
+          ),
+        },
       },
-    }, this);
+      this,
+    );
   }
 
   private _loading = false;

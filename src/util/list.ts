@@ -30,9 +30,7 @@ export function get_selected<T extends GObject.Object>(
 
   const selected: number[] = [];
 
-  const [has_selection, bitset, first] = Gtk.BitsetIter.init_first(
-    model.get_selection(),
-  );
+  const [, bitset] = Gtk.BitsetIter.init_first(model.get_selection());
 
   while (bitset.is_valid()) {
     selected.push(bitset.get_value());

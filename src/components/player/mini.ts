@@ -12,15 +12,15 @@ import { bind_play_icon } from "src/player/helpers.js";
 
 export class MiniPlayerView extends Gtk.Overlay {
   static {
-    GObject.registerClass({
-      GTypeName: "MiniPlayerView",
-      Template: "resource:///com/vixalien/muzika/ui/components/player/mini.ui",
-      InternalChildren: [
-        "title",
-        "subtitle",
-        "play_button",
-      ],
-    }, this);
+    GObject.registerClass(
+      {
+        GTypeName: "MiniPlayerView",
+        Template:
+          "resource:///com/vixalien/muzika/ui/components/player/mini.ui",
+        InternalChildren: ["title", "subtitle", "play_button"],
+      },
+      this,
+    );
   }
 
   private _title!: Gtk.Label;
@@ -45,7 +45,7 @@ export class MiniPlayerView extends Gtk.Overlay {
 
     const song = this.player.queue.current?.object;
     if (song) {
-      this.show_song(song!);
+      this.show_song(song);
     }
   }
 
@@ -61,9 +61,7 @@ export class MiniPlayerView extends Gtk.Overlay {
       this.song_changed.bind(this),
     );
 
-    this.listeners.add_bindings(
-      bind_play_icon(this._play_button),
-    );
+    this.listeners.add_bindings(bind_play_icon(this._play_button));
 
     this.listeners.connect(this.player, "notify::duration", () => {
       this.progress_bar.set_duration(this.player.duration);

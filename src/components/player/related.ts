@@ -15,17 +15,15 @@ export interface RelatedViewOptions {
 
 export class RelatedView extends Gtk.Stack {
   static {
-    GObject.registerClass({
-      GTypeName: "RelatedView",
-      Template:
-        "resource:///com/vixalien/muzika/ui/components/player/related.ui",
-      InternalChildren: [
-        "no_related",
-        "loading",
-        "related_window",
-        "box",
-      ],
-    }, this);
+    GObject.registerClass(
+      {
+        GTypeName: "RelatedView",
+        Template:
+          "resource:///com/vixalien/muzika/ui/components/player/related.ui",
+        InternalChildren: ["no_related", "loading", "related_window", "box"],
+      },
+      this,
+    );
   }
 
   _no_related!: Adw.StatusPage;
@@ -65,34 +63,37 @@ export class RelatedView extends Gtk.Stack {
 
       await get_song_related(new_related, {
         signal: this.controller.signal,
-      }).then((result) => {
-        let child: Gtk.Widget | null = null;
+      })
+        .then((result) => {
+          let child: Gtk.Widget | null = null;
 
-        while (child = this._box.get_first_child()) {
-          this._box.remove(child);
-        }
+          while ((child = this._box.get_first_child())) {
+            this._box.remove(child);
+          }
 
-        for (const content of result) {
-          const carousel = new Carousel();
-          carousel.show_content(content);
-          this._box.append(carousel);
+          for (const content of result) {
+            const carousel = new Carousel();
+            carousel.show_content(content);
+            this._box.append(carousel);
 
-          const spacer = new Gtk.Separator();
-          spacer.add_css_class("spacer");
-          this._box.append(spacer);
-        }
+            const spacer = new Gtk.Separator();
+            spacer.add_css_class("spacer");
+            this._box.append(spacer);
+          }
 
-        this.loaded_related = new_related;
-        this.set_visible_child(this._related_window);
-      }).catch((err) => {
-        if (err.name === "AbortError") {
-          return;
-        } else {
-          throw err;
-        }
-      }).finally(() => {
-        this._loading.stop();
-      });
+          this.loaded_related = new_related;
+          this.set_visible_child(this._related_window);
+        })
+        .catch((err) => {
+          if (err.name === "AbortError") {
+            return;
+          } else {
+            throw err;
+          }
+        })
+        .finally(() => {
+          this._loading.stop();
+        });
     } else {
       this.loaded_related = null;
       this.set_visible_child(this._no_related);
@@ -104,14 +105,10 @@ export class RelatedView extends Gtk.Stack {
   vfunc_map(): void {
     super.vfunc_map();
 
-    this.listeners.connect(
-      this.player.queue,
-      "notify::current",
-      () => {
-        this._loading.start();
-        this.set_visible_child(this._loading);
-      },
-    );
+    this.listeners.connect(this.player.queue, "notify::current", () => {
+      this._loading.start();
+      this.set_visible_child(this._loading);
+    });
 
     this.listeners.connect(
       this.player.queue,

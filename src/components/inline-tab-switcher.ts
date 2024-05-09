@@ -16,33 +16,33 @@ export class Tab extends GObject.Object {
       {
         GTypeName: "Tab",
         Properties: {
-          id: GObject.ParamSpec.string(
+          id: GObject.param_spec_string(
             "id",
             "ID",
             "The unique ID of the tab",
+            null,
             GObject.ParamFlags.READWRITE,
-            null as any,
           ),
-          title: GObject.ParamSpec.string(
+          title: GObject.param_spec_string(
             "title",
             "Title",
             "Title of the tab",
+            null,
             GObject.ParamFlags.READWRITE,
-            null as any,
           ),
-          icon: GObject.ParamSpec.string(
+          icon: GObject.param_spec_string(
             "icon",
             "Icon",
             "Icon that represents the tab",
+            null,
             GObject.ParamFlags.READWRITE,
-            null as any,
           ),
-          navigate: GObject.ParamSpec.string(
+          navigate: GObject.param_spec_string(
             "action-target",
             "Action Target",
             "The target string of the action to be executed when the tab is activated",
+            null,
             GObject.ParamFlags.READWRITE,
-            null as any,
           ),
         },
       },
@@ -67,7 +67,7 @@ export class Tab extends GObject.Object {
 
 export class InlineTabSwitcher extends Gtk.Widget {
   private TIMEOUT_EXPAND = 500;
-  private buttons = new Map<Tab, Gtk.ToggleButton>();
+  private buttons = new Map<Tab, ToggleButtonWithSeparator>();
 
   model = new Gio.ListStore<Tab>();
 
@@ -78,7 +78,7 @@ export class InlineTabSwitcher extends Gtk.Widget {
       {
         GTypeName: "InlineTabSwitcher",
         Signals: {
-          "changed": {
+          changed: {
             param_types: [GObject.TYPE_STRING],
           },
         },
@@ -99,13 +99,10 @@ export class InlineTabSwitcher extends Gtk.Widget {
     this.tabs.set_model(this.model);
 
     this.tabs.connect("items-changed", this.items_changed_cb.bind(this));
-    this.tabs.connect(
-      "selection-changed",
-      (_, position, items) => {
-        this.emit("changed", this.tabs.get_item(this.tabs.selected)!.id);
-        this.selection_changed_cb(position, items);
-      },
-    );
+    this.tabs.connect("selection-changed", (_, position, items) => {
+      this.emit("changed", this.tabs.get_item(this.tabs.selected)!.id);
+      this.selection_changed_cb(position, items);
+    });
 
     this.populate_switcher();
   }
@@ -157,7 +154,7 @@ export class InlineTabSwitcher extends Gtk.Widget {
 
   private clear_switcher() {
     this.buttons.forEach((button, tab) => {
-      const separator = (button as any).separator as Gtk.Widget;
+      const separator = button.separator as Gtk.Widget;
       button.unparent();
       separator.unparent();
       tab.connect("notify", this.tab_updated_cb.bind(this));
@@ -199,7 +196,7 @@ export class InlineTabSwitcher extends Gtk.Widget {
       hexpand: true,
       vexpand: true,
       focus_on_click: false,
-    });
+    }) as ToggleButtonWithSeparator;
 
     button.add_css_class("flat");
 
@@ -270,7 +267,7 @@ export class InlineTabSwitcher extends Gtk.Widget {
     const separator = Gtk.Separator.new(Gtk.Orientation.VERTICAL);
     separator.set_parent(this);
 
-    (button as any).separator = separator;
+    button.separator = separator;
 
     const separator_changed = () => {
       const prev_separator = button.get_prev_sibling();
@@ -290,7 +287,7 @@ export class InlineTabSwitcher extends Gtk.Widget {
     separator_changed();
   }
 
-  private tab_updated_cb(tab: Tab, pspec: GObject.ParamSpec) {
+  private tab_updated_cb(tab: Tab) {
     const button = this.buttons.get(tab)!;
 
     this.update_button(tab, button);
@@ -329,8 +326,10 @@ export class InlineTabSwitcher extends Gtk.Widget {
 
     if (
       (flags &
-        (Gtk.StateFlags.PRELIGHT | Gtk.StateFlags.SELECTED |
-          Gtk.StateFlags.CHECKED)) != 0
+        (Gtk.StateFlags.PRELIGHT |
+          Gtk.StateFlags.SELECTED |
+          Gtk.StateFlags.CHECKED)) !=
+      0
     ) {
       return true;
     }
@@ -349,7 +348,7 @@ export class InlineTabSwitcher extends Gtk.Widget {
     const prev_button = separator.get_prev_sibling() as Gtk.Button;
     const next_button = separator.get_next_sibling() as Gtk.Button;
 
-    separator.visible = (prev_button != null) && (next_button != null);
+    separator.visible = prev_button != null && next_button != null;
 
     if (
       this.should_hide_separators(prev_button) ||
@@ -360,4 +359,8 @@ export class InlineTabSwitcher extends Gtk.Widget {
       separator.remove_css_class("hidden");
     }
   }
+}
+
+interface ToggleButtonWithSeparator extends Gtk.ToggleButton {
+  separator: Gtk.Separator;
 }

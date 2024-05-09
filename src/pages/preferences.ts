@@ -9,15 +9,14 @@ import { Settings } from "src/util/settings.js";
 
 export class MuzikaPreferencesDialog extends Adw.PreferencesDialog {
   static {
-    GObject.registerClass({
-      GTypeName: "MuzikaPreferencesDialog",
-      Template: "resource:///com/vixalien/muzika/ui/pages/preferences.ui",
-      InternalChildren: [
-        "audio_quality",
-        "video_quality",
-        "background_play",
-      ],
-    }, this);
+    GObject.registerClass(
+      {
+        GTypeName: "MuzikaPreferencesDialog",
+        Template: "resource:///com/vixalien/muzika/ui/pages/preferences.ui",
+        InternalChildren: ["audio_quality", "video_quality", "background_play"],
+      },
+      this,
+    );
   }
 
   private _video_quality!: Adw.ComboRow;
@@ -39,7 +38,7 @@ export class MuzikaPreferencesDialog extends Adw.PreferencesDialog {
   }
 
   private prepare_quality(
-    widget: typeof this._audio_quality | typeof this._video_quality,
+    widget: typeof this._audio_quality,
     qualities: typeof AudioQualities | typeof VideoQualities,
     gsettings_key: string,
   ) {
@@ -52,7 +51,7 @@ export class MuzikaPreferencesDialog extends Adw.PreferencesDialog {
 
     widget.expression = Gtk.ClosureExpression.new(
       GObject.TYPE_STRING,
-      (container: ObjectContainer<typeof qualities[number]>) => {
+      (container: ObjectContainer<(typeof qualities)[number]>) => {
         return container.object.name;
       },
       [],

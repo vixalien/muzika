@@ -1,6 +1,5 @@
 import Gtk from "gi://Gtk?version=4.0";
 import GObject from "gi://GObject";
-import GLib from "gi://GLib";
 
 import type { PlaylistItem } from "libmuse";
 
@@ -13,35 +12,36 @@ import { setup_link_label } from "src/util/label.js";
 
 export class PlaylistListItem extends Gtk.Box {
   static {
-    GObject.registerClass({
-      GTypeName: "PlaylistListItem",
-      Template:
-        "resource:///com/vixalien/muzika/ui/components/playlist/listitem.ui",
-      InternalChildren: [
-        "title",
-        "explicit",
-        "subtitle",
-        "chart_rank",
-        "rank",
-        "change",
-        "add",
-      ],
-      Children: [
-        "dynamic_image",
-      ],
-      Properties: {
-        "show-add": GObject.param_spec_boolean(
-          "show-add",
-          "Show Add",
-          "Show Add button",
-          true,
-          GObject.ParamFlags.READWRITE,
-        ),
+    GObject.registerClass(
+      {
+        GTypeName: "PlaylistListItem",
+        Template:
+          "resource:///com/vixalien/muzika/ui/components/playlist/listitem.ui",
+        InternalChildren: [
+          "title",
+          "explicit",
+          "subtitle",
+          "chart_rank",
+          "rank",
+          "change",
+          "add",
+        ],
+        Children: ["dynamic_image"],
+        Properties: {
+          "show-add": GObject.param_spec_boolean(
+            "show-add",
+            "Show Add",
+            "Show Add button",
+            true,
+            GObject.ParamFlags.READWRITE,
+          ),
+        },
+        Signals: {
+          add: {},
+        },
       },
-      Signals: {
-        "add": {},
-      },
-    }, this);
+      this,
+    );
   }
 
   item?: PlaylistItem;
@@ -124,7 +124,7 @@ export class PlaylistListItem extends Gtk.Box {
         menuLikeRow(
           item.likeStatus,
           item.videoId,
-          (likeStatus) => item.likeStatus = likeStatus,
+          (likeStatus) => (item.likeStatus = likeStatus),
         ),
         [_("Start radio"), `queue.play-song("${item.videoId}?radio=true")`],
         [_("Play next"), `queue.add-song("${item.videoId}?next=true")`],
@@ -135,15 +135,15 @@ export class PlaylistListItem extends Gtk.Box {
           : null,
         item.album
           ? [
-            _("Go to album"),
-            `navigator.visit("muzika:album:${item.album.id}")`,
-          ]
+              _("Go to album"),
+              `navigator.visit("muzika:album:${item.album.id}")`,
+            ]
           : null,
         item.artists.length > 1
           ? [
-            _("Go to artist"),
-            `navigator.visit("muzika:artist:${item.artists[0].id}")`,
-          ]
+              _("Go to artist"),
+              `navigator.visit("muzika:artist:${item.artists[0].id}")`,
+            ]
           : null,
       ];
     });

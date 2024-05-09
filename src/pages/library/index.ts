@@ -8,9 +8,12 @@ import { RequiredMixedItem } from "src/components/carousel/index.js";
 
 export class LibraryPage extends AbstractLibraryPage {
   static {
-    GObject.registerClass({
-      GTypeName: "LibraryPage",
-    }, this);
+    GObject.registerClass(
+      {
+        GTypeName: "LibraryPage",
+      },
+      this,
+    );
   }
 
   constructor() {

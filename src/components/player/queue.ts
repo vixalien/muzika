@@ -2,29 +2,32 @@ import Gtk from "gi://Gtk?version=4.0";
 import GObject from "gi://GObject";
 import Adw from "gi://Adw";
 
-import type { QueueTrack } from "libmuse";
-
-import { ObjectContainer } from "src/util/objectcontainer";
 import { QueueItem } from "./queueitem";
 import { MuzikaPlayer } from "src/player";
 import { escape_label } from "src/util/text";
 import { get_player } from "src/application";
 import { setup_link_label } from "src/util/label";
+import { ObjectContainer } from "src/util/objectcontainer";
+import { QueueTrack } from "libmuse";
 
 export class QueueView extends Gtk.Stack {
   static {
-    GObject.registerClass({
-      GTypeName: "QueueView",
-      Template: "resource:///com/vixalien/muzika/ui/components/player/queue.ui",
-      InternalChildren: [
-        "no_queue",
-        "list_view",
-        "queue_box",
-        "playlist_label",
-        "params",
-        "params_box",
-      ],
-    }, this);
+    GObject.registerClass(
+      {
+        GTypeName: "QueueView",
+        Template:
+          "resource:///com/vixalien/muzika/ui/components/player/queue.ui",
+        InternalChildren: [
+          "no_queue",
+          "list_view",
+          "queue_box",
+          "playlist_label",
+          "params",
+          "params_box",
+        ],
+      },
+      this,
+    );
   }
 
   private _list_view!: Gtk.ListView;
@@ -85,9 +88,8 @@ export class QueueView extends Gtk.Stack {
   }
 
   update_visible_child() {
-    this.visible_child = this.player.queue.list.n_items > 0
-      ? this._queue_box
-      : this._no_queue;
+    this.visible_child =
+      this.player.queue.list.n_items > 0 ? this._queue_box : this._no_queue;
   }
 
   update_settings() {
@@ -96,8 +98,7 @@ export class QueueView extends Gtk.Stack {
 
     // radio playlists can't be visited
     if (settings?.playlistId && !settings.playlistId.startsWith("RDA")) {
-      this._playlist_label.label =
-        `<a href="muzika:playlist:${settings.playlistId}">${playlist_name}</a>`;
+      this._playlist_label.label = `<a href="muzika:playlist:${settings.playlistId}">${playlist_name}</a>`;
     } else {
       this._playlist_label.label = playlist_name;
     }
@@ -108,7 +109,7 @@ export class QueueView extends Gtk.Stack {
 
     let first_param: Gtk.Widget | null = null;
 
-    while (first_param = this._params_box.get_first_child()) {
+    while ((first_param = this._params_box.get_first_child())) {
       this._params_box.remove(first_param);
     }
 

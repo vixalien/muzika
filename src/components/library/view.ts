@@ -14,44 +14,48 @@ export interface LibraryViewOptions {
 
 export class LibraryView extends Gtk.Box {
   static {
-    GObject.registerClass({
-      GTypeName: "LibraryView",
-      Template: "resource:///com/vixalien/muzika/ui/components/library/view.ui",
-      InternalChildren: [
-        "drop_down",
-        "grid_button",
-        "list_button",
-        "stack",
-        "tools",
-        "box",
-        "list",
-        "grid",
-        "paginator",
-      ],
-      Children: ["scrolled"],
-      Signals: {
-        "filter-changed": {
-          param_types: [GObject.TYPE_STRING],
+    GObject.registerClass(
+      {
+        GTypeName: "LibraryView",
+        Template:
+          "resource:///com/vixalien/muzika/ui/components/library/view.ui",
+        InternalChildren: [
+          "drop_down",
+          "grid_button",
+          "list_button",
+          "stack",
+          "tools",
+          "box",
+          "list",
+          "grid",
+          "paginator",
+        ],
+        Children: ["scrolled"],
+        Signals: {
+          "filter-changed": {
+            param_types: [GObject.TYPE_STRING],
+          },
+          paginate: {},
         },
-        "paginate": {},
+        Properties: {
+          "reveal-paginator": GObject.param_spec_boolean(
+            "reveal-paginator",
+            "Reveal Paginator",
+            "Whether to show the paginator component",
+            false,
+            GObject.ParamFlags.READWRITE,
+          ),
+          "paginator-loading": GObject.param_spec_boolean(
+            "paginator-loading",
+            "Paginator Loading",
+            "Whether the paginator is currently loading",
+            false,
+            GObject.ParamFlags.READWRITE,
+          ),
+        },
       },
-      Properties: {
-        "reveal-paginator": GObject.param_spec_boolean(
-          "reveal-paginator",
-          "Reveal Paginator",
-          "Whether to show the paginator component",
-          false,
-          GObject.ParamFlags.READWRITE,
-        ),
-        "paginator-loading": GObject.param_spec_boolean(
-          "paginator-loading",
-          "Paginator Loading",
-          "Whether the paginator is currently loading",
-          false,
-          GObject.ParamFlags.READWRITE,
-        ),
-      },
-    }, this);
+      this,
+    );
   }
 
   private _stack!: Gtk.Stack;
