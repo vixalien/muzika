@@ -11,20 +11,20 @@
     "@lemaik/qrcode-svg": "^1.2.0",
     "libmuse": "^0.0.97",
     "lodash-es": "^4.17.21",
-    "path-to-regexp": "^6.2.1",
-    "typescript": "^5.3.3",
-    "web-streams-polyfill": "^3.2.1"
+    "path-to-regexp": "^6.2.2",
+    "typescript": "^5.4.5",
+    "web-streams-polyfill": "^4.0.0"
   },
   "devDependencies": {
     "@types/core-js": "^2.5.8",
     "@types/lodash-es": "^4.17.12",
-    "@typescript-eslint/eslint-plugin": "^6.19.1",
-    "@typescript-eslint/parser": "^6.19.1",
-    "core-js": "^3.35.1",
-    "esbuild": "^0.20.0",
-    "eslint": "^8.56.0",
+    "@typescript-eslint/eslint-plugin": "^7.8.0",
+    "@typescript-eslint/parser": "^7.8.0",
+    "core-js": "^3.37.0",
+    "esbuild": "^0.21.1",
+    "eslint": "^8.57.0",
     "event-target-polyfill": "^0.0.4",
-    "headers-polyfill": "^4.0.2",
+    "headers-polyfill": "^4.0.3",
     "minimist": "^1.2.8"
   },
   "scripts": {
