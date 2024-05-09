@@ -139,6 +139,8 @@ export class GResponse {
     const reader = this._body.getReader();
     const chunks: Uint8Array[] = [];
 
+    // TODO: find a better way to do this
+    // eslint-disable-next-line no-constant-condition
     while (true) {
       const { done, value } = await reader.read();
       if (done) break;
@@ -240,6 +242,8 @@ export async function fetch(url: string | URL, options: FetchOptions = {}) {
     });
   }
 
+  // TODO: find a better way to do this
+  // eslint-disable-next-line no-async-promise-executor
   return new Promise<GResponse>(async (resolve, reject) => {
     const inputStream = await SESSION.send_async(
       message,
@@ -300,5 +304,5 @@ export async function fetch(url: string | URL, options: FetchOptions = {}) {
   });
 }
 
-// @ts-ignore
+// @ts-expect-error polluting the globals
 window.fetch = fetch;

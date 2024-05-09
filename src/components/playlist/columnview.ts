@@ -651,7 +651,7 @@ export class PlaylistColumnView extends Gtk.ColumnView {
             "playlist-id",
             "Playlist ID",
             "The playlist ID",
-            null as any,
+            null,
             GObject.ParamFlags.READWRITE,
           ),
           album: GObject.param_spec_boolean(

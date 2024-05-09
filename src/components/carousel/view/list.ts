@@ -10,6 +10,10 @@ import { mixed_card_activate_cb } from "./util.js";
 
 export type RequiredMixedItem = NonNullable<MixedItem>;
 
+interface ContainerWithBinding extends PlayableContainer<MixedCardItem> {
+  binding?: GObject.Binding;
+}
+
 export class CarouselListView extends Gtk.ListView {
   static {
     GObject.registerClass(
@@ -50,12 +54,12 @@ export class CarouselListView extends Gtk.ListView {
 
   bind_cb(_factory: Gtk.ListItemFactory, list_item: Gtk.ListItem) {
     const card = list_item.child as CarouselCard;
-    const container = list_item.item as PlayableContainer<MixedCardItem>;
+    const container = list_item.item as ContainerWithBinding;
 
     if (container.object) {
       card.show_item(container.object);
 
-      (container as any).binding = container.bind_property(
+      container.binding = container.bind_property(
         "state",
         card,
         "state",
@@ -65,9 +69,9 @@ export class CarouselListView extends Gtk.ListView {
   }
 
   unbind_cb(_factory: Gtk.ListItemFactory, list_item: Gtk.ListItem) {
-    const container = list_item.item as PlayableContainer<MixedCardItem>;
+    const container = list_item.item as ContainerWithBinding;
 
-    ((container as any).binding as GObject.Binding)?.unbind();
+    (container.binding as GObject.Binding)?.unbind();
   }
 
   vfunc_map(): void {

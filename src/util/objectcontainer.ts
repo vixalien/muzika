@@ -1,6 +1,6 @@
 import GObject from "gi://GObject";
 
-export class ObjectContainer<T extends Object> extends GObject.Object {
+export class ObjectContainer<T> extends GObject.Object {
   static {
     if (!GObject.type_from_name("ObjectContainer")) {
       GObject.registerClass(
@@ -30,7 +30,7 @@ export class ObjectContainer<T extends Object> extends GObject.Object {
   }
 }
 
-export class OptionalObjectContainer<T extends Object> extends GObject.Object {
+export class OptionalObjectContainer<T> extends GObject.Object {
   static {
     GObject.registerClass(
       {

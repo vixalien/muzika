@@ -136,16 +136,18 @@ class MuzikaPlaySignalAdapter extends GObject.Object {
       case GstPlay.PlayMessage.END_OF_STREAM:
         this.emit_message("end-of-stream", []);
         break;
-      case GstPlay.PlayMessage.ERROR:
+      case GstPlay.PlayMessage.ERROR: {
         const error = GstPlay.play_message_parse_error(message);
 
         this.emit_message("error", [error[0]!, error[1]!]);
         break;
-      case GstPlay.PlayMessage.WARNING:
+      }
+      case GstPlay.PlayMessage.WARNING: {
         const warning = GstPlay.play_message_parse_warning(message);
 
         this.emit_message("warning", [warning[0]!, warning[1]!]);
         break;
+      }
       case GstPlay.PlayMessage.VIDEO_DIMENSIONS_CHANGED:
         this.emit_message(
           "video-dimensions-changed",
@@ -283,6 +285,7 @@ export class MuzikaMediaStream extends Gtk.MediaStream {
       );
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     this._paintable = (sink as any).paintable;
     this.notify("paintable");
 
@@ -491,7 +494,7 @@ export class MuzikaMediaStream extends Gtk.MediaStream {
     }
   }
 
-  private duration_changed_cb(_play: GstPlay.Play): void {
+  private duration_changed_cb(): void {
     this.notify("duration");
   }
 
@@ -512,7 +515,7 @@ export class MuzikaMediaStream extends Gtk.MediaStream {
     this.gerror(error);
   }
 
-  protected eos_cb(_play: GstPlay.Play): boolean {
+  protected eos_cb(): boolean {
     if (this._play.duration - this._play.position >= Gst.SECOND) {
       // this means an error occured, we might need to refresh the uri
       if (!this.refreshed_uri) {
@@ -551,12 +554,12 @@ export class MuzikaMediaStream extends Gtk.MediaStream {
     }
   }
 
-  private volume_changed_cb(_play: GstPlay.Play): void {
+  private volume_changed_cb(): void {
     this.notify("volume");
     this.notify("cubic-volume");
   }
 
-  private mute_changed_cb(_play: GstPlay.Play): void {
+  private mute_changed_cb(): void {
     this.notify("muted");
   }
 
@@ -924,7 +927,7 @@ export class MuzikaPlayer extends MuzikaMediaStream {
         this.refreshed_uri = true;
 
         this._now_playing = new ObjectContainer<TrackMetadata>({
-          ...this.now_playing?.object!,
+          ...this.now_playing!.object,
           song,
         });
 
@@ -943,8 +946,8 @@ export class MuzikaPlayer extends MuzikaMediaStream {
       });
   }
 
-  protected eos_cb(_play: GstPlay.Play) {
-    if (super.eos_cb(_play)) {
+  protected eos_cb() {
+    if (super.eos_cb()) {
       this.queue.repeat_or_next();
     }
 

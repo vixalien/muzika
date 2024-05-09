@@ -85,7 +85,7 @@ export class MoodsPage
     carousel.show_content({
       title: data.title,
       display: "mood",
-      contents: data.items as any[],
+      contents: data.items,
     });
 
     this._box.append(carousel);

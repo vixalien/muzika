@@ -9,7 +9,7 @@ import type { Filter, SearchOptions, SearchResults, SearchRuns } from "libmuse";
 import { SearchSection } from "../components/search/section.js";
 import { TopResultSection } from "../components/search/topresultsection.js";
 import { Paginator } from "../components/paginator.js";
-import { InlineTabSwitcher, Tab } from "../components/inline-tab-switcher.js";
+import { InlineTabSwitcher } from "../components/inline-tab-switcher.js";
 import { MuzikaPageWidget, PageLoadContext } from "src/navigation.js";
 import { escape_label } from "src/util/text.js";
 import {
@@ -267,7 +267,8 @@ export class SearchPage
       decodeURIComponent(context.match.params.query),
       {
         signal: context.signal,
-        ...Object.fromEntries(context.url.searchParams as any),
+        // @ts-expect-error types wonky
+        ...Object.fromEntries(context.url.searchParams as unknown),
         autocorrect: autocorrect ? autocorrect === "true" : undefined,
       },
     ] as const;
@@ -300,13 +301,16 @@ export function search_args_to_url(
   options: SearchOptions = {},
   replace = false,
 ) {
-  const opts = options as Record<string, any>;
-  if (replace) opts.replace = true;
+  const opts = options as Record<string, string>;
+
+  if (replace) opts.replace = "true";
+
   const params = new URLSearchParams(
     Object.entries(opts)
-      .filter(([_, v]) => v != null)
+      .filter(([, v]) => v != null)
       .filter(([k]) => k !== "signal"),
   ).toString();
+
   let url_string = `muzika:search:${encodeURIComponent(query)}`;
   if (params) url_string += `?${params}`;
 

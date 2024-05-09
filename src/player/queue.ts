@@ -2,6 +2,8 @@ import GObject from "gi://GObject";
 import Gio from "gi://Gio";
 import GLib from "gi://GLib";
 
+import { omit } from "lodash-es";
+
 import { get_queue } from "libmuse";
 import type { Queue as MuseQueue, QueueTrack } from "libmuse";
 
@@ -32,7 +34,7 @@ export interface QueueMeta extends QueueTrack {
 }
 
 // Durstenfeld's modification of Fisher-Yates shuffle
-function durstenfeld_shuffle<T extends any>(array: T[]) {
+function durstenfeld_shuffle<T>(array: T[]) {
   for (let i = array.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
     [array[i], array[j]] = [array[j], array[i]];
@@ -124,7 +126,7 @@ export class Queue extends GObject.Object {
             "active-chip",
             "Active chip",
             "The active chip",
-            null as any,
+            null,
             GObject.ParamFlags.READWRITE,
           ),
           "preferred-media-type": GObject.param_spec_uint(
@@ -242,7 +244,7 @@ export class Queue extends GObject.Object {
   }
 
   private _settings: ObjectContainer<QueueSettings> = new ObjectContainer(
-    null as any,
+    null!,
   );
 
   get settings() {
@@ -375,7 +377,7 @@ export class Queue extends GObject.Object {
         activate: (__, param) => {
           if (!param) return;
 
-          const url = new URL(`muzika:${param.get_string()}`);
+          const url = new URL(`muzika:${param.get_string()[0]}`);
           const params = url.searchParams;
 
           this.add_playlist(url.pathname, params.get("video") ?? undefined, {
@@ -608,7 +610,7 @@ export class Queue extends GObject.Object {
     }
 
     if (options.play) {
-      this.set_settings(_omit(queue, ["tracks"]));
+      this.set_settings(omit(queue, ["tracks"]));
 
       const position = queue.current?.index
         ? queue.current?.index % queue.tracks.length
@@ -632,7 +634,7 @@ export class Queue extends GObject.Object {
       const queue = await get_track_queue(song_ids[0], { radio: true });
 
       tracks = queue.tracks;
-      first_track_options = _omit(queue, ["tracks"]);
+      first_track_options = omit(queue, ["tracks"]);
     } else {
       [tracks, first_track_options] = await Promise.all([
         get_tracklist(song_ids).then((tracks) => tracks ?? []),
@@ -866,17 +868,6 @@ interface AddPlaylistOptions {
   signal?: AbortSignal;
   play?: boolean;
   radio?: boolean;
-}
-
-function _omit<Object extends Record<string, any>, Key extends keyof Object>(
-  object: Object,
-  keys: Key[],
-): Omit<Object, Key> {
-  const new_object = { ...object };
-  for (const key of keys) {
-    delete new_object[key];
-  }
-  return new_object;
 }
 
 export function tracks_to_meta(

@@ -98,13 +98,14 @@ function activate_mixed_card(view: Gtk.Widget, item: MixedCardItem) {
       break;
     case "artist":
     // library channels are music channels
+    // eslint-disable-next-line no-fallthrough
     case "channel":
       uri = `artist:${item.browseId}`;
       break;
     case "album":
       uri = `album:${item.browseId}`;
       break;
-    case "library-artist":
+    case "library-artist": {
       // remove MPLA prefix if it's there
       const id = item.browseId;
       if (id.startsWith("MPLA")) {
@@ -113,6 +114,7 @@ function activate_mixed_card(view: Gtk.Widget, item: MixedCardItem) {
         uri = `artist:${item.browseId}`;
       }
       break;
+    }
     case "inline-video":
     case "song":
     case "video":

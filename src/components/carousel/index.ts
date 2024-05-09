@@ -17,7 +17,7 @@ export type RequiredMixedItem = NonNullable<MixedItem>;
 
 export class Carousel<
   Content extends Partial<Omit<MixedContent, "contents" | "display">> & {
-    contents: string | (MixedCardItem | null)[];
+    contents: string | (MixedCardItem | ParsedMoodOrGenre | null)[];
     display?: null | "list" | "mood";
   },
 > extends Gtk.Box {
@@ -194,11 +194,11 @@ export class Carousel<
       this._carousel_stack.visible_child = this._scrolled;
 
       if (content.display == "list") {
-        this.show_gridview(content.contents);
+        this.show_gridview(content.contents as MixedCardItem[]);
       } else if (content.display == "mood") {
-        this.show_moodview(content.contents as any[]);
+        this.show_moodview(content.contents as ParsedMoodOrGenre[]);
       } else {
-        this.show_listview(content.contents);
+        this.show_listview(content.contents as MixedCardItem[]);
       }
     }
   }

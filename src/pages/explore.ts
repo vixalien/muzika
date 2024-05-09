@@ -118,7 +118,7 @@ export class ExplorePage
     carousel.show_content({
       title,
       display: "mood",
-      contents: data.results as any,
+      contents: data.results,
     });
 
     this._box.append(carousel);

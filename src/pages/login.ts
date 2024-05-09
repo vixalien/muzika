@@ -3,7 +3,7 @@ import Gdk from "gi://Gdk?version=4.0";
 import GObject from "gi://GObject";
 import Adw from "gi://Adw";
 
-/// @ts-expect-error
+/// @ts-expect-error this package has no types
 import QRCode from "@lemaik/qrcode-svg";
 
 import { get_option } from "libmuse";

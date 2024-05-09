@@ -36,9 +36,9 @@ export class SignalListeners {
   connect<Signal extends string, Obj extends GObject.Object>(
     widget: Obj,
     signal: Signal,
-    fn: (...args: any[]) => any,
+    fn: (...args: unknown[]) => unknown,
   ) {
-    const listener = widget.connect(signal, fn as any);
+    const listener = widget.connect(signal, fn);
     this.add(widget, listener);
     return listener;
   }

@@ -30,7 +30,6 @@ import {
   EditedValues,
   EditPlaylistDialog,
 } from "src/components/playlist/edit.js";
-import { Window } from "src/window.js";
 import { PlayableContainer, PlayableList } from "src/util/playablelist.js";
 import { AddActionEntries } from "src/util/action.js";
 import { generate_menu } from "src/util/menu/index.js";
@@ -131,7 +130,7 @@ export class PlaylistPage
     (group.add_action_entries as AddActionEntries)([
       {
         name: "delete",
-        activate: (__) => {
+        activate: () => {
           this.delete_playlist();
         },
       },
@@ -336,7 +335,7 @@ export class PlaylistPage
 
     this.playlist.title = values.title;
     this.playlist.description = values.description;
-    this.playlist.privacy = values.privacy.id as any;
+    this.playlist.privacy = values.privacy.id as "PUBLIC";
 
     this._header.set_title(values.title);
     this._header.set_description(values.description);

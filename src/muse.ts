@@ -6,7 +6,6 @@ import "core-js/features/url";
 
 // Headers
 import { Headers } from "headers-polyfill";
-/// @ts-ignore
 globalThis.Headers = Headers;
 
 // Headers

@@ -3,6 +3,7 @@ import GLib from "gi://GLib";
 import Gtk from "gi://Gtk?version=4.0";
 
 import { LikeStatus } from "libmuse";
+import { MenuItemWithChildRenderer } from ".";
 
 export type LikeRowCallback = (status: LikeStatus) => void;
 
@@ -12,11 +13,11 @@ export function menuLikeRow(
   cb?: LikeRowCallback,
 ) {
   if (!status) return null;
-  const menu = new Gio.MenuItem();
+  const menu = new Gio.MenuItem() as MenuItemWithChildRenderer;
   menu.set_label(_("Change rating of track"));
   menu.set_attribute_value("custom", GLib.Variant.new_string("rate-button"));
 
-  (menu as any)["__child"] = (popover: Gtk.Popover) => {
+  menu.__child = (popover: Gtk.Popover) => {
     const box = new Gtk.Box({
       orientation: Gtk.Orientation.HORIZONTAL,
       spacing: 3,

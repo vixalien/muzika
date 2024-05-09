@@ -157,9 +157,7 @@ export class PlaylistItemView extends Adw.Bin {
 
     this._model = model;
 
-    this.multi_selection_model = new Gtk.MultiSelection({
-      model: model as any,
-    });
+    this.multi_selection_model = new Gtk.MultiSelection({ model: model! });
 
     this.set_current_property("model", this.multi_selection_model);
 
@@ -232,12 +230,12 @@ export class PlaylistItemView extends Adw.Bin {
     }
 
     const props = {
-      header_factory: this.header_factory ?? (null as any),
+      header_factory: this.header_factory ?? (null as unknown as undefined),
       model: this.multi_selection_model!,
       selection_mode: this.selection_mode,
       album: this.album,
       show_add: this.show_add,
-      playlistId: this.playlistId ?? (null as any),
+      playlistId: this.playlistId ?? (null as unknown as undefined),
       editable: this.editable,
     };
 

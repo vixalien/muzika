@@ -1,6 +1,5 @@
 import GObject from "gi://GObject";
 import Adw from "gi://Adw";
-import GLib from "gi://GLib";
 import Gtk from "gi://Gtk?version=4.0";
 
 import { get_player } from "src/application";
@@ -58,8 +57,6 @@ export class FullVideoControls extends Adw.Bin {
       this._duration_label.label = track.duration_seconds
         ? seconds_to_string(track.duration_seconds)
         : track.duration ?? "00:00";
-      {
-      }
     }
   }
 

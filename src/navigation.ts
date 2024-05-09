@@ -154,7 +154,7 @@ export class Navigator extends GObject.Object {
       },
       {
         name: "back",
-        activate: (_) => {
+        activate: () => {
           this.back();
         },
       },
@@ -260,7 +260,9 @@ export class Navigator extends GObject.Object {
     if (search_match) {
       this.emit(
         "search-changed",
-        decodeURIComponent((search_match.params as any).query),
+        decodeURIComponent(
+          (search_match.params as Record<string, string>).query,
+        ),
       );
     }
 

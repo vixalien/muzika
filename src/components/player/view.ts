@@ -1,7 +1,5 @@
 import GObject from "gi://GObject";
 import Adw from "gi://Adw";
-import GLib from "gi://GLib";
-import Gtk from "gi://Gtk?version=4.0";
 
 import { MiniPlayerView } from "./mini.js";
 import { FullPlayerView } from "./full.js";

@@ -88,37 +88,37 @@ export class PlayerNowPlayingDetails extends Adw.NavigationPage {
     // TODO: use `sensitive` instead
     // blocked by:
 
-    // @ts-expect-error
+    // @ts-expect-error wrong types
     player.queue.bind_property_full(
       "settings",
       this._lyrics_page,
       "visible",
       GObject.BindingFlags.DEFAULT | GObject.BindingFlags.SYNC_CREATE,
-      (_, __) => {
+      () => {
         return [true, player.queue.settings.object?.lyrics != null];
       },
       null,
     );
 
-    // @ts-expect-error
+    // @ts-expect-error wrong types
     player.queue.bind_property_full(
       "settings",
       this._related_page,
       "visible",
       GObject.BindingFlags.DEFAULT | GObject.BindingFlags.SYNC_CREATE,
-      (_, __) => {
+      () => {
         return [true, player.queue.settings.object?.related != null];
       },
       null,
     );
 
-    // @ts-expect-error
+    // @ts-expect-error wrong types
     this._stack.bind_property_full(
       "visible-child",
       this,
       "title",
       GObject.BindingFlags.DEFAULT | GObject.BindingFlags.SYNC_CREATE,
-      (_, __) => {
+      () => {
         const visible_child = this._stack.get_visible_child();
 
         if (!visible_child) return [false];

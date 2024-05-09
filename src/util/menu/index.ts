@@ -44,7 +44,7 @@ export type MenuProp =
   | MenuSubmenu
   | MenuSection;
 
-function is_gio_menu_item(item: any): item is Gio.MenuItem {
+function is_gio_menu_item(item: unknown): item is Gio.MenuItem {
   return typeof item === "object" && item instanceof Gio.MenuItem;
 }
 
@@ -86,18 +86,18 @@ function generate_menu_item(props: NonNullable<MenuItemProps>) {
   }
 }
 
-function filter_null<T extends any>(menu_props: T[]) {
+function filter_null<T>(menu_props: T[]) {
   return menu_props.filter((prop) => prop !== null) as NonNullable<T>[];
 }
 
-type PopoverChildren = Record<string, (popover: Gtk.Popover) => Gtk.Widget>;
+type MenuChildrenRenderer = (popover: Gtk.Popover) => Gtk.Widget;
 
 export function generate_menu(props: MenuProp[]) {
-  const menu = new Gio.Menu();
+  const menu = new Gio.Menu() as MenuWithChildrenRenderers;
 
-  const children: PopoverChildren = {};
+  const children: Record<string, MenuChildrenRenderer> = {};
 
-  (menu as any).children = children;
+  menu.children = children;
 
   filter_null(props).forEach((item) => {
     if (is_gio_menu_item(item)) {
@@ -105,7 +105,7 @@ export function generate_menu(props: MenuProp[]) {
 
       if (item.get_attribute_value("custom", GLib.VariantType.new("s"))) {
         const child = item.get_attribute_value("custom", null)!.get_string()[0];
-        children[child] = (item as any)["__child"];
+        children[child] = (item as MenuItemWithChildRenderer)["__child"];
       }
     } else if (is_submenu(item)) {
       const submenu = new Gio.Menu();
@@ -215,7 +215,7 @@ export class MenuHelper {
       this.popover_menu = null;
     }
 
-    const menu = generate_menu(props);
+    const menu = generate_menu(props) as MenuWithChildrenRenderers;
 
     this.popover_menu = new Gtk.PopoverMenu({
       has_arrow: false,
@@ -225,7 +225,7 @@ export class MenuHelper {
     });
 
     // generate and set custom popover children
-    const children = (menu as any).children as PopoverChildren;
+    const children = menu.children;
     if (children && Object.keys(children).length > 0) {
       for (const [name, child] of Object.entries(children)) {
         this.popover_menu.add_child(child(this.popover_menu), name);
@@ -245,3 +245,11 @@ export class MenuHelper {
 }
 
 export type PropsBuilder = () => MenuProp[];
+
+export interface MenuItemWithChildRenderer extends Gio.MenuItem {
+  __child: MenuChildrenRenderer;
+}
+
+export interface MenuWithChildrenRenderers extends Gio.Menu {
+  children: Record<string, MenuChildrenRenderer>;
+}

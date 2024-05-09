@@ -2,14 +2,13 @@ import Gtk from "gi://Gtk?version=4.0";
 import GObject from "gi://GObject";
 import Adw from "gi://Adw";
 
-import type { QueueTrack } from "libmuse";
-
-import { ObjectContainer } from "src/util/objectcontainer";
 import { QueueItem } from "./queueitem";
 import { MuzikaPlayer } from "src/player";
 import { escape_label } from "src/util/text";
 import { get_player } from "src/application";
 import { setup_link_label } from "src/util/label";
+import { ObjectContainer } from "src/util/objectcontainer";
+import { QueueTrack } from "libmuse";
 
 export class QueueView extends Gtk.Stack {
   static {
@@ -146,7 +145,7 @@ export class QueueView extends Gtk.Stack {
   }
 
   bind_cb(_factory: Gtk.ListItemFactory, list_item: Gtk.ListItem) {
-    const container = list_item.get_item();
+    const container = list_item.get_item() as ObjectContainer<QueueTrack>;
     const track = container.object;
 
     const card = new QueueItem();

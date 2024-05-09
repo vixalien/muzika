@@ -9,7 +9,7 @@ import { omit } from "lodash-es";
 import { QueueSettings, RepeatMode } from "./queue";
 import { get_player } from "src/application";
 
-function create_cache_map<T extends any>() {
+function create_cache_map<T>() {
   return new Map<string, T>();
 }
 

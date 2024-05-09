@@ -279,9 +279,8 @@ export class FixedRatioThumbnail extends Gtk.Widget implements Gtk.Orientable {
     orientation: Gtk.Orientation,
     for_size: number,
   ): [number, number, number, number] {
-    let minimal_size: number,
-      natural_size: number,
-      minimum_baseline = -1,
+    let minimal_size: number, natural_size: number;
+    const minimum_baseline = -1,
       natural_baseline = -1;
 
     const expand = this.can_expand;

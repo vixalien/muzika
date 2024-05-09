@@ -17,10 +17,7 @@ export interface PageState<State> {
 // register Loading
 GObject.type_ensure(Loading.$gtype);
 
-export class Page<
-  Data extends unknown,
-  State extends unknown = null,
-> extends Adw.NavigationPage {
+export class Page<Data, State = null> extends Adw.NavigationPage {
   static {
     GObject.registerClass(
       {
@@ -79,7 +76,7 @@ export class Page<
   last_match?: MatchResult<Record<string, string>>;
 
   private __state: PageState<State> | null = null;
-  private __error: any;
+  private __error?: unknown;
 
   constructor(meta: MuzikaPageMeta<Data, State>) {
     super();
@@ -94,12 +91,12 @@ export class Page<
 
   vfunc_hidden(): void {
     if (this.__error) {
-      this.page = this._content.child = null as any;
+      this.page = this._content.child = null!;
     } else if (this.page) {
       this.__state = {
         state: this.page.get_state(),
       };
-      this.page = this._content.child = null as any;
+      this.page = this._content.child = null!;
     }
   }
 
@@ -118,7 +115,7 @@ export class Page<
     }
   }
 
-  show_error(error: any) {
+  show_error(error: unknown) {
     this.__error = error;
 
     let error_page: Gtk.Widget;
@@ -158,7 +155,7 @@ export class Page<
       this.__error = null;
 
       const page = this.meta.build();
-      page.present(result);
+      page.present(result as Data);
 
       this._content.child = this.page = page;
     } catch (error) {

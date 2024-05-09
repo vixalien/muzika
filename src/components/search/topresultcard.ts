@@ -438,7 +438,10 @@ export class TopResultCard extends Adw.Bin {
         this.show_playlist(top_result);
         break;
       default:
-        console.error("Unknown top result type", (top_result as any).type);
+        console.error(
+          "Unknown top result type",
+          (top_result as TopResult).type,
+        );
         return;
     }
   }

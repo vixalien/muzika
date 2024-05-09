@@ -78,6 +78,6 @@ export function pretty_subtitles(
   return { markup: merge(author_markup), plain: merge(author_plain) };
 }
 
-function is_artist_run(node: any): node is ArtistRun {
-  return node && typeof node === "object" && "name" in node;
+function is_artist_run(node: unknown): node is ArtistRun {
+  return !!node && typeof node === "object" && "name" in node;
 }

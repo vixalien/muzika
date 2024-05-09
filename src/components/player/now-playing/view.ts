@@ -195,7 +195,7 @@ export class PlayerNowPlayingView extends Adw.NavigationPage {
         this._duration,
         "label",
         GObject.BindingFlags.DEFAULT | GObject.BindingFlags.SYNC_CREATE,
-        (_, __) => {
+        () => {
           return [true, micro_to_string(this.player.duration)];
         },
         null,
@@ -206,7 +206,7 @@ export class PlayerNowPlayingView extends Adw.NavigationPage {
         this._timestamp,
         "label",
         GObject.BindingFlags.DEFAULT | GObject.BindingFlags.SYNC_CREATE,
-        (_, __) => {
+        () => {
           return [true, micro_to_string(this.player.timestamp)];
         },
         null,

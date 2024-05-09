@@ -56,8 +56,6 @@ export class MiniVideoControls extends Adw.Bin {
       this._duration_label.label = track.duration_seconds
         ? seconds_to_string(track.duration_seconds)
         : track.duration ?? "00:00";
-      {
-      }
     }
   }
 

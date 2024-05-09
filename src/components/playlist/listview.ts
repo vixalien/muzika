@@ -31,7 +31,7 @@ export class PlaylistListView extends Gtk.ListView {
             "playlist-id",
             "Playlist ID",
             "The playlist ID",
-            null as any,
+            null,
             GObject.ParamFlags.READWRITE,
           ),
           album: GObject.param_spec_boolean(
@@ -185,7 +185,7 @@ export class PlaylistListView extends Gtk.ListView {
 
     item.signals.add(
       item,
-      item.connect("add", (_) => {
+      item.connect("add", () => {
         this.emit("add", list_item.position);
       }),
     );

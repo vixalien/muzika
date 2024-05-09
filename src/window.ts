@@ -190,19 +190,19 @@ export class Window extends Adw.ApplicationWindow {
       },
       {
         name: "show-main-view",
-        activate: (_) => {
+        activate: () => {
           this.show_view("main");
         },
       },
       {
         name: "toggle-show-video",
-        activate: (_) => {
+        activate: () => {
           this.toggle_show_video();
         },
       },
       {
         name: "fullscreen",
-        activate: (_) => {
+        activate: () => {
           this.fullscreen_video();
         },
       },

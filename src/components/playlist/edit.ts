@@ -51,7 +51,7 @@ export class PrivacyStatus extends GObject.Object {
   }
 }
 
-export interface PrivacyStatus {
+export interface PrivacyStatusProps {
   id: string;
   name: string;
   description: string;
@@ -188,7 +188,7 @@ export class EditPlaylistDialog extends Adw.PreferencesDialog {
     await edit_playlist(this.playlist.id, {
       title: values.title,
       description: values.description,
-      privacy_status: values.privacy.id as any,
+      privacy_status: values.privacy.id as "PUBLIC",
     });
 
     add_toast(_("Playlist saved"));

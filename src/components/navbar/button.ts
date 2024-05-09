@@ -1,4 +1,3 @@
-import GLib from "gi://GLib";
 import GObject from "gi://GObject";
 import Gtk from "gi://Gtk?version=4.0";
 
@@ -58,7 +57,7 @@ export class NavbarButton extends Gtk.Box {
   link: string | null = null;
   title: string | null = null;
 
-  constructor(args?: any) {
+  constructor(args?: Partial<NavbarButtonContructorProperties>) {
     super(args);
   }
 
