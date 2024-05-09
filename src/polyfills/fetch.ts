@@ -9,11 +9,7 @@ import "./abortcontroller.js";
 import "./customevent.js";
 import "./domexception.js";
 
-Gio._promisify(
-  Soup.Session.prototype,
-  "send_async",
-  "send_finish",
-);
+Gio._promisify(Soup.Session.prototype, "send_async", "send_finish");
 
 Gio._promisify(
   Gio.InputStream.prototype,
@@ -21,11 +17,7 @@ Gio._promisify(
   "read_bytes_finish",
 );
 
-Gio._promisify(
-  Gio.OutputStream.prototype,
-  "splice_async",
-  "splice_finish",
-);
+Gio._promisify(Gio.OutputStream.prototype, "splice_async", "splice_finish");
 
 export interface FetchOptions {
   body?: string | Uint8Array;
@@ -145,7 +137,7 @@ export class GResponse {
 
   async arrayBuffer() {
     const reader = this._body.getReader();
-    let chunks: Uint8Array[] = [];
+    const chunks: Uint8Array[] = [];
 
     while (true) {
       const { done, value } = await reader.read();
@@ -192,24 +184,24 @@ const SESSION = new Soup.Session({
 });
 
 export const cache = Soup.Cache.new(
-  SOUP_CACHE_DIR.get_path()!,
+  SOUP_CACHE_DIR.get_path(),
   Soup.CacheType.SHARED,
 );
 // set max cache size to 16 megabytes
-cache.set_max_size(16e+6);
+cache.set_max_size(16e6);
 
 cache.load();
 
 SESSION.add_feature(cache);
 
 export async function fetch(url: string | URL, options: FetchOptions = {}) {
-  if (typeof url !== "string" && ("href" in (url as URL))) {
-    url = (url as URL).href;
+  if (typeof url !== "string" && "href" in url) {
+    url = url.href;
   }
 
   const method = options.method?.toUpperCase() || "GET";
 
-  const uri = GLib.Uri.parse(url as string, GLib.UriFlags.NONE);
+  const uri = GLib.Uri.parse(url, GLib.UriFlags.NONE);
 
   const message = new Soup.Message({
     method,
@@ -255,8 +247,8 @@ export async function fetch(url: string | URL, options: FetchOptions = {}) {
       cancellable,
     ).catch((e) => {
       if (
-        (e instanceof Gio.IOErrorEnum) &&
-        (e.code === Gio.IOErrorEnum.CANCELLED)
+        e instanceof Gio.IOErrorEnum &&
+        e.code === Gio.IOErrorEnum.CANCELLED
       ) {
         if (options.signal && options.signal.reason instanceof DOMException) {
           reject(options.signal.reason);
@@ -301,7 +293,7 @@ export async function fetch(url: string | URL, options: FetchOptions = {}) {
       status: message.status_code,
       statusText: message.reason_phrase,
       headers,
-      url: url as string,
+      url: url,
     });
 
     resolve(response);

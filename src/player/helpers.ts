@@ -33,10 +33,7 @@ export async function get_track_settings(
     cache_maps.track_settings.set(video_id, omit(queue, ["tracks"]));
 
     for (const track of queue.tracks) {
-      cache_maps.queue_tracks.set(
-        track.videoId,
-        track,
-      );
+      cache_maps.queue_tracks.set(track.videoId, track);
     }
   }
 
@@ -54,10 +51,7 @@ export async function get_tracklist(video_ids: string[]) {
   const tracks = await get_queue_ids(video_ids);
 
   for (const track of tracks) {
-    cache_maps.queue_tracks.set(
-      track.videoId,
-      track,
-    );
+    cache_maps.queue_tracks.set(track.videoId, track);
   }
 
   return tracks;
@@ -70,10 +64,7 @@ export async function get_track_queue(
   const queue = await get_queue(video_id, null, options);
 
   for (const track of queue.tracks) {
-    cache_maps.queue_tracks.set(
-      track.videoId,
-      track,
-    );
+    cache_maps.queue_tracks.set(track.videoId, track);
   }
 
   return queue;

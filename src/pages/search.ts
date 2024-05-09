@@ -33,26 +33,31 @@ interface SearchData {
 
 GObject.type_ensure(InlineTabSwitcher.$gtype);
 
-export class SearchPage extends Adw.Bin
-  implements MuzikaPageWidget<SearchData, SearchState> {
+export class SearchPage
+  extends Adw.Bin
+  implements MuzikaPageWidget<SearchData, SearchState>
+{
   static {
-    GObject.registerClass({
-      GTypeName: "SearchPage",
-      Template: "resource:///com/vixalien/muzika/ui/pages/search.ui",
-      InternalChildren: [
-        "sections",
-        "stack",
-        "no_results",
-        "breakpoint",
-        "paginator",
-        "scrolled",
-        "context_label",
-        "scope_window",
-        "scope_switcher",
-        "filter_window",
-        "filter_box",
-      ],
-    }, this);
+    GObject.registerClass(
+      {
+        GTypeName: "SearchPage",
+        Template: "resource:///com/vixalien/muzika/ui/pages/search.ui",
+        InternalChildren: [
+          "sections",
+          "stack",
+          "no_results",
+          "breakpoint",
+          "paginator",
+          "scrolled",
+          "context_label",
+          "scope_window",
+          "scope_switcher",
+          "filter_window",
+          "filter_box",
+        ],
+      },
+      this,
+    );
   }
 
   private _sections!: Gtk.Box;
@@ -160,11 +165,9 @@ export class SearchPage extends Adw.Bin
   show_did_you_mean() {
     if (!this.results?.did_you_mean) return;
 
-    const link = `<a href="${
-      escape_label(
-        search_args_to_url(this.results.did_you_mean.query, this.args[1]),
-      )
-    }">${search_runs_to_string(this.results.did_you_mean.search)}</a>`;
+    const link = `<a href="${escape_label(
+      search_args_to_url(this.results.did_you_mean.query, this.args[1]),
+    )}">${search_runs_to_string(this.results.did_you_mean.search)}</a>`;
 
     this._context_label.visible = true;
     this._context_label.label = vprintf(_("Did you mean: %s"), [link]);
@@ -173,27 +176,24 @@ export class SearchPage extends Adw.Bin
   show_autocorrect() {
     if (!this.results?.autocorrect) return;
 
-    const original_link = `<a href="${
-      escape_label(
-        search_args_to_url(this.results.autocorrect.original.query, {
-          ...this.args[1],
-          autocorrect: false,
-        }),
-      )
-    }">${search_runs_to_string(this.results.autocorrect.original.search)}</a>`;
+    const original_link = `<a href="${escape_label(
+      search_args_to_url(this.results.autocorrect.original.query, {
+        ...this.args[1],
+        autocorrect: false,
+      }),
+    )}">${search_runs_to_string(this.results.autocorrect.original.search)}</a>`;
 
-    const corrected_link = `<a href="${
-      escape_label(
-        search_args_to_url(
-          this.results.autocorrect.corrected.query,
-          this.args[1],
-        ),
-      )
-    }">${search_runs_to_string(this.results.autocorrect.corrected.search)}</a>`;
+    const corrected_link = `<a href="${escape_label(
+      search_args_to_url(
+        this.results.autocorrect.corrected.query,
+        this.args[1],
+      ),
+    )}">${search_runs_to_string(this.results.autocorrect.corrected.search)}</a>`;
 
     this._context_label.visible = true;
     this._context_label.label =
-      vprintf(_("Showing results for: %s"), [corrected_link]) + "\n" +
+      vprintf(_("Showing results for: %s"), [corrected_link]) +
+      "\n" +
       vprintf(_("Search instead for: %s"), [original_link]);
   }
 
@@ -263,11 +263,14 @@ export class SearchPage extends Adw.Bin
   static load(context: PageLoadContext) {
     const autocorrect = context.url.searchParams.get("autocorrect");
 
-    const args = [decodeURIComponent(context.match.params.query), {
-      signal: context.signal,
-      ...Object.fromEntries(context.url.searchParams as any),
-      autocorrect: autocorrect ? autocorrect === "true" : undefined,
-    }] as const;
+    const args = [
+      decodeURIComponent(context.match.params.query),
+      {
+        signal: context.signal,
+        ...Object.fromEntries(context.url.searchParams as any),
+        autocorrect: autocorrect ? autocorrect === "true" : undefined,
+      },
+    ] as const;
 
     return search(...args).then((results) => {
       return {
@@ -303,8 +306,7 @@ export function search_args_to_url(
     Object.entries(opts)
       .filter(([_, v]) => v != null)
       .filter(([k]) => k !== "signal"),
-  )
-    .toString();
+  ).toString();
   let url_string = `muzika:search:${encodeURIComponent(query)}`;
   if (params) url_string += `?${params}`;
 
@@ -335,13 +337,15 @@ function filter_to_string(filter: Filter) {
 }
 
 function search_runs_to_string(runs: SearchRuns) {
-  return runs.map((run) => {
-    if (run.italics) {
-      return `<i>${escape_label(run.text)}</i>`;
-    } else if (run.bold) {
-      return `<b>${escape_label(run.text)}</b>`;
-    } else {
-      return escape_label(run.text);
-    }
-  }).join("");
+  return runs
+    .map((run) => {
+      if (run.italics) {
+        return `<i>${escape_label(run.text)}</i>`;
+      } else if (run.bold) {
+        return `<b>${escape_label(run.text)}</b>`;
+      } else {
+        return escape_label(run.text);
+      }
+    })
+    .join("");
 }

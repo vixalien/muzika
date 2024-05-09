@@ -32,9 +32,7 @@ import Gio from "gi://Gio";
 import { Navigator } from "./navigation.js";
 import { get_player } from "./application.js";
 import { Settings } from "./util/settings.js";
-import {
-  PlayerNowPlayingDetails,
-} from "./components/player/now-playing/details.js";
+import { PlayerNowPlayingDetails } from "./components/player/now-playing/details.js";
 import { LoginDialog } from "./pages/login.js";
 import { AddActionEntries } from "./util/action.js";
 import { get_option, LikeStatus, rate_song } from "libmuse";
@@ -71,9 +69,7 @@ export class Window extends Adw.ApplicationWindow {
           "now_playing_view",
           "sidebar",
         ],
-        Children: [
-          "toast_overlay",
-        ],
+        Children: ["toast_overlay"],
         Properties: {
           navigator: GObject.ParamSpec.object(
             "navigator",
@@ -150,10 +146,7 @@ export class Window extends Adw.ApplicationWindow {
 
     this.insert_action_group("navigator", this.navigator.get_action_group());
     this.insert_action_group("player", player.get_action_group());
-    this.insert_action_group(
-      "queue",
-      player.queue.get_action_group(),
-    );
+    this.insert_action_group("queue", player.queue.get_action_group());
 
     this.add_actions();
 
@@ -250,7 +243,7 @@ export class Window extends Adw.ApplicationWindow {
           this.rate_song(
             videoId,
             status as LikeStatus,
-            oldStatus as LikeStatus || undefined,
+            (oldStatus as LikeStatus) || undefined,
           );
         },
       },
@@ -316,8 +309,7 @@ export class Window extends Adw.ApplicationWindow {
       Adw.ResponseAppearance.DESTRUCTIVE,
     );
 
-    const response = await dialog.choose(this, null)
-      .catch(console.error);
+    const response = await dialog.choose(this, null).catch(console.error);
 
     if (response === "logout") {
       get_option("auth").token = null;
@@ -344,7 +336,8 @@ export class Window extends Adw.ApplicationWindow {
       controller.abort();
     });
 
-    loginDialog.auth_flow(controller.signal)
+    loginDialog
+      .auth_flow(controller.signal)
       .then(() => {
         this.add_toast(_("Successfully logged in!"));
         this.navigator.reload();
@@ -457,11 +450,11 @@ export class Window extends Adw.ApplicationWindow {
     status: LikeStatus,
     oldStatus?: LikeStatus,
   ) {
-    rate_song(videoId, status as LikeStatus)
+    rate_song(videoId, status)
       .then(() => {
         const toast = new Adw.Toast();
 
-        switch (status as LikeStatus) {
+        switch (status) {
           case "DISLIKE":
             toast.title = _("Added to disliked songs");
             break;

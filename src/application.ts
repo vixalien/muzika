@@ -37,8 +37,8 @@ export class Application extends Adw.Application {
       },
       {
         name: "about",
-        activate: this.show_about_dialog_cb.bind(this)
-      }
+        activate: this.show_about_dialog_cb.bind(this),
+      },
     ]);
 
     this.set_accels_for_action("app.quit", ["<primary>q"]);

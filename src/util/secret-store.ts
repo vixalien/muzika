@@ -51,7 +51,7 @@ export class MuzikaSecretStore extends Store {
   }
 
   get<T>(key: string): T | null {
-    return this.map.get(key) as T ?? null;
+    return (this.map.get(key) as T) ?? null;
   }
 
   set(key: string, value: unknown): void {
@@ -71,11 +71,7 @@ export class MuzikaSecretStore extends Store {
 
     this.save();
 
-    Secret.password_clear_sync(
-      this.schema,
-      { version: this.version },
-      null,
-    );
+    Secret.password_clear_sync(this.schema, { version: this.version }, null);
   }
 
   private save() {

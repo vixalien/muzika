@@ -10,54 +10,57 @@ import { setup_link_label } from "src/util/label.js";
 
 export class PlaylistHeader extends Gtk.Box {
   static {
-    GObject.registerClass({
-      GTypeName: "PlaylistHeader",
-      Template:
-        "resource:///com/vixalien/muzika/ui/components/playlist/header.ui",
-      Implements: [Gtk.Buildable],
-      Properties: {
-        "show-large-header": GObject.ParamSpec.boolean(
-          "show-large-header",
-          "Show Large Header",
-          "Whether to show the larger header",
-          GObject.ParamFlags.READWRITE,
-          true,
-        ),
-        "show-avatar": GObject.ParamSpec.boolean(
-          "show-avatar",
-          "Show Avatar",
-          "Whether to show the avatar or image",
-          GObject.ParamFlags.READWRITE,
-          false,
-        ),
-        "show-meta": GObject.ParamSpec.boolean(
-          "show-meta",
-          "Show Meta",
-          "Whether to show the metadata like genre & year",
-          GObject.ParamFlags.READWRITE,
-          false,
-        ),
+    GObject.registerClass(
+      {
+        GTypeName: "PlaylistHeader",
+        Template:
+          "resource:///com/vixalien/muzika/ui/components/playlist/header.ui",
+        Implements: [Gtk.Buildable],
+        Properties: {
+          "show-large-header": GObject.ParamSpec.boolean(
+            "show-large-header",
+            "Show Large Header",
+            "Whether to show the larger header",
+            GObject.ParamFlags.READWRITE,
+            true,
+          ),
+          "show-avatar": GObject.ParamSpec.boolean(
+            "show-avatar",
+            "Show Avatar",
+            "Whether to show the avatar or image",
+            GObject.ParamFlags.READWRITE,
+            false,
+          ),
+          "show-meta": GObject.ParamSpec.boolean(
+            "show-meta",
+            "Show Meta",
+            "Whether to show the metadata like genre & year",
+            GObject.ParamFlags.READWRITE,
+            false,
+          ),
+        },
+        InternalChildren: [
+          "stack",
+          "title",
+          "subtitle",
+          "submeta",
+          "description_stack",
+          "more",
+          "description",
+          "description_long",
+          "year",
+          "genre",
+          "subtitle_separator",
+          "image",
+          "explicit",
+          "avatar",
+          "primary_buttons",
+          "secondary_buttons",
+          "buttons",
+        ],
       },
-      InternalChildren: [
-        "stack",
-        "title",
-        "subtitle",
-        "submeta",
-        "description_stack",
-        "more",
-        "description",
-        "description_long",
-        "year",
-        "genre",
-        "subtitle_separator",
-        "image",
-        "explicit",
-        "avatar",
-        "primary_buttons",
-        "secondary_buttons",
-        "buttons",
-      ],
-    }, this);
+      this,
+    );
   }
 
   private _stack!: Gtk.Stack;

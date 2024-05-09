@@ -10,18 +10,21 @@ GObject.type_ensure(VideoControls.$gtype);
 
 export class VideoPlayerView extends Adw.Bin {
   static {
-    GObject.registerClass({
-      GTypeName: "VideoPlayerView",
-      Template:
-        "resource:///com/vixalien/muzika/ui/components/player/video/view.ui",
-      InternalChildren: [
-        "picture",
-        "fullscreen",
-        "toolbar_view",
-        "window_title",
-        "controls",
-      ],
-    }, this);
+    GObject.registerClass(
+      {
+        GTypeName: "VideoPlayerView",
+        Template:
+          "resource:///com/vixalien/muzika/ui/components/player/video/view.ui",
+        InternalChildren: [
+          "picture",
+          "fullscreen",
+          "toolbar_view",
+          "window_title",
+          "controls",
+        ],
+      },
+      this,
+    );
   }
 
   private _picture!: Gtk.Picture;
@@ -163,24 +166,21 @@ export class VideoPlayerView extends Adw.Bin {
   private hide_ui() {
     this.remove_timeout();
 
-    this._toolbar_view.reveal_top_bars =
-      this._toolbar_view.reveal_bottom_bars =
-        false;
+    this._toolbar_view.reveal_top_bars = this._toolbar_view.reveal_bottom_bars =
+      false;
   }
 
   private show_ui() {
     this.remove_timeout();
 
-    this._toolbar_view.reveal_top_bars =
-      this._toolbar_view.reveal_bottom_bars =
-        true;
+    this._toolbar_view.reveal_top_bars = this._toolbar_view.reveal_bottom_bars =
+      true;
   }
 
   private toggle_ui() {
     this.remove_timeout();
 
-    this._toolbar_view.reveal_top_bars =
-      this._toolbar_view.reveal_bottom_bars =
-        !this._toolbar_view.reveal_top_bars;
+    this._toolbar_view.reveal_top_bars = this._toolbar_view.reveal_bottom_bars =
+      !this._toolbar_view.reveal_top_bars;
   }
 }

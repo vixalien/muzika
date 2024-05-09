@@ -13,9 +13,12 @@ export interface PlayerViewOptions {
 
 export class PlayerView extends Adw.Bin {
   static {
-    GObject.registerClass({
-      GTypeName: "PlayerView",
-    }, this);
+    GObject.registerClass(
+      {
+        GTypeName: "PlayerView",
+      },
+      this,
+    );
   }
 
   squeezer: Adw.Squeezer;

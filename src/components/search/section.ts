@@ -13,12 +13,15 @@ GObject.type_ensure(FlatListView.$gtype);
 
 export class SearchSection extends Gtk.Box {
   static {
-    GObject.registerClass({
-      GTypeName: "SearchSection",
-      Template:
-        "resource:///com/vixalien/muzika/ui/components/search/section.ui",
-      InternalChildren: ["title", "more", "card_view"],
-    }, this);
+    GObject.registerClass(
+      {
+        GTypeName: "SearchSection",
+        Template:
+          "resource:///com/vixalien/muzika/ui/components/search/section.ui",
+        InternalChildren: ["title", "more", "card_view"],
+      },
+      this,
+    );
   }
 
   private _title!: Gtk.Label;
@@ -29,13 +32,11 @@ export class SearchSection extends Gtk.Box {
   show_more: boolean;
   show_type: boolean;
 
-  constructor(
-    options: {
-      args: Parameters<typeof search>;
-      show_more?: boolean;
-      show_type?: boolean;
-    },
-  ) {
+  constructor(options: {
+    args: Parameters<typeof search>;
+    show_more?: boolean;
+    show_type?: boolean;
+  }) {
     super();
 
     this.args = options.args;
@@ -47,23 +48,19 @@ export class SearchSection extends Gtk.Box {
     this._title.label = category.title || _("Results");
 
     if (
-      category.results.length >= 0 && this.show_more && category.filter &&
+      category.results.length >= 0 &&
+      this.show_more &&
+      category.filter &&
       filters.includes(category.filter)
     ) {
-      const url = search_args_to_url(
-        this.args[0],
-        {
-          filter: category.filter ?? undefined,
-          ...this.args[1],
-        },
-      );
+      const url = search_args_to_url(this.args[0], {
+        filter: category.filter ?? undefined,
+        ...this.args[1],
+      });
 
       this._more.visible = true;
       this._more.action_name = "navigator.visit";
-      this._more.action_target = GLib.Variant.new(
-        "s",
-        url,
-      );
+      this._more.action_target = GLib.Variant.new("s", url);
     }
 
     this.add_search_contents(category.results);

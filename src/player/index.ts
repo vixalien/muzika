@@ -37,8 +37,8 @@ if (!Gst.is_initialized()) {
   Gst.init(null);
 }
 
-type GTypeToType<Y extends GObject.GType> = Y extends GObject.GType<infer T> ? T
-  : never;
+type GTypeToType<Y extends GObject.GType> =
+  Y extends GObject.GType<infer T> ? T : never;
 
 type GTypeArrayToTypeArray<Y extends readonly GObject.GType[]> = {
   [K in keyof Y]: GTypeToType<Y[K]>;
@@ -46,10 +46,10 @@ type GTypeArrayToTypeArray<Y extends readonly GObject.GType[]> = {
 
 class MuzikaPlaySignalAdapter extends GObject.Object {
   private static events = {
-    "buffering": [GObject.TYPE_INT],
+    buffering: [GObject.TYPE_INT],
     "duration-changed": [GObject.TYPE_INT],
     "end-of-stream": [],
-    "error": [GLib.Error.$gtype, Gst.Structure.$gtype],
+    error: [GLib.Error.$gtype, Gst.Structure.$gtype],
     "media-info-updated": [GstPlay.PlayMediaInfo.$gtype],
     "mute-changed": [GObject.TYPE_BOOLEAN],
     "position-updated": [GObject.TYPE_DOUBLE],
@@ -58,22 +58,24 @@ class MuzikaPlaySignalAdapter extends GObject.Object {
     "uri-loaded": [GObject.TYPE_STRING],
     "video-dimensions-changed": [GObject.TYPE_INT, GObject.TYPE_INT],
     "volume-changed": [GObject.TYPE_INT],
-    "warning": [GLib.Error.$gtype, Gst.Structure.$gtype],
+    warning: [GLib.Error.$gtype, Gst.Structure.$gtype],
   } as const;
 
   static {
-    GObject.registerClass({
-      GTypeName: "MuzikaPlaySignalAdapter",
-      Signals: Object.fromEntries(
-        Object.entries(this.events)
-          .map(([name, types]) => [
+    GObject.registerClass(
+      {
+        GTypeName: "MuzikaPlaySignalAdapter",
+        Signals: Object.fromEntries(
+          Object.entries(this.events).map(([name, types]) => [
             name,
             {
               param_types: types,
             },
           ]),
-      ),
-    }, this);
+        ),
+      },
+      this,
+    );
   }
   private _play: GstPlay.Play;
 
@@ -86,7 +88,7 @@ class MuzikaPlaySignalAdapter extends GObject.Object {
 
     this._play = play;
 
-    const bus = this._play.get_message_bus()!;
+    const bus = this._play.get_message_bus();
     bus.add_signal_watch();
 
     bus.connect("message", this.on_message.bind(this));
@@ -103,7 +105,7 @@ class MuzikaPlaySignalAdapter extends GObject.Object {
       GstPlay.PlayMessage.$gtype,
     );
 
-    if (!type[0] || structure.get_name()! !== "gst-play-message-data") {
+    if (!type[0] || structure.get_name() !== "gst-play-message-data") {
       return;
     }
 
@@ -162,7 +164,7 @@ class MuzikaPlaySignalAdapter extends GObject.Object {
         break;
       case GstPlay.PlayMessage.MUTE_CHANGED:
         this.emit_message("mute-changed", [
-          GstPlay.play_message_parse_muted_changed(message)!,
+          GstPlay.play_message_parse_muted_changed(message),
         ]);
         break;
       case GstPlay.PlayMessage.SEEK_DONE:
@@ -174,60 +176,60 @@ class MuzikaPlaySignalAdapter extends GObject.Object {
   }
 
   private emit_message<
-    Name extends keyof typeof MuzikaPlaySignalAdapter["events"],
-    Types extends typeof MuzikaPlaySignalAdapter["events"][Name],
-  >(
-    name: Name,
-    args: GTypeArrayToTypeArray<Types>,
-  ) {
-    this.emit(name as string, ...args as GTypeToType<Types[number]>[]);
+    Name extends keyof (typeof MuzikaPlaySignalAdapter)["events"],
+    Types extends (typeof MuzikaPlaySignalAdapter)["events"][Name],
+  >(name: Name, args: GTypeArrayToTypeArray<Types>) {
+    this.emit(name as string, ...(args as GTypeToType<Types[number]>[]));
   }
 }
 
 export class MuzikaMediaStream extends Gtk.MediaStream {
   static {
-    GObject.registerClass({
-      GTypeName: "MuzikaMediaStream",
-      Properties: {
-        queue: GObject.param_spec_object(
-          "queue",
-          "Queue",
-          "The queue",
-          Queue.$gtype,
-          GObject.ParamFlags.READABLE,
-        ),
-        buffering: GObject.param_spec_boolean(
-          "is-buffering",
-          "Is Buffering",
-          "Whether the player is buffering",
-          false,
-          GObject.ParamFlags.READABLE,
-        ),
-        paintable: GObject.param_spec_object(
-          "paintable",
-          "Paintable",
-          "The GdkPaintable representing the video",
-          Gdk.Paintable.$gtype,
-          GObject.ParamFlags.READABLE,
-        ),
-        media_info: GObject.param_spec_object(
-          "media-info",
-          "Media Info",
-          "The media info",
-          GstPlay.PlayMediaInfo.$gtype,
-          GObject.ParamFlags.READABLE,
-        ),
-        cubic_volume: GObject.param_spec_double(
-          "cubic-volume",
-          "Cubic Volume",
-          "The volume that is suitable for display",
-          0.0,
-          1.0,
-          1.0,
-          GObject.ParamFlags.READABLE,
-        ),
+    GObject.registerClass(
+      {
+        GTypeName: "MuzikaMediaStream",
+        Properties: {
+          queue: GObject.param_spec_object(
+            "queue",
+            "Queue",
+            "The queue",
+            Queue.$gtype,
+            GObject.ParamFlags.READABLE,
+          ),
+          buffering: GObject.param_spec_boolean(
+            "is-buffering",
+            "Is Buffering",
+            "Whether the player is buffering",
+            false,
+            GObject.ParamFlags.READABLE,
+          ),
+          paintable: GObject.param_spec_object(
+            "paintable",
+            "Paintable",
+            "The GdkPaintable representing the video",
+            Gdk.Paintable.$gtype,
+            GObject.ParamFlags.READABLE,
+          ),
+          media_info: GObject.param_spec_object(
+            "media-info",
+            "Media Info",
+            "The media info",
+            GstPlay.PlayMediaInfo.$gtype,
+            GObject.ParamFlags.READABLE,
+          ),
+          cubic_volume: GObject.param_spec_double(
+            "cubic-volume",
+            "Cubic Volume",
+            "The volume that is suitable for display",
+            0.0,
+            1.0,
+            1.0,
+            GObject.ParamFlags.READABLE,
+          ),
+        },
       },
-    }, this);
+      this,
+    );
   }
 
   private _paintable: Gdk.Paintable | null = null;
@@ -588,39 +590,42 @@ export class MuzikaMediaStream extends Gtk.MediaStream {
 
 export class MuzikaPlayer extends MuzikaMediaStream {
   static {
-    GObject.registerClass({
-      GTypeName: "MuzikaPlayer",
-      Properties: {
-        queue: GObject.param_spec_object(
-          "queue",
-          "Queue",
-          "The queue",
-          Queue.$gtype,
-          GObject.ParamFlags.READABLE,
-        ),
-        buffering: GObject.param_spec_boolean(
-          "buffering",
-          "Buffering",
-          "Whether the player is buffering",
-          false,
-          GObject.ParamFlags.READABLE,
-        ),
-        now_playing: GObject.param_spec_object(
-          "now-playing",
-          "Now playing",
-          "The metadata of the currently playing song",
-          ObjectContainer.$gtype,
-          GObject.ParamFlags.READABLE,
-        ),
-        loading_track: GObject.param_spec_string(
-          "loading-track",
-          "Loading track",
-          "The videoId of track that is currently being loaded",
-          null,
-          GObject.ParamFlags.READABLE,
-        ),
+    GObject.registerClass(
+      {
+        GTypeName: "MuzikaPlayer",
+        Properties: {
+          queue: GObject.param_spec_object(
+            "queue",
+            "Queue",
+            "The queue",
+            Queue.$gtype,
+            GObject.ParamFlags.READABLE,
+          ),
+          buffering: GObject.param_spec_boolean(
+            "buffering",
+            "Buffering",
+            "Whether the player is buffering",
+            false,
+            GObject.ParamFlags.READABLE,
+          ),
+          now_playing: GObject.param_spec_object(
+            "now-playing",
+            "Now playing",
+            "The metadata of the currently playing song",
+            ObjectContainer.$gtype,
+            GObject.ParamFlags.READABLE,
+          ),
+          loading_track: GObject.param_spec_string(
+            "loading-track",
+            "Loading track",
+            "The videoId of track that is currently being loaded",
+            null,
+            GObject.ParamFlags.READABLE,
+          ),
+        },
       },
-    }, this);
+      this,
+    );
   }
 
   private app: Application;
@@ -633,8 +638,8 @@ export class MuzikaPlayer extends MuzikaMediaStream {
   get duration() {
     // normalise duration when the media-info is not available
     if (super.duration <= 0) {
-      const duration_seconds = this.now_playing?.object.song.videoDetails
-        .lengthSeconds;
+      const duration_seconds =
+        this.now_playing?.object.song.videoDetails.lengthSeconds;
 
       if (duration_seconds) {
         // to microsecond
@@ -663,10 +668,13 @@ export class MuzikaPlayer extends MuzikaMediaStream {
 
       // try to seek to the same position
       if (
-        counterpart_videoId && counterpart_videoId === now_playing_videoId &&
-        current.duration_seconds && this.timestamp !== 0
+        counterpart_videoId &&
+        counterpart_videoId === now_playing_videoId &&
+        current.duration_seconds &&
+        this.timestamp !== 0
       ) {
-        this.initial_seek_to = (this.timestamp / this.duration) *
+        this.initial_seek_to =
+          (this.timestamp / this.duration) *
           (current.duration_seconds * Gst.MSECOND);
       } else {
         // reset seek
@@ -805,10 +813,9 @@ export class MuzikaPlayer extends MuzikaMediaStream {
     if (song) {
       if (this.add_history && get_option("auth").has_token()) {
         // add history entry, but don't wait for the promise to resolve
-        add_history_item(song)
-          .catch((err) => {
-            console.log("Couldn't add history item", err);
-          });
+        add_history_item(song).catch((err) => {
+          console.log("Couldn't add history item", err);
+        });
 
         this.add_history = false;
       }
@@ -866,8 +873,8 @@ export class MuzikaPlayer extends MuzikaMediaStream {
     this.notify("is-buffering");
 
     return Promise.all([
-      get_song(track.videoId, { signal: this.loading_controller!.signal }),
-      get_track_settings(track.videoId, this.loading_controller!.signal),
+      get_song(track.videoId, { signal: this.loading_controller.signal }),
+      get_track_settings(track.videoId, this.loading_controller.signal),
     ])
       .then(([song, settings]) => {
         this._now_playing = new ObjectContainer<TrackMetadata>({
@@ -875,8 +882,8 @@ export class MuzikaPlayer extends MuzikaMediaStream {
           track,
           settings: {
             ...settings,
-            playlistId: this.queue.settings.object?.playlistId ??
-              settings.playlistId,
+            playlistId:
+              this.queue.settings.object?.playlistId ?? settings.playlistId,
           },
         });
         this.notify("now-playing");
@@ -912,7 +919,7 @@ export class MuzikaPlayer extends MuzikaMediaStream {
 
     this.loading_controller = new AbortController();
 
-    return get_song(track.videoId, { signal: this.loading_controller!.signal })
+    return get_song(track.videoId, { signal: this.loading_controller.signal })
       .then((song) => {
         this.refreshed_uri = true;
 
@@ -953,7 +960,7 @@ export class MuzikaPlayer extends MuzikaMediaStream {
       return list_model_to_array(list)
         .map((container) => container.object)
         .filter(Boolean)
-        .map((track) => track?.videoId) as string[];
+        .map((track) => track?.videoId);
     };
 
     return {
@@ -981,18 +988,16 @@ export class MuzikaPlayer extends MuzikaMediaStream {
     }
 
     await Promise.all([
-      get_tracklist(state.tracks)
-        .then((tracks) => {
-          this.queue.add(tracks_to_meta(tracks), state.position ?? undefined);
-        }),
-      get_tracklist(state.original)
-        .then((tracks) =>
-          tracks.forEach((track) =>
-            this.queue._original.append(
-              new ObjectContainer({ ...track, playlist: null }),
-            )
-          )
+      get_tracklist(state.tracks).then((tracks) => {
+        this.queue.add(tracks_to_meta(tracks), state.position ?? undefined);
+      }),
+      get_tracklist(state.original).then((tracks) =>
+        tracks.forEach((track) =>
+          this.queue._original.append(
+            new ObjectContainer({ ...track, playlist: null }),
+          ),
         ),
+      ),
     ]);
 
     this.queue._shuffle = state.shuffle;
@@ -1002,8 +1007,7 @@ export class MuzikaPlayer extends MuzikaMediaStream {
   private async load_state() {
     const state = store.get("player-state") as PlayerState | undefined;
 
-    await this.set_state(state)
-      .catch((err) => console.error(err));
+    await this.set_state(state).catch((err) => console.error(err));
   }
 
   save_state() {
@@ -1209,11 +1213,15 @@ function get_song_formats<
     .filter((format) => {
       // filter requested manifests
       if (video && format_has_video(format)) {
-        return quality === VideoQuality.auto ||
-          format.video_quality == VideoQuality[quality];
+        return (
+          quality === VideoQuality.auto ||
+          format.video_quality == VideoQuality[quality]
+        );
       } else if (!video && format_has_audio(format)) {
-        return quality === AudioQuality.auto ||
-          format.audio_quality == AudioQuality[quality];
+        return (
+          quality === AudioQuality.auto ||
+          format.audio_quality == AudioQuality[quality]
+        );
       } else {
         return false;
       }
@@ -1252,11 +1260,7 @@ function get_best_formats(
   let best_formats: Format[] = [];
 
   while (best_quality >= 0) {
-    best_formats = get_song_formats(
-      video,
-      formats,
-      best_quality,
-    );
+    best_formats = get_song_formats(video, formats, best_quality);
 
     if (best_formats.length > 0) {
       return best_formats;
@@ -1304,13 +1308,13 @@ function get_song_uri(song: Song) {
     return total_formats[0].url;
   }
 
-  return `data:application/dash+xml;base64,${
-    btoa(convert_formats_to_dash({
+  return `data:application/dash+xml;base64,${btoa(
+    convert_formats_to_dash({
       ...song,
       adaptive_formats: [],
       formats: total_formats,
-    }))
-  }`;
+    }),
+  )}`;
 }
 
 export const VideoQualities: { name: string; value: string }[] = [

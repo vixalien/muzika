@@ -34,8 +34,10 @@ export class GioFileStore extends Store {
     } catch (error) {
       // create the file if it's missing
       if (
-        !(error instanceof GLib.Error &&
-          error.matches(Gio.IOErrorEnum, Gio.IOErrorEnum.NOT_FOUND))
+        !(
+          error instanceof GLib.Error &&
+          error.matches(Gio.IOErrorEnum, Gio.IOErrorEnum.NOT_FOUND)
+        )
       ) {
         console.error("Failed to load store, resetting", error);
       }
@@ -48,7 +50,7 @@ export class GioFileStore extends Store {
   }
 
   get<T>(key: string): T | null {
-    return this.map.get(key) as T ?? null;
+    return (this.map.get(key) as T) ?? null;
   }
 
   set(key: string, value: unknown): void {

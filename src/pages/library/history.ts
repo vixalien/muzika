@@ -26,9 +26,12 @@ interface HistoryState extends VScrollState {
 
 class HistoryTitle extends Gtk.Box {
   static {
-    GObject.registerClass({
-      GTypeName: "HistoryTitle",
-    }, this);
+    GObject.registerClass(
+      {
+        GTypeName: "HistoryTitle",
+      },
+      this,
+    );
   }
 
   private label_widget: Gtk.Label;
@@ -48,7 +51,7 @@ class HistoryTitle extends Gtk.Box {
     });
 
     this.label_widget = new Gtk.Label({
-      label: props.title ?? null as unknown as string,
+      label: props.title ?? (null as unknown as string),
       hexpand: true,
       xalign: 0,
     });
@@ -63,15 +66,20 @@ interface CategoryMeta {
   title: string;
 }
 
-export class HistoryPage extends Adw.Bin
-  implements MuzikaPageWidget<History, HistoryState> {
+export class HistoryPage
+  extends Adw.Bin
+  implements MuzikaPageWidget<History, HistoryState>
+{
   static {
-    GObject.registerClass({
-      GTypeName: "HistoryPage",
-      Template:
-        "resource:///com/vixalien/muzika/ui/components/library/history.ui",
-      InternalChildren: ["item_view", "scrolled"],
-    }, this);
+    GObject.registerClass(
+      {
+        GTypeName: "HistoryPage",
+        Template:
+          "resource:///com/vixalien/muzika/ui/components/library/history.ui",
+        InternalChildren: ["item_view", "scrolled"],
+      },
+      this,
+    );
   }
 
   private _item_view!: PlaylistItemView;
@@ -127,19 +135,17 @@ export class HistoryPage extends Adw.Bin
 
   private show_library(library: History) {
     const items = library.categories.reduce((acc, category) => {
-      return acc.concat(category.items.map((item, index) => {
-        return SectionedPlayableContainer.new_from_playlist_item<CategoryMeta>(
-          item,
-          index === 0 ? { title: category.title } : undefined,
-        );
-      }));
+      return acc.concat(
+        category.items.map((item, index) => {
+          return SectionedPlayableContainer.new_from_playlist_item<CategoryMeta>(
+            item,
+            index === 0 ? { title: category.title } : undefined,
+          );
+        }),
+      );
     }, [] as SectionedPlayableContainer[]);
 
-    this.model.splice(
-      this.model.n_items,
-      0,
-      items,
-    );
+    this.model.splice(this.model.n_items, 0, items);
   }
 
   get_state() {

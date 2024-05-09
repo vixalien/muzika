@@ -11,32 +11,35 @@ import { add_toast } from "src/util/window";
 
 export class PrivacyStatus extends GObject.Object {
   static {
-    GObject.registerClass({
-      GTypeName: "PrivacyStatus",
-      Properties: {
-        id: GObject.ParamSpec.string(
-          "id",
-          "ID",
-          "The unique ID of the privacy status",
-          GObject.ParamFlags.READWRITE,
-          "",
-        ),
-        name: GObject.ParamSpec.string(
-          "name",
-          "Name",
-          "Translated name of the privacy status",
-          GObject.ParamFlags.READWRITE,
-          "",
-        ),
-        description: GObject.ParamSpec.string(
-          "description",
-          "description",
-          "Translated description of the privacy status",
-          GObject.ParamFlags.READWRITE,
-          "",
-        ),
+    GObject.registerClass(
+      {
+        GTypeName: "PrivacyStatus",
+        Properties: {
+          id: GObject.ParamSpec.string(
+            "id",
+            "ID",
+            "The unique ID of the privacy status",
+            GObject.ParamFlags.READWRITE,
+            "",
+          ),
+          name: GObject.ParamSpec.string(
+            "name",
+            "Name",
+            "Translated name of the privacy status",
+            GObject.ParamFlags.READWRITE,
+            "",
+          ),
+          description: GObject.ParamSpec.string(
+            "description",
+            "description",
+            "Translated description of the privacy status",
+            GObject.ParamFlags.READWRITE,
+            "",
+          ),
+        },
       },
-    }, this);
+      this,
+    );
   }
 
   constructor(
@@ -63,11 +66,7 @@ export interface EditedValues {
 const privacy_model = new Gio.ListStore<PrivacyStatus>();
 
 privacy_model.append(
-  new PrivacyStatus(
-    "PUBLIC",
-    _("Public"),
-    _("Anyone can search for and view"),
-  ),
+  new PrivacyStatus("PUBLIC", _("Public"), _("Anyone can search for and view")),
 );
 
 privacy_model.append(
@@ -79,31 +78,25 @@ privacy_model.append(
 );
 
 privacy_model.append(
-  new PrivacyStatus(
-    "PRIVATE",
-    _("Private"),
-    _("Only you can view"),
-  ),
+  new PrivacyStatus("PRIVATE", _("Private"), _("Only you can view")),
 );
 
 export class EditPlaylistDialog extends Adw.PreferencesDialog {
   static {
-    GObject.registerClass({
-      GTypeName: "EditPlaylistDialog",
-      Template:
-        "resource:///com/vixalien/muzika/ui/components/playlist/edit.ui",
-      InternalChildren: [
-        "title",
-        "description",
-        "privacy",
-        "save",
-      ],
-      Signals: {
-        saved: {
-          param_types: [GObject.TYPE_OBJECT],
+    GObject.registerClass(
+      {
+        GTypeName: "EditPlaylistDialog",
+        Template:
+          "resource:///com/vixalien/muzika/ui/components/playlist/edit.ui",
+        InternalChildren: ["title", "description", "privacy", "save"],
+        Signals: {
+          saved: {
+            param_types: [GObject.TYPE_OBJECT],
+          },
         },
       },
-    }, this);
+      this,
+    );
   }
 
   private _title!: Adw.EntryRow;
@@ -207,9 +200,12 @@ export class EditPlaylistDialog extends Adw.PreferencesDialog {
 
 class PrivacyBox extends Gtk.Box {
   static {
-    GObject.registerClass({
-      GTypeName: "PrivacyBox",
-    }, this);
+    GObject.registerClass(
+      {
+        GTypeName: "PrivacyBox",
+      },
+      this,
+    );
   }
 
   title!: Gtk.Label;

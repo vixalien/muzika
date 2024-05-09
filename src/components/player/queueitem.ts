@@ -9,17 +9,15 @@ import { setup_link_label } from "src/util/label.js";
 
 export class QueueItem extends Gtk.Box {
   static {
-    GObject.registerClass({
-      GTypeName: "QueueItem",
-      Template:
-        "resource:///com/vixalien/muzika/ui/components/player/queueitem.ui",
-      InternalChildren: [
-        "image",
-        "title",
-        "explicit",
-        "subtitle",
-      ],
-    }, this);
+    GObject.registerClass(
+      {
+        GTypeName: "QueueItem",
+        Template:
+          "resource:///com/vixalien/muzika/ui/components/player/queueitem.ui",
+        InternalChildren: ["image", "title", "explicit", "subtitle"],
+      },
+      this,
+    );
   }
 
   item?: QueueTrack;

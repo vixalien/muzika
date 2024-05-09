@@ -33,10 +33,7 @@ export class SignalListeners {
     this.bindings.length = 0;
   }
 
-  connect<
-    Signal extends string,
-    Obj extends GObject.Object,
-  >(
+  connect<Signal extends string, Obj extends GObject.Object>(
     widget: Obj,
     signal: Signal,
     fn: (...args: any[]) => any,

@@ -15,20 +15,23 @@ export interface FlatListViewConstructorProperties
 
 export class FlatListView extends Gtk.ListView {
   static {
-    GObject.registerClass({
-      GTypeName: "FlatListView",
-      Properties: {
-        "child-type": GObject.ParamSpec.uint(
-          "child-type",
-          "Child Type",
-          "The type of children rendered by this listview",
-          GObject.ParamFlags.READWRITE,
-          FlatViewChildType.INLINE_SONG,
-          FlatViewChildType.MIXED_CARD,
-          FlatViewChildType.INLINE_SONG,
-        ),
+    GObject.registerClass(
+      {
+        GTypeName: "FlatListView",
+        Properties: {
+          "child-type": GObject.ParamSpec.uint(
+            "child-type",
+            "Child Type",
+            "The type of children rendered by this listview",
+            GObject.ParamFlags.READWRITE,
+            FlatViewChildType.INLINE_SONG,
+            FlatViewChildType.MIXED_CARD,
+            FlatViewChildType.INLINE_SONG,
+          ),
+        },
       },
-    }, this);
+      this,
+    );
   }
 
   private _items!: PlayableList<FlatCardItem>;

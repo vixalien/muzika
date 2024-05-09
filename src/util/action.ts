@@ -36,7 +36,7 @@ export interface ActionDeclaration {
 export function build_action(decl: ActionDeclaration) {
   const action = new Gio.SimpleAction({
     name: decl.name,
-    parameter_type: decl.parameter_type ?? null as any,
+    parameter_type: decl.parameter_type ?? (null as any),
     state: decl.state ?? undefined,
   });
 

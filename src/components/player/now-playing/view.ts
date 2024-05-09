@@ -19,47 +19,50 @@ import { get_button_props } from "src/util/menu/like";
 
 export class PlayerNowPlayingView extends Adw.NavigationPage {
   static {
-    GObject.registerClass({
-      GTypeName: "PlayerNowPlayingView",
-      Template:
-        "resource:///com/vixalien/muzika/ui/components/player/now-playing/view.ui",
-      InternalChildren: [
-        "video_counterpart",
-        "music_counterpart",
-        "title",
-        "subtitle",
-        "picture",
-        "timestamp",
-        "duration",
-        "play_image",
-        "overlay_box",
-        "repeat_button",
-        "expand_button",
-        "fullscreen_button",
-        "switchers",
-        "like_button",
-        "dislike_button",
-      ],
-      Properties: {
-        switcher_stack: GObject.param_spec_object(
-          "switcher-stack",
-          "Switcher Stack",
-          "The Stack associated with the switcher",
-          Adw.ViewStack.$gtype,
-          GObject.ParamFlags.READWRITE,
-        ),
-        switcher_visible: GObject.param_spec_boolean(
-          "switcher-visible",
-          "Switcher Visible",
-          "Whether to show the switcher stack",
-          false,
-          GObject.ParamFlags.READWRITE,
-        ),
+    GObject.registerClass(
+      {
+        GTypeName: "PlayerNowPlayingView",
+        Template:
+          "resource:///com/vixalien/muzika/ui/components/player/now-playing/view.ui",
+        InternalChildren: [
+          "video_counterpart",
+          "music_counterpart",
+          "title",
+          "subtitle",
+          "picture",
+          "timestamp",
+          "duration",
+          "play_image",
+          "overlay_box",
+          "repeat_button",
+          "expand_button",
+          "fullscreen_button",
+          "switchers",
+          "like_button",
+          "dislike_button",
+        ],
+        Properties: {
+          switcher_stack: GObject.param_spec_object(
+            "switcher-stack",
+            "Switcher Stack",
+            "The Stack associated with the switcher",
+            Adw.ViewStack.$gtype,
+            GObject.ParamFlags.READWRITE,
+          ),
+          switcher_visible: GObject.param_spec_boolean(
+            "switcher-visible",
+            "Switcher Visible",
+            "Whether to show the switcher stack",
+            false,
+            GObject.ParamFlags.READWRITE,
+          ),
+        },
+        Signals: {
+          "bottom-bar-clicked": {},
+        },
       },
-      Signals: {
-        "bottom-bar-clicked": {},
-      },
-    }, this);
+      this,
+    );
   }
 
   player: MuzikaPlayer;
@@ -128,10 +131,11 @@ export class PlayerNowPlayingView extends Adw.NavigationPage {
       old_child.unparent();
     }
 
-    (list_model_to_array(stack.pages) as Adw.ViewStackPage[])
-      .forEach((page, i) => {
+    (list_model_to_array(stack.pages) as Adw.ViewStackPage[]).forEach(
+      (page, i) => {
         this._switchers.append(this.construct_switcher(stack, i, page));
-      });
+      },
+    );
   }
 
   private _switcher_stack: Adw.ViewStack | null = null;
@@ -166,10 +170,7 @@ export class PlayerNowPlayingView extends Adw.NavigationPage {
 
   private activate_link_cb(_: Gtk.Label, uri: string) {
     if (uri && uri.startsWith("muzika:")) {
-      this.activate_action(
-        "navigator.visit",
-        GLib.Variant.new_string(uri),
-      );
+      this.activate_action("navigator.visit", GLib.Variant.new_string(uri));
 
       return true;
     }
@@ -223,7 +224,7 @@ export class PlayerNowPlayingView extends Adw.NavigationPage {
     const song = this.player.queue.current?.object;
 
     if (song) {
-      this.show_song(song!);
+      this.show_song(song);
       this.update_thumbnail();
     }
   }
@@ -258,9 +259,8 @@ export class PlayerNowPlayingView extends Adw.NavigationPage {
   show_song(track: QueueTrack) {
     // thumbnail
 
-    this._video_counterpart.sensitive =
-      this._music_counterpart.sensitive =
-        !!track.counterpart;
+    this._video_counterpart.sensitive = this._music_counterpart.sensitive =
+      !!track.counterpart;
 
     this._overlay_box.visible = this.player.queue.current_is_video;
 
@@ -276,9 +276,9 @@ export class PlayerNowPlayingView extends Adw.NavigationPage {
 
     if (track.album) {
       this._title.set_markup(
-        `<a href="muzika:album:${track.album.id}?track=${track.videoId}">${
-          escape_label(track.title)
-        }</a>`,
+        `<a href="muzika:album:${track.album.id}?track=${track.videoId}">${escape_label(
+          track.title,
+        )}</a>`,
       );
       this._title.tooltip_text = track.title;
     } else {

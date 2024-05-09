@@ -33,6 +33,6 @@
     "build": "node lib/build.js",
     "typecheck": "tsc --strict --noEmit",
     "generate-sources": "flatpak-node-generator yarn yarn.lock -o build-aux/flatpak/modules/yarn-deps-sources.json",
-    "lint": "eslint src types"
+    "lint": "eslint --ext .ts,.tsx,.js,.jsx src types"
   }
 }

@@ -11,72 +11,75 @@ import { SignalListeners } from "src/util/signal-listener";
 
 export class PlaylistItemView extends Adw.Bin {
   static {
-    GObject.registerClass({
-      GTypeName: "PlaylistItemView",
-      Properties: {
-        model: GObject.ParamSpec.object(
-          "model",
-          "Model",
-          "The list model this view is displaying",
-          GObject.ParamFlags.READWRITE,
-          Gio.ListModel.$gtype,
-        ),
-        "show-rank": GObject.ParamSpec.boolean(
-          "show-rank",
-          "Show Rank",
-          "Whether to show the rank of the playlist item",
-          GObject.ParamFlags.READWRITE,
-          false,
-        ),
-        "show-artists": GObject.ParamSpec.boolean(
-          "show-artists",
-          "Show Artists",
-          "Whether to show the artists of each track",
-          GObject.ParamFlags.READWRITE,
-          true,
-        ),
-        "show-time": GObject.ParamSpec.boolean(
-          "show-time",
-          "Show Time",
-          "Whether to show the duration of each track",
-          GObject.ParamFlags.READWRITE,
-          true,
-        ),
-        "show-column": GObject.ParamSpec.boolean(
-          "show-column",
-          "Show Column",
-          "Whether to show the column view",
-          GObject.ParamFlags.READWRITE,
-          false,
-        ),
-        album: GObject.ParamSpec.boolean(
-          "album",
-          "Album",
-          "Whether this view is displaying an album",
-          GObject.ParamFlags.READWRITE,
-          false,
-        ),
-        "selection-mode": GObject.ParamSpec.boolean(
-          "selection-mode",
-          "Selection Mode",
-          "Whether this view is in selection mode",
-          GObject.ParamFlags.READWRITE,
-          false,
-        ),
-        "show-add": GObject.param_spec_boolean(
-          "show-add",
-          "Show Add",
-          "Show Add button",
-          true,
-          GObject.ParamFlags.READWRITE,
-        ),
-      },
-      Signals: {
-        "add": {
-          param_types: [GObject.TYPE_OBJECT],
+    GObject.registerClass(
+      {
+        GTypeName: "PlaylistItemView",
+        Properties: {
+          model: GObject.ParamSpec.object(
+            "model",
+            "Model",
+            "The list model this view is displaying",
+            GObject.ParamFlags.READWRITE,
+            Gio.ListModel.$gtype,
+          ),
+          "show-rank": GObject.ParamSpec.boolean(
+            "show-rank",
+            "Show Rank",
+            "Whether to show the rank of the playlist item",
+            GObject.ParamFlags.READWRITE,
+            false,
+          ),
+          "show-artists": GObject.ParamSpec.boolean(
+            "show-artists",
+            "Show Artists",
+            "Whether to show the artists of each track",
+            GObject.ParamFlags.READWRITE,
+            true,
+          ),
+          "show-time": GObject.ParamSpec.boolean(
+            "show-time",
+            "Show Time",
+            "Whether to show the duration of each track",
+            GObject.ParamFlags.READWRITE,
+            true,
+          ),
+          "show-column": GObject.ParamSpec.boolean(
+            "show-column",
+            "Show Column",
+            "Whether to show the column view",
+            GObject.ParamFlags.READWRITE,
+            false,
+          ),
+          album: GObject.ParamSpec.boolean(
+            "album",
+            "Album",
+            "Whether this view is displaying an album",
+            GObject.ParamFlags.READWRITE,
+            false,
+          ),
+          "selection-mode": GObject.ParamSpec.boolean(
+            "selection-mode",
+            "Selection Mode",
+            "Whether this view is in selection mode",
+            GObject.ParamFlags.READWRITE,
+            false,
+          ),
+          "show-add": GObject.param_spec_boolean(
+            "show-add",
+            "Show Add",
+            "Show Add button",
+            true,
+            GObject.ParamFlags.READWRITE,
+          ),
+        },
+        Signals: {
+          add: {
+            param_types: [GObject.TYPE_OBJECT],
+          },
         },
       },
-    }, this);
+      this,
+    );
   }
 
   private get_current_child() {
@@ -91,7 +94,7 @@ export class PlaylistItemView extends Adw.Bin {
     property: Key,
     value: CurrentChild[Key],
   ) {
-    return this.get_current_child()[property] = value;
+    return (this.get_current_child()[property] = value);
   }
 
   // property: selection-mode
@@ -158,7 +161,7 @@ export class PlaylistItemView extends Adw.Bin {
       model: model as any,
     });
 
-    this.set_current_property("model", this.multi_selection_model!);
+    this.set_current_property("model", this.multi_selection_model);
 
     this.setup_listeners();
   }
@@ -229,12 +232,12 @@ export class PlaylistItemView extends Adw.Bin {
     }
 
     const props = {
-      header_factory: this.header_factory ?? null as any,
+      header_factory: this.header_factory ?? (null as any),
       model: this.multi_selection_model!,
       selection_mode: this.selection_mode,
       album: this.album,
       show_add: this.show_add,
-      playlistId: this.playlistId ?? null as any,
+      playlistId: this.playlistId ?? (null as any),
       editable: this.editable,
     };
 
@@ -246,9 +249,7 @@ export class PlaylistItemView extends Adw.Bin {
         show_time: this.show_time,
       });
     } else {
-      this.child = new PlaylistListView(
-        props,
-      );
+      this.child = new PlaylistListView(props);
     }
 
     this.child.connect("add", (_list, index) => {

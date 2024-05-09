@@ -7,24 +7,27 @@ import { get_player } from "src/application";
 
 export class PlayerScale extends Gtk.Scale {
   static {
-    GObject.registerClass({
-      GTypeName: "PlayerScale",
-      Properties: {
-        buffering: GObject.ParamSpec.boolean(
-          "buffering",
-          "Buffering",
-          "Whether the player is buffering",
-          GObject.ParamFlags.READWRITE,
-          false,
-        ),
-      },
-      Signals: {
-        // this signal is deprecated
-        "user-changed-value": {
-          param_types: [GObject.TYPE_DOUBLE],
+    GObject.registerClass(
+      {
+        GTypeName: "PlayerScale",
+        Properties: {
+          buffering: GObject.ParamSpec.boolean(
+            "buffering",
+            "Buffering",
+            "Whether the player is buffering",
+            GObject.ParamFlags.READWRITE,
+            false,
+          ),
+        },
+        Signals: {
+          // this signal is deprecated
+          "user-changed-value": {
+            param_types: [GObject.TYPE_DOUBLE],
+          },
         },
       },
-    }, this);
+      this,
+    );
   }
 
   constructor() {

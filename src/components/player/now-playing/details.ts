@@ -14,41 +14,44 @@ GObject.type_ensure(RelatedView.$gtype);
 
 export class PlayerNowPlayingDetails extends Adw.NavigationPage {
   static {
-    GObject.registerClass({
-      GTypeName: "PlayerNowPlayingDetails",
-      Template:
-        "resource:///com/vixalien/muzika/ui/components/player/now-playing/details.ui",
-      Properties: {
-        stack: GObject.param_spec_object(
+    GObject.registerClass(
+      {
+        GTypeName: "PlayerNowPlayingDetails",
+        Template:
+          "resource:///com/vixalien/muzika/ui/components/player/now-playing/details.ui",
+        Properties: {
+          stack: GObject.param_spec_object(
+            "stack",
+            "Stack",
+            "The View Stack",
+            Adw.ViewStack.$gtype,
+            GObject.ParamFlags.READABLE,
+          ),
+          header_title: GObject.param_spec_object(
+            "header-title",
+            "Header Title Widget",
+            "The widget to show as the header title",
+            Gtk.Widget.$gtype,
+            GObject.ParamFlags.READWRITE,
+          ),
+          show_mini_player: GObject.param_spec_boolean(
+            "show-mini-player",
+            "Show Mini Player",
+            "Whether to show the mini player",
+            false,
+            GObject.ParamFlags.READWRITE,
+          ),
+        },
+        InternalChildren: [
           "stack",
-          "Stack",
-          "The View Stack",
-          Adw.ViewStack.$gtype,
-          GObject.ParamFlags.READABLE,
-        ),
-        header_title: GObject.param_spec_object(
-          "header-title",
-          "Header Title Widget",
-          "The widget to show as the header title",
-          Gtk.Widget.$gtype,
-          GObject.ParamFlags.READWRITE,
-        ),
-        show_mini_player: GObject.param_spec_boolean(
-          "show-mini-player",
-          "Show Mini Player",
-          "Whether to show the mini player",
-          false,
-          GObject.ParamFlags.READWRITE,
-        ),
+          "headerbar",
+          "lyrics_page",
+          "related_page",
+          "toolbar_view",
+        ],
       },
-      InternalChildren: [
-        "stack",
-        "headerbar",
-        "lyrics_page",
-        "related_page",
-        "toolbar_view",
-      ],
-    }, this);
+      this,
+    );
   }
 
   private _stack!: Adw.ViewStack;

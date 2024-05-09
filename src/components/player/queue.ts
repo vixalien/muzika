@@ -13,18 +13,22 @@ import { setup_link_label } from "src/util/label";
 
 export class QueueView extends Gtk.Stack {
   static {
-    GObject.registerClass({
-      GTypeName: "QueueView",
-      Template: "resource:///com/vixalien/muzika/ui/components/player/queue.ui",
-      InternalChildren: [
-        "no_queue",
-        "list_view",
-        "queue_box",
-        "playlist_label",
-        "params",
-        "params_box",
-      ],
-    }, this);
+    GObject.registerClass(
+      {
+        GTypeName: "QueueView",
+        Template:
+          "resource:///com/vixalien/muzika/ui/components/player/queue.ui",
+        InternalChildren: [
+          "no_queue",
+          "list_view",
+          "queue_box",
+          "playlist_label",
+          "params",
+          "params_box",
+        ],
+      },
+      this,
+    );
   }
 
   private _list_view!: Gtk.ListView;
@@ -85,9 +89,8 @@ export class QueueView extends Gtk.Stack {
   }
 
   update_visible_child() {
-    this.visible_child = this.player.queue.list.n_items > 0
-      ? this._queue_box
-      : this._no_queue;
+    this.visible_child =
+      this.player.queue.list.n_items > 0 ? this._queue_box : this._no_queue;
   }
 
   update_settings() {
@@ -96,8 +99,7 @@ export class QueueView extends Gtk.Stack {
 
     // radio playlists can't be visited
     if (settings?.playlistId && !settings.playlistId.startsWith("RDA")) {
-      this._playlist_label.label =
-        `<a href="muzika:playlist:${settings.playlistId}">${playlist_name}</a>`;
+      this._playlist_label.label = `<a href="muzika:playlist:${settings.playlistId}">${playlist_name}</a>`;
     } else {
       this._playlist_label.label = playlist_name;
     }
@@ -108,7 +110,7 @@ export class QueueView extends Gtk.Stack {
 
     let first_param: Gtk.Widget | null = null;
 
-    while (first_param = this._params_box.get_first_child()) {
+    while ((first_param = this._params_box.get_first_child())) {
       this._params_box.remove(first_param);
     }
 
@@ -144,7 +146,7 @@ export class QueueView extends Gtk.Stack {
   }
 
   bind_cb(_factory: Gtk.ListItemFactory, list_item: Gtk.ListItem) {
-    const container = list_item.get_item() as ObjectContainer<QueueTrack>;
+    const container = list_item.get_item();
     const track = container.object;
 
     const card = new QueueItem();

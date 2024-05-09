@@ -54,30 +54,24 @@ export function generate_subtitles_menu(
 }
 
 export function generate_video_menu(song: Song) {
-  const all_video_formats = [...song.formats, ...song.adaptive_formats]
-    .filter(format_has_video);
+  const all_video_formats = [...song.formats, ...song.adaptive_formats].filter(
+    format_has_video,
+  );
 
   if (all_video_formats.length === 0) return null;
 
-  const qualities = VideoQualities
-    .filter((quality) => {
-      return all_video_formats.some((format) =>
-        format.video_quality === quality.value
-      );
-    });
+  const qualities = VideoQualities.filter((quality) => {
+    return all_video_formats.some(
+      (format) => format.video_quality === quality.value,
+    );
+  });
 
   const menu = Gio.Menu.new();
 
-  menu.append(
-    _("Auto"),
-    `player.video-quality("auto")`,
-  );
+  menu.append(_("Auto"), `player.video-quality("auto")`);
 
   qualities.forEach((quality) => {
-    menu.append(
-      quality.name,
-      `player.video-quality("${quality.value}")`,
-    );
+    menu.append(quality.name, `player.video-quality("${quality.value}")`);
   });
 
   return menu;

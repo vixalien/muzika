@@ -16,29 +16,29 @@ GObject.type_ensure(FixedRatioThumbnail.$gtype);
 
 export class PlayerPreview extends Gtk.Stack {
   static {
-    GObject.registerClass({
-      GTypeName: "PlayerPreview",
-      Template:
-        "resource:///com/vixalien/muzika/ui/components/player/preview.ui",
-      InternalChildren: [
-        "image",
-        "picture",
-      ],
-      Properties: {
-        size: GObject.ParamSpec.int(
-          "size",
-          "Size",
-          "Size",
-          GObject.ParamFlags.READWRITE,
-          0,
-          GLib.MAXINT32,
-          0,
-        ),
+    GObject.registerClass(
+      {
+        GTypeName: "PlayerPreview",
+        Template:
+          "resource:///com/vixalien/muzika/ui/components/player/preview.ui",
+        InternalChildren: ["image", "picture"],
+        Properties: {
+          size: GObject.ParamSpec.int(
+            "size",
+            "Size",
+            "Size",
+            GObject.ParamFlags.READWRITE,
+            0,
+            GLib.MAXINT32,
+            0,
+          ),
+        },
+        Signals: {
+          activate: {},
+        },
       },
-      Signals: {
-        activate: {},
-      },
-    }, this);
+      this,
+    );
   }
 
   private _image!: Gtk.Image;

@@ -44,32 +44,35 @@ export class Navigator extends GObject.Object {
   loading = false;
 
   static {
-    GObject.registerClass({
-      Signals: {
-        navigate: {},
-        "load-start": {},
-        "load-end": {},
-        "search-changed": {
-          param_types: [GObject.TYPE_STRING],
+    GObject.registerClass(
+      {
+        Signals: {
+          navigate: {},
+          "load-start": {},
+          "load-end": {},
+          "search-changed": {
+            param_types: [GObject.TYPE_STRING],
+          },
+        },
+        Properties: {
+          loading: GObject.ParamSpec.boolean(
+            "loading",
+            "Loading",
+            "Whether something is loading currently",
+            GObject.ParamFlags.READWRITE,
+            false,
+          ),
+          current_uri: GObject.ParamSpec.string(
+            "current-uri",
+            "Current URI",
+            "The current URI",
+            GObject.ParamFlags.READABLE,
+            "",
+          ),
         },
       },
-      Properties: {
-        loading: GObject.ParamSpec.boolean(
-          "loading",
-          "Loading",
-          "Whether something is loading currently",
-          GObject.ParamFlags.READWRITE,
-          false,
-        ),
-        current_uri: GObject.ParamSpec.string(
-          "current-uri",
-          "Current URI",
-          "The current URI",
-          GObject.ParamFlags.READABLE,
-          "",
-        ),
-      },
-    }, this);
+      this,
+    );
   }
 
   private _visible_page_signal: number;
@@ -187,7 +190,8 @@ export class Navigator extends GObject.Object {
 
     this.abort_current();
 
-    return page.reload(this.abort_controller!.signal)
+    return page
+      .reload(this.abort_controller!.signal)
       ?.catch((error) => {
         if (error instanceof DOMException && error.name == "AbortError") return;
         page.show_error(error);
@@ -206,7 +210,8 @@ export class Navigator extends GObject.Object {
 
     const page = new Page(meta);
     this._view.push(page);
-    page.load(uri, match, this.abort_controller!.signal)
+    page
+      .load(uri, match, this.abort_controller!.signal)
       .then(() => {
         this.reset_abort_controller();
       })
@@ -303,14 +308,12 @@ export class Navigator extends GObject.Object {
 
     if (match) {
       page.load;
-      return page.load(
-        uri,
-        match.match,
-        this.abort_controller!.signal,
-      )
+      return page
+        .load(uri, match.match, this.abort_controller!.signal)
         ?.then(() => {
           this.reset_abort_controller();
-        }).catch((error) => {
+        })
+        .catch((error) => {
           if (error instanceof DOMException && error.name == "AbortError") {
             return;
           }
@@ -352,7 +355,7 @@ export class Navigator extends GObject.Object {
 }
 
 export function get_navigator(widget?: Gtk.Widget) {
-  const window = ((widget?.root) || get_window()) as Window;
+  const window = (widget?.root || get_window()) as Window;
 
   return window.navigator;
 }

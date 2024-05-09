@@ -11,26 +11,29 @@ import { bind_play_icon } from "src/player/helpers";
 
 export class MiniVideoControls extends Adw.Bin {
   static {
-    GObject.registerClass({
-      GTypeName: "MiniVideoControls",
-      Template:
-        "resource:///com/vixalien/muzika/ui/components/player/video/mini.ui",
-      InternalChildren: [
-        "play_button",
-        "progress_label",
-        "duration_label",
-        "menu_button",
-      ],
-      Properties: {
-        "inhibit-hide": GObject.ParamSpec.boolean(
-          "inhibit-hide",
-          "Inhibit Hide",
-          "Inhibit the hiding of the controls, for example when the mouse is over them.",
-          GObject.ParamFlags.READWRITE,
-          true,
-        ),
+    GObject.registerClass(
+      {
+        GTypeName: "MiniVideoControls",
+        Template:
+          "resource:///com/vixalien/muzika/ui/components/player/video/mini.ui",
+        InternalChildren: [
+          "play_button",
+          "progress_label",
+          "duration_label",
+          "menu_button",
+        ],
+        Properties: {
+          "inhibit-hide": GObject.ParamSpec.boolean(
+            "inhibit-hide",
+            "Inhibit Hide",
+            "Inhibit the hiding of the controls, for example when the mouse is over them.",
+            GObject.ParamFlags.READWRITE,
+            true,
+          ),
+        },
       },
-    }, this);
+      this,
+    );
   }
 
   private _play_button!: Gtk.Button;
@@ -53,7 +56,8 @@ export class MiniVideoControls extends Adw.Bin {
       this._duration_label.label = track.duration_seconds
         ? seconds_to_string(track.duration_seconds)
         : track.duration ?? "00:00";
-      {}
+      {
+      }
     }
   }
 
@@ -93,39 +97,25 @@ export class MiniVideoControls extends Adw.Bin {
       this.media_info_changed.bind(this),
     );
 
-    this.listeners.add_bindings(
-      bind_play_icon(this._play_button),
-    );
+    this.listeners.add_bindings(bind_play_icon(this._play_button));
 
     this._duration_label.label = micro_to_string(player.duration);
 
-    this.listeners.connect(
-      player,
-      "notify::duration",
-      () => {
-        this._duration_label.label = micro_to_string(player.duration);
-      },
-    );
+    this.listeners.connect(player, "notify::duration", () => {
+      this._duration_label.label = micro_to_string(player.duration);
+    });
 
     // buttons
 
     // this.setup_volume_button();
 
-    this.listeners.connect(
-      player,
-      "notify::timestamp",
-      () => {
-        this._progress_label.label = micro_to_string(player.timestamp);
-      },
-    );
+    this.listeners.connect(player, "notify::timestamp", () => {
+      this._progress_label.label = micro_to_string(player.timestamp);
+    });
 
-    this.listeners.connect(
-      this._menu_button,
-      "notify::active",
-      () => {
-        this.inhibit_hide = this._menu_button.active;
-      },
-    );
+    this.listeners.connect(this._menu_button, "notify::active", () => {
+      this.inhibit_hide = this._menu_button.active;
+    });
   }
 
   clear_listeners() {

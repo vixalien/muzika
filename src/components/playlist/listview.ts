@@ -16,58 +16,61 @@ interface PlaylistListItemWithSignals extends PlaylistListItem {
 
 export class PlaylistListView extends Gtk.ListView {
   static {
-    GObject.registerClass({
-      GTypeName: "PlaylistListView",
-      Properties: {
-        "show-rank": GObject.param_spec_boolean(
-          "show-rank",
-          "Show Rank",
-          "Whether to show chart rank and trend change",
-          false,
-          GObject.ParamFlags.READWRITE,
-        ),
-        playlistId: GObject.param_spec_string(
-          "playlist-id",
-          "Playlist ID",
-          "The playlist ID",
-          null as any,
-          GObject.ParamFlags.READWRITE,
-        ),
-        album: GObject.param_spec_boolean(
-          "album",
-          "Album",
-          "Whether this is currently displaying an album",
-          false,
-          GObject.ParamFlags.READWRITE,
-        ),
-        show_add: GObject.param_spec_boolean(
-          "show-add",
-          "Show Add",
-          "Show the Save to playlist button",
-          false,
-          GObject.ParamFlags.READWRITE,
-        ),
-        selection_mode: GObject.param_spec_boolean(
-          "selection-mode",
-          "Selection Mode",
-          "Whether the selection mode is toggled on",
-          false,
-          GObject.ParamFlags.READWRITE,
-        ),
-        editable: GObject.param_spec_boolean(
-          "editable",
-          "Editable",
-          "Whether the playlist items can be edited",
-          false,
-          GObject.ParamFlags.READWRITE,
-        ),
-      },
-      Signals: {
-        "add": {
-          param_types: [GObject.TYPE_INT],
+    GObject.registerClass(
+      {
+        GTypeName: "PlaylistListView",
+        Properties: {
+          "show-rank": GObject.param_spec_boolean(
+            "show-rank",
+            "Show Rank",
+            "Whether to show chart rank and trend change",
+            false,
+            GObject.ParamFlags.READWRITE,
+          ),
+          playlistId: GObject.param_spec_string(
+            "playlist-id",
+            "Playlist ID",
+            "The playlist ID",
+            null as any,
+            GObject.ParamFlags.READWRITE,
+          ),
+          album: GObject.param_spec_boolean(
+            "album",
+            "Album",
+            "Whether this is currently displaying an album",
+            false,
+            GObject.ParamFlags.READWRITE,
+          ),
+          show_add: GObject.param_spec_boolean(
+            "show-add",
+            "Show Add",
+            "Show the Save to playlist button",
+            false,
+            GObject.ParamFlags.READWRITE,
+          ),
+          selection_mode: GObject.param_spec_boolean(
+            "selection-mode",
+            "Selection Mode",
+            "Whether the selection mode is toggled on",
+            false,
+            GObject.ParamFlags.READWRITE,
+          ),
+          editable: GObject.param_spec_boolean(
+            "editable",
+            "Editable",
+            "Whether the playlist items can be edited",
+            false,
+            GObject.ParamFlags.READWRITE,
+          ),
+        },
+        Signals: {
+          add: {
+            param_types: [GObject.TYPE_INT],
+          },
         },
       },
-    }, this);
+      this,
+    );
   }
 
   album = false;
@@ -75,11 +78,14 @@ export class PlaylistListView extends Gtk.ListView {
   playlistId?: string;
   editable = false;
 
-  constructor(
-    { model, album, selection_mode, show_add, editable, ...props }: Partial<
-      Gtk.ListView.ConstructorProperties
-    > = {},
-  ) {
+  constructor({
+    model,
+    album,
+    selection_mode,
+    show_add,
+    editable,
+    ...props
+  }: Partial<Gtk.ListView.ConstructorProperties> = {}) {
     super({ single_click_activate: true, ...props });
 
     if (album != null) this.album = album;
@@ -102,9 +108,9 @@ export class PlaylistListView extends Gtk.ListView {
     this.factory = factory;
 
     this.connect("activate", (_, position) => {
-      const container = this.model.get_item(position) as ObjectContainer<
-        PlaylistItem
-      >;
+      const container = this.model.get_item(
+        position,
+      ) as ObjectContainer<PlaylistItem>;
 
       if (this.playlistId) {
         this.activate_action(
@@ -156,10 +162,7 @@ export class PlaylistListView extends Gtk.ListView {
       item.dynamic_image,
       "notify::selected",
       (dynamic_image: DynamicImage) => {
-        this.selection_mode_toggled(
-          list_item.position,
-          dynamic_image.selected,
-        );
+        this.selection_mode_toggled(list_item.position, dynamic_image.selected);
       },
     );
 

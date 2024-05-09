@@ -18,7 +18,7 @@ declare interface Number {
 
 declare module imports {
   const format: {
-    format(this: String, ...args: any[]): string;
+    format(this: string, ...args: any[]): string;
     printf(fmt: string, ...args: any[]): string;
     vprintf(fmt: string, args: any[]): string;
   };
@@ -26,9 +26,5 @@ declare module imports {
 
 declare module "gettext" {
   export function gettext(id: string): string;
-  export function ngettext(
-    singular: string,
-    plural: string,
-    n: number,
-  ): string;
+  export function ngettext(singular: string, plural: string, n: number): string;
 }

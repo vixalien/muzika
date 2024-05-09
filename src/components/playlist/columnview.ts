@@ -16,14 +16,17 @@ import { setup_link_label } from "src/util/label";
 
 class ImageColumn extends Gtk.ColumnViewColumn {
   static {
-    GObject.registerClass({
-      GTypeName: "ImageColumn",
-      Signals: {
-        "selection-mode-toggled": {
-          param_types: [GObject.TYPE_UINT64, GObject.TYPE_BOOLEAN],
+    GObject.registerClass(
+      {
+        GTypeName: "ImageColumn",
+        Signals: {
+          "selection-mode-toggled": {
+            param_types: [GObject.TYPE_UINT64, GObject.TYPE_BOOLEAN],
+          },
         },
       },
-    }, this);
+      this,
+    );
   }
 
   album = false;
@@ -60,16 +63,13 @@ class ImageColumn extends Gtk.ColumnViewColumn {
 
     const playlist_item = container.object;
 
-    dynamic_image.connect(
-      "notify::selected",
-      (dynamic_image: DynamicImage) => {
-        this.emit(
-          "selection-mode-toggled",
-          list_item.position,
-          dynamic_image.selected,
-        );
-      },
-    );
+    dynamic_image.connect("notify::selected", (dynamic_image: DynamicImage) => {
+      this.emit(
+        "selection-mode-toggled",
+        list_item.position,
+        dynamic_image.selected,
+      );
+    });
 
     container.connect("notify::state", () => {
       dynamic_image.state = container.state;
@@ -334,9 +334,9 @@ class AlbumColumn extends Gtk.ColumnViewColumn {
     if (playlist_item.album) {
       if (playlist_item.album.id) {
         label.set_markup(
-          `<a href="muzika:album:${playlist_item.album.id}?track=${playlist_item.videoId}">${
-            escape_label(playlist_item.album.name)
-          }</a>`,
+          `<a href="muzika:album:${playlist_item.album.id}?track=${playlist_item.videoId}">${escape_label(
+            playlist_item.album.name,
+          )}</a>`,
         );
       } else {
         label.use_markup = false;
@@ -392,12 +392,15 @@ interface AddColumnButton extends Gtk.Button {
 
 class AddColumn extends Gtk.ColumnViewColumn {
   static {
-    GObject.registerClass({
-      GTypeName: "AddColumn",
-      Signals: {
-        "add": { param_types: [GObject.TYPE_INT] },
+    GObject.registerClass(
+      {
+        GTypeName: "AddColumn",
+        Signals: {
+          add: { param_types: [GObject.TYPE_INT] },
+        },
       },
-    }, this);
+      this,
+    );
   }
 
   constructor() {
@@ -442,9 +445,12 @@ class AddColumn extends Gtk.ColumnViewColumn {
 
 class ExtraMenuButtons extends Adw.Bin {
   static {
-    GObject.registerClass({
-      GTypeName: "MenuButtons",
-    }, this);
+    GObject.registerClass(
+      {
+        GTypeName: "MenuButtons",
+      },
+      this,
+    );
   }
 
   private item?: PlaylistItem;
@@ -508,21 +514,21 @@ class ExtraMenuButtons extends Adw.Bin {
       [_("Save to playlist"), `win.add-to-playlist("${this.item.videoId}")`],
       this.position > 0
         ? [
-          _("Remove from playlist"),
-          `playlist.remove-tracks([${this.position}])`,
-        ]
+            _("Remove from playlist"),
+            `playlist.remove-tracks([${this.position}])`,
+          ]
         : null,
       this.item.album
         ? [
-          _("Go to album"),
-          `navigator.visit("muzika:album:${this.item.album.id}")`,
-        ]
+            _("Go to album"),
+            `navigator.visit("muzika:album:${this.item.album.id}")`,
+          ]
         : null,
       this.item.artists.length > 1
         ? [
-          _("Go to artist"),
-          `navigator.visit("muzika:artist:${this.item.artists[0].id}")`,
-        ]
+            _("Go to artist"),
+            `navigator.visit("muzika:artist:${this.item.artists[0].id}")`,
+          ]
         : null,
     ]);
   }
@@ -550,9 +556,8 @@ class ExtraMenuButtons extends Adw.Bin {
     if (like) {
       newStatus = this.item.likeStatus === "LIKE" ? "INDIFFERENT" : "LIKE";
     } else {
-      newStatus = this.item.likeStatus === "DISLIKE"
-        ? "INDIFFERENT"
-        : "DISLIKE";
+      newStatus =
+        this.item.likeStatus === "DISLIKE" ? "INDIFFERENT" : "DISLIKE";
     }
 
     if (newStatus === this.item.likeStatus) return;
@@ -574,9 +579,12 @@ class ExtraMenuButtons extends Adw.Bin {
 
 class MenuColumn extends Gtk.ColumnViewColumn {
   static {
-    GObject.registerClass({
-      GTypeName: "MenuColumn",
-    }, this);
+    GObject.registerClass(
+      {
+        GTypeName: "MenuColumn",
+      },
+      this,
+    );
   }
 
   editable = false;
@@ -614,72 +622,75 @@ class MenuColumn extends Gtk.ColumnViewColumn {
 
 export class PlaylistColumnView extends Gtk.ColumnView {
   static {
-    GObject.registerClass({
-      GTypeName: "PlaylistColumnView",
-      Properties: {
-        "show-rank": GObject.param_spec_boolean(
-          "show-rank",
-          "Show Rank",
-          "Whether to show chart rank and trend change",
-          false,
-          GObject.ParamFlags.READWRITE,
-        ),
-        "show-artists": GObject.ParamSpec.boolean(
-          "show-artists",
-          "Show Artists",
-          "Whether to show the artists of each track",
-          GObject.ParamFlags.READWRITE,
-          true,
-        ),
-        "show-time": GObject.ParamSpec.boolean(
-          "show-time",
-          "Show Time",
-          "Whether to show the duration of each track",
-          GObject.ParamFlags.READWRITE,
-          true,
-        ),
-        playlistId: GObject.param_spec_string(
-          "playlist-id",
-          "Playlist ID",
-          "The playlist ID",
-          null as any,
-          GObject.ParamFlags.READWRITE,
-        ),
-        album: GObject.param_spec_boolean(
-          "album",
-          "Album",
-          "Whether this is currently displaying an album",
-          false,
-          GObject.ParamFlags.READWRITE,
-        ),
-        show_add: GObject.param_spec_boolean(
-          "show-add",
-          "Show Add",
-          "Show the Save to playlist button",
-          false,
-          GObject.ParamFlags.READWRITE,
-        ),
-        selection_mode: GObject.param_spec_boolean(
-          "selection-mode",
-          "Selection Mode",
-          "Whether the selection mode is toggled on",
-          false,
-          GObject.ParamFlags.READWRITE,
-        ),
-        editable: GObject.param_spec_boolean(
-          "editable",
-          "Editable",
-          "Whether the playlist items can be edited",
-          false,
-          GObject.ParamFlags.READWRITE,
-        ),
-      },
-      Signals: {
-        "add": {
-          param_types: [GObject.TYPE_INT],
+    GObject.registerClass(
+      {
+        GTypeName: "PlaylistColumnView",
+        Properties: {
+          "show-rank": GObject.param_spec_boolean(
+            "show-rank",
+            "Show Rank",
+            "Whether to show chart rank and trend change",
+            false,
+            GObject.ParamFlags.READWRITE,
+          ),
+          "show-artists": GObject.ParamSpec.boolean(
+            "show-artists",
+            "Show Artists",
+            "Whether to show the artists of each track",
+            GObject.ParamFlags.READWRITE,
+            true,
+          ),
+          "show-time": GObject.ParamSpec.boolean(
+            "show-time",
+            "Show Time",
+            "Whether to show the duration of each track",
+            GObject.ParamFlags.READWRITE,
+            true,
+          ),
+          playlistId: GObject.param_spec_string(
+            "playlist-id",
+            "Playlist ID",
+            "The playlist ID",
+            null as any,
+            GObject.ParamFlags.READWRITE,
+          ),
+          album: GObject.param_spec_boolean(
+            "album",
+            "Album",
+            "Whether this is currently displaying an album",
+            false,
+            GObject.ParamFlags.READWRITE,
+          ),
+          show_add: GObject.param_spec_boolean(
+            "show-add",
+            "Show Add",
+            "Show the Save to playlist button",
+            false,
+            GObject.ParamFlags.READWRITE,
+          ),
+          selection_mode: GObject.param_spec_boolean(
+            "selection-mode",
+            "Selection Mode",
+            "Whether the selection mode is toggled on",
+            false,
+            GObject.ParamFlags.READWRITE,
+          ),
+          editable: GObject.param_spec_boolean(
+            "editable",
+            "Editable",
+            "Whether the playlist items can be edited",
+            false,
+            GObject.ParamFlags.READWRITE,
+          ),
+        },
+        Signals: {
+          add: {
+            param_types: [GObject.TYPE_INT],
+          },
         },
       },
-    }, this);
+      this,
+    );
   }
 
   private _image_column = new ImageColumn();
@@ -780,21 +791,17 @@ export class PlaylistColumnView extends Gtk.ColumnView {
     this._menu_column.editable = value;
   }
 
-  constructor(
-    {
-      selection_mode,
-      show_rank,
-      show_add,
-      show_artists,
-      album,
-      playlistId,
-      show_time,
-      editable,
-      ...options
-    }: Partial<
-      PlaylistColumnViewOptions
-    > = {},
-  ) {
+  constructor({
+    selection_mode,
+    show_rank,
+    show_add,
+    show_artists,
+    album,
+    playlistId,
+    show_time,
+    editable,
+    ...options
+  }: Partial<PlaylistColumnViewOptions> = {}) {
     super(options);
 
     if (playlistId != null) {
@@ -832,7 +839,7 @@ export class PlaylistColumnView extends Gtk.ColumnView {
     this._image_column.connect(
       "selection-mode-toggled",
       (_, position: number, value: boolean) => {
-        const selection_model = this.model as Gtk.SelectionModel;
+        const selection_model = this.model;
 
         if (value) {
           selection_model.select_item(position, false);
@@ -858,9 +865,9 @@ export class PlaylistColumnView extends Gtk.ColumnView {
     });
 
     this.connect("activate", (_, position) => {
-      const container = this.model.get_item(position) as ObjectContainer<
-        PlaylistItem
-      >;
+      const container = this.model.get_item(
+        position,
+      ) as ObjectContainer<PlaylistItem>;
 
       if (this.playlistId) {
         this.activate_action(

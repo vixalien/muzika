@@ -4,44 +4,47 @@ import Adw from "gi://Adw";
 
 export class PlayerProgressBar extends Gtk.ProgressBar {
   static {
-    GObject.registerClass({
-      GTypeName: "PlayerProgressBar",
-      Properties: {
-        duration: GObject.ParamSpec.double(
-          "duration",
-          "Duration",
-          "Duration in nanoseconds",
-          GObject.ParamFlags.READABLE,
-          0,
-          Number.MAX_SAFE_INTEGER,
-          0,
-        ),
-        value: GObject.ParamSpec.double(
-          "value",
-          "Value",
-          "Value in nanoseconds",
-          GObject.ParamFlags.READWRITE,
-          0,
-          Number.MAX_SAFE_INTEGER,
-          0,
-        ),
-        buffering: GObject.ParamSpec.boolean(
-          "buffering",
-          "Buffering",
-          "Whether the player is buffering",
-          GObject.ParamFlags.READWRITE,
-          false,
-        ),
-        animation: GObject.ParamSpec.object(
-          "animation",
-          "Animation",
-          "The animation object",
-          GObject.ParamFlags.READWRITE,
-          Adw.TimedAnimation,
-        ),
+    GObject.registerClass(
+      {
+        GTypeName: "PlayerProgressBar",
+        Properties: {
+          duration: GObject.ParamSpec.double(
+            "duration",
+            "Duration",
+            "Duration in nanoseconds",
+            GObject.ParamFlags.READABLE,
+            0,
+            Number.MAX_SAFE_INTEGER,
+            0,
+          ),
+          value: GObject.ParamSpec.double(
+            "value",
+            "Value",
+            "Value in nanoseconds",
+            GObject.ParamFlags.READWRITE,
+            0,
+            Number.MAX_SAFE_INTEGER,
+            0,
+          ),
+          buffering: GObject.ParamSpec.boolean(
+            "buffering",
+            "Buffering",
+            "Whether the player is buffering",
+            GObject.ParamFlags.READWRITE,
+            false,
+          ),
+          animation: GObject.ParamSpec.object(
+            "animation",
+            "Animation",
+            "The animation object",
+            GObject.ParamFlags.READWRITE,
+            Adw.TimedAnimation,
+          ),
+        },
+        Signals: {},
       },
-      Signals: {},
-    }, this);
+      this,
+    );
   }
 
   constructor() {

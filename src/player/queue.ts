@@ -49,116 +49,118 @@ export enum PreferredMediaType {
 
 export class Queue extends GObject.Object {
   static {
-    GObject.registerClass({
-      GTypeName: "Queue",
-      Properties: {
-        history: GObject.param_spec_object(
-          "history",
-          "History",
-          "A Gio.ListStore that stores all the previously played songs",
-          Gio.ListStore.$gtype,
-          GObject.ParamFlags.READABLE,
-        ),
-        list: GObject.param_spec_object(
-          "list",
-          "List",
-          "A Gio.ListStore that stores all the songs",
-          Gio.ListStore.$gtype,
-          GObject.ParamFlags.READABLE,
-        ),
-        position: GObject.param_spec_int(
-          "position",
-          "Position",
-          "The current position in the queue",
-          0,
-          1000000,
-          0,
-          GObject.ParamFlags.READABLE,
-        ),
-        current: GObject.param_spec_object(
-          "current",
-          "Current",
-          "The current song",
-          ObjectContainer.$gtype,
-          GObject.ParamFlags.READABLE,
-        ),
-        "can-play-next": GObject.param_spec_boolean(
-          "can-play-next",
-          "Can play next",
-          "Whether the next song can be played",
-          false,
-          GObject.ParamFlags.READABLE,
-        ),
-        "can-play-previous": GObject.param_spec_boolean(
-          "can-play-previous",
-          "Can play previous",
-          "Whether the previous song can be played",
-          false,
-          GObject.ParamFlags.READABLE,
-        ),
-        repeat: GObject.param_spec_uint(
-          "repeat",
-          "Repeat",
-          "The repeat mode",
-          0,
-          2,
-          0,
-          GObject.ParamFlags.READWRITE,
-        ),
-        shuffle: GObject.param_spec_boolean(
-          "shuffle",
-          "Shuffle",
-          "Whether the queue is shuffled",
-          false,
-          GObject.ParamFlags.READWRITE,
-        ),
-        settings: GObject.param_spec_object(
-          "settings",
-          "Settings",
-          "The current queue settings",
-          ObjectContainer.$gtype,
-          GObject.ParamFlags.READWRITE,
-        ),
-        "active-chip": GObject.param_spec_string(
-          "active-chip",
-          "Active chip",
-          "The active chip",
-          null as any,
-          GObject.ParamFlags.READWRITE,
-        ),
-        "preferred-media-type": GObject.param_spec_uint(
-          "preferred-media-type",
-          "The preferred media type",
-          "Whether the users prefers to play tracks as-is, track or video versions",
-          PreferredMediaType.AUTO,
-          PreferredMediaType.VIDEO,
-          PreferredMediaType.AUTO,
-          GObject.ParamFlags.READWRITE,
-        ),
-        "current-is-video": GObject.param_spec_boolean(
-          "current-is-video",
-          "Current Is Video",
-          "Whether the currently playing track has a video",
-          false,
-          GObject.ParamFlags.READWRITE,
-        ),
-      },
-      Signals: {
-        "prepare-next": {
-          param_types: [GObject.TYPE_STRING],
+    GObject.registerClass(
+      {
+        GTypeName: "Queue",
+        Properties: {
+          history: GObject.param_spec_object(
+            "history",
+            "History",
+            "A Gio.ListStore that stores all the previously played songs",
+            Gio.ListStore.$gtype,
+            GObject.ParamFlags.READABLE,
+          ),
+          list: GObject.param_spec_object(
+            "list",
+            "List",
+            "A Gio.ListStore that stores all the songs",
+            Gio.ListStore.$gtype,
+            GObject.ParamFlags.READABLE,
+          ),
+          position: GObject.param_spec_int(
+            "position",
+            "Position",
+            "The current position in the queue",
+            0,
+            1000000,
+            0,
+            GObject.ParamFlags.READABLE,
+          ),
+          current: GObject.param_spec_object(
+            "current",
+            "Current",
+            "The current song",
+            ObjectContainer.$gtype,
+            GObject.ParamFlags.READABLE,
+          ),
+          "can-play-next": GObject.param_spec_boolean(
+            "can-play-next",
+            "Can play next",
+            "Whether the next song can be played",
+            false,
+            GObject.ParamFlags.READABLE,
+          ),
+          "can-play-previous": GObject.param_spec_boolean(
+            "can-play-previous",
+            "Can play previous",
+            "Whether the previous song can be played",
+            false,
+            GObject.ParamFlags.READABLE,
+          ),
+          repeat: GObject.param_spec_uint(
+            "repeat",
+            "Repeat",
+            "The repeat mode",
+            0,
+            2,
+            0,
+            GObject.ParamFlags.READWRITE,
+          ),
+          shuffle: GObject.param_spec_boolean(
+            "shuffle",
+            "Shuffle",
+            "Whether the queue is shuffled",
+            false,
+            GObject.ParamFlags.READWRITE,
+          ),
+          settings: GObject.param_spec_object(
+            "settings",
+            "Settings",
+            "The current queue settings",
+            ObjectContainer.$gtype,
+            GObject.ParamFlags.READWRITE,
+          ),
+          "active-chip": GObject.param_spec_string(
+            "active-chip",
+            "Active chip",
+            "The active chip",
+            null as any,
+            GObject.ParamFlags.READWRITE,
+          ),
+          "preferred-media-type": GObject.param_spec_uint(
+            "preferred-media-type",
+            "The preferred media type",
+            "Whether the users prefers to play tracks as-is, track or video versions",
+            PreferredMediaType.AUTO,
+            PreferredMediaType.VIDEO,
+            PreferredMediaType.AUTO,
+            GObject.ParamFlags.READWRITE,
+          ),
+          "current-is-video": GObject.param_spec_boolean(
+            "current-is-video",
+            "Current Is Video",
+            "Whether the currently playing track has a video",
+            false,
+            GObject.ParamFlags.READWRITE,
+          ),
         },
-        "play": {},
+        Signals: {
+          "prepare-next": {
+            param_types: [GObject.TYPE_STRING],
+          },
+          play: {},
+        },
       },
-    }, this);
+      this,
+    );
   }
 
   preferred_media_type = PreferredMediaType.AUTO;
 
-  private _list: Gio.ListStore<ObjectContainer<QueueMeta>> = new Gio
-    .ListStore();
+  private _list: Gio.ListStore<ObjectContainer<QueueMeta>> =
+    new Gio.ListStore();
   // original is used to store unshuffled list
-  _original: Gio.ListStore<ObjectContainer<QueueMeta>> = new Gio
-    .ListStore();
+  _original: Gio.ListStore<ObjectContainer<QueueMeta>> = new Gio.ListStore();
 
   get list() {
     return this._list;
@@ -390,8 +392,8 @@ export class Queue extends GObject.Object {
             add_toast(
               params.has("next")
                 ? vprintf(_("Playing “%s” next"), [normalized_title])
-                // Translators: %s is a playlist name
-                : vprintf(_("Added “%s” to queue"), [normalized_title]),
+                : // Translators: %s is a playlist name
+                  vprintf(_("Added “%s” to queue"), [normalized_title]),
             );
           });
         },
@@ -410,7 +412,8 @@ export class Queue extends GObject.Object {
           if (ids.length == 1) {
             // notify when starting radio, and the current track is playing already
             if (
-              params.has("radio") && this.current?.object.videoId === ids[0]
+              params.has("radio") &&
+              this.current?.object.videoId === ids[0]
             ) {
               add_toast(_("Starting Radio"));
             }
@@ -443,17 +446,17 @@ export class Queue extends GObject.Object {
             add_toast(
               params.has("next")
                 ? ngettext(
-                  // Translators: %s is a song's name
-                  vprintf(_("Playing “%s” next"), [normalized_title]),
-                  vprintf(_("Playing %d songs next"), [tracks.length]),
-                  tracks.length,
-                )
+                    // Translators: %s is a song's name
+                    vprintf(_("Playing “%s” next"), [normalized_title]),
+                    vprintf(_("Playing %d songs next"), [tracks.length]),
+                    tracks.length,
+                  )
                 : ngettext(
-                  // Translators: %s is a song's name
-                  vprintf(_("Added “%s” to queue"), [normalized_title]),
-                  vprintf(_("Added %d songs to queue"), [tracks.length]),
-                  tracks.length,
-                ),
+                    // Translators: %s is a song's name
+                    vprintf(_("Added “%s” to queue"), [normalized_title]),
+                    vprintf(_("Added %d songs to queue"), [tracks.length]),
+                    tracks.length,
+                  ),
             );
           });
         },
@@ -472,30 +475,42 @@ export class Queue extends GObject.Object {
       },
     ]);
 
-    action_group.add_action(build_action({
-      name: "toggle-repeat",
-      parameter_type: null,
-      state: GLib.Variant.new_boolean(false),
-      activate: this.toggle_repeat.bind(this),
-      bind_state_full: [this, "repeat", () => {
-        return [
-          true,
-          GLib.Variant.new_boolean(
-            this.repeat == RepeatMode.NONE ? false : true,
-          ),
-        ];
-      }],
-    }));
+    action_group.add_action(
+      build_action({
+        name: "toggle-repeat",
+        parameter_type: null,
+        state: GLib.Variant.new_boolean(false),
+        activate: this.toggle_repeat.bind(this),
+        bind_state_full: [
+          this,
+          "repeat",
+          () => {
+            return [
+              true,
+              GLib.Variant.new_boolean(
+                this.repeat == RepeatMode.NONE ? false : true,
+              ),
+            ];
+          },
+        ],
+      }),
+    );
 
-    action_group.add_action(build_action({
-      name: "toggle-shuffle",
-      parameter_type: null,
-      state: GLib.Variant.new_boolean(false),
-      activate: () => this.shuffle = !this.shuffle,
-      bind_state_full: [this, "shuffle", () => {
-        return [true, GLib.Variant.new_boolean(this.shuffle)];
-      }],
-    }));
+    action_group.add_action(
+      build_action({
+        name: "toggle-shuffle",
+        parameter_type: null,
+        state: GLib.Variant.new_boolean(false),
+        activate: () => (this.shuffle = !this.shuffle),
+        bind_state_full: [
+          this,
+          "shuffle",
+          () => {
+            return [true, GLib.Variant.new_boolean(this.shuffle)];
+          },
+        ],
+      }),
+    );
 
     this.connect("notify::can-play-previous", () => {
       action_group.action_enabled_changed("previous", this.can_play_previous);
@@ -530,8 +545,8 @@ export class Queue extends GObject.Object {
    */
 
   async change_active_chip(chip: string | null) {
-    const found_chip = this.settings?.object?.chips.find((c) =>
-      c.playlistId == chip
+    const found_chip = this.settings?.object?.chips.find(
+      (c) => c.playlistId == chip,
     );
 
     if (chip && found_chip) {
@@ -548,8 +563,9 @@ export class Queue extends GObject.Object {
         this.list.splice(
           this.position + 1,
           this.list.n_items - this.position - 1,
-          tracks_to_meta(queue.tracks, found_chip.playlistId)
-            .map((track) => new ObjectContainer(track)),
+          tracks_to_meta(queue.tracks, found_chip.playlistId).map(
+            (track) => new ObjectContainer(track),
+          ),
         );
 
         this.active_chip = chip;
@@ -796,23 +812,12 @@ export class Queue extends GObject.Object {
     }
   }
 
-  private play_next(
-    tracks: QueueMeta[],
-    new_position?: number,
-  ) {
-    this.add_to_queue_at_position(
-      tracks,
-      this.position + 1,
-      new_position,
-    );
+  private play_next(tracks: QueueMeta[], new_position?: number) {
+    this.add_to_queue_at_position(tracks, this.position + 1, new_position);
   }
 
   add(tracks: QueueMeta[], new_position?: number) {
-    this.add_to_queue_at_position(
-      tracks,
-      this.list.n_items,
-      new_position,
-    );
+    this.add_to_queue_at_position(tracks, this.list.n_items, new_position);
   }
 
   private get_counterpart(track: QueueMeta) {

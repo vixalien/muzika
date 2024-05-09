@@ -11,20 +11,23 @@ import type { LoginCode } from "libmuse";
 
 export class LoginDialog extends Adw.Dialog {
   static {
-    GObject.registerClass({
-      GTypeName: "LoginDialog",
-      Template: "resource:///com/vixalien/muzika/ui/pages/login.ui",
-      InternalChildren: [
-        "stack",
-        "spinner",
-        "flow",
-        "qr",
-        "link",
-        "code",
-        "button",
-        "toast_overlay",
-      ],
-    }, this);
+    GObject.registerClass(
+      {
+        GTypeName: "LoginDialog",
+        Template: "resource:///com/vixalien/muzika/ui/pages/login.ui",
+        InternalChildren: [
+          "stack",
+          "spinner",
+          "flow",
+          "qr",
+          "link",
+          "code",
+          "button",
+          "toast_overlay",
+        ],
+      },
+      this,
+    );
   }
 
   _stack!: Gtk.Stack;
@@ -92,7 +95,7 @@ export class LoginDialog extends Adw.Dialog {
         this._last_signal = undefined;
       })
       .catch((error) => {
-        if ((error instanceof DOMException) && error.name === "AbortError") {
+        if (error instanceof DOMException && error.name === "AbortError") {
           return;
         }
 
@@ -101,7 +104,9 @@ export class LoginDialog extends Adw.Dialog {
         } else {
           this._toast_overlay.add_toast(
             Adw.Toast.new(
-              _("An Error happened while trying to log you in. Generating a new code…"),
+              _(
+                "An Error happened while trying to log you in. Generating a new code…",
+              ),
             ),
           );
           this.errored_before = true;

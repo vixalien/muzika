@@ -36,27 +36,22 @@ GObject.type_ensure(DynamicImage.$gtype);
 
 export type FlatCardItem = MixedCardItem | InlineSong | SearchContent;
 
-export type InlineSong =
-  | FlatSong
-  | Ranked<ParsedSong>
-  | Ranked<ParsedVideo>;
+export type InlineSong = FlatSong | Ranked<ParsedSong> | Ranked<ParsedVideo>;
 
 export class FlatCard extends Gtk.Box {
   static {
-    GObject.registerClass({
-      GTypeName: "FlatCard",
-      Template:
-        "resource:///com/vixalien/muzika/ui/components/carousel/flatcard.ui",
-      InternalChildren: [
-        "title",
-        "explicit",
-        "subtitle",
-        "dynamic_image",
-      ],
-      Properties: {
-        state: get_state_pspec(),
+    GObject.registerClass(
+      {
+        GTypeName: "FlatCard",
+        Template:
+          "resource:///com/vixalien/muzika/ui/components/carousel/flatcard.ui",
+        InternalChildren: ["title", "explicit", "subtitle", "dynamic_image"],
+        Properties: {
+          state: get_state_pspec(),
+        },
       },
-    }, this);
+      this,
+    );
   }
 
   content?: FlatCardItem;
@@ -170,7 +165,7 @@ export class FlatCard extends Gtk.Box {
         menuLikeRow(
           song.likeStatus,
           song.videoId!,
-          (likeStatus) => song.likeStatus = likeStatus,
+          (likeStatus) => (song.likeStatus = likeStatus),
         ),
         [_("Start radio"), `queue.play-song("${song.videoId}?radio=true")`],
         [_("Play next"), `queue.add-song("${song.videoId}?next=true")`],
@@ -178,9 +173,9 @@ export class FlatCard extends Gtk.Box {
         [_("Save to playlist"), `win.add-to-playlist("${song.videoId}")`],
         song.album
           ? [
-            _("Go to album"),
-            `navigator.visit("muzika:album:${song.album.id}")`,
-          ]
+              _("Go to album"),
+              `navigator.visit("muzika:album:${song.album.id}")`,
+            ]
           : null,
       ];
     });
@@ -200,7 +195,7 @@ export class FlatCard extends Gtk.Box {
         menuLikeRow(
           song.likeStatus,
           song.videoId,
-          (likeStatus) => song.likeStatus = likeStatus,
+          (likeStatus) => (song.likeStatus = likeStatus),
         ),
         [_("Start radio"), `queue.play-song("${song.videoId}?radio=true")`],
         [_("Play next"), `queue.add-song("${song.videoId}?next=true")`],
@@ -208,15 +203,15 @@ export class FlatCard extends Gtk.Box {
         [_("Save to playlist"), `win.add-to-playlist("${song.videoId}")`],
         song.album
           ? [
-            _("Go to album"),
-            `navigator.visit("muzika:album:${song.album.id}")`,
-          ]
+              _("Go to album"),
+              `navigator.visit("muzika:album:${song.album.id}")`,
+            ]
           : null,
         song.artists.length > 1
           ? [
-            _("Go to artist"),
-            `navigator.visit("muzika:artist:${song.artists[0].id}")`,
-          ]
+              _("Go to artist"),
+              `navigator.visit("muzika:artist:${song.artists[0].id}")`,
+            ]
           : null,
       ];
     });
@@ -239,7 +234,7 @@ export class FlatCard extends Gtk.Box {
         menuLikeRow(
           video.likeStatus,
           video.videoId,
-          (likeStatus) => video.likeStatus = likeStatus,
+          (likeStatus) => (video.likeStatus = likeStatus),
         ),
         [_("Start radio"), `queue.play-song("${video.videoId}?radio=true")`],
         [_("Play next"), `queue.add-song("${video.videoId}?next=true")`],
@@ -247,9 +242,9 @@ export class FlatCard extends Gtk.Box {
         [_("Save to playlist"), `win.add-to-playlist("${video.videoId}")`],
         video.artists && video.artists.length > 1
           ? [
-            _("Go to artist"),
-            `navigator.visit("muzika:artist:${video.artists[0].id}")`,
-          ]
+              _("Go to artist"),
+              `navigator.visit("muzika:artist:${video.artists[0].id}")`,
+            ]
           : null,
       ];
     });
@@ -269,7 +264,7 @@ export class FlatCard extends Gtk.Box {
         menuLikeRow(
           song.likeStatus,
           song.videoId,
-          (likeStatus) => song.likeStatus = likeStatus,
+          (likeStatus) => (song.likeStatus = likeStatus),
         ),
         [_("Start radio"), `queue.play-song("${song.videoId}?radio=true")`],
         [_("Play next"), `queue.add-song("${song.videoId}?next=true")`],
@@ -277,15 +272,15 @@ export class FlatCard extends Gtk.Box {
         [_("Save to playlist"), `win.add-to-playlist("${song.videoId}")`],
         song.album
           ? [
-            _("Go to album"),
-            `navigator.visit("muzika:album:${song.album.id}")`,
-          ]
+              _("Go to album"),
+              `navigator.visit("muzika:album:${song.album.id}")`,
+            ]
           : null,
         song.artists.length > 1
           ? [
-            _("Go to artist"),
-            `navigator.visit("muzika:artist:${song.artists[0].id}")`,
-          ]
+              _("Go to artist"),
+              `navigator.visit("muzika:artist:${song.artists[0].id}")`,
+            ]
           : null,
       ];
     });
@@ -310,7 +305,7 @@ export class FlatCard extends Gtk.Box {
         menuLikeRow(
           video.likeStatus,
           video.videoId,
-          (likeStatus) => video.likeStatus = likeStatus,
+          (likeStatus) => (video.likeStatus = likeStatus),
         ),
         [_("Start radio"), `queue.play-song("${video.videoId}?radio=true")`],
         [_("Play next"), `queue.add-song("${video.videoId}?next=true")`],
@@ -318,9 +313,9 @@ export class FlatCard extends Gtk.Box {
         [_("Save to playlist"), `win.add-to-playlist("${video.videoId}")`],
         video.artists && video.artists.length > 1
           ? [
-            _("Go to artist"),
-            `navigator.visit("muzika:artist:${video.artists[0].id}")`,
-          ]
+              _("Go to artist"),
+              `navigator.visit("muzika:artist:${video.artists[0].id}")`,
+            ]
           : null,
       ];
     });
@@ -338,15 +333,15 @@ export class FlatCard extends Gtk.Box {
     this.menu_helper.props = [
       album.shuffleId
         ? [
-          _("Shuffle play"),
-          `queue.play-playlist("${album.shuffleId}?next=true")`,
-        ]
+            _("Shuffle play"),
+            `queue.play-playlist("${album.shuffleId}?next=true")`,
+          ]
         : null,
       album.radioId
         ? [
-          _("Start radio"),
-          `queue.play-playlist("${album.radioId}?next=true")`,
-        ]
+            _("Start radio"),
+            `queue.play-playlist("${album.radioId}?next=true")`,
+          ]
         : null,
       // TODO: get album audioPlaylistId
       // [
@@ -360,9 +355,9 @@ export class FlatCard extends Gtk.Box {
       // ],
       album.artists.length > 1
         ? [
-          _("Go to artist"),
-          `navigator.visit("muzika:artist:${album.artists[0].id}")`,
-        ]
+            _("Go to artist"),
+            `navigator.visit("muzika:artist:${album.artists[0].id}")`,
+          ]
         : null,
     ];
   }
@@ -379,20 +374,17 @@ export class FlatCard extends Gtk.Box {
     this.menu_helper.props = [
       playlist.shuffleId
         ? [
-          _("Shuffle play"),
-          `queue.play-playlist("${playlist.shuffleId}?next=true")`,
-        ]
+            _("Shuffle play"),
+            `queue.play-playlist("${playlist.shuffleId}?next=true")`,
+          ]
         : null,
       playlist.radioId
         ? [
-          _("Start radio"),
-          `queue.play-playlist("${playlist.radioId}?next=true")`,
-        ]
+            _("Start radio"),
+            `queue.play-playlist("${playlist.radioId}?next=true")`,
+          ]
         : null,
-      [
-        _("Play next"),
-        `queue.add-playlist("${playlist.browseId}?next=true")`,
-      ],
+      [_("Play next"), `queue.add-playlist("${playlist.browseId}?next=true")`],
       [_("Add to queue"), `queue.add-playlist("${playlist.browseId}")`],
       [
         _("Save to playlist"),
@@ -414,15 +406,15 @@ export class FlatCard extends Gtk.Box {
     this.menu_helper.props = [
       artist.shuffleId
         ? [
-          _("Shuffle play"),
-          `queue.play-playlist("${artist.shuffleId}?next=true")`,
-        ]
+            _("Shuffle play"),
+            `queue.play-playlist("${artist.shuffleId}?next=true")`,
+          ]
         : null,
       artist.radioId
         ? [
-          _("Start radio"),
-          `queue.play-playlist("${artist.radioId}?next=true")`,
-        ]
+            _("Start radio"),
+            `queue.play-playlist("${artist.radioId}?next=true")`,
+          ]
         : null,
     ];
   }
@@ -451,10 +443,7 @@ export class FlatCard extends Gtk.Box {
     this.setup_playlist(radio.playlistId);
 
     this.menu_helper.props = [
-      [
-        _("Play next"),
-        `queue.add-playlist("${radio.playlistId}?next=true")`,
-      ],
+      [_("Play next"), `queue.add-playlist("${radio.playlistId}?next=true")`],
       [_("Add to queue"), `queue.add-playlist("${radio.playlistId}")`],
       [
         _("Save to playlist"),
@@ -478,7 +467,7 @@ export class FlatCard extends Gtk.Box {
         menuLikeRow(
           song.likeStatus,
           song.videoId,
-          (likeStatus) => song.likeStatus = likeStatus,
+          (likeStatus) => (song.likeStatus = likeStatus),
         ),
         [_("Start radio"), `queue.play-song("${song.videoId}?radio=true")`],
         [_("Play next"), `queue.add-song("${song.videoId}?next=true")`],
@@ -486,15 +475,15 @@ export class FlatCard extends Gtk.Box {
         [_("Save to playlist"), `win.add-to-playlist("${song.videoId}")`],
         song.album
           ? [
-            _("Go to album"),
-            `navigator.visit("muzika:album:${song.album.id}")`,
-          ]
+              _("Go to album"),
+              `navigator.visit("muzika:album:${song.album.id}")`,
+            ]
           : null,
         song.artists.length > 1
           ? [
-            _("Go to artist"),
-            `navigator.visit("muzika:artist:${song.artists[0].id}")`,
-          ]
+              _("Go to artist"),
+              `navigator.visit("muzika:artist:${song.artists[0].id}")`,
+            ]
           : null,
       ];
     });
@@ -512,15 +501,15 @@ export class FlatCard extends Gtk.Box {
     this.menu_helper.props = [
       artist.shuffleId
         ? [
-          _("Shuffle play"),
-          `queue.play-playlist("${artist.shuffleId}?next=true")`,
-        ]
+            _("Shuffle play"),
+            `queue.play-playlist("${artist.shuffleId}?next=true")`,
+          ]
         : null,
       artist.radioId
         ? [
-          _("Start radio"),
-          `queue.play-playlist("${artist.radioId}?next=true")`,
-        ]
+            _("Start radio"),
+            `queue.play-playlist("${artist.radioId}?next=true")`,
+          ]
         : null,
     ];
   }
@@ -538,15 +527,15 @@ export class FlatCard extends Gtk.Box {
     this.menu_helper.props = [
       artist.shuffleId
         ? [
-          _("Shuffle play"),
-          `queue.play-playlist("${artist.shuffleId}?next=true")`,
-        ]
+            _("Shuffle play"),
+            `queue.play-playlist("${artist.shuffleId}?next=true")`,
+          ]
         : null,
       artist.radioId
         ? [
-          _("Start radio"),
-          `queue.play-playlist("${artist.radioId}?next=true")`,
-        ]
+            _("Start radio"),
+            `queue.play-playlist("${artist.radioId}?next=true")`,
+          ]
         : null,
     ];
   }
@@ -568,7 +557,7 @@ export class FlatCard extends Gtk.Box {
         menuLikeRow(
           video.likeStatus,
           video.videoId,
-          (likeStatus) => video.likeStatus = likeStatus,
+          (likeStatus) => (video.likeStatus = likeStatus),
         ),
         [_("Start radio"), `queue.play-song("${video.videoId}?radio=true")`],
         [_("Play next"), `queue.add-song("${video.videoId}?next=true")`],
@@ -576,9 +565,9 @@ export class FlatCard extends Gtk.Box {
         [_("Save to playlist"), `win.add-to-playlist("${video.videoId}")`],
         video.artists && video.artists.length > 1
           ? [
-            _("Go to artist"),
-            `navigator.visit("muzika:artist:${video.artists[0].id}")`,
-          ]
+              _("Go to artist"),
+              `navigator.visit("muzika:artist:${video.artists[0].id}")`,
+            ]
           : null,
       ];
     });
@@ -601,7 +590,7 @@ export class FlatCard extends Gtk.Box {
         menuLikeRow(
           video.likeStatus,
           video.videoId,
-          (likeStatus) => video.likeStatus = likeStatus,
+          (likeStatus) => (video.likeStatus = likeStatus),
         ),
         [_("Start radio"), `queue.play-song("${video.videoId}?radio=true")`],
         [_("Play next"), `queue.add-song("${video.videoId}?next=true")`],
@@ -609,9 +598,9 @@ export class FlatCard extends Gtk.Box {
         [_("Save to playlist"), `win.add-to-playlist("${video.videoId}")`],
         video.artists && video.artists.length > 1
           ? [
-            _("Go to artist"),
-            `navigator.visit("muzika:artist:${video.artists[0].id}")`,
-          ]
+              _("Go to artist"),
+              `navigator.visit("muzika:artist:${video.artists[0].id}")`,
+            ]
           : null,
       ];
     });
@@ -623,7 +612,7 @@ export class FlatCard extends Gtk.Box {
     this.set_title(playlist.title);
     this.set_subtitle(
       _("Playlist"),
-      playlist.description ? [playlist.description] : (playlist.authors ?? []),
+      playlist.description ? [playlist.description] : playlist.authors ?? [],
     );
 
     this.load_thumbnails(playlist.thumbnails);
@@ -632,15 +621,15 @@ export class FlatCard extends Gtk.Box {
     this.menu_helper.props = [
       playlist.shuffleId
         ? [
-          _("Shuffle play"),
-          `queue.play-playlist("${playlist.shuffleId}?next=true")`,
-        ]
+            _("Shuffle play"),
+            `queue.play-playlist("${playlist.shuffleId}?next=true")`,
+          ]
         : null,
       playlist.radioId
         ? [
-          _("Start radio"),
-          `queue.play-playlist("${playlist.radioId}?next=true")`,
-        ]
+            _("Start radio"),
+            `queue.play-playlist("${playlist.radioId}?next=true")`,
+          ]
         : null,
       [
         _("Play next"),
@@ -659,10 +648,7 @@ export class FlatCard extends Gtk.Box {
 
     this.set_title(playlist.title);
     this.show_type = false;
-    this.set_subtitle(
-      _("Radio"),
-      _("Start Radio"),
-    );
+    this.set_subtitle(_("Radio"), _("Start Radio"));
 
     this.load_thumbnails(playlist.thumbnails);
     this.setup_playlist(playlist.playlistId);
@@ -670,15 +656,15 @@ export class FlatCard extends Gtk.Box {
     this.menu_helper.props = [
       playlist.shuffleId
         ? [
-          _("Shuffle play"),
-          `queue.play-playlist("${playlist.shuffleId}?next=true")`,
-        ]
+            _("Shuffle play"),
+            `queue.play-playlist("${playlist.shuffleId}?next=true")`,
+          ]
         : null,
       playlist.radioId
         ? [
-          _("Start radio"),
-          `queue.play-playlist("${playlist.radioId}?next=true")`,
-        ]
+            _("Start radio"),
+            `queue.play-playlist("${playlist.radioId}?next=true")`,
+          ]
         : null,
       [
         _("Play next"),
@@ -704,15 +690,15 @@ export class FlatCard extends Gtk.Box {
     this.menu_helper.props = [
       album.shuffleId
         ? [
-          _("Shuffle play"),
-          `queue.play-playlist("${album.shuffleId}?next=true")`,
-        ]
+            _("Shuffle play"),
+            `queue.play-playlist("${album.shuffleId}?next=true")`,
+          ]
         : null,
       album.radioId
         ? [
-          _("Start radio"),
-          `queue.play-playlist("${album.radioId}?next=true")`,
-        ]
+            _("Start radio"),
+            `queue.play-playlist("${album.radioId}?next=true")`,
+          ]
         : null,
       [
         _("Play next"),
@@ -725,9 +711,9 @@ export class FlatCard extends Gtk.Box {
       ],
       album.artists.length > 1
         ? [
-          _("Go to artist"),
-          `navigator.visit("muzika:artist:${album.artists[0].id}")`,
-        ]
+            _("Go to artist"),
+            `navigator.visit("muzika:artist:${album.artists[0].id}")`,
+          ]
         : null,
     ];
   }

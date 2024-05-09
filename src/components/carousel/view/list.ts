@@ -12,9 +12,12 @@ export type RequiredMixedItem = NonNullable<MixedItem>;
 
 export class CarouselListView extends Gtk.ListView {
   static {
-    GObject.registerClass({
-      GTypeName: "CarouselListView",
-    }, this);
+    GObject.registerClass(
+      {
+        GTypeName: "CarouselListView",
+      },
+      this,
+    );
   }
 
   items = new PlayableList<MixedCardItem>();

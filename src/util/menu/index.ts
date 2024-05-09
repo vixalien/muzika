@@ -48,15 +48,11 @@ function is_gio_menu_item(item: any): item is Gio.MenuItem {
   return typeof item === "object" && item instanceof Gio.MenuItem;
 }
 
-function is_submenu(
-  item: NonNullable<MenuProp>,
-): item is MenuSubmenu {
+function is_submenu(item: NonNullable<MenuProp>): item is MenuSubmenu {
   return typeof item === "object" && Object.hasOwn(item, "submenu");
 }
 
-function is_section(
-  item: NonNullable<MenuProp>,
-): item is MenuSection {
+function is_section(item: NonNullable<MenuProp>): item is MenuSection {
   return typeof item === "object" && Object.hasOwn(item, "section");
 }
 

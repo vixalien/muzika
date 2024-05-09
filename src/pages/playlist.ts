@@ -49,32 +49,37 @@ GObject.type_ensure(PlaylistHeader.$gtype);
 GObject.type_ensure(PlaylistItemView.$gtype);
 GObject.type_ensure(PlaylistBar.$gtype);
 
-export class PlaylistPage extends Adw.Bin
-  implements MuzikaPageWidget<Playlist, PlaylistState> {
+export class PlaylistPage
+  extends Adw.Bin
+  implements MuzikaPageWidget<Playlist, PlaylistState>
+{
   static {
-    GObject.registerClass({
-      GTypeName: "PlaylistPage",
-      Template: "resource:///com/vixalien/muzika/ui/pages/playlist.ui",
-      InternalChildren: [
-        "trackCount",
-        "separator",
-        "duration",
-        "scrolled",
-        "data",
-        "playlist_item_view",
-        "paginator",
-        "header",
-        "bar",
-        "suggestions",
-        "suggestions_item_view",
-        "insights_clamp",
-        "insights",
-        "menu",
-        "shuffle_button",
-        "edit_playlist_button",
-        "add_to_library_button",
-      ],
-    }, this);
+    GObject.registerClass(
+      {
+        GTypeName: "PlaylistPage",
+        Template: "resource:///com/vixalien/muzika/ui/pages/playlist.ui",
+        InternalChildren: [
+          "trackCount",
+          "separator",
+          "duration",
+          "scrolled",
+          "data",
+          "playlist_item_view",
+          "paginator",
+          "header",
+          "bar",
+          "suggestions",
+          "suggestions_item_view",
+          "insights_clamp",
+          "insights",
+          "menu",
+          "shuffle_button",
+          "edit_playlist_button",
+          "add_to_library_button",
+        ],
+      },
+      this,
+    );
   }
 
   playlist?: Playlist;
@@ -182,15 +187,17 @@ export class PlaylistPage extends Adw.Bin
       Adw.ResponseAppearance.DESTRUCTIVE,
     );
 
-    const response = await dialog.choose(get_window(), null)
+    const response = await dialog
+      .choose(get_window(), null)
       .catch(console.error);
 
     if (response === "delete") {
-      delete_playlist(this.playlist!.id)
+      delete_playlist(this.playlist.id)
         .then(() => {
           add_toast(_("Playlist deleted"));
           this.activate_action("navigation.pop", null);
-        }).catch(() => {
+        })
+        .catch(() => {
           add_toast(_("Couldn't delete playlist"));
         });
     }
@@ -234,7 +241,9 @@ export class PlaylistPage extends Adw.Bin
 
     const dialog = Adw.AlertDialog.new(
       _("Remove from playlist"),
-      _(" Are you sure that you want to remove the selected content from the playlist? "),
+      _(
+        " Are you sure that you want to remove the selected content from the playlist? ",
+      ),
     );
 
     dialog.add_response("cancel", _("Cancel"));
@@ -244,14 +253,17 @@ export class PlaylistPage extends Adw.Bin
       Adw.ResponseAppearance.DESTRUCTIVE,
     );
 
-    const response = await dialog.choose(get_window(), null)
+    const response = await dialog
+      .choose(get_window(), null)
       .catch(console.error);
 
     if (response === "remove") {
-      const message = await remove_playlist_items(this.playlist!.id, items)
-        .catch((err) => {
-          console.error(err);
-        });
+      const message = await remove_playlist_items(
+        this.playlist.id,
+        items,
+      ).catch((err) => {
+        console.error(err);
+      });
 
       if (message?.status === "STATUS_SUCCEEDED") {
         success_toast();
@@ -359,8 +371,8 @@ export class PlaylistPage extends Adw.Bin
 
     this._playlist_item_view.playlistId = playlist.id;
     this._playlist_item_view.editable = this._bar.editable = playlist.editable;
-    this._playlist_item_view.show_rank = playlist.tracks[0] &&
-      playlist.tracks[0].rank != null;
+    this._playlist_item_view.show_rank =
+      playlist.tracks[0] && playlist.tracks[0].rank != null;
 
     this._bar.playlistId = this.playlist.id;
     this._suggestions.visible = this.playlist.editable;
@@ -408,7 +420,7 @@ export class PlaylistPage extends Adw.Bin
       0,
       this.suggestions_model.n_items,
       playlist.suggestions.map((suggestion) =>
-        PlayableContainer.new_from_playlist_item(suggestion)
+        PlayableContainer.new_from_playlist_item(suggestion),
       ),
     );
 
@@ -441,7 +453,7 @@ export class PlaylistPage extends Adw.Bin
             0,
             this.suggestions_model.n_items,
             result.suggestions.map((suggestion) =>
-              PlayableContainer.new(suggestion)
+              PlayableContainer.new(suggestion),
             ),
           );
         })
@@ -457,35 +469,34 @@ export class PlaylistPage extends Adw.Bin
   private setup_menu() {
     if (!this.playlist) return;
 
-    this._menu.set_menu_model(generate_menu([
-      [
-        _("Start Radio"),
-        `queue.play-playlist("${this.playlist.id}?radio=true")`,
-      ],
-      [_("Play Next"), `queue.add-playlist("${this.playlist.id}?next=true")`],
-      [_("Add to queue"), `queue.add-playlist("${this.playlist.id}")`],
-      {
-        section: null,
-        items: [
-          [
-            _("Select tracks…"),
-            `playlist.select`,
-          ],
-          this.playlist.editable
-            ? [_("Delete Playlist…"), `playlist.delete`]
-            : null,
+    this._menu.set_menu_model(
+      generate_menu([
+        [
+          _("Start Radio"),
+          `queue.play-playlist("${this.playlist.id}?radio=true")`,
         ],
-      },
-      {
-        section: null,
-        items: [
-          [
-            _("Copy Link"),
-            `win.copy-url("https://music.youtube.com/playlist?list=${this.playlist.id}")`,
+        [_("Play Next"), `queue.add-playlist("${this.playlist.id}?next=true")`],
+        [_("Add to queue"), `queue.add-playlist("${this.playlist.id}")`],
+        {
+          section: null,
+          items: [
+            [_("Select tracks…"), `playlist.select`],
+            this.playlist.editable
+              ? [_("Delete Playlist…"), `playlist.delete`]
+              : null,
           ],
-        ],
-      },
-    ]));
+        },
+        {
+          section: null,
+          items: [
+            [
+              _("Copy Link"),
+              `win.copy-url("https://music.youtube.com/playlist?list=${this.playlist.id}")`,
+            ],
+          ],
+        },
+      ]),
+    );
   }
 
   no_more = false;
@@ -544,7 +555,7 @@ export class PlaylistPage extends Adw.Bin
         ...this.playlist!,
         tracks: list_model_to_array(this.model)
           .map((container) => (container as PlayableContainer).object)
-          .filter((item) => item != null) as PlaylistItem[],
+          .filter((item) => item != null),
       },
       vscroll: this._scrolled.get_vadjustment().get_value(),
     };

@@ -15,9 +15,12 @@ type LyricLine = TimedLyrics["timed_lyrics"][number];
 
 export class TimedLyricLineRow extends Gtk.ListBoxRow {
   static {
-    GObject.registerClass({
-      GTypeName: "TimedLyricLineRow",
-    }, this);
+    GObject.registerClass(
+      {
+        GTypeName: "TimedLyricLineRow",
+      },
+      this,
+    );
   }
 
   line: LyricLine;
@@ -38,21 +41,24 @@ export class TimedLyricLineRow extends Gtk.ListBoxRow {
 
 export class LyricsView extends Gtk.Stack {
   static {
-    GObject.registerClass({
-      GTypeName: "LyricsView",
-      Template:
-        "resource:///com/vixalien/muzika/ui/components/player/lyrics.ui",
-      InternalChildren: [
-        "no_lyrics",
-        "loading",
-        "lyrics_window",
-        "view",
-        "buffer",
-        "timed_window",
-        "timed_listbox",
-        "timed_source",
-      ],
-    }, this);
+    GObject.registerClass(
+      {
+        GTypeName: "LyricsView",
+        Template:
+          "resource:///com/vixalien/muzika/ui/components/player/lyrics.ui",
+        InternalChildren: [
+          "no_lyrics",
+          "loading",
+          "lyrics_window",
+          "view",
+          "buffer",
+          "timed_window",
+          "timed_listbox",
+          "timed_source",
+        ],
+      },
+      this,
+    );
   }
 
   private _no_lyrics!: Adw.StatusPage;
@@ -98,18 +104,21 @@ export class LyricsView extends Gtk.Stack {
 
       await get_lyrics(new_lyrics, {
         signal: this.controller.signal,
-      }).then((lyrics) => {
-        this.loaded_lyrics = new_lyrics;
-        this.show_lyrics(lyrics);
-      }).catch((err) => {
-        if (err.name === "AbortError") {
-          return;
-        } else {
-          throw err;
-        }
-      }).finally(() => {
-        this._loading.stop();
-      });
+      })
+        .then((lyrics) => {
+          this.loaded_lyrics = new_lyrics;
+          this.show_lyrics(lyrics);
+        })
+        .catch((err) => {
+          if (err.name === "AbortError") {
+            return;
+          } else {
+            throw err;
+          }
+        })
+        .finally(() => {
+          this._loading.stop();
+        });
     } else {
       this.loaded_lyrics = null;
       this.set_visible_child(this._no_lyrics);
@@ -135,7 +144,8 @@ export class LyricsView extends Gtk.Stack {
     this.clear_views();
 
     if (
-      lyrics.timed && Gtk.Settings.get_default()!.gtk_enable_animations === true
+      lyrics.timed &&
+      Gtk.Settings.get_default()!.gtk_enable_animations === true
     ) {
       lyrics.timed_lyrics.forEach((line) => {
         const row = new TimedLyricLineRow(line);
@@ -161,12 +171,8 @@ export class LyricsView extends Gtk.Stack {
 
   private pending_animation: Adw.Animation | null = null;
 
-  private scroll_to_row(
-    _: Gtk.ListBox,
-    row: Gtk.ListBoxRow,
-    force = false,
-  ) {
-    if (((this.get_state_flags() & Gtk.StateFlags.ACTIVE) !== 0) && !force) {
+  private scroll_to_row(_: Gtk.ListBox, row: Gtk.ListBoxRow, force = false) {
+    if ((this.get_state_flags() & Gtk.StateFlags.ACTIVE) !== 0 && !force) {
       return;
     }
 
@@ -183,9 +189,7 @@ export class LyricsView extends Gtk.Stack {
       const scroll_to = rect.get_y() - 180;
 
       // don't scroll if the scroll value is near the target (in one direction)
-      if (
-        Math.abs(scroll_to - this._timed_window.vadjustment.value) < 40
-      ) {
+      if (Math.abs(scroll_to - this._timed_window.vadjustment.value) < 40) {
         return;
       }
 
@@ -202,7 +206,7 @@ export class LyricsView extends Gtk.Stack {
         property_target,
       );
 
-      let id = animation.connect("done", () => {
+      const id = animation.connect("done", () => {
         this.pending_animation = null;
         animation.disconnect(id);
       });
@@ -213,10 +217,7 @@ export class LyricsView extends Gtk.Stack {
     }
   }
 
-  private lyrics_row_activated(
-    _: Gtk.ListBox,
-    row: TimedLyricLineRow,
-  ) {
+  private lyrics_row_activated(_: Gtk.ListBox, row: TimedLyricLineRow) {
     const player = get_player();
 
     player.seek(row.line.start * 1000 + 1);
@@ -249,8 +250,8 @@ export class LyricsView extends Gtk.Stack {
     }
 
     const line_id = this.lyrics.timed_lyrics.findIndex((line) => {
-      const timestamp_milli = (player.timestamp / 1000) +
-        LyricsView.ANIMATION_DURATION / 2;
+      const timestamp_milli =
+        player.timestamp / 1000 + LyricsView.ANIMATION_DURATION / 2;
       return timestamp_milli >= line.start && timestamp_milli <= line.end;
     });
 
@@ -277,14 +278,10 @@ export class LyricsView extends Gtk.Stack {
   vfunc_map(): void {
     super.vfunc_map();
 
-    this.listeners.connect(
-      this.player.queue,
-      "notify::current",
-      () => {
-        this._loading.start();
-        this.set_visible_child(this._loading);
-      },
-    );
+    this.listeners.connect(this.player.queue, "notify::current", () => {
+      this._loading.start();
+      this.set_visible_child(this._loading);
+    });
 
     this.listeners.connect(
       this.player.queue,

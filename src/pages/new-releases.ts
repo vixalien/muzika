@@ -19,14 +19,19 @@ export interface NewReleasesPageState extends VScrollState {
   contents: NewReleases;
 }
 
-export class NewReleasesPage extends Adw.Bin
-  implements MuzikaPageWidget<NewReleases, NewReleasesPageState> {
+export class NewReleasesPage
+  extends Adw.Bin
+  implements MuzikaPageWidget<NewReleases, NewReleasesPageState>
+{
   static {
-    GObject.registerClass({
-      GTypeName: "NewReleasesPage",
-      Template: "resource:///com/vixalien/muzika/ui/pages/new-releases.ui",
-      InternalChildren: ["scrolled", "box"],
-    }, this);
+    GObject.registerClass(
+      {
+        GTypeName: "NewReleasesPage",
+        Template: "resource:///com/vixalien/muzika/ui/pages/new-releases.ui",
+        InternalChildren: ["scrolled", "box"],
+      },
+      this,
+    );
   }
 
   private _scrolled!: Gtk.ScrolledWindow;
