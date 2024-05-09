@@ -51,7 +51,7 @@ export class AbortSignal extends EventTarget implements globalThis.AbortSignal {
   static timeout(ms: number) {
     const signal = new this();
 
-    GLib.timeout_add(GLib.PRIORITY_DEFAULT, ms, () => {
+    GLib.timeout_add(GLib.PRIORITY_DEFAULT_IDLE, ms, () => {
       signal.dispatchEvent(
         new CustomEvent("abort", {
           detail: new DOMException(

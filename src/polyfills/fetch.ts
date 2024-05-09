@@ -251,7 +251,7 @@ export async function fetch(url: string | URL, options: FetchOptions = {}) {
   return new Promise<GResponse>(async (resolve, reject) => {
     const inputStream = await SESSION.send_async(
       message,
-      GLib.PRIORITY_DEFAULT,
+      GLib.PRIORITY_DEFAULT_IDLE,
       cancellable,
     ).catch((e) => {
       if (
@@ -278,8 +278,9 @@ export async function fetch(url: string | URL, options: FetchOptions = {}) {
       const outputStream = Gio.MemoryOutputStream.new_resizable();
       await outputStream.splice_async(
         inputStream,
-        Gio.OutputStreamSpliceFlags.CLOSE_SOURCE | Gio.OutputStreamSpliceFlags.CLOSE_TARGET,
-        GLib.PRIORITY_DEFAULT,
+        Gio.OutputStreamSpliceFlags.CLOSE_SOURCE |
+          Gio.OutputStreamSpliceFlags.CLOSE_TARGET,
+        GLib.PRIORITY_DEFAULT_IDLE,
         null,
       );
 
