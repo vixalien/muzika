@@ -557,6 +557,15 @@ export class PlaylistItemView extends Gtk.Widget {
     const upper = child_size;
     let value = adjustment.value;
 
+    // getting the handler ID registered while setting the adjustment
+    const handler = this.adjustment_listeners[orientation].listeners.get(
+      adjustment,
+    )?.[0];
+
+    if (handler) {
+      GObject.signal_handler_block(adjustment, handler);
+    }
+
     /* We clamp to the left in RTL mode */
     if (
       orientation === Gtk.Orientation.HORIZONTAL &&
@@ -574,6 +583,10 @@ export class PlaylistItemView extends Gtk.Widget {
       viewport_size * 0.9,
       viewport_size,
     );
+
+    if (handler) {
+      GObject.signal_handler_unblock(adjustment, handler);
+    }
   }
 
   vfunc_size_allocate(width: number, height: number, baseline: number): void {
