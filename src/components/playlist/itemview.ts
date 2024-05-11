@@ -150,32 +150,63 @@ export class PlaylistItemView extends Gtk.Widget {
   // adjustments
 
   private adjustment = orientedPair(new Gtk.Adjustment(), new Gtk.Adjustment());
+  private adjustment_listeners = orientedPair(
+    new SignalListeners(),
+    new SignalListeners(),
+  );
   private child_adjustment = orientedPair(
     new Gtk.Adjustment(),
     new Gtk.Adjustment(),
   );
+
+  private set_adjustment(
+    orientation: Gtk.Orientation,
+    adjustment?: Gtk.Adjustment,
+  ) {
+    if (adjustment === this.adjustment[orientation]) return;
+
+    if (!adjustment) {
+      adjustment = Gtk.Adjustment.new(0, 0, 0, 0, 0, 0);
+    } else {
+      adjustment.configure(0, 0, 0, 0, 0, 0);
+    }
+
+    this.clear_adjustment(orientation);
+
+    this.adjustment[orientation] = adjustment;
+
+    this.adjustment_listeners[orientation].add(
+      adjustment,
+      adjustment.connect("value-changed", () => {
+        this.adjustment_changed_cb();
+      }),
+    );
+
+    this.queue_allocate();
+  }
+
+  private adjustment_changed_cb() {
+    this.queue_allocate();
+  }
+
+  private clear_adjustment(orientation: Gtk.Orientation) {
+    this.adjustment_listeners[orientation].clear();
+    this.adjustment[orientation] = null!;
+  }
 
   // hadjustment
   get hadjustment(): Gtk.Adjustment {
     return this.adjustment[Gtk.Orientation.HORIZONTAL];
   }
   set hadjustment(value: Gtk.Adjustment) {
-    if (!value) return;
-    this.adjustment[Gtk.Orientation.HORIZONTAL] = value;
-    value.connect("value-changed", () => this.queue_allocate());
-    this.queue_allocate();
-    this.notify("hadjustment");
+    this.set_adjustment(Gtk.Orientation.HORIZONTAL, value);
   }
 
   get vadjustment(): Gtk.Adjustment {
     return this.adjustment[Gtk.Orientation.VERTICAL];
   }
   set vadjustment(value: Gtk.Adjustment) {
-    if (!value) return;
-    this.adjustment[Gtk.Orientation.VERTICAL] = value;
-    value.connect("value-changed", () => this.queue_allocate());
-    this.notify("vadjustment");
-    this.queue_allocate();
+    this.set_adjustment(Gtk.Orientation.VERTICAL, value);
   }
 
   // scroll policy
