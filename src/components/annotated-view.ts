@@ -337,8 +337,13 @@ export class AnnotatedView extends Gtk.Widget {
 
   vfunc_size_allocate(width: number, height: number, baseline: number): void {
     const children = [this._header, this._child, this._footer];
+
     this.adjustment[Gtk.Orientation.VERTICAL].freeze_notify();
     this.adjustment[Gtk.Orientation.HORIZONTAL].freeze_notify();
+
+    // update adjust values
+    const child_adjustment = this.child_adjustment[1];
+    child_adjustment.freeze_notify();
 
     // get the total and each widget's size
     const { totals, sizes } = this.get_widgets_sizes(children, width, height);
@@ -374,22 +379,17 @@ export class AnnotatedView extends Gtk.Widget {
         allocation.x = -x;
         allocation.y = -y;
 
+        let y_offset, visible_height;
+
         // scroll the child widget direct using it's scrollable interface
         if (child === this._child && isScrollable(child)) {
           const widget_height = allocation.height;
-          const y_offset = Math.max(0, y);
+          y_offset = Math.max(0, y);
 
-          const visible_height = Math.min(
+          visible_height = Math.min(
             widget_height,
             height + Math.min(y, 0),
           );
-
-          // update adjust values
-          const child_adjustment = this.child_adjustment[1];
-          child_adjustment.freeze_notify();
-          child_adjustment.value = y_offset;
-          child_adjustment.page_size = visible_height;
-          child_adjustment.thaw_notify();
 
           allocation.height = Math.min(
             visible_height,
@@ -409,9 +409,17 @@ export class AnnotatedView extends Gtk.Widget {
         } else {
           child.map();
           child.size_allocate(allocation, -1);
+
+          if (child === this._child && isScrollable(child)) {
+            // scroll the scrollable child after allocating
+            child_adjustment.value = y_offset!;
+            child_adjustment.page_size = visible_height!;
+          }
         }
       }
     }
+
+    child_adjustment.thaw_notify();
 
     this.adjustment[Gtk.Orientation.VERTICAL].thaw_notify();
     this.adjustment[Gtk.Orientation.HORIZONTAL].thaw_notify();
