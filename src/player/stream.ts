@@ -197,22 +197,6 @@ export class MuzikaMediaStream extends Gtk.MediaStream {
     return this._error as GLib.Error;
   }
 
-  // property: has-audio
-
-  get has_audio() {
-    if (!this._play.media_info) return false;
-
-    return this._play.media_info.get_number_of_audio_streams() > 0;
-  }
-
-  // property: has-video
-
-  get has_video() {
-    if (!this._play.media_info) return false;
-
-    return this._play.media_info.get_number_of_video_streams() > 0;
-  }
-
   // property: playing
 
   vfunc_play() {
