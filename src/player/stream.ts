@@ -38,7 +38,7 @@ export class MuzikaMediaStream extends Gtk.MediaStream {
           "Paintable",
           "The GdkPaintable representing the video",
           Gdk.Paintable.$gtype,
-          GObject.ParamFlags.READABLE,
+          GObject.ParamFlags.READWRITE,
         ),
         media_info: GObject.param_spec_object(
           "media-info",
@@ -60,11 +60,7 @@ export class MuzikaMediaStream extends Gtk.MediaStream {
     }, this);
   }
 
-  private _paintable: Gdk.Paintable | null = null;
-
-  get paintable(): Gdk.Paintable | null {
-    return this._paintable;
-  }
+  paintable!: Gdk.Paintable;
 
   constructor() {
     super();
@@ -111,8 +107,12 @@ export class MuzikaMediaStream extends Gtk.MediaStream {
       );
     }
 
-    this._paintable = (sink as any).paintable;
-    this.notify("paintable");
+    sink.bind_property(
+      "paintable",
+      this,
+      "paintable",
+      GObject.BindingFlags.SYNC_CREATE,
+    );
 
     this._play.pipeline.set_property("video-sink", sink);
   }

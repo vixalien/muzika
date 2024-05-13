@@ -303,7 +303,8 @@ export class PlayerNowPlayingView extends Adw.NavigationPage {
    * loading multiple thumbnails can result in the previous one loading
    * after the current one, so we need to abort the previous one
    */
-  abort_thumbnail: AbortController | null = null;
+  private abort_thumbnail: AbortController | null = null;
+  private paintable_binding: GObject.Binding | null = null;
 
   update_thumbnail() {
     const player = get_player();
@@ -318,8 +319,18 @@ export class PlayerNowPlayingView extends Adw.NavigationPage {
     }
 
     if (player.queue.current_is_video) {
-      this._picture.paintable = this.player.paintable;
+      if (this.paintable_binding) return;
+
+      this.paintable_binding = player.bind_property(
+        "paintable",
+        this._picture,
+        "paintable",
+        GObject.BindingFlags.SYNC_CREATE,
+      );
     } else {
+      this.paintable_binding?.unbind();
+      this.paintable_binding = null;
+
       this.abort_thumbnail = new AbortController();
 
       const theme = Gtk.IconTheme.get_for_display(Gdk.Display.get_default()!);

@@ -35,11 +35,12 @@ export class VideoPlayerView extends Adw.Bin {
 
     const player = get_player();
 
-    player.connect("notify::paintable", () => {
-      this._picture.set_paintable(player.paintable);
-    });
-
-    this._picture.set_paintable(player.paintable);
+    player.bind_property(
+      "paintable",
+      this._picture,
+      "paintable",
+      GObject.BindingFlags.SYNC_CREATE,
+    );
 
     // player
 
