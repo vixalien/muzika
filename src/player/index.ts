@@ -383,7 +383,7 @@ export class MuzikaPlayer extends MuzikaMediaStream {
     return true;
   }
 
-  private get_state(): PlayerState | null {
+  private serialize_state(): PlayerState | null {
     if (!this.queue.current?.object) {
       return null;
     }
@@ -406,7 +406,7 @@ export class MuzikaPlayer extends MuzikaMediaStream {
     };
   }
 
-  private async set_state(state?: PlayerState) {
+  private async apply_state(state?: PlayerState) {
     if (!state) return;
 
     if (state.tracks.length === 0) return;
@@ -443,12 +443,12 @@ export class MuzikaPlayer extends MuzikaMediaStream {
   private async load_state() {
     const state = this.store.get("player-state") as PlayerState | undefined;
 
-    await this.set_state(state)
+    await this.apply_state(state)
       .catch((err) => console.error(err));
   }
 
   save_state() {
-    const state = this.get_state();
+    const state = this.serialize_state();
 
     this.store.set("player-state", state);
   }
