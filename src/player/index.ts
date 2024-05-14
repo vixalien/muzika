@@ -62,7 +62,6 @@ export class MuzikaPlayer extends MuzikaMediaStream {
     }, this);
   }
 
-  private app: Application;
   private _queue: Queue;
 
   get queue() {
@@ -89,7 +88,6 @@ export class MuzikaPlayer extends MuzikaMediaStream {
   constructor(options: { app: Application }) {
     super();
 
-    this.app = options.app;
     this._queue = new Queue({ app: options.app });
 
     this._queue.connect("notify::current", () => {
@@ -128,17 +126,6 @@ export class MuzikaPlayer extends MuzikaMediaStream {
       if (now_playing_videoId && now_playing_videoId === next) {
         return;
       }
-
-      // this.stop();
-
-      // this._loading_track = next;
-      // this.emit("loading-track");
-
-      // this._play.pause();
-      // this._play.seek(0);
-
-      // this._is_buffering = true;
-      // this.notify("is-buffering");
     });
 
     this.queue.connect("play", () => {
@@ -185,44 +172,20 @@ export class MuzikaPlayer extends MuzikaMediaStream {
       );
       this.update_uri();
     });
-  }
 
-  get volume() {
-    return super.volume;
-  }
+    Settings.bind(
+      "volume",
+      this,
+      "volume",
+      Gio.SettingsBindFlags.DEFAULT,
+    );
 
-  private update_volume(value: number) {
-    super.volume = value;
-
-    if (value !== Settings.get_double("volume")) {
-      Settings.set_double("volume", value);
-    }
-  }
-
-  private throttled_update_volume = throttle(this.update_volume, 100, {
-    leading: true,
-    trailing: true,
-  });
-
-  set volume(value: number) {
-    // value and this.volume are of different precision
-    if (compare_numbers(this.volume, value)) return;
-
-    this.throttled_update_volume(value);
-  }
-
-  get muted() {
-    return super.muted;
-  }
-
-  set muted(value: boolean) {
-    if (this.muted === value) return;
-
-    super.muted = value;
-
-    if (value !== Settings.get_boolean("muted")) {
-      Settings.set_boolean("muted", value);
-    }
+    Settings.bind(
+      "muted",
+      this,
+      "muted",
+      Gio.SettingsBindFlags.DEFAULT,
+    );
   }
 
   // property: current-meta
