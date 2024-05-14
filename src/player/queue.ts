@@ -675,7 +675,7 @@ export class Queue extends GObject.Object {
       }
     } else {
       if (this.position >= this.list.n_items - 1) {
-        position = -1;
+        return [-1, null];
       } else {
         position = this.position + 1;
       }
@@ -695,8 +695,10 @@ export class Queue extends GObject.Object {
   next(): QueueTrack | null {
     const [position, track] = this.peek_next();
 
-    this.update_position(position);
-    this.emit("play");
+    if (position > -1) {
+      this.update_position(position);
+      this.emit("play");
+    }
 
     return track;
   }
@@ -716,8 +718,10 @@ export class Queue extends GObject.Object {
   repeat_or_next(): QueueTrack | null {
     const [position, track] = this.peek_repeat_or_next();
 
-    this.update_position(position);
-    this.emit("play");
+    if (position > -1) {
+      this.update_position(position);
+      this.emit("play");
+    }
 
     return track;
   }
@@ -759,8 +763,10 @@ export class Queue extends GObject.Object {
   previous(): QueueTrack | null {
     const [position, track] = this.peek_previous();
 
-    this.update_position(position);
-    this.emit("play");
+    if (position > -1) {
+      this.update_position(position);
+      this.emit("play");
+    }
 
     return track;
   }

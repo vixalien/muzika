@@ -376,8 +376,20 @@ export class MuzikaPlayer extends MuzikaMediaStream {
   }
 
   protected eos_cb(_play: GstPlay.Play) {
+    const previous_metadata = [
+      this.has_audio,
+      this.has_video,
+      this.seekable,
+      this.duration,
+    ] as const;
+
     if (super.eos_cb(_play)) {
-      this.queue.repeat_or_next();
+      const track = this.queue.repeat_or_next();
+
+      if (!track) {
+        // this means there is no track to play. Just reprepare the current track
+        this.stream_prepared(...previous_metadata);
+      }
     }
 
     return true;
