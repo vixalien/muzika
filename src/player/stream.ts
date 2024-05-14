@@ -172,15 +172,7 @@ export class MuzikaMediaStream extends Gtk.MediaStream {
   // property: buffering
 
   is_buffering = false;
-
-  // property: duration
-
-  get duration() {
-    if (!this._play.media_info) return 0;
-
-    return this._play.media_info.get_duration() / Gst.USECOND;
-  }
-
+  
   // property: error
 
   private _error: GLib.Error | null = null;
