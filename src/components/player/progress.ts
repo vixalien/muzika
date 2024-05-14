@@ -1,96 +1,63 @@
 import Gtk from "gi://Gtk?version=4.0";
 import GObject from "gi://GObject";
-import Adw from "gi://Adw";
+
+import { SignalListeners } from "src/util/signal-listener";
+import { get_player } from "src/application";
 
 export class PlayerProgressBar extends Gtk.ProgressBar {
   static {
     GObject.registerClass({
       GTypeName: "PlayerProgressBar",
-      Properties: {
-        duration: GObject.ParamSpec.double(
-          "duration",
-          "Duration",
-          "Duration in nanoseconds",
-          GObject.ParamFlags.READABLE,
-          0,
-          Number.MAX_SAFE_INTEGER,
-          0,
-        ),
-        value: GObject.ParamSpec.double(
-          "value",
-          "Value",
-          "Value in nanoseconds",
-          GObject.ParamFlags.READWRITE,
-          0,
-          Number.MAX_SAFE_INTEGER,
-          0,
-        ),
-        buffering: GObject.ParamSpec.boolean(
-          "buffering",
-          "Buffering",
-          "Whether the player is buffering",
-          GObject.ParamFlags.READWRITE,
-          false,
-        ),
-        animation: GObject.ParamSpec.object(
-          "animation",
-          "Animation",
-          "The animation object",
-          GObject.ParamFlags.READWRITE,
-          Adw.TimedAnimation,
-        ),
-      },
-      Signals: {},
     }, this);
   }
 
   constructor() {
     super({
-      hexpand: true,
       valign: Gtk.Align.START,
     });
 
-    this.add_css_class("osd");
+    this.add_css_class("osd")
   }
 
-  get value() {
-    return this.fraction * this.duration;
-  }
+  private update_fraction() {
+    const player = get_player();
 
-  set value(value: number) {
-    this.fraction = Math.max(Math.min(value / this.duration, 1), 0) || 0;
-  }
+    this.fraction =
+      Math.max(Math.min(player.timestamp / player.duration, 1), 0) || 0;
 
-  private _duration = 1;
+    const already_buffering = this.has_css_class("buffering");
 
-  get duration() {
-    return this._duration;
-  }
-
-  set_duration(value: number) {
-    if (value === this._duration) return;
-
-    this._duration = value;
-  }
-
-  private _buffering: boolean = false;
-
-  get buffering() {
-    return this._buffering;
-  }
-
-  set buffering(value: boolean) {
-    this._buffering = value;
-
-    if (value) {
-      this.add_css_class("buffering");
-    } else {
+    if (player.is_buffering) {
+      if (!already_buffering) this.add_css_class("buffering");
+    } else if (already_buffering) {
       this.remove_css_class("buffering");
     }
   }
 
-  update_position(position: number) {
-    this.value = position;
-    this.notify("value");
+  listeners = new SignalListeners();
+
+  vfunc_map() {
+    super.vfunc_map();
+    this.listeners.clear();
+    this.listeners.connect(
+      get_player(),
+      "notify::timestamp",
+      this.update_fraction.bind(this),
+    );
+    this.listeners.connect(
+      get_player(),
+      "notify::duration",
+      this.update_fraction.bind(this),
+    );
+    this.listeners.connect(
+      get_player(),
+      "notify::is-buffering",
+      this.update_fraction.bind(this),
+    );
+  }
+
+  vfunc_unmap() {
+    super.vfunc_unmap();
+    this.listeners.clear();
   }
 }
