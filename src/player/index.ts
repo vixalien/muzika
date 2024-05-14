@@ -129,7 +129,7 @@ export class MuzikaPlayer extends MuzikaMediaStream {
         return;
       }
 
-      this.stop();
+      // this.stop();
 
       // this._loading_track = next;
       // this.emit("loading-track");
