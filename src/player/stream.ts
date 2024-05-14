@@ -343,6 +343,8 @@ export class MuzikaMediaStream extends Gtk.MediaStream {
 
     this.discover_uri(uri)
       .then((info) => {
+        const was_playing = this.playing;
+
         if (this.is_prepared()) this.unprepare();
 
         this.refreshed_uri = false;
@@ -357,6 +359,10 @@ export class MuzikaMediaStream extends Gtk.MediaStream {
         );
 
         this._play.set_uri(uri);
+
+        if (was_playing) {
+          this.play();
+        }
 
         this.do_initial_seek();
       });
