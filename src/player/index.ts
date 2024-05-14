@@ -196,26 +196,28 @@ export class MuzikaPlayer extends MuzikaMediaStream {
     return this._now_playing;
   }
 
-  // whether the next play action should add to the history
-  private add_history = false;
+  // whether we should add the current track to history once played
+  private added_to_playback_history = false;
 
-  play() {
-    super.play();
+  vfunc_play() {
+    super.vfunc_play();
 
-    // TODO: add history
+    // adding the current track to the playback history
     const song = this.now_playing?.object.song;
 
     if (song) {
-      if (this.add_history && get_option("auth").has_token()) {
+      if (!this.added_to_playback_history && get_option("auth").has_token()) {
         // add history entry, but don't wait for the promise to resolve
         add_history_item(song)
           .catch((err) => {
-            console.log("Couldn't add history item", err);
+            console.log("Couldn't add track to playback history", err);
           });
 
-        this.add_history = false;
+        this.added_to_playback_history = true;
       }
     }
+
+    return true;
   }
 
   private loading_controller: AbortController | null = null;
@@ -289,7 +291,7 @@ export class MuzikaPlayer extends MuzikaMediaStream {
 
         this.resume();
 
-        this.add_history = true;
+        this.added_to_playback_history = false;
       })
       .catch((error) => {
         if (error instanceof DOMException && error.name == "AbortError") return;
