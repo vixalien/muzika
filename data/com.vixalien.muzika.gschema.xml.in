@@ -20,6 +20,11 @@
 		<value nick='hd2160' value='8' />
 		<value nick='highres' value='9' />
 	</enum>
+	<enum id="@app-id@.RepeatMode">
+		<value nick='none' value='0' />
+		<value nick='all' value='1' />
+		<value nick='one' value='2' />
+	</enum>
 	<schema id="@app-id@" path="/com/vixalien/muzika/" gettext-domain="@gettext-package@">
 		<key name="prefer-list" type="b">
 			<default>false</default>
@@ -63,6 +68,29 @@
 			<default>'auto'</default>
 			<summary>Video Quality</summary>
 			<description>Preferred video quality.</description>
+		</key>
+	</schema>
+	<schema id="@app-id@.PlayerState" path="/com/vixalien/muzika/" gettext-domain="@gettext-package@">
+		<key name="shuffle" type="b">
+			<default>false</default>
+		</key>
+		<key name="repeat" enum="@app-id@.RepeatMode">
+			<default>'none'</default>
+		</key>
+		<key name="position" type="u">
+			<default>0</default>
+		</key>
+		<key name="tracks" type="as">
+			<default>[]</default>
+		</key>
+		<key name="original" type="as">
+			<default>[]</default>
+		</key>
+		<key name="seek" type="t">
+			<default>0</default>
+		</key>
+		<key name="playlist-id" type="s">
+			<default>''</default>
 		</key>
 	</schema>
 </schemalist>

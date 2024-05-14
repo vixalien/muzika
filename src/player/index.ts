@@ -9,10 +9,9 @@ import type { AudioFormat, Format, Song, VideoFormat } from "libmuse";
 import { throttle } from "lodash-es";
 
 import { Application } from "../application.js";
-import { Settings } from "../util/settings";
+import { PlayerStateSettings, Settings } from "../util/settings";
 import { ObjectContainer } from "../util/objectcontainer.js";
 import { AddActionEntries } from "src/util/action.js";
-import { GioFileStore } from "src/util/giofilestore.js";
 import { list_model_to_array } from "src/util/list.js";
 import { get_track_settings, get_tracklist } from "./helpers.js";
 import { convert_formats_to_dash } from "./mpd";
@@ -115,7 +114,7 @@ export class MuzikaPlayer extends MuzikaMediaStream {
 
       this.load(current ?? null)
         .then(() => {
-          this.save_state();
+          this.save_state_settings();
         })
         .catch((e) => {
           console.log("caught error", e);
@@ -168,7 +167,8 @@ export class MuzikaPlayer extends MuzikaMediaStream {
 
     // restore state
 
-    this.load_state();
+    this.load_settings_state()
+      .catch(console.error);
 
     Settings.connect("changed::audio-quality", () => {
       console.log(
@@ -383,7 +383,7 @@ export class MuzikaPlayer extends MuzikaMediaStream {
     return true;
   }
 
-  private serialize_state(): PlayerState | null {
+  save_state_settings() {
     if (!this.queue.current?.object) {
       return null;
     }
@@ -395,36 +395,48 @@ export class MuzikaPlayer extends MuzikaMediaStream {
         .map((track) => track?.videoId) as string[];
     };
 
-    return {
-      shuffle: this.queue.shuffle,
-      repeat: this.queue.repeat,
-      position: this.queue.position,
-      tracks: get_tracks(this.queue.list),
-      original: get_tracks(this.queue._original),
-      seek: this.timestamp,
-      settings: this.queue.settings.object,
-    };
+    PlayerStateSettings.set_boolean("shuffle", this.queue.shuffle);
+    PlayerStateSettings.set_enum("repeat", this.queue.repeat);
+    PlayerStateSettings.set_uint("position", this.queue.position);
+    PlayerStateSettings.set_value(
+      "tracks",
+      GLib.Variant.new("as", get_tracks(this.queue.list)),
+    );
+    PlayerStateSettings.set_value(
+      "original",
+      GLib.Variant.new("as", get_tracks(this.queue._original)),
+    );
+    PlayerStateSettings.set_uint64("seek", this.timestamp);
+    PlayerStateSettings.set_string(
+      "playlist-id",
+      this.queue.settings.object.playlistId ?? "",
+    );
   }
 
-  private async apply_state(state?: PlayerState) {
-    if (!state) return;
+  private async load_settings_state() {
+    const tracks = PlayerStateSettings.get_value<"as">("tracks").deep_unpack();
 
-    if (state.tracks.length === 0) return;
+    if (tracks.length == 0) return;
 
-    if (state.settings) {
-      this.queue.set_settings(state.settings);
-    }
-
-    if (state.seek) {
-      this.initial_seek_to = state.seek;
-    }
+    this.queue._shuffle = PlayerStateSettings.get_boolean("shuffle");
+    this.queue.repeat = PlayerStateSettings.get_enum("repeat");
+    this.queue.settings.object ??= {} as QueueSettings;
+    this.queue.settings.object.playlistId = PlayerStateSettings.get_string(
+      "playlist-id",
+    );
+    this.initial_seek_to = PlayerStateSettings.get_uint64("seek");
 
     await Promise.all([
-      get_tracklist(state.tracks)
+      get_tracklist(tracks)
         .then((tracks) => {
-          this.queue.add(tracks_to_meta(tracks), state.position ?? undefined);
+          this.queue.add(
+            tracks_to_meta(tracks),
+            PlayerStateSettings.get_uint("position"),
+          );
         }),
-      get_tracklist(state.original)
+      get_tracklist(
+        PlayerStateSettings.get_value<"as">("original").deep_unpack(),
+      )
         .then((tracks) =>
           tracks.forEach((track) =>
             this.queue._original.append(
@@ -433,24 +445,6 @@ export class MuzikaPlayer extends MuzikaMediaStream {
           )
         ),
     ]);
-
-    this.queue._shuffle = state.shuffle;
-    this.queue.repeat = state.repeat;
-  }
-
-  store = new GioFileStore();
-
-  private async load_state() {
-    const state = this.store.get("player-state") as PlayerState | undefined;
-
-    await this.apply_state(state)
-      .catch((err) => console.error(err));
-  }
-
-  save_state() {
-    const state = this.serialize_state();
-
-    this.store.set("player-state", state);
   }
 
   play_pause() {

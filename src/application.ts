@@ -144,7 +144,7 @@ export class Application extends Adw.Application {
     cache.flush();
     cache.dump();
 
-    this.player.save_state();
+    this.player.save_state_settings();
     this.player.unprepare();
 
     super.vfunc_shutdown();
