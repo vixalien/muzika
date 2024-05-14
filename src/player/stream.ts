@@ -169,11 +169,6 @@ export class MuzikaMediaStream extends Gtk.MediaStream {
     return this._media_info;
   }
 
-  set media_info(media_info: GstPlay.PlayMediaInfo | null) {
-    this._media_info = media_info;
-    this.notify("media-info");
-  }
-
   // property: buffering
 
   is_buffering = false;
@@ -339,6 +334,7 @@ export class MuzikaMediaStream extends Gtk.MediaStream {
     info: GstPlay.PlayMediaInfo,
   ): void {
     this._media_info = info;
+    this.notify("media-info")
   }
 
   private volume_changed_cb(_play: GstPlay.Play): void {
