@@ -172,14 +172,6 @@ export class MuzikaMediaStream extends Gtk.MediaStream {
   // property: buffering
 
   is_buffering = false;
-  
-  // property: error
-
-  private _error: GLib.Error | null = null;
-
-  get error() {
-    return this._error as GLib.Error;
-  }
 
   // property: playing
 
@@ -225,7 +217,7 @@ export class MuzikaMediaStream extends Gtk.MediaStream {
 
   // error functions
 
-  handle_glib_error(error: GLib.Error): void {
+  on_stream_error_cb(error: GLib.Error): void {
     // TODO: reconsider if this is necessary
     // if (this.refreshed_uri === false) {
     //   this.refresh_uri();
@@ -233,17 +225,10 @@ export class MuzikaMediaStream extends Gtk.MediaStream {
     //   return;
     // }
 
-    this._error = error;
-    this.notify("error");
-
     add_toast("An error happened during playback");
-
     console.error(error);
 
-    // TODO: cancel pending seeks
-    this.unprepare();
-
-    // this._playing = false;
+    this.gerror(error);
   }
 
   // seek
@@ -301,7 +286,7 @@ export class MuzikaMediaStream extends Gtk.MediaStream {
   }
 
   private error_cb(_play: GstPlay.Play, error: GLib.Error): void {
-    this.handle_glib_error(error);
+    this.on_stream_error_cb(error);
   }
 
   protected eos_cb(_play: GstPlay.Play): boolean {
@@ -326,7 +311,7 @@ export class MuzikaMediaStream extends Gtk.MediaStream {
     info: GstPlay.PlayMediaInfo,
   ): void {
     this._media_info = info;
-    this.notify("media-info")
+    this.notify("media-info");
   }
 
   private volume_changed_cb(_play: GstPlay.Play): void {
