@@ -6,6 +6,7 @@ import GstVideo from "gi://GstVideo";
 import Gtk from "gi://Gtk?version=4.0";
 import Gdk from "gi://Gdk?version=4.0";
 import GstAudio from "gi://GstAudio";
+import GstPbUtils from "gi://GstPbutils";
 
 import { add_toast } from "src/util/window";
 import { hold_application, release_application } from "src/util/hold";
@@ -26,12 +27,12 @@ export class MuzikaMediaStream extends Gtk.MediaStream {
           Queue.$gtype,
           GObject.ParamFlags.READABLE,
         ),
-        buffering: GObject.param_spec_boolean(
+        is_buffering: GObject.param_spec_boolean(
           "is-buffering",
           "Is Buffering",
           "Whether the player is buffering",
           false,
-          GObject.ParamFlags.READABLE,
+          GObject.ParamFlags.READWRITE,
         ),
         paintable: GObject.param_spec_object(
           "paintable",
@@ -175,11 +176,7 @@ export class MuzikaMediaStream extends Gtk.MediaStream {
 
   // property: buffering
 
-  protected _is_buffering = false;
-
-  get is_buffering() {
-    return this._is_buffering;
-  }
+  is_buffering = false;
 
   // property: duration
 
@@ -241,7 +238,7 @@ export class MuzikaMediaStream extends Gtk.MediaStream {
 
   // error functions
 
-  gerror(error: GLib.Error): void {
+  handle_glib_error(error: GLib.Error): void {
     // TODO: reconsider if this is necessary
     // if (this.refreshed_uri === false) {
     //   this.refresh_uri();
@@ -282,12 +279,10 @@ export class MuzikaMediaStream extends Gtk.MediaStream {
       if (!this.is_buffering && this.playing) {
         this._play.pause();
 
-        this._is_buffering = true;
-        this.notify("is-buffering");
+        this.is_buffering = true;
       }
     } else {
-      this._is_buffering = false;
-      this.notify("is-buffering");
+      this.is_buffering = false;
 
       if (this.playing) this._play.play();
     }
@@ -312,16 +307,14 @@ export class MuzikaMediaStream extends Gtk.MediaStream {
     state: GstPlay.PlayState,
   ): void {
     if (state == GstPlay.PlayState.BUFFERING) {
-      this._is_buffering = true;
-      this.notify("is-buffering");
+      this.is_buffering = true;
     } else if (this.is_buffering && state != GstPlay.PlayState.STOPPED) {
-      this._is_buffering = false;
-      this.notify("is-buffering");
+      this.is_buffering = false;
     }
   }
 
   private error_cb(_play: GstPlay.Play, error: GLib.Error): void {
-    this.gerror(error);
+    this.handle_glib_error(error);
   }
 
   protected eos_cb(_play: GstPlay.Play): boolean {
@@ -346,21 +339,6 @@ export class MuzikaMediaStream extends Gtk.MediaStream {
     info: GstPlay.PlayMediaInfo,
   ): void {
     this._media_info = info;
-
-    this.refreshed_uri = false;
-
-    if (!this.prepared) {
-      hold_application();
-
-      this.stream_prepared(
-        info.get_number_of_audio_streams() > 0,
-        info.get_number_of_video_streams() > 0,
-        info.is_seekable(),
-        this._play.get_duration(),
-      );
-
-      this.do_initial_seek();
-    }
   }
 
   private volume_changed_cb(_play: GstPlay.Play): void {
@@ -382,8 +360,33 @@ export class MuzikaMediaStream extends Gtk.MediaStream {
     }
   }
 
+  private discover_controller: AbortController | null = null;
+
   protected set_uri(uri: string): void {
-    this._play.uri = uri;
+    this.discover_controller?.abort();
+    this.discover_controller = null;
+
+    this.discover_controller = new AbortController();
+
+    this.discover_uri(uri)
+      .then((info) => {
+        if (this.is_prepared()) this.unprepare();
+
+        this.refreshed_uri = false;
+
+        hold_application();
+
+        this.stream_prepared(
+          info.get_audio_streams().length > 0,
+          info.get_video_streams().length > 0,
+          info.get_seekable(),
+          info.get_duration(),
+        );
+
+        this._play.set_uri(uri);
+
+        this.do_initial_seek();
+      });
   }
 
   stop() {
@@ -397,6 +400,75 @@ export class MuzikaMediaStream extends Gtk.MediaStream {
 
     this.stop();
     release_application();
+  }
+
+  private async discover_uri(uri: string, signal?: AbortSignal) {
+    const discoverer = new GstPbUtils.Discoverer();
+
+    signal?.addEventListener("abort", () => {
+      discoverer.stop();
+    });
+
+    discoverer.start();
+    discoverer.discover_uri_async(uri);
+
+    return new Promise<GstPbUtils.DiscovererInfo>((resolve, reject) => {
+      const handler = discoverer.connect(
+        "discovered",
+        (_source, info, error) => {
+          discoverer.disconnect(handler);
+
+          switch (info.get_result()) {
+            case GstPbUtils.DiscovererResult.OK: {
+              const uri = info.get_uri();
+              this._play.set_uri(uri);
+              resolve(info);
+            }
+            case GstPbUtils.DiscovererResult.MISSING_PLUGINS:
+              reject(
+                GLib.Error.new_literal(
+                  GstPlay.PlayError,
+                  GstPlay.PlayError.FAILED,
+                  _(
+                    "File uses a format that cannot be played. Additional media codecs may be required.",
+                  ),
+                ),
+              );
+            case GstPbUtils.DiscovererResult.ERROR:
+              reject(
+                error ??
+                  GLib.Error.new_literal(
+                    GstPlay.PlayError,
+                    GstPlay.PlayError.FAILED,
+                    _(
+                      "An error happened while trying to get information about the file. Please try again.",
+                    ),
+                  ),
+              );
+            case GstPbUtils.DiscovererResult.URI_INVALID:
+              reject(
+                error ??
+                  GLib.Error.new_literal(
+                    GstPlay.PlayError,
+                    GstPlay.PlayError.FAILED,
+                    _("File uses an invalid URI"),
+                  ),
+              );
+            case GstPbUtils.DiscovererResult.TIMEOUT:
+              reject(
+                error ??
+                  GLib.Error.new_literal(
+                    GstPlay.PlayError,
+                    GstPlay.PlayError.FAILED,
+                    _(
+                      "Reading the file's information timed out. Please try again.",
+                    ),
+                  ),
+              );
+          }
+        },
+      );
+    });
   }
 }
 

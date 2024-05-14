@@ -45,13 +45,6 @@ export class MuzikaPlayer extends MuzikaMediaStream {
           Queue.$gtype,
           GObject.ParamFlags.READABLE,
         ),
-        buffering: GObject.param_spec_boolean(
-          "buffering",
-          "Buffering",
-          "Whether the player is buffering",
-          false,
-          GObject.ParamFlags.READABLE,
-        ),
         now_playing: GObject.param_spec_object(
           "now-playing",
           "Now playing",
@@ -309,8 +302,7 @@ export class MuzikaPlayer extends MuzikaMediaStream {
 
     this.stop();
 
-    this._is_buffering = true;
-    this.notify("is-buffering");
+    this.is_buffering = true;
 
     return Promise.all([
       get_song(track.videoId, { signal: this.loading_controller!.signal }),
