@@ -90,34 +90,10 @@ export class MuzikaPlayer extends MuzikaMediaStream {
 
     this._queue = new Queue({ app: options.app });
 
-    this._queue.connect("notify::current", () => {
-      this._play.set_video_track_enabled(this.queue.current_is_video);
-
-      const current = this.queue.current?.object;
-
-      const now_playing_videoId = this.now_playing?.object.track.videoId;
-      const counterpart_videoId = current?.counterpart?.videoId;
-
-      // try to seek to the same position
-      if (
-        counterpart_videoId && counterpart_videoId === now_playing_videoId &&
-        current.duration_seconds && this.timestamp !== 0
-      ) {
-        this.initial_seek_to = (this.timestamp / this.duration) *
-          (current.duration_seconds * Gst.MSECOND);
-      } else {
-        // reset seek
-        this.initial_seek_to = null;
-      }
-
-      this.load(current ?? null)
-        .then(() => {
-          this.save_state_settings();
-        })
-        .catch((e) => {
-          console.log("caught error", e);
-        });
-    });
+    this._queue.connect(
+      "notify::current",
+      this.current_track_changed_cb.bind(this),
+    );
 
     this.queue.connect("prepare-next", (_, next: string) => {
       const now_playing_videoId = this.now_playing?.object.track.videoId;
@@ -239,7 +215,7 @@ export class MuzikaPlayer extends MuzikaMediaStream {
     this.resume();
   }
 
-  async load(track: QueueMeta | null) {
+  private async load(track: QueueMeta | null) {
     // TODO: stop
     if (!track) return;
 
@@ -297,6 +273,36 @@ export class MuzikaPlayer extends MuzikaMediaStream {
         if (error instanceof DOMException && error.name == "AbortError") return;
 
         console.log(error);
+      });
+  }
+
+  private current_track_changed_cb() {
+    this._play.set_video_track_enabled(this.queue.current_is_video);
+
+    const current = this.queue.current?.object;
+
+    const now_playing_videoId = this.now_playing?.object.track.videoId;
+    const counterpart_videoId = current?.counterpart?.videoId;
+
+    // we are switching counterparts (from track to video)
+    // try to seek to the same position (for example 40%)
+    if (
+      counterpart_videoId && counterpart_videoId === now_playing_videoId &&
+      current.duration_seconds && this.timestamp !== 0
+    ) {
+      this.initial_seek_to = (this.timestamp / this.duration) *
+        (current.duration_seconds * Gst.MSECOND);
+    } else {
+      // reset seek
+      this.initial_seek_to = null;
+    }
+
+    this.load(current ?? null)
+      .then(() => {
+        this.save_state_settings();
+      })
+      .catch((e) => {
+        console.log("caught error", e);
       });
   }
 
