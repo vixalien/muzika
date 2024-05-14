@@ -27,7 +27,7 @@ export class PlayerProgressBar extends Gtk.ProgressBar {
 
     const already_buffering = this.has_css_class("buffering");
 
-    if (player.is_buffering) {
+    if (player.is_buffering && player.playing) {
       if (!already_buffering) this.add_css_class("buffering");
     } else if (already_buffering) {
       this.remove_css_class("buffering");

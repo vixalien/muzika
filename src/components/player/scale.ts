@@ -58,11 +58,15 @@ export class PlayerScale extends Gtk.Scale {
   }
 
   set buffering(value: boolean) {
+    if (value === this.buffering) return;
+
     this._buffering = value;
+    this.notify("buffering");
+    const already_buffering = this.has_css_class("buffering");
 
     if (value) {
-      this.add_css_class("buffering");
-    } else {
+      if (!already_buffering) this.add_css_class("buffering");
+    } else if (already_buffering) {
       this.remove_css_class("buffering");
     }
   }

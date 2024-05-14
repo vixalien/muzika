@@ -55,7 +55,7 @@ export class MuzikaMediaStream extends Gtk.MediaStream {
           0.0,
           1.0,
           1.0,
-          GObject.ParamFlags.READABLE,
+          GObject.ParamFlags.READWRITE,
         ),
       },
     }, this);
