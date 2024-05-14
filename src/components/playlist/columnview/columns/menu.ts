@@ -91,7 +91,7 @@ class ExtraMenuButtons extends Adw.Bin {
           `navigator.visit("muzika:album:${this.item.album.id}")`,
         ]
         : null,
-      this.item.artists.length > 1
+      this.item.artists.length > 0
         ? [
           _("Go to artist"),
           `navigator.visit("muzika:artist:${this.item.artists[0].id}")`,

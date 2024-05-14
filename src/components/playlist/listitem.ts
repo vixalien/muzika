@@ -150,7 +150,7 @@ export class PlaylistListItem extends Gtk.Box {
             `navigator.visit("muzika:album:${item.album.id}")`,
           ]
           : null,
-        item.artists.length > 1
+        item.artists.length > 0
           ? [
             _("Go to artist"),
             `navigator.visit("muzika:artist:${item.artists[0].id}")`,
