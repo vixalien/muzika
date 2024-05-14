@@ -380,7 +380,7 @@ export class MuzikaMediaStream extends Gtk.MediaStream {
           info.get_audio_streams().length > 0,
           info.get_video_streams().length > 0,
           info.get_seekable(),
-          info.get_duration(),
+          info.get_duration() / Gst.USECOND,
         );
 
         this._play.set_uri(uri);
