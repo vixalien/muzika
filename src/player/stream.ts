@@ -360,6 +360,8 @@ export class MuzikaMediaStream extends Gtk.MediaStream {
 
         this._play.set_uri(uri);
 
+        this.pause();
+
         if (was_playing) {
           this.play();
         }
