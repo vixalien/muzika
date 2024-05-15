@@ -80,6 +80,7 @@ export class MuzikaMediaStream extends Gtk.MediaStream {
 
     const adapter = new MuzikaPlaySignalAdapter(this._play);
 
+    adapter.connect("uri-loaded", this.uri_loaded_cb.bind(this));
     adapter.connect("buffering", this.buffering_cb.bind(this));
     adapter.connect("end-of-stream", this.eos_cb.bind(this));
     adapter.connect("error", this.error_cb.bind(this));
@@ -132,7 +133,7 @@ export class MuzikaMediaStream extends Gtk.MediaStream {
 
   protected _play: GstPlay.Play;
 
-  protected _initial_seek_to: number | null = null;
+  private _initial_seek_to: number | null = null;
 
   get initial_seek_to() {
     return this._initial_seek_to;
@@ -149,14 +150,6 @@ export class MuzikaMediaStream extends Gtk.MediaStream {
       this.seek(this.initial_seek_to);
       this.initial_seek_to = null;
     }
-  }
-
-  get timestamp() {
-    if (this.initial_seek_to != null) {
-      return this.initial_seek_to;
-    }
-
-    return super.timestamp;
   }
 
   // PROPERTIES
@@ -185,25 +178,29 @@ export class MuzikaMediaStream extends Gtk.MediaStream {
     return true;
   }
 
-  resume() {
-    if (this.playing) {
-      this.play();
-    } else {
-      this.pause();
-    }
+  // to play the next loaded song
+
+  protected was_playing = false;
+
+  /**
+   * Save if the player was playing. This is saved so that playback can be
+   * resumed in case of something like updating URI
+   */
+  protected save_playback_state(force_state?: boolean, timestamp?: number) {
+    timestamp ??= this.timestamp;
+
+    this.initial_seek_to = timestamp !== 0 ? timestamp : null;
+    this.was_playing = force_state ?? (this.was_playing || this.playing);
   }
 
-  // property: playing
+  protected resume() {
+    this.do_initial_seek();
+    this.pause();
 
-  // get prepared() {
-  //   const state = this.get_state();
+    if (this.was_playing) this.play();
 
-  //   if (!state) return false;
-
-  //   return state >= Gst.State.READY;
-  // }
-
-  // property: seekable
+    this.was_playing = false;
+  }
 
   // first try to refresh URI when an error occurs
 
@@ -245,6 +242,18 @@ export class MuzikaMediaStream extends Gtk.MediaStream {
   }
 
   // handlers
+
+  /**
+   * Sometimes the same URI may emit multiple uri-loaded signals
+   */
+  private last_loaded_uri?: string;
+
+  private uri_loaded_cb(_play: GstPlay.Play, uri: string): void {
+    if (this.last_loaded_uri === uri) return;
+    this.last_loaded_uri = uri;
+
+    this.resume();
+  }
 
   private buffering_cb(_play: GstPlay.Play, percent: number): void {
     if (percent < 100) {
@@ -333,41 +342,24 @@ export class MuzikaMediaStream extends Gtk.MediaStream {
     }
   }
 
-  private discover_controller: AbortController | null = null;
+  protected set_stream_info(info: GstPbUtils.DiscovererInfo) {
+    if (this.is_prepared()) this.unprepare();
 
-  protected set_uri(uri: string): void {
-    this.discover_controller?.abort();
-    this.discover_controller = null;
+    this.refreshed_uri = false;
 
-    this.discover_controller = new AbortController();
+    hold_application();
 
-    this.discover_uri(uri)
-      .then((info) => {
-        const was_playing = this.playing;
+    this.stream_prepared(
+      info.get_audio_streams().length > 0,
+      info.get_video_streams().length > 0,
+      info.get_seekable(),
+      info.get_duration() / Gst.USECOND,
+    );
 
-        if (this.is_prepared()) this.unprepare();
+    this._play.uri = info.get_uri();
+  }
 
-        this.refreshed_uri = false;
-
-        hold_application();
-
-        this.stream_prepared(
-          info.get_audio_streams().length > 0,
-          info.get_video_streams().length > 0,
-          info.get_seekable(),
-          info.get_duration() / Gst.USECOND,
-        );
-
-        this._play.set_uri(uri);
-
-        this.pause();
-
-        if (was_playing) {
-          this.play();
-        }
-
-        this.do_initial_seek();
-      });
+  protected start_playback() {
   }
 
   stop() {
@@ -383,7 +375,7 @@ export class MuzikaMediaStream extends Gtk.MediaStream {
     release_application();
   }
 
-  private async discover_uri(uri: string, signal?: AbortSignal) {
+  protected async discover_uri(uri: string, signal?: AbortSignal) {
     const discoverer = new GstPbUtils.Discoverer();
 
     signal?.addEventListener("abort", () => {

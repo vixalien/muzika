@@ -6,7 +6,6 @@ import GstPlay from "gi://GstPlay";
 
 import { add_history_item, get_option, get_song } from "libmuse";
 import type { AudioFormat, Format, Song, VideoFormat } from "libmuse";
-import { throttle } from "lodash-es";
 
 import { Application } from "../application.js";
 import { PlayerStateSettings, Settings } from "../util/settings";
@@ -16,13 +15,7 @@ import { list_model_to_array } from "src/util/list.js";
 import { get_track_settings, get_tracklist } from "./helpers.js";
 import { convert_formats_to_dash } from "./mpd";
 
-import {
-  Queue,
-  QueueMeta,
-  QueueSettings,
-  RepeatMode,
-  tracks_to_meta,
-} from "./queue";
+import { Queue, QueueMeta, QueueSettings, tracks_to_meta } from "./queue";
 
 import { MuzikaMediaStream } from "./stream.js";
 
@@ -95,17 +88,10 @@ export class MuzikaPlayer extends MuzikaMediaStream {
       this.current_track_changed_cb.bind(this),
     );
 
-    this.queue.connect("prepare-next", (_, next: string) => {
-      const now_playing_videoId = this.now_playing?.object.track.videoId;
-
-      // if trying to play the already-playing song, just play if paused
-      if (now_playing_videoId && now_playing_videoId === next) {
-        return;
-      }
-    });
-
+    // when the queue wants to play, that means the next track will get played
+    // automatically
     this.queue.connect("play", () => {
-      this.play();
+      this.save_playback_state(true, 0);
     });
 
     // volume
@@ -133,21 +119,8 @@ export class MuzikaPlayer extends MuzikaMediaStream {
     this.load_settings_state()
       .catch(console.error);
 
-    Settings.connect("changed::audio-quality", () => {
-      console.log(
-        "audio-quality changed",
-        AudioQuality[Settings.get_enum("audio-quality")],
-      );
-      this.update_uri();
-    });
-
-    Settings.connect("changed::video-quality", () => {
-      console.log(
-        "video-quality changed",
-        VideoQuality[Settings.get_enum("video-quality")],
-      );
-      this.update_uri();
-    });
+    Settings.connect("changed::audio-quality", this.update_song_uri.bind(this));
+    Settings.connect("changed::video-quality", this.update_song_uri.bind(this));
 
     Settings.bind(
       "volume",
@@ -204,76 +177,60 @@ export class MuzikaPlayer extends MuzikaMediaStream {
     return this._loading_track;
   }
 
-  private update_uri() {
-    const song = this.now_playing?.object.song;
+  private async load_new_track_metadata(track: QueueMeta) {
+    this.loading_controller?.abort();
+    this.loading_controller = new AbortController();
 
-    if (!song || !this._play.get_media_info()) return;
-
-    this.initial_seek_to = this.get_timestamp();
-    this.set_uri(get_song_uri(song));
-
-    this.resume();
-  }
-
-  private async load(track: QueueMeta | null) {
-    // TODO: stop
-    if (!track) return;
-
-    const current = this.now_playing?.object.track.videoId;
-
-    // if the requested track is already playing, just resume playback
-    if (current == track.videoId) {
-      this.play();
-      return;
-    }
-
-    if (this._loading_track == track.videoId) {
-      return;
-    }
-
-    if (this.loading_controller != null) {
-      this.loading_controller.abort();
-      this.loading_controller = null;
-    }
-
+    // start loading the current track
     this._loading_track = track.videoId;
     this.notify("loading-track");
 
-    this.loading_controller = new AbortController();
+    const [song, settings] = await Promise.all([
+      get_song(track.videoId, { signal: this.loading_controller.signal }),
+      get_track_settings(track.videoId, this.loading_controller.signal),
+    ]);
+
+    this._now_playing = new ObjectContainer<TrackMetadata>({
+      song,
+      track,
+      lyrics: settings.lyrics,
+      related: settings.related,
+    });
+    this.notify("now-playing");
+
+    const uri = get_song_uri(song);
+
+    const info = await this.discover_uri(uri, this.loading_controller.signal);
+
+    this.set_stream_info(info);
+
+    this.added_to_playback_history = false;
+  }
+
+  private async load_new_track() {
+    const track = this.queue.current?.object;
+
+    // stop the currently playing track
+    if (!track) {
+      this.unprepare();
+      this._now_playing = null;
+      this.notify("now-playing");
+      return;
+    }
+
+    const current_track = this.now_playing?.object.track;
+
+    // if the requested track is already playing, just resume playback
+    if (current_track?.videoId == track.videoId) return this.play();
+
+    // the track we are trying to load is already loading
+    if (this._loading_track == track.videoId) return;
 
     this.stop();
 
     this.is_buffering = true;
 
-    return Promise.all([
-      get_song(track.videoId, { signal: this.loading_controller!.signal }),
-      get_track_settings(track.videoId, this.loading_controller!.signal),
-    ])
-      .then(([song, settings]) => {
-        this._now_playing = new ObjectContainer<TrackMetadata>({
-          song,
-          track,
-          settings: {
-            ...settings,
-            playlistId: this.queue.settings.object?.playlistId ??
-              settings.playlistId,
-          },
-        });
-        this.notify("now-playing");
-        this.notify("duration");
-
-        const uri = get_song_uri(song);
-        this.set_uri(uri);
-
-        this.resume();
-
-        this.added_to_playback_history = false;
-      })
-      .catch((error) => {
-        if (error instanceof DOMException && error.name == "AbortError") return;
-
-        console.log(error);
-      });
+    await this.load_new_track_metadata(track);
   }
 
   private current_track_changed_cb() {
@@ -285,65 +242,65 @@ export class MuzikaPlayer extends MuzikaMediaStream {
     const counterpart_videoId = current?.counterpart?.videoId;
 
     // we are switching counterparts (from track to video)
-    // try to seek to the same position (for example 40%)
     if (
       counterpart_videoId && counterpart_videoId === now_playing_videoId &&
-      current.duration_seconds && this.timestamp !== 0
+      current.duration_seconds
     ) {
-      this.initial_seek_to = (this.timestamp / this.duration) *
-        (current.duration_seconds * Gst.MSECOND);
-    } else {
-      // reset seek
-      this.initial_seek_to = null;
+      // try to seek to the same position (for example 40%)
+      this.save_playback_state(
+        undefined,
+        this.timestamp !== 0
+          ? this.initial_seek_to = (this.timestamp / this.duration) *
+            (current.duration_seconds * Gst.MSECOND)
+          : undefined,
+      );
     }
 
-    this.load(current ?? null)
+    void this.load_new_track()
       .then(() => {
         this.save_state_settings();
       })
-      .catch((e) => {
-        console.log("caught error", e);
+      .catch((error) => {
+        // TODO: maybe play the next track
+        if (error instanceof DOMException && error.name == "AbortError") return;
+
+        console.log("couldn't load current track", error);
       });
   }
 
   async refresh_uri() {
     const track = this.now_playing?.object.track;
 
-    if (!track?.videoId) {
-      return;
-    }
-
-    if (this.loading_controller != null) {
-      this.loading_controller.abort();
-      this.loading_controller = null;
-    }
+    if (!track?.videoId) return;
 
     this.initial_seek_to = this.timestamp;
 
+    this.loading_controller?.abort();
+    this.loading_controller = null;
+
     this.loading_controller = new AbortController();
 
-    return get_song(track.videoId, { signal: this.loading_controller!.signal })
-      .then((song) => {
-        this.refreshed_uri = true;
-
-        this._now_playing = new ObjectContainer<TrackMetadata>({
-          ...this.now_playing?.object!,
-          song,
-        });
-
-        this.notify("now-playing");
-
-        const uri = get_song_uri(song);
-
-        this.set_uri(uri);
-
-        this.resume();
-      })
+    const song = await get_song(track.videoId, {
+      signal: this.loading_controller!.signal,
+    })
       .catch((error) => {
         if (error instanceof DOMException && error.name == "AbortError") return;
 
-        console.log(error);
+        this.unprepare();
+        console.log("Couldn't refresh URI", error);
       });
+
+    if (!song) return;
+
+    this._now_playing = new ObjectContainer<TrackMetadata>({
+      ...this.now_playing?.object!,
+      song,
+    });
+    this.notify("now-playing");
+
+    this.refreshed_uri = true;
+
+    this.update_song_uri();
   }
 
   protected eos_cb(_play: GstPlay.Play) {
@@ -568,22 +525,32 @@ export class MuzikaPlayer extends MuzikaMediaStream {
     this._play.set_subtitle_track(index);
     this._play.set_subtitle_track_enabled(true);
   }
-}
 
-export interface PlayerState {
-  shuffle: boolean;
-  repeat: RepeatMode;
-  position: number;
-  tracks: string[];
-  original: string[];
-  seek: number;
-  settings?: QueueSettings;
+  /**
+   * Refresh the currently playing URI.
+   * This is useful in case the user changed their preference about quality
+   * or when an error happens and it's necessary to fetch a new URI
+   */
+  private update_song_uri() {
+    const song = this.now_playing?.object.song;
+    if (!song) return;
+
+    const uri = get_song_uri(song);
+    if (uri === this._play.uri) return;
+
+    this.save_playback_state();
+
+    this.is_buffering = true;
+
+    this._play.uri = uri;
+  }
 }
 
 export type TrackMetadata = {
   song: Song;
   track: QueueMeta;
-  settings: QueueSettings;
+  lyrics: string | null;
+  related: string | null;
 };
 
 export function format_has_audio(format: Format): format is AudioFormat {
