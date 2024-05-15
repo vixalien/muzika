@@ -249,10 +249,8 @@ export class MuzikaPlayer extends MuzikaMediaStream {
       // try to seek to the same position (for example 40%)
       this.save_playback_state(
         undefined,
-        this.timestamp !== 0
-          ? this.initial_seek_to = (this.timestamp / this.duration) *
-            (current.duration_seconds * Gst.MSECOND)
-          : undefined,
+        this.initial_seek_to = (this.timestamp / this.duration) *
+          (current.duration_seconds * Gst.MSECOND),
       );
     }
 
@@ -427,6 +425,8 @@ export class MuzikaPlayer extends MuzikaMediaStream {
         name: "pause",
         activate: () => {
           this.pause();
+          // it's clear the user doesn't want playback lol
+          this.was_playing = false;
         },
       },
       {

@@ -189,7 +189,7 @@ export class MuzikaMediaStream extends Gtk.MediaStream {
   protected save_playback_state(force_state?: boolean, timestamp?: number) {
     timestamp ??= this.timestamp;
 
-    this.initial_seek_to = timestamp !== 0 ? timestamp : null;
+    this.initial_seek_to = timestamp;
     this.was_playing = force_state ?? (this.was_playing || this.playing);
   }
 
@@ -231,6 +231,8 @@ export class MuzikaMediaStream extends Gtk.MediaStream {
   // seek
 
   vfunc_seek(timestamp: number): void {
+    if (timestamp === this.timestamp) return;
+
     this.update(timestamp);
     this._play.seek(Math.trunc(timestamp * Gst.USECOND));
   }
