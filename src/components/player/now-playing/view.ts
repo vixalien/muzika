@@ -206,7 +206,12 @@ export class PlayerNowPlayingView extends Adw.NavigationPage {
         "label",
         GObject.BindingFlags.DEFAULT | GObject.BindingFlags.SYNC_CREATE,
         (_, __) => {
-          return [true, micro_to_string(this.player.timestamp)];
+          return [
+            true,
+            micro_to_string(
+              this.player.initial_seek_to ?? this.player.timestamp,
+            ),
+          ];
         },
         null,
       ),

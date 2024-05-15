@@ -100,7 +100,7 @@ export class PlayerScale extends Gtk.Scale {
           if ((this.get_state_flags() & Gtk.StateFlags.ACTIVE) != 0) {
             return [false];
           }
-          return [true, timestamp];
+          return [true, player.initial_seek_to ?? timestamp];
         },
         null,
       ),

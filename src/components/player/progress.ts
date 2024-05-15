@@ -16,14 +16,19 @@ export class PlayerProgressBar extends Gtk.ProgressBar {
       valign: Gtk.Align.START,
     });
 
-    this.add_css_class("osd")
+    this.add_css_class("osd");
   }
 
   private update_fraction() {
     const player = get_player();
 
-    this.fraction =
-      Math.max(Math.min(player.timestamp / player.duration, 1), 0) || 0;
+    this.fraction = Math.max(
+      Math.min(
+        player.initial_seek_to ?? player.timestamp / player.duration,
+        1,
+      ),
+      0,
+    ) || 0;
 
     const already_buffering = this.has_css_class("buffering");
 

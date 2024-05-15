@@ -56,7 +56,7 @@ export class MiniVideoControls extends Adw.Bin {
         "label",
         GObject.BindingFlags.SYNC_CREATE,
         (_, from) => {
-          return [true, micro_to_string(from)];
+          return [true, micro_to_string(player.initial_seek_to ?? from)];
         },
         null,
       ),
