@@ -197,14 +197,6 @@ export class PlaylistListView extends Gtk.ListView {
     item.bind_signals?.clear();
     item.bind_signals = undefined;
   }
-
-  private selection_mode_toggled(position: number, value: boolean) {
-    if (value) {
-      this.model.select_item(position, false);
-    } else {
-      this.model.unselect_item(position);
-    }
-  }
 }
 
 interface PlaylistListViewConstructorProperties
