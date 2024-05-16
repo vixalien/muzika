@@ -135,25 +135,25 @@ export class PlaylistPage extends Adw.Bin
     this._suggestions_item_view.connect("add", this.add_cb.bind(this));
 
     this.add_actions();
+
+    // selection-mode
+
+    this.bind_property(
+      "selection-mode",
+      this._bar,
+      "selection-mode",
+      GObject.BindingFlags.SYNC_CREATE,
+    );
+
+    this.bind_property(
+      "selection-mode",
+      this._playlist_item_view,
+      "selection-mode",
+      GObject.BindingFlags.SYNC_CREATE,
+    );
   }
 
-  // property: selection-mode
-
-  private _selection_mode = false;
-
-  get selection_mode() {
-    return this._selection_mode;
-  }
-
-  set selection_mode(value: boolean) {
-    if (this.selection_mode == value) return;
-
-    this._selection_mode = value;
-    this._bar.selection_mode = value;
-    this._playlist_item_view.selection_mode = value;
-
-    this.notify("selection-mode");
-  }
+  selection_mode = false;
 
   add_actions() {
     const group = new Gio.SimpleActionGroup();
