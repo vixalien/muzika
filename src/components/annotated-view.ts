@@ -389,12 +389,10 @@ export class AnnotatedView extends Gtk.Widget {
           visible_height = Math.min(
             widget_height,
             height + Math.min(y, 0),
-          );
-
-          allocation.height = Math.min(
-            visible_height,
             Math.max(0, widget_height - y),
           );
+
+          allocation.height = visible_height;
           allocation.y += y_offset;
 
           y -= widget_height;
@@ -404,7 +402,10 @@ export class AnnotatedView extends Gtk.Widget {
 
         y -= this.spacing;
 
-        if ((allocation.height + allocation.y) < 0 || (allocation.y) > height) {
+        if (
+          (allocation.height + allocation.y) < 0 || (allocation.y) > height ||
+          allocation.height <= 0
+        ) {
           child.unmap();
         } else {
           child.map();
