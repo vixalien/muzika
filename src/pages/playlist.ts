@@ -30,7 +30,6 @@ import {
   EditedValues,
   EditPlaylistDialog,
 } from "src/components/playlist/edit.js";
-import { Window } from "src/window.js";
 import { PlayableContainer, PlayableList } from "src/util/playablelist.js";
 import { AddActionEntries } from "src/util/action.js";
 import { generate_menu } from "src/util/menu/index.js";
@@ -40,7 +39,6 @@ import {
 } from "src/util/scrolled.js";
 import { add_toast, get_window } from "src/util/window.js";
 import { AnnotatedView } from "src/components/annotated-view.js";
-import { PlaylistListView } from "src/components/playlist/listview.js";
 import { Rectangle } from "gi-types/gdk4.js";
 
 interface PlaylistState extends VScrollState {
@@ -63,7 +61,7 @@ export class PlaylistPage extends Adw.Bin
         "trackCount",
         "separator",
         "duration",
-        // "scrolled",
+        "scrolled",
         "data",
         "playlist_item_view",
         "paginator",
@@ -95,7 +93,7 @@ export class PlaylistPage extends Adw.Bin
   private _trackCount!: Gtk.Label;
   private _duration!: Gtk.Label;
   private _separator!: Gtk.Label;
-  // private _scrolled!: Gtk.ScrolledWindow;
+  private _scrolled!: Gtk.ScrolledWindow;
   private _data!: Gtk.Box;
   private _playlist_item_view!: PlaylistItemView;
   private _paginator!: Paginator;
@@ -117,11 +115,11 @@ export class PlaylistPage extends Adw.Bin
   constructor() {
     super();
 
-    // this._scrolled.connect("edge-reached", (_, pos) => {
-    //   if (pos === Gtk.PositionType.BOTTOM) {
-    //     this.load_more();
-    //   }
-    // });
+    this._scrolled.connect("edge-reached", (_, pos) => {
+      if (pos === Gtk.PositionType.BOTTOM) {
+        this.load_more();
+      }
+    });
 
     const selection_model = Gtk.MultiSelection.new(
       this.model,
@@ -385,10 +383,9 @@ export class PlaylistPage extends Adw.Bin
 
     this.playlist = playlist;
 
-    this._playlist_item_view.playlistId = playlist.id;
-    this._playlist_item_view.editable = this._bar.editable = playlist.editable;
-    // this._playlist_item_view.show_rank = playlist.tracks[0] &&
-    //   playlist.tracks[0].rank != null;
+    this._playlist_item_view.playlist_id = playlist.id;
+    this._playlist_item_view.is_editable = this._bar.editable = playlist
+      .editable;
 
     this._bar.playlistId = this.playlist.id;
     this._suggestions.visible = this.playlist.editable;
@@ -581,9 +578,6 @@ export class PlaylistPage extends Adw.Bin
   restore_state(state: PlaylistState) {
     this.present(state.playlist);
 
-    // set_scrolled_window_initial_vscroll(this._scrolled, state.vscroll);
-  }
-
-  size_allocate(allocation: Rectangle, baseline: number): void {
+    set_scrolled_window_initial_vscroll(this._scrolled, state.vscroll);
   }
 }
