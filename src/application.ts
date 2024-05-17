@@ -111,8 +111,11 @@ export class Application extends Adw.Application {
   private show_about_dialog_cb() {
     const aboutDialog = Adw.AboutDialog.new_from_appdata(
       `/com/vixalien/muzika/com.vixalien.muzika.metainfo.xml`,
+      // so that looking up versions with commit IDs doesn't fail
       pkg.version.split("-")[0],
     );
+
+    aboutDialog.set_version(pkg.version);
 
     aboutDialog.set_developers([
       "Angelo Verlain <hey@vixalien.com>",
