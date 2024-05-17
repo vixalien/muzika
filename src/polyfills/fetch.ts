@@ -182,7 +182,7 @@ if (!SOUP_CACHE_DIR.query_exists(null)) {
   SOUP_CACHE_DIR.make_directory_with_parents(null);
 }
 
-console.log("caching soup requests at", SOUP_CACHE_DIR.get_path());
+console.info("caching soup requests at", SOUP_CACHE_DIR.get_path());
 
 const SESSION = new Soup.Session({
   // change from the default of 10 and 2 respectively

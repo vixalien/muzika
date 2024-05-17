@@ -6,8 +6,6 @@ export interface Options {
   visitor_id: string;
 }
 
-console.log("storing token to secret store");
-
 export class MuzikaSecretStore extends Store {
   private map: Map<string, unknown> = new Map();
 
@@ -16,7 +14,7 @@ export class MuzikaSecretStore extends Store {
   };
 
   private schema = Secret.Schema.new(
-    "org.vixalien.muzika",
+    pkg.name,
     Secret.SchemaFlags.NONE,
     this.attributes,
   );
@@ -48,6 +46,8 @@ export class MuzikaSecretStore extends Store {
       this.map = new Map();
       this.set("version", this.version);
     }
+
+    console.info("storing token to secret store");
   }
 
   get<T>(key: string): T | null {
@@ -91,5 +91,3 @@ export class MuzikaSecretStore extends Store {
     );
   }
 }
-
-export const store = new MuzikaSecretStore();

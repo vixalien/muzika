@@ -44,7 +44,7 @@ export class GioFileStore extends Store {
       this.set("version", this.version);
     }
 
-    console.log("storing data at", this.path.get_path());
+    console.info("storing data at", this.path.get_path());
   }
 
   get<T>(key: string): T | null {
@@ -76,5 +76,3 @@ export class GioFileStore extends Store {
     );
   }
 }
-
-export const store = new GioFileStore();

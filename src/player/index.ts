@@ -23,7 +23,7 @@ import { Application } from "../application.js";
 import { Settings } from "../util/settings";
 import { ObjectContainer } from "../util/objectcontainer.js";
 import { AddActionEntries } from "src/util/action.js";
-import { store } from "src/util/giofilestore.js";
+import { GioFileStore } from "src/util/giofilestore.js";
 import { list_model_to_array } from "src/util/list.js";
 import { get_track_settings, get_tracklist } from "./helpers.js";
 import { convert_formats_to_dash } from "./mpd";
@@ -999,8 +999,10 @@ export class MuzikaPlayer extends MuzikaMediaStream {
     this.queue.repeat = state.repeat;
   }
 
+  store = new GioFileStore();
+
   private async load_state() {
-    const state = store.get("player-state") as PlayerState | undefined;
+    const state = this.store.get("player-state") as PlayerState | undefined;
 
     await this.set_state(state)
       .catch((err) => console.error(err));
@@ -1009,7 +1011,7 @@ export class MuzikaPlayer extends MuzikaMediaStream {
   save_state() {
     const state = this.get_state();
 
-    store.set("player-state", state);
+    this.store.set("player-state", state);
   }
 
   play_pause() {

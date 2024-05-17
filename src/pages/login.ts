@@ -7,7 +7,7 @@ import Adw from "gi://Adw";
 import QRCode from "@lemaik/qrcode-svg";
 
 import { get_option } from "libmuse";
-import type { LoginCode } from "libmuse";
+import type { LoginCode, Token } from "libmuse";
 
 export class LoginDialog extends Adw.Dialog {
   static {
@@ -74,47 +74,70 @@ export class LoginDialog extends Adw.Dialog {
     });
   }
 
-  private _last_signal?: AbortSignal;
+  private code?: LoginCode;
+  private onLogin?: (token: Token) => void;
+  private onError?: (error: Error) => void;
 
-  async auth_flow(signal?: AbortSignal) {
+  private waiting_controller?: AbortController;
+
+  private async generate_code() {
     this._stack.visible_child = this._spinner;
     this._spinner.start();
 
-    this._last_signal = signal;
-
-    const login_code = await get_option("auth").get_login_code();
-
-    this.show_code(login_code);
-
-    await get_option("auth")
-      .load_token_with_code(login_code, signal)
-      .then(() => {
-        this._last_signal = undefined;
-      })
-      .catch((error) => {
-        if ((error instanceof DOMException) && error.name === "AbortError") {
-          return;
-        }
-
-        if (this.errored_before) {
-          throw error;
-        } else {
-          this._toast_overlay.add_toast(
-            Adw.Toast.new(
-              _("An Error happened while trying to log you in. Generating a new code…"),
-            ),
-          );
-          this.errored_before = true;
-          return this.refresh_cb();
-        }
-      });
+    const code = await get_option("auth").get_login_code();
+    this.code = code;
+    this.show_code(code);
   }
 
-  private errored_before = false;
+  login(signal?: AbortSignal) {
+    return new Promise<Token>((resolve, reject) => {
+      this.onLogin = resolve;
+      this.onError = reject;
+      return this.reload_token(signal);
+    });
+  }
 
-  private refresh_cb() {
-    const signal = this._last_signal;
+  private async start_waiting_for_token(signal?: AbortSignal) {
+    if (!this.code) return;
 
-    this.auth_flow(signal);
+    const abort_controller = new AbortController();
+    signal?.addEventListener("abort", () => {
+      abort_controller?.abort();
+    });
+    this.waiting_controller = abort_controller;
+
+    const token = await get_option("auth")
+      .load_token_with_code(this.code, this.waiting_controller.signal)
+      .catch((error) => {
+        if ((error instanceof DOMException) && error.name === "AbortError") {
+          return null;
+        }
+
+        this.onError?.(error);
+      });
+
+    if (!token) {
+      return;
+    }
+
+    this.onLogin?.(token);
+  }
+
+  private stop_waiting_for_token() {
+    this.waiting_controller?.abort();
+  }
+
+  private master_signal?: AbortSignal;
+
+  private async reload_token(signal?: AbortSignal) {
+    this.stop_waiting_for_token();
+    await this.generate_code()
+      .catch(this.onError);
+    return this.start_waiting_for_token(signal);
+  }
+
+  private async refresh_cb() {
+    this.reload_token(this.master_signal)
+      .catch(this.onError);
   }
 }
