@@ -71,7 +71,7 @@ export class MuzikaMediaStream extends Gtk.MediaStream {
     const pipeline = this._play.get_pipeline() as Gst.Pipeline;
     let flags = pipeline.flags;
     // add download flag
-    flags |= 0x00000080;
+    // flags |= 0x00000080;
     pipeline.flags = flags;
 
     const play_config = this._play.get_config();
@@ -187,9 +187,9 @@ export class MuzikaMediaStream extends Gtk.MediaStream {
    * resumed in case of something like updating URI
    */
   protected save_playback_state(force_state?: boolean, timestamp?: number) {
-    timestamp ??= this.timestamp;
+    if (!force_state) timestamp ??= this.timestamp;
 
-    this.initial_seek_to = timestamp;
+    this.initial_seek_to = timestamp ?? null;
     this.was_playing = force_state ?? (this.was_playing || this.playing);
   }
 
