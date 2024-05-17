@@ -67,13 +67,13 @@ export class VideoControls extends Adw.Bin {
         "inhibit-hide",
         this._mini,
         "inhibit-hide",
-        GObject.BindingFlags.SYNC_CREATE,
+        GObject.BindingFlags.SYNC_CREATE | GObject.BindingFlags.BIDIRECTIONAL,
       ),
       this.bind_property(
         "inhibit-hide",
         this._full,
         "inhibit-hide",
-        GObject.BindingFlags.SYNC_CREATE,
+        GObject.BindingFlags.SYNC_CREATE | GObject.BindingFlags.BIDIRECTIONAL,
       ),
     );
 
