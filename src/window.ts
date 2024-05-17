@@ -333,18 +333,19 @@ export class Window extends Adw.ApplicationWindow {
     this.toast_overlay.add_toast(toast);
   }
 
-  auth_flow() {
-    const loginDialog = new LoginDialog();
+  login_dialog?: LoginDialog;
 
-    loginDialog.present(this);
+  auth_flow() {
+    this.login_dialog ??= new LoginDialog();
+    this.login_dialog.present(this);
 
     const controller = new AbortController();
 
-    const listener = loginDialog.connect("closed", () => {
+    const listener = this.login_dialog.connect("closed", () => {
       controller.abort();
     });
 
-    loginDialog.auth_flow(controller.signal)
+    this.login_dialog.login(controller.signal)
       .then(() => {
         this.add_toast(_("Successfully logged in!"));
         this.navigator.reload();
@@ -361,8 +362,13 @@ export class Window extends Adw.ApplicationWindow {
         console.log("An error happened while logging in", error);
       })
       .finally(() => {
-        loginDialog.close();
-        loginDialog.disconnect(listener);
+        // it seems you can't quickyl close a dialog after opening it
+        GLib.timeout_add(100, GLib.PRIORITY_LOW, () => {
+          this.login_dialog!.force_close();
+          this.login_dialog!.disconnect(listener);
+
+          return GLib.SOURCE_REMOVE;
+        });
       });
   }
 
