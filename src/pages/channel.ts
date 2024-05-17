@@ -55,7 +55,7 @@ export class ChannelPage extends Adw.Bin
   constructor() {
     super();
 
-    this._playlist_item_view.model = this.model;
+    this._playlist_item_view.model = Gtk.MultiSelection.new(this.model);
 
     this._header.set_description(null);
   }

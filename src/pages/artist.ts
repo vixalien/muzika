@@ -80,15 +80,15 @@ export class ArtistPage extends Adw.Bin
   constructor() {
     super();
 
-    this._playlist_item_view.model = this.model;
+    this._playlist_item_view.model = Gtk.MultiSelection.new(this.model);
   }
 
   show_top_songs(songs: Artist["songs"]) {
-    this._playlist_item_view.playlistId = songs.browseId ?? undefined;
+    this._playlist_item_view.playlist_id = songs.browseId ?? undefined;
     this._playlist_item_view.show_artists = songs.results.some(
       (track) => track.artists.length > 0,
     );
-    this._playlist_item_view.show_time = songs.results.some(
+    this._playlist_item_view.show_duration = songs.results.some(
       (track) => track.duration != null,
     );
 

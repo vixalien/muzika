@@ -7,11 +7,11 @@ import type { PlaylistItem } from "libmuse";
 import { PlaylistListItem } from "./listitem";
 import { SignalListeners } from "src/util/signal-listener";
 import { PlayableContainer } from "src/util/playablelist";
-import { DynamicImage } from "../dynamic-image";
 import { ObjectContainer } from "src/util/objectcontainer";
 
 interface PlaylistListItemWithSignals extends PlaylistListItem {
-  signals: SignalListeners;
+  setup_signals?: SignalListeners;
+  bind_signals?: SignalListeners;
 }
 
 export class PlaylistListView extends Gtk.ListView {
@@ -19,32 +19,25 @@ export class PlaylistListView extends Gtk.ListView {
     GObject.registerClass({
       GTypeName: "PlaylistListView",
       Properties: {
-        "show-rank": GObject.param_spec_boolean(
-          "show-rank",
-          "Show Rank",
-          "Whether to show chart rank and trend change",
+        is_album: GObject.param_spec_boolean(
+          "is-album",
+          "Represents an album",
+          "Whether this playlist represents an album",
           false,
           GObject.ParamFlags.READWRITE,
         ),
-        playlistId: GObject.param_spec_string(
+        is_editable: GObject.param_spec_boolean(
+          "is-editable",
+          "Is editable",
+          "Whether the playlist items can be edited (or deleted)",
+          false,
+          GObject.ParamFlags.READWRITE,
+        ),
+        playlist_id: GObject.param_spec_string(
           "playlist-id",
           "Playlist ID",
           "The playlist ID",
-          null as any,
-          GObject.ParamFlags.READWRITE,
-        ),
-        album: GObject.param_spec_boolean(
-          "album",
-          "Album",
-          "Whether this is currently displaying an album",
-          false,
-          GObject.ParamFlags.READWRITE,
-        ),
-        show_add: GObject.param_spec_boolean(
-          "show-add",
-          "Show Add",
-          "Show the Save to playlist button",
-          false,
+          null,
           GObject.ParamFlags.READWRITE,
         ),
         selection_mode: GObject.param_spec_boolean(
@@ -54,12 +47,12 @@ export class PlaylistListView extends Gtk.ListView {
           false,
           GObject.ParamFlags.READWRITE,
         ),
-        editable: GObject.param_spec_boolean(
-          "editable",
-          "Editable",
-          "Whether the playlist items can be edited",
+        show_add_button: GObject.param_spec_boolean(
+          "show-add-button",
+          "Show the add button",
+          "Show a button to trigger the 'Save to playlist' action",
           false,
-          GObject.ParamFlags.READWRITE,
+          GObject.ParamFlags.READWRITE | GObject.ParamFlags.CONSTRUCT,
         ),
       },
       Signals: {
@@ -70,27 +63,14 @@ export class PlaylistListView extends Gtk.ListView {
     }, this);
   }
 
-  album = false;
-  selection_mode = false;
-  playlistId?: string;
-  editable = false;
+  is_album!: boolean;
+  is_editable!: boolean;
+  playlist_id?: string;
+  selection_mode!: boolean;
+  show_add_button!: boolean;
 
-  constructor(
-    { model, album, selection_mode, show_add, editable, ...props }: Partial<
-      Gtk.ListView.ConstructorProperties
-    > = {},
-  ) {
-    super({ single_click_activate: true, ...props });
-
-    if (album != null) this.album = album;
-
-    if (model !== undefined) this.model = model!;
-
-    if (selection_mode != null) this.selection_mode = selection_mode;
-
-    if (show_add != null) this.show_add = show_add;
-
-    if (editable != null) this.editable = editable;
+  constructor(props: Partial<PlaylistListViewConstructorProperties> = {}) {
+    super(props);
 
     this.add_css_class("playlist-list-view");
 
@@ -101,16 +81,24 @@ export class PlaylistListView extends Gtk.ListView {
 
     this.factory = factory;
 
+    this.bind_property(
+      "selection-mode",
+      this,
+      "single-click-activate",
+      GObject.BindingFlags.DEFAULT | GObject.BindingFlags.INVERT_BOOLEAN |
+        GObject.BindingFlags.SYNC_CREATE,
+    );
+
     this.connect("activate", (_, position) => {
       const container = this.model.get_item(position) as ObjectContainer<
         PlaylistItem
       >;
 
-      if (this.playlistId) {
+      if (this.playlist_id) {
         this.activate_action(
           "queue.play-playlist",
           GLib.Variant.new_string(
-            `${this.playlistId}?video=${container.object.videoId}`,
+            `${this.playlist_id}?video=${container.object.videoId}`,
           ),
         );
       } else {
@@ -123,9 +111,23 @@ export class PlaylistListView extends Gtk.ListView {
   }
 
   setup_cb(_factory: Gtk.SignalListItemFactory, list_item: Gtk.ListItem) {
-    const item = new PlaylistListItem() as PlaylistListItemWithSignals;
+    const item = new PlaylistListItem({
+      show_add_button: this.show_add_button,
+    }) as PlaylistListItemWithSignals;
 
-    item.signals = new SignalListeners();
+    // change the item's selection mode based on the model's selection mode
+
+    const listeners = new SignalListeners();
+    listeners.add_binding(
+      this.bind_property(
+        "selection-mode",
+        item.dynamic_image,
+        "selection-mode",
+        GObject.BindingFlags.DEFAULT | GObject.BindingFlags.SYNC_CREATE,
+      ),
+    );
+
+    item.setup_signals = listeners;
 
     list_item.set_child(item);
   }
@@ -136,72 +138,73 @@ export class PlaylistListView extends Gtk.ListView {
 
     const playlist_item = container.object;
 
-    item.show_add = this.show_add;
-
-    item.dynamic_image.selection_mode = this.selection_mode;
     item.dynamic_image.selected = list_item.selected;
 
     item.set_item(
       list_item.position,
       playlist_item,
-      this.playlistId,
-      this.editable,
+      this.playlist_id,
+      this.is_editable,
     );
 
-    if (this.album) {
-      item.dynamic_image.track_number = list_item.position + 1;
-    }
+    const listeners = new SignalListeners();
 
-    item.signals.connect(
-      item.dynamic_image,
-      "notify::selected",
-      (dynamic_image: DynamicImage) => {
-        this.selection_mode_toggled(
-          list_item.position,
-          dynamic_image.selected,
-        );
-      },
-    );
-
-    item.signals.add(
-      container,
-      container.connect("notify::state", () => {
-        item.dynamic_image.state = container.state;
-      }),
-    );
-
-    item.dynamic_image.state = container.state;
-
-    item.signals.add(
-      container,
-      container.connect("notify", () => {
-        item.dynamic_image.selection_mode = this.selection_mode;
-        item.show_add = this.show_add;
-      }),
-    );
-
-    item.signals.add(
+    listeners.add(
       item,
       item.connect("add", (_) => {
         this.emit("add", list_item.position);
       }),
     );
+
+    // select the item when the user toggles the selection check button
+
+    listeners.add(
+      item.dynamic_image,
+      item.dynamic_image.connect("notify::selected", () => {
+        if (item.dynamic_image.selected) {
+          this.model.select_item(list_item.position, false);
+        } else {
+          this.model.unselect_item(list_item.position);
+        }
+      }),
+    );
+
+    // bind the dynamic image's state (playing, paused, etc..)
+
+    listeners.add_binding(
+      container.bind_property(
+        "state",
+        item.dynamic_image,
+        "state",
+        GObject.BindingFlags.DEFAULT | GObject.BindingFlags.SYNC_CREATE,
+      ),
+    );
+
+    item.bind_signals = listeners;
   }
 
   unbind_cb(_factory: Gtk.SignalListItemFactory, list_item: Gtk.ListItem) {
     const item = list_item.child as PlaylistListItemWithSignals;
 
-    item.signals.clear();
+    item.bind_signals?.clear();
+    item.bind_signals = undefined;
     item.clear();
   }
 
-  private selection_mode_toggled(position: number, value: boolean) {
-    if (value) {
-      this.model.select_item(position, false);
-    } else {
-      this.model.unselect_item(position);
-    }
-  }
+  teardown_cb(_factory: Gtk.SignalListItemFactory, list_item: Gtk.ListItem) {
+    const item = list_item.child as PlaylistListItemWithSignals;
 
-  show_add = false;
+    item.bind_signals?.clear();
+    item.bind_signals = undefined;
+  }
+}
+
+interface PlaylistListViewConstructorProperties
+  extends Gtk.ListView.ConstructorProperties {
+  is_album: boolean;
+  is_editable: boolean;
+  playlist_id: string;
+  selection_mode: boolean;
+  show_add_column: boolean;
+  show_rank_column: boolean;
 }

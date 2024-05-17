@@ -30,7 +30,6 @@ import {
   EditedValues,
   EditPlaylistDialog,
 } from "src/components/playlist/edit.js";
-import { Window } from "src/window.js";
 import { PlayableContainer, PlayableList } from "src/util/playablelist.js";
 import { AddActionEntries } from "src/util/action.js";
 import { generate_menu } from "src/util/menu/index.js";
@@ -39,6 +38,8 @@ import {
   VScrollState,
 } from "src/util/scrolled.js";
 import { add_toast, get_window } from "src/util/window.js";
+import { AnnotatedView } from "src/components/annotated-view.js";
+import { Rectangle } from "gi-types/gdk4.js";
 
 interface PlaylistState extends VScrollState {
   playlist: Playlist;
@@ -48,6 +49,7 @@ GObject.type_ensure(Paginator.$gtype);
 GObject.type_ensure(PlaylistHeader.$gtype);
 GObject.type_ensure(PlaylistItemView.$gtype);
 GObject.type_ensure(PlaylistBar.$gtype);
+GObject.type_ensure(AnnotatedView.$gtype);
 
 export class PlaylistPage extends Adw.Bin
   implements MuzikaPageWidget<Playlist, PlaylistState> {
@@ -74,6 +76,15 @@ export class PlaylistPage extends Adw.Bin
         "edit_playlist_button",
         "add_to_library_button",
       ],
+      Properties: {
+        "selection-mode": GObject.ParamSpec.boolean(
+          "selection-mode",
+          "Selection Mode",
+          "Whether this view is in selection mode",
+          GObject.ParamFlags.READWRITE | GObject.ParamFlags.EXPLICIT_NOTIFY,
+          false,
+        ),
+      },
     }, this);
   }
 
@@ -110,15 +121,39 @@ export class PlaylistPage extends Adw.Bin
       }
     });
 
-    this._playlist_item_view.model = this.model;
-    this._bar.model = this._playlist_item_view.multi_selection_model!;
+    const selection_model = Gtk.MultiSelection.new(
+      this.model,
+    ) as Gtk.MultiSelection<ObjectContainer<PlaylistItem>>;
 
-    this._suggestions_item_view.model = this.suggestions_model;
+    this._playlist_item_view.model = selection_model;
+    this._bar.model = selection_model;
+
+    this._suggestions_item_view.model = Gtk.MultiSelection.new(
+      this.suggestions_model,
+    );
 
     this._suggestions_item_view.connect("add", this.add_cb.bind(this));
 
     this.add_actions();
+
+    // selection-mode
+
+    this.bind_property(
+      "selection-mode",
+      this._bar,
+      "selection-mode",
+      GObject.BindingFlags.SYNC_CREATE,
+    );
+
+    this.bind_property(
+      "selection-mode",
+      this._playlist_item_view,
+      "selection-mode",
+      GObject.BindingFlags.SYNC_CREATE,
+    );
   }
+
+  selection_mode = false;
 
   add_actions() {
     const group = new Gio.SimpleActionGroup();
@@ -127,13 +162,13 @@ export class PlaylistPage extends Adw.Bin
       {
         name: "delete",
         activate: (__) => {
-          this.delete_playlist();
+          this.delete_playlist_cb();
         },
       },
       {
         name: "select",
         activate: () => {
-          this.toggle_selection_mode();
+          this.selection_mode = !this.selection_mode;
         },
       },
       {
@@ -158,16 +193,7 @@ export class PlaylistPage extends Adw.Bin
     this.insert_action_group("playlist", group);
   }
 
-  private toggle_selection_mode() {
-    const selection_mode = this._playlist_item_view.selection_mode;
-
-    this._playlist_item_view.selection_mode = !selection_mode;
-    this._bar.selection_mode = !selection_mode;
-    this._bar.update_selection();
-    this._playlist_item_view.update();
-  }
-
-  private async delete_playlist() {
+  private async delete_playlist_cb() {
     if (this.playlist?.editable !== true) return;
 
     const dialog = Adw.AlertDialog.new(
@@ -263,7 +289,7 @@ export class PlaylistPage extends Adw.Bin
             this.model.remove(position);
           });
 
-        this._playlist_item_view.multi_selection_model!.unselect_all();
+        this._playlist_item_view.model?.unselect_all();
       } else {
         error_toast();
       }
@@ -357,10 +383,9 @@ export class PlaylistPage extends Adw.Bin
 
     this.playlist = playlist;
 
-    this._playlist_item_view.playlistId = playlist.id;
-    this._playlist_item_view.editable = this._bar.editable = playlist.editable;
-    this._playlist_item_view.show_rank = playlist.tracks[0] &&
-      playlist.tracks[0].rank != null;
+    this._playlist_item_view.playlist_id = playlist.id;
+    this._playlist_item_view.is_editable = this._bar.editable = playlist
+      .editable;
 
     this._bar.playlistId = this.playlist.id;
     this._suggestions.visible = this.playlist.editable;
@@ -546,7 +571,7 @@ export class PlaylistPage extends Adw.Bin
           .map((container) => (container as PlayableContainer).object)
           .filter((item) => item != null) as PlaylistItem[],
       },
-      vscroll: this._scrolled.get_vadjustment().get_value(),
+      vscroll: 0,
     };
   }
 

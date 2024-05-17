@@ -68,7 +68,7 @@ export class AlbumPage extends Adw.Bin
   constructor() {
     super();
 
-    this._playlist_item_view.model = this.model;
+    this._playlist_item_view.model = Gtk.MultiSelection.new(this.model);
   }
 
   append_tracks(tracks: PlaylistItem[]) {

@@ -30,10 +30,10 @@ export class PlaylistListItem extends Gtk.Box {
         "dynamic_image",
       ],
       Properties: {
-        "show-add": GObject.param_spec_boolean(
-          "show-add",
-          "Show Add",
-          "Show Add button",
+        "show-add-button": GObject.param_spec_boolean(
+          "show-add-button",
+          "Show add button",
+          "Show a button to add this track to a certain playlist",
           true,
           GObject.ParamFlags.READWRITE,
         ),
@@ -48,7 +48,7 @@ export class PlaylistListItem extends Gtk.Box {
 
   dynamic_image!: DynamicImage;
 
-  private _title!: Gtk.Label;
+  private _title!: Gtk.Inscription;
   private _explicit!: Gtk.Image;
   private _subtitle!: Gtk.Label;
   private _chart_rank!: Gtk.Box;
@@ -62,31 +62,42 @@ export class PlaylistListItem extends Gtk.Box {
 
   private menu_helper: MenuHelper;
 
-  constructor() {
-    super({});
+  constructor(props: Partial<PlaylistListItemConstructorProps>) {
+    super(props);
 
     setup_link_label(this._subtitle);
 
     this.menu_helper = MenuHelper.new(this);
+
+    // show-add-column
+
+    this.bind_property(
+      "show-add-button",
+      this._add,
+      "visible",
+      GObject.BindingFlags.SYNC_CREATE,
+    );
   }
+
+  show_add_button = false;
 
   set_item(
     position: number,
     item: PlaylistItem,
     playlistId?: string,
-    editable = false,
+    is_editable = false,
   ) {
     this.item = item;
     this.playlistId = playlistId;
 
-    this._title.set_label(item.title);
+    this._title.set_text(item.title);
 
     if (item.artists && item.artists.length > 0) {
       this._subtitle.visible = true;
-      const subtitles = pretty_subtitles(item.artists ?? []);
+      const { markup, plain } = pretty_subtitles(item.artists ?? []);
 
-      this._subtitle.set_markup(subtitles.markup);
-      this._subtitle.tooltip_text = subtitles.plain;
+      this._subtitle.set_markup(markup);
+      this._subtitle.tooltip_text = plain;
     } else {
       this._subtitle.visible = false;
     }
@@ -130,7 +141,7 @@ export class PlaylistListItem extends Gtk.Box {
         [_("Play next"), `queue.add-song("${item.videoId}?next=true")`],
         [_("Add to queue"), `queue.add-song("${item.videoId}")`],
         [_("Save to playlist"), `win.add-to-playlist("${item.videoId}")`],
-        editable
+        is_editable
           ? [_("Remove from playlist"), `playlist.remove-tracks([${position}])`]
           : null,
         item.album
@@ -149,16 +160,6 @@ export class PlaylistListItem extends Gtk.Box {
     });
   }
 
-  // property: show-add
-
-  get show_add(): boolean {
-    return this._add.visible;
-  }
-
-  set show_add(value: boolean) {
-    this._add.visible = value;
-  }
-
   private add_cb() {
     this.emit("add");
   }
@@ -166,4 +167,9 @@ export class PlaylistListItem extends Gtk.Box {
   clear() {
     this.listeners.clear();
   }
+}
+
+interface PlaylistListItemConstructorProps
+  extends Gtk.Box.ConstructorProperties {
+  show_add_button: boolean;
 }

@@ -172,13 +172,23 @@ label.bold-link link {
   text-decoration: none;
 }
 
+.floating-button {
+  border-radius: 50px;
+  padding: 2px;
+}
+
 .carousel-list-view,
 .carousel-grid-view,
 .playlist-list-view,
-.carousel-flat-list-view {
+.carousel-flat-list-view,
+.playlist-column-view listview {
+  background-color: transparent;
   border-spacing: 6px;
-  padding-left: 6px;
-  padding-right: 6px;
+  padding: 6px;
+}
+
+.playlist-column-view {
+  background-color: transparent;
 }
 
 .carousel-list-view>row,
@@ -189,29 +199,9 @@ label.bold-link link {
   padding: 6px;
 }
 
-.floating-button {
-  border-radius: 50px;
-  padding: 2px;
-}
-
-.playlist-column-view,
-.playlist-column-view listview,
-.playlist-list-view {
-  background-color: transparent;
-}
-
-.playlist-column-view listview {
-  border-spacing: 6px;
-}
-
 .playlist-column-view listview>row,
-.playlist-list-view>row {
+.playlist-list-view >row {
   border-radius: 9px;
-}
-
-.playlist-column-view {
-  padding-left: 6px;
-  padding-right: 6px;
 }
 
 .insights-clamp {
