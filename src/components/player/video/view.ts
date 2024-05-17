@@ -1,4 +1,5 @@
 import Gtk from "gi://Gtk?version=4.0";
+import Gdk from "gi://Gdk?version=4.0";
 import GObject from "gi://GObject";
 import Adw from "gi://Adw";
 import GLib from "gi://GLib";
@@ -161,27 +162,41 @@ export class VideoPlayerView extends Adw.Bin {
     });
   }
 
+  get ui_is_visible() {
+    return this._toolbar_view.reveal_top_bars;
+  }
+
   private hide_ui() {
     this.remove_timeout();
+
+    if (!this.ui_is_visible) return;
 
     this._toolbar_view.reveal_top_bars =
       this._toolbar_view.reveal_bottom_bars =
         false;
+
+    this.set_cursor(Gdk.Cursor.new_from_name("none", null));
   }
 
   private show_ui() {
     this.remove_timeout();
 
+    if (this.ui_is_visible) return;
+
     this._toolbar_view.reveal_top_bars =
       this._toolbar_view.reveal_bottom_bars =
         true;
+
+    this.set_cursor(null);
   }
 
   private toggle_ui() {
     this.remove_timeout();
 
-    this._toolbar_view.reveal_top_bars =
-      this._toolbar_view.reveal_bottom_bars =
-        !this._toolbar_view.reveal_top_bars;
+    if (this.ui_is_visible) {
+      this.hide_ui();
+    } else {
+      this.show_ui();
+    }
   }
 }
