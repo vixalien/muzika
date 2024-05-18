@@ -24,7 +24,7 @@ export class PlayerProgressBar extends Gtk.ProgressBar {
 
     this.fraction = Math.max(
       Math.min(
-        player.initial_seek_to ?? player.timestamp / player.duration,
+        (player.initial_seek_to ?? player.timestamp) / player.duration,
         1,
       ),
       0,
