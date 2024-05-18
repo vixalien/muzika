@@ -2,7 +2,7 @@
 <gresources>
   <gresource prefix="/com/vixalien/muzika">
     <!-- metainfo -->
-    <file preprocess="xml-stripblanks">com.vixalien.muzika.metainfo.xml</file>
+    <file preprocess="xml-stripblanks">@app-id@.metainfo.xml</file>
     <!-- style -->
     <file>style.css</file>
     <!-- components -->
