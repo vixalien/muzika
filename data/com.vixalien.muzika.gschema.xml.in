@@ -86,9 +86,6 @@
 		<key name="original" type="as">
 			<default>[]</default>
 		</key>
-		<key name="seek" type="t">
-			<default>0</default>
-		</key>
 		<key name="playlist-id" type="s">
 			<default>''</default>
 		</key>

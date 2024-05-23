@@ -357,7 +357,6 @@ export class MuzikaPlayer extends MuzikaMediaStream {
       "original",
       GLib.Variant.new("as", get_tracks(this.queue._original)),
     );
-    PlayerStateSettings.set_uint64("seek", this.timestamp);
     PlayerStateSettings.set_string("playlist-id", this.queue.playlist_id ?? "");
     PlayerStateSettings.set_string(
       "playlist-name",
@@ -375,7 +374,6 @@ export class MuzikaPlayer extends MuzikaMediaStream {
 
     this.queue._shuffle = PlayerStateSettings.get_boolean("shuffle");
     this.queue.repeat = PlayerStateSettings.get_enum("repeat");
-    this.initial_seek_to = PlayerStateSettings.get_uint64("seek");
 
     const [tracks, original] = await Promise.all([
       get_queue_ids(tracks_ids),
