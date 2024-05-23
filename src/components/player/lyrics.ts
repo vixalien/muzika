@@ -137,7 +137,10 @@ export class LyricsView extends Gtk.Stack {
     this.lyrics = lyrics;
     this.clear_views();
 
-    if (
+    if (!lyrics.lyrics) {
+      this.set_visible_child(this._no_lyrics);
+    }
+    else if (
       lyrics.timed && Gtk.Settings.get_default()!.gtk_enable_animations === true
     ) {
       lyrics.timed_lyrics.forEach((line) => {
