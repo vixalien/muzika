@@ -1,5 +1,6 @@
 import Gtk from "gi://Gtk?version=4.0";
 import GObject from "gi://GObject";
+import GLib from "gi://GLib";
 import Adw from "gi://Adw";
 
 import type { QueueTrack } from "libmuse";
@@ -10,6 +11,7 @@ import { MuzikaPlayer } from "src/player";
 import { escape_label } from "src/util/text";
 import { get_player } from "src/application";
 import { setup_link_label } from "src/util/label";
+import { list_model_to_array } from "src/util/list";
 
 export class QueueView extends Gtk.Stack {
   static {
@@ -94,6 +96,11 @@ export class QueueView extends Gtk.Stack {
       }
     });
 
+    this.player.queue.chips.connect(
+      "items-changed",
+      this.update_chips.bind(this),
+    );
+
     // set up the list view
 
     const factory = Gtk.SignalListItemFactory.new();
@@ -118,35 +125,23 @@ export class QueueView extends Gtk.Stack {
       this._params_box.remove(first_param);
     }
 
-    // if (settings?.chips && settings.chips.length > 0) {
-    //   this._params.show();
+    const chips = list_model_to_array(this.player.queue.chips);
 
-    //   let first_button: Gtk.ToggleButton | null = null;
+    if (chips.length > 0) {
+      this._params.show();
 
-    //   settings.chips.forEach((chip) => {
-    //     const button = Gtk.ToggleButton.new_with_label(chip.title);
+      chips.forEach((chip) => {
+        const button = new Gtk.ToggleButton({
+          label: chip.title,
+          action_target: GLib.Variant.new_string(chip.playlist_id),
+          action_name: `queue.active-chip`,
+        });
 
-    //     if (!first_button) {
-    //       first_button = button;
-
-    //       if (!this.player.queue.active_chip) {
-    //         button.set_active(true);
-    //       }
-    //     } else {
-    //       button.set_group(first_button);
-    //     }
-
-    //     button.connect("toggled", (button) => {
-    //       if (button.active) {
-    //         this.player.queue.change_active_chip(chip.playlistId);
-    //       }
-    //     });
-
-    //     this._params_box.append(button);
-    //   });
-    // } else {
-    //   this._params.hide();
-    // }
+        this._params_box.append(button);
+      });
+    } else {
+      this._params.hide();
+    }
   }
 
   bind_cb(_factory: Gtk.ListItemFactory, list_item: Gtk.ListItem) {

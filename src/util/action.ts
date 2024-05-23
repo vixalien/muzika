@@ -31,13 +31,17 @@ export interface ActionDeclaration {
       from_value: any,
     ) => [boolean, GLib.Variant],
   ];
+  bind_enabled?: [
+    object: GObject.Object,
+    property: string,
+  ];
 }
 
 export function build_action(decl: ActionDeclaration) {
   const action = new Gio.SimpleAction({
     name: decl.name,
     parameter_type: decl.parameter_type ?? null as any,
-    state: decl.state ?? undefined,
+    state: decl.state ?? null as any,
   });
 
   if (decl.activate) action.connect("activate", decl.activate);
@@ -50,9 +54,20 @@ export function build_action(decl: ActionDeclaration) {
       property,
       action,
       "state",
-      GObject.BindingFlags.DEFAULT | GObject.BindingFlags.DEFAULT,
+      GObject.BindingFlags.DEFAULT,
       transform,
       null,
+    );
+  }
+
+  if (decl.bind_enabled) {
+    const [object, property] = decl.bind_enabled;
+
+    object.bind_property(
+      property,
+      action,
+      "enabled",
+      GObject.BindingFlags.SYNC_CREATE,
     );
   }
 

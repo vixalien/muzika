@@ -366,35 +366,40 @@ export class MuzikaPlayer extends MuzikaMediaStream {
   }
 
   private async load_settings_state() {
-    const tracks = PlayerStateSettings.get_value<"as">("tracks").deep_unpack();
+    const tracks_ids = PlayerStateSettings.get_value<"as">("tracks")
+      .deep_unpack();
+    const original_ids = PlayerStateSettings.get_value<"as">("original")
+      .deep_unpack();
 
-    if (tracks.length == 0) return;
+    if (tracks_ids.length == 0) return;
 
     this.queue._shuffle = PlayerStateSettings.get_boolean("shuffle");
     this.queue.repeat = PlayerStateSettings.get_enum("repeat");
-    // TODO: provide playlist-id as standalone properties
+    this.initial_seek_to = PlayerStateSettings.get_uint64("seek");
+
+    const [tracks, original] = await Promise.all([
+      get_queue_ids(tracks_ids),
+      get_queue_ids(original_ids),
+    ]);
+
+    this.queue.list.splice(
+      0,
+      0,
+      tracks.map((track) => new ObjectContainer(track)),
+    );
+
+    this.queue._original.splice(
+      0,
+      0,
+      original.map((track) => new ObjectContainer(track)),
+    );
+
     this.queue.set_queue({
       playlistId: PlayerStateSettings.get_string("playlist-id"),
       playlist: PlayerStateSettings.get_string("playlist-name"),
+      chips: [],
+      tracks,
     } as Partial<MuseQueue> as MuseQueue);
-    this.initial_seek_to = PlayerStateSettings.get_uint64("seek");
-
-    await Promise.all([
-      get_queue_ids(tracks).then((tracks) => {
-        this.queue.list.splice(
-          0,
-          0,
-          tracks.map((track) => new ObjectContainer(track)),
-        );
-      }),
-      get_queue_ids(tracks).then((tracks) => {
-        this.queue._original.splice(
-          0,
-          0,
-          tracks.map((track) => new ObjectContainer(track)),
-        );
-      }),
-    ]);
 
     this.queue.change_position(PlayerStateSettings.get_uint("position"));
   }
