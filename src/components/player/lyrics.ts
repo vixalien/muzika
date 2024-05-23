@@ -80,11 +80,14 @@ export class LyricsView extends Gtk.Stack {
   controller: AbortController | null = null;
 
   async load_lyrics() {
-    const new_lyrics = this.player.queue.settings.object?.lyrics ?? null;
+    const new_lyrics = this.player.now_playing?.object.lyrics ?? null;
 
     if (new_lyrics === this.loaded_lyrics) {
       return;
     }
+
+    this._loading.start();
+    this.set_visible_child(this._loading);
 
     if (this.controller) {
       this.controller.abort();
@@ -278,17 +281,8 @@ export class LyricsView extends Gtk.Stack {
     super.vfunc_map();
 
     this.listeners.connect(
-      this.player.queue,
-      "notify::current",
-      () => {
-        this._loading.start();
-        this.set_visible_child(this._loading);
-      },
-    );
-
-    this.listeners.connect(
-      this.player.queue,
-      "notify::settings",
+      this.player,
+      "notify::now-playing",
       this.load_lyrics.bind(this),
     );
 
