@@ -541,10 +541,12 @@ export class DynamicImage extends Gtk.Overlay {
       player.play();
     } else if (this.playlistId) {
       this.state = DynamicActionState.LOADING;
-      player.queue.play_playlist(this.playlistId, this.videoId ?? undefined);
+      player.queue.add_playlist2(this.playlistId, this.videoId ?? undefined, {
+        play: true,
+      });
     } else if (this.videoId) {
       this.state = DynamicActionState.LOADING;
-      player.queue.play_song(this.videoId);
+      player.queue.add_songs2([this.videoId], { radio: true, play: true })
     }
   }
 
@@ -554,7 +556,7 @@ export class DynamicImage extends Gtk.Overlay {
     this.emit("pause");
 
     if (this.playlistId && !this.videoId) {
-      if (player.now_playing?.object.track.playlist === this.playlistId) {
+      if (player.queue.playlist_id === this.playlistId) {
         player.pause();
       }
     } else if (player.now_playing?.object.track.videoId === this.videoId) {

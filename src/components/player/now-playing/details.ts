@@ -92,7 +92,7 @@ export class PlayerNowPlayingDetails extends Adw.NavigationPage {
       "visible",
       GObject.BindingFlags.DEFAULT | GObject.BindingFlags.SYNC_CREATE,
       (_, __) => {
-        return [true, player.now_playing?.object.lyrics != null];
+        return [true, player.now_playing?.object?.meta.lyrics != null];
       },
       null,
     );
@@ -104,7 +104,7 @@ export class PlayerNowPlayingDetails extends Adw.NavigationPage {
       "visible",
       GObject.BindingFlags.DEFAULT | GObject.BindingFlags.SYNC_CREATE,
       (_, __) => {
-        return [true, player.now_playing?.object.lyrics != null];
+        return [true, player.now_playing?.object?.meta.related != null];
       },
       null,
     );

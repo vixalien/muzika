@@ -407,7 +407,7 @@ export class PlayableList<
     this.array.forEach((item) => {
       if (item.is_playlist) {
         item.state = (item.playlist_id &&
-            player.queue.settings?.object.playlistId ==
+            player.queue.playlist_id ==
               item.playlist_id)
           ? player.playing
             ? DynamicActionState.PLAYING

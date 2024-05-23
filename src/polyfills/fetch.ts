@@ -182,7 +182,7 @@ if (!SOUP_CACHE_DIR.query_exists(null)) {
   SOUP_CACHE_DIR.make_directory_with_parents(null);
 }
 
-console.info("caching soup requests at", SOUP_CACHE_DIR.get_path());
+console.log("caching soup requests at", SOUP_CACHE_DIR.get_path());
 
 const SESSION = new Soup.Session({
   // change from the default of 10 and 2 respectively
@@ -201,6 +201,7 @@ cache.set_max_size(16e+6);
 cache.load();
 
 SESSION.add_feature(cache);
+SESSION.add_feature(new Soup.ContentSniffer());
 
 export async function fetch(url: string | URL, options: FetchOptions = {}) {
   if (typeof url !== "string" && ("href" in (url as URL))) {

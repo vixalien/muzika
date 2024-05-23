@@ -92,5 +92,8 @@
 		<key name="playlist-id" type="s">
 			<default>''</default>
 		</key>
+		<key name="playlist-name" type="s">
+			<default>''</default>
+		</key>
 	</schema>
 </schemalist>

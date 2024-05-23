@@ -80,7 +80,7 @@ export class LyricsView extends Gtk.Stack {
   controller: AbortController | null = null;
 
   async load_lyrics() {
-    const new_lyrics = this.player.now_playing?.object.lyrics ?? null;
+    const new_lyrics = this.player.now_playing?.object?.meta.lyrics ?? null;
 
     if (new_lyrics === this.loaded_lyrics) {
       return;
@@ -175,7 +175,6 @@ export class LyricsView extends Gtk.Stack {
 
     if (this.pending_animation) {
       this.pending_animation.pause();
-      this.pending_animation.unref();
 
       this.pending_animation = null;
     }

@@ -4,18 +4,30 @@ import Gio from "gi://Gio";
 import GLib from "gi://GLib";
 import GstPlay from "gi://GstPlay";
 
-import { add_history_item, get_option, get_song } from "libmuse";
-import type { AudioFormat, Format, Song, VideoFormat } from "libmuse";
+import {
+  add_history_item,
+  get_option,
+  get_queue,
+  get_queue_ids,
+  get_song,
+} from "libmuse";
+import type {
+  AudioFormat,
+  Format,
+  Queue as MuseQueue,
+  QueueTrack,
+  Song,
+  VideoFormat,
+} from "libmuse";
 
 import { Application } from "../application.js";
 import { PlayerStateSettings, Settings } from "../util/settings";
 import { ObjectContainer } from "../util/objectcontainer.js";
 import { AddActionEntries } from "src/util/action.js";
 import { list_model_to_array } from "src/util/list.js";
-import { get_track_settings, get_tracklist } from "./helpers.js";
 import { convert_formats_to_dash } from "./mpd";
 
-import { Queue, QueueMeta, QueueSettings, tracks_to_meta } from "./queue";
+import { Queue } from "./queue";
 
 import { MuzikaMediaStream } from "./stream.js";
 
@@ -159,7 +171,7 @@ export class MuzikaPlayer extends MuzikaMediaStream {
         // add history entry, but don't wait for the promise to resolve
         add_history_item(song)
           .catch((err) => {
-            console.log("Couldn't add track to playback history", err);
+            console.error("Couldn't add track to playback history", err);
           });
 
         this.added_to_playback_history = true;
@@ -177,24 +189,25 @@ export class MuzikaPlayer extends MuzikaMediaStream {
     return this._loading_track;
   }
 
-  private async load_new_track_metadata(track: QueueMeta) {
+  private async load_new_track_metadata(video_id: string) {
     this.loading_controller?.abort();
     this.loading_controller = new AbortController();
 
     // start loading the current track
-    this._loading_track = track.videoId;
+    this._loading_track = video_id;
     this.notify("loading-track");
 
-    const [song, settings] = await Promise.all([
-      get_song(track.videoId, { signal: this.loading_controller.signal }),
-      get_track_settings(track.videoId, this.loading_controller.signal),
+    const [song, meta] = await Promise.all([
+      get_song(video_id, {
+        signal: this.loading_controller.signal,
+      }),
+      get_queue(video_id, null, { autoplay: false, radio: false }),
     ]);
 
     this._now_playing = new ObjectContainer<TrackMetadata>({
       song,
-      track,
-      lyrics: settings.lyrics,
-      related: settings.related,
+      track: meta.tracks[0],
+      meta,
     });
     this.notify("now-playing");
 
@@ -230,7 +243,7 @@ export class MuzikaPlayer extends MuzikaMediaStream {
 
     this.is_buffering = true;
 
-    await this.load_new_track_metadata(track);
+    await this.load_new_track_metadata(track.videoId);
   }
 
   private current_track_changed_cb() {
@@ -262,7 +275,7 @@ export class MuzikaPlayer extends MuzikaMediaStream {
         // TODO: maybe play the next track
         if (error instanceof DOMException && error.name == "AbortError") return;
 
-        console.log("couldn't load current track", error);
+        console.error("couldn't load current track", error);
       });
   }
 
@@ -285,7 +298,7 @@ export class MuzikaPlayer extends MuzikaMediaStream {
         if (error instanceof DOMException && error.name == "AbortError") return;
 
         this.unprepare();
-        console.log("Couldn't refresh URI", error);
+        console.error("Couldn't refresh URI", error);
       });
 
     if (!song) return;
@@ -326,7 +339,7 @@ export class MuzikaPlayer extends MuzikaMediaStream {
       return null;
     }
 
-    const get_tracks = (list: Gio.ListStore<ObjectContainer<QueueMeta>>) => {
+    const get_tracks = (list: Gio.ListStore<ObjectContainer<QueueTrack>>) => {
       return list_model_to_array(list)
         .map((container) => container.object)
         .filter(Boolean)
@@ -345,9 +358,10 @@ export class MuzikaPlayer extends MuzikaMediaStream {
       GLib.Variant.new("as", get_tracks(this.queue._original)),
     );
     PlayerStateSettings.set_uint64("seek", this.timestamp);
+    PlayerStateSettings.set_string("playlist-id", this.queue.playlist_id ?? "");
     PlayerStateSettings.set_string(
-      "playlist-id",
-      this.queue.settings.object.playlistId ?? "",
+      "playlist-name",
+      this.queue.playlist_name ?? "",
     );
   }
 
@@ -358,31 +372,31 @@ export class MuzikaPlayer extends MuzikaMediaStream {
 
     this.queue._shuffle = PlayerStateSettings.get_boolean("shuffle");
     this.queue.repeat = PlayerStateSettings.get_enum("repeat");
-    this.queue.settings.object ??= {} as QueueSettings;
-    this.queue.settings.object.playlistId = PlayerStateSettings.get_string(
-      "playlist-id",
-    );
+    // TODO: provide playlist-id as standalone properties
+    this.queue.set_queue({
+      playlistId: PlayerStateSettings.get_string("playlist-id"),
+      playlist: PlayerStateSettings.get_string("playlist-name"),
+    } as Partial<MuseQueue> as MuseQueue);
     this.initial_seek_to = PlayerStateSettings.get_uint64("seek");
 
     await Promise.all([
-      get_tracklist(tracks)
-        .then((tracks) => {
-          this.queue.add(
-            tracks_to_meta(tracks),
-            PlayerStateSettings.get_uint("position"),
-          );
-        }),
-      get_tracklist(
-        PlayerStateSettings.get_value<"as">("original").deep_unpack(),
-      )
-        .then((tracks) =>
-          tracks.forEach((track) =>
-            this.queue._original.append(
-              new ObjectContainer({ ...track, playlist: null }),
-            )
-          )
-        ),
+      get_queue_ids(tracks).then((tracks) => {
+        this.queue.list.splice(
+          0,
+          0,
+          tracks.map((track) => new ObjectContainer(track)),
+        );
+      }),
+      get_queue_ids(tracks).then((tracks) => {
+        this.queue._original.splice(
+          0,
+          0,
+          tracks.map((track) => new ObjectContainer(track)),
+        );
+      }),
     ]);
+
+    this.queue.change_position(PlayerStateSettings.get_uint("position"));
   }
 
   play_pause() {
@@ -548,9 +562,8 @@ export class MuzikaPlayer extends MuzikaMediaStream {
 
 export type TrackMetadata = {
   song: Song;
-  track: QueueMeta;
-  lyrics: string | null;
-  related: string | null;
+  track: QueueTrack;
+  meta: Omit<MuseQueue, "tracks">;
 };
 
 export function format_has_audio(format: Format): format is AudioFormat {

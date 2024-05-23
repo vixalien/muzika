@@ -469,7 +469,7 @@ export class TopResultCard extends Adw.Bin {
 
     if (item.is_playlist) {
       this.dynamic_image.state = (item.playlist_id &&
-          player.queue.settings?.object.playlistId ==
+          player.queue.playlist_id ==
             item.playlist_id)
         ? player.playing
           ? DynamicActionState.PLAYING
