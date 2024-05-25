@@ -110,7 +110,7 @@ export class Application extends Adw.Application {
 
   private show_about_dialog_cb() {
     const aboutDialog = Adw.AboutDialog.new_from_appdata(
-      `/com/vixalien/muzika/com.vixalien.muzika.metainfo.xml`,
+      `/com/vixalien/muzika/${pkg.name}.metainfo.xml`,
       // so that looking up versions with commit IDs doesn't fail
       pkg.version.split("-")[0],
     );

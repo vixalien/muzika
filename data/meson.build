@@ -1,11 +1,12 @@
-desktop_conf = configuration_data()
-desktop_conf.set('app-id', application_id)
+app_conf = configuration_data()
+app_conf.set('app-id', application_id)
+app_conf.set('gettext-package', gettext_package)
 
 desktop_file = i18n.merge_file(
   input: configure_file(
     input: base_name + '.desktop.in.in',
     output: '@BASENAME@',
-    configuration: desktop_conf
+    configuration: app_conf
   ),
   output: application_id + '.desktop',
   type: 'desktop',
@@ -19,20 +20,16 @@ if desktop_utils.found()
   test('Validate desktop file', desktop_utils, args: [desktop_file])
 endif
 
-appstream_conf = configuration_data()
-appstream_conf.set('app-id', application_id)
-appstream_conf.set('gettext-package', gettext_package)
-
 appstream_file = i18n.merge_file(
   input: configure_file(
     input: base_name + '.metainfo.xml.in.in',
     output: base_name + '.metainfo.xml.in',
-    configuration: appstream_conf
+    configuration: app_conf
   ),
-  output: base_name + '.metainfo.xml',
+  output: application_id + '.metainfo.xml',
   po_dir: '../po',
   install: true,
-  install_dir: join_paths(muzika_datadir, 'appdata'),
+  install_dir: join_paths(muzika_datadir, 'metainfo'),
 )
 
 appstreamcli = find_program('appstreamcli', required: false)
@@ -44,13 +41,10 @@ if (appstreamcli.found())
   )
 endif
 
-gsettings_conf = configuration_data()
-gsettings_conf.set('app-id', application_id)
-gsettings_conf.set('gettext-package', gettext_package)
 gsettings_schema = configure_file(
   input: base_name + '.gschema.xml.in',
   output: application_id + '.gschema.xml',
-  configuration: gsettings_conf,
+  configuration: app_conf,
   install: true,
   install_dir: muzika_schemadir
 )
@@ -74,7 +68,11 @@ subdir('ui')
 
 data_res = gnome.compile_resources(
   application_id + '.data',
-  base_name + '.data.gresource.xml',
+  configure_file(
+    input: base_name + '.data.gresource.xml.in',
+    output: application_id + '.data.gresource.xml.in',
+    configuration: app_conf,
+  ),
   gresource_bundle: true,
   install: true,
   install_dir: muzika_pkgdatadir,
