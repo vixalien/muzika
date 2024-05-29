@@ -651,12 +651,12 @@ export class PlaylistItemView extends Gtk.Widget {
     allocation.x = 0;
     allocation.y = 0;
 
+    this.child.size_allocate(allocation, -1);
+
     child_adjustment.value = y;
     child_adjustment.page_size = visible_height;
 
     child_adjustment.thaw_notify();
-
-    this.child.size_allocate(allocation, -1);
 
     this.adjustment[Gtk.Orientation.VERTICAL].thaw_notify();
     this.adjustment[Gtk.Orientation.HORIZONTAL].thaw_notify();
