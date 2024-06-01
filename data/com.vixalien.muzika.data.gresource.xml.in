@@ -24,8 +24,6 @@
     <file preprocess="xml-stripblanks">ui/components/player/now-playing/details.ui</file>
     <file preprocess="xml-stripblanks">ui/components/player/now-playing/view.ui</file>
     <file preprocess="xml-stripblanks">ui/components/player/video/controls.ui</file>
-    <file preprocess="xml-stripblanks">ui/components/player/video/full.ui</file>
-    <file preprocess="xml-stripblanks">ui/components/player/video/mini.ui</file>
     <file preprocess="xml-stripblanks">ui/components/player/video/view.ui</file>
     <file preprocess="xml-stripblanks">ui/components/player/video/volume-controls.ui</file>
     <file preprocess="xml-stripblanks">ui/components/player/full.ui</file>
