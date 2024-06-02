@@ -375,7 +375,7 @@ export class Queue extends GObject.Object {
         activate: (_, param) => {
           if (!param) return;
 
-          const url = new URL(`muzika:${param.get_string()}`);
+          const url = new URL(`muzika:${param.get_string()[0]}`);
           const params = url.searchParams;
 
           return this.add_playlist_action_cb(
@@ -395,7 +395,7 @@ export class Queue extends GObject.Object {
         activate: async (__, param) => {
           if (!param) return;
 
-          const url = new URL(`muzika:${param.get_string()}`);
+          const url = new URL(`muzika:${param.get_string()[0]}`);
           const params = url.searchParams;
 
           return this.add_playlist_action_cb(
