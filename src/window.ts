@@ -29,6 +29,14 @@ import Adw from "gi://Adw";
 import GLib from "gi://GLib";
 import Gio from "gi://Gio";
 
+import {
+  edit_song_library_status,
+  get_option,
+  rate_playlist,
+  rate_song,
+} from "libmuse";
+import type { LikeStatus } from "libmuse";
+
 import { Navigator } from "./navigation.js";
 import { get_player } from "./application.js";
 import { Settings } from "./util/settings.js";
@@ -37,7 +45,6 @@ import {
 } from "./components/player/now-playing/details.js";
 import { LoginDialog } from "./pages/login.js";
 import { AddActionEntries } from "./util/action.js";
-import { get_option, LikeStatus, rate_song } from "libmuse";
 import { PlayerView } from "./components/player/view.js";
 import { VideoPlayerView } from "./components/player/video/view.js";
 import { SaveToPlaylistDialog } from "./components/playlist/save-to-playlist.js";
@@ -254,6 +261,28 @@ export class Window extends Adw.ApplicationWindow {
           );
         },
       },
+
+      {
+        name: "rate-playlist",
+        parameter_type: "(ssb)",
+        activate: (_, parameter) => {
+          if (!parameter) return;
+
+          const [videoId, status, album] = parameter.deep_unpack() as [
+            string,
+            string,
+            boolean,
+          ];
+
+          if (!videoId || !status) return;
+
+          this.rate_playlist(
+            videoId,
+            status as LikeStatus,
+            album,
+          );
+        },
+      },
       {
         name: "login",
         activate: () => {
@@ -275,6 +304,20 @@ export class Window extends Adw.ApplicationWindow {
           if (string && this.show_view(string)) {
             action.set_state(GLib.Variant.new_string(string));
           }
+        },
+      },
+      {
+        name: "edit-library",
+        parameter_type: "(ss)",
+        activate: (_, parameter) => {
+          if (!parameter) return;
+
+          const [action, token] = parameter.deep_unpack() as [
+            "add" | "remove",
+            string,
+          ];
+
+          this.edit_library(action, token);
         },
       },
     ]);
@@ -491,7 +534,62 @@ export class Window extends Adw.ApplicationWindow {
       .catch((error) => {
         this.add_toast(_("An error happened while rating song"));
 
-        console.log("An error happened while rating song", error);
+        console.error("An error happened while rating song", error);
+      });
+  }
+
+  private rate_playlist(
+    playlistId: string,
+    status: LikeStatus,
+    album = false,
+  ) {
+    rate_playlist(playlistId, status)
+      .then(() => {
+        let title;
+
+        switch (status as LikeStatus) {
+          case "LIKE":
+            if (album) {
+              title = _("Added album to library");
+            } else {
+              title = _("Added playlist to library");
+            }
+            break;
+          default:
+            if (album) {
+              title = _("Removed album to library");
+            } else {
+              title = _("Removed playlist to library");
+            }
+            break;
+        }
+
+        this.add_toast(title);
+      })
+      .catch((error) => {
+        this.add_toast(_("An error happened while editing library"));
+
+        console.error("An error happened while editing library", error);
+      });
+  }
+
+  private edit_library(
+    action: "add" | "remove",
+    token: string,
+  ) {
+    edit_song_library_status([token])
+      .then(() => {
+        this.add_toast(
+          action === "add" ? _("Added to library") : _("Removed from library"),
+        );
+      }).catch((error) => {
+        console.error("An error happened while rating song", action, error);
+
+        this.add_toast(
+          action === "add"
+            ? _("Couldn't add to library")
+            : _("Couldn't remove from library"),
+        );
       });
   }
 }

@@ -31,6 +31,10 @@ import { MixedCardItem } from "../library/mixedcard.js";
 import { MenuHelper } from "src/util/menu/index.js";
 import { menuLikeRow } from "src/util/menu/like.js";
 import { setup_link_label } from "src/util/label.js";
+import {
+  menuLibraryRow,
+  menuPlaylistLibraryRow,
+} from "src/util/menu/library.js";
 
 GObject.type_ensure(DynamicImage.$gtype);
 
@@ -205,6 +209,10 @@ export class FlatCard extends Gtk.Box {
         [_("Start radio"), `queue.play-song("${song.videoId}?radio=true")`],
         [_("Play next"), `queue.add-song("${song.videoId}?next=true")`],
         [_("Add to queue"), `queue.add-song("${song.videoId}")`],
+        menuLibraryRow(
+          song.feedbackTokens,
+          (tokens) => song.feedbackTokens = tokens,
+        ),
         [_("Save to playlist"), `win.add-to-playlist("${song.videoId}")`],
         song.album
           ? [
@@ -274,6 +282,10 @@ export class FlatCard extends Gtk.Box {
         [_("Start radio"), `queue.play-song("${song.videoId}?radio=true")`],
         [_("Play next"), `queue.add-song("${song.videoId}?next=true")`],
         [_("Add to queue"), `queue.add-song("${song.videoId}")`],
+        menuLibraryRow(
+          song.feedbackTokens,
+          (tokens) => song.feedbackTokens = tokens,
+        ),
         [_("Save to playlist"), `win.add-to-playlist("${song.videoId}")`],
         song.album
           ? [
@@ -376,29 +388,36 @@ export class FlatCard extends Gtk.Box {
     this.load_thumbnails(playlist.thumbnails);
     this.setup_playlist(playlist.browseId);
 
-    this.menu_helper.props = [
-      playlist.shuffleId
-        ? [
-          _("Shuffle play"),
-          `queue.play-playlist("${playlist.shuffleId}?next=true")`,
-        ]
-        : null,
-      playlist.radioId
-        ? [
-          _("Start radio"),
-          `queue.play-playlist("${playlist.radioId}?next=true")`,
-        ]
-        : null,
-      [
-        _("Play next"),
-        `queue.add-playlist("${playlist.browseId}?next=true")`,
-      ],
-      [_("Add to queue"), `queue.add-playlist("${playlist.browseId}")`],
-      [
-        _("Save to playlist"),
-        `win.add-playlist-to-playlist("${playlist.browseId}")`,
-      ],
-    ];
+    this.menu_helper.set_builder(() => {
+      return [
+        playlist.shuffleId
+          ? [
+            _("Shuffle play"),
+            `queue.play-playlist("${playlist.shuffleId}?next=true")`,
+          ]
+          : null,
+        playlist.radioId
+          ? [
+            _("Start radio"),
+            `queue.play-playlist("${playlist.radioId}?next=true")`,
+          ]
+          : null,
+        [
+          _("Play next"),
+          `queue.add-playlist("${playlist.browseId}?next=true")`,
+        ],
+        [_("Add to queue"), `queue.add-playlist("${playlist.browseId}")`],
+        menuPlaylistLibraryRow(
+          playlist.browseId,
+          playlist.libraryLikeStatus,
+          (status) => playlist.libraryLikeStatus = status,
+        ),
+        [
+          _("Save to playlist"),
+          `win.add-playlist-to-playlist("${playlist.browseId}")`,
+        ],
+      ];
+    });
   }
 
   show_search_artist(artist: SearchArtist) {
@@ -483,6 +502,10 @@ export class FlatCard extends Gtk.Box {
         [_("Start radio"), `queue.play-song("${song.videoId}?radio=true")`],
         [_("Play next"), `queue.add-song("${song.videoId}?next=true")`],
         [_("Add to queue"), `queue.add-song("${song.videoId}")`],
+        menuLibraryRow(
+          song.feedbackTokens,
+          (tokens) => song.feedbackTokens = tokens,
+        ),
         [_("Save to playlist"), `win.add-to-playlist("${song.videoId}")`],
         song.album
           ? [
@@ -606,6 +629,10 @@ export class FlatCard extends Gtk.Box {
         [_("Start radio"), `queue.play-song("${video.videoId}?radio=true")`],
         [_("Play next"), `queue.add-song("${video.videoId}?next=true")`],
         [_("Add to queue"), `queue.add-song("${video.videoId}")`],
+        menuLibraryRow(
+          video.feedbackTokens,
+          (tokens) => video.feedbackTokens = tokens,
+        ),
         [_("Save to playlist"), `win.add-to-playlist("${video.videoId}")`],
         video.artists && video.artists.length > 1
           ? [
@@ -629,29 +656,36 @@ export class FlatCard extends Gtk.Box {
     this.load_thumbnails(playlist.thumbnails);
     this.setup_playlist(playlist.playlistId);
 
-    this.menu_helper.props = [
-      playlist.shuffleId
-        ? [
-          _("Shuffle play"),
-          `queue.play-playlist("${playlist.shuffleId}?next=true")`,
-        ]
-        : null,
-      playlist.radioId
-        ? [
-          _("Start radio"),
-          `queue.play-playlist("${playlist.radioId}?next=true")`,
-        ]
-        : null,
-      [
-        _("Play next"),
-        `queue.add-playlist("${playlist.playlistId}?next=true")`,
-      ],
-      [_("Add to queue"), `queue.add-playlist("${playlist.playlistId}")`],
-      [
-        _("Save to playlist"),
-        `win.add-playlist-to-playlist("${playlist.playlistId}")`,
-      ],
-    ];
+    this.menu_helper.set_builder(() => {
+      return [
+        playlist.shuffleId
+          ? [
+            _("Shuffle play"),
+            `queue.play-playlist("${playlist.shuffleId}?next=true")`,
+          ]
+          : null,
+        playlist.radioId
+          ? [
+            _("Start radio"),
+            `queue.play-playlist("${playlist.radioId}?next=true")`,
+          ]
+          : null,
+        [
+          _("Play next"),
+          `queue.add-playlist("${playlist.playlistId}?next=true")`,
+        ],
+        [_("Add to queue"), `queue.add-playlist("${playlist.playlistId}")`],
+        menuPlaylistLibraryRow(
+          playlist.playlistId,
+          playlist.libraryLikeStatus,
+          (status) => playlist.libraryLikeStatus = status,
+        ),
+        [
+          _("Save to playlist"),
+          `win.add-playlist-to-playlist("${playlist.playlistId}")`,
+        ],
+      ];
+    });
   }
 
   show_mixed_watch_playlist(playlist: WatchPlaylist) {
@@ -701,35 +735,42 @@ export class FlatCard extends Gtk.Box {
 
     this.load_thumbnails(album.thumbnails);
 
-    this.menu_helper.props = [
-      album.shuffleId
-        ? [
-          _("Shuffle play"),
-          `queue.play-playlist("${album.shuffleId}?next=true")`,
-        ]
-        : null,
-      album.radioId
-        ? [
-          _("Start radio"),
-          `queue.play-playlist("${album.radioId}?next=true")`,
-        ]
-        : null,
-      [
-        _("Play next"),
-        `queue.add-playlist("${album.audioPlaylistId}?next=true")`,
-      ],
-      [_("Add to queue"), `queue.add-playlist("${album.audioPlaylistId}")`],
-      [
-        _("Save to playlist"),
-        `win.add-playlist-to-playlist("${album.audioPlaylistId}")`,
-      ],
-      album.artists.length > 1
-        ? [
-          _("Go to artist"),
-          `navigator.visit("muzika:artist:${album.artists[0].id}")`,
-        ]
-        : null,
-    ];
+    this.menu_helper.set_builder(() => {
+      return [
+        album.shuffleId
+          ? [
+            _("Shuffle play"),
+            `queue.play-playlist("${album.shuffleId}?next=true")`,
+          ]
+          : null,
+        album.radioId
+          ? [
+            _("Start radio"),
+            `queue.play-playlist("${album.radioId}?next=true")`,
+          ]
+          : null,
+        [
+          _("Play next"),
+          `queue.add-playlist("${album.audioPlaylistId}?next=true")`,
+        ],
+        [_("Add to queue"), `queue.add-playlist("${album.audioPlaylistId}")`],
+        menuPlaylistLibraryRow(
+          album.audioPlaylistId,
+          album.libraryLikeStatus,
+          (status) => album.libraryLikeStatus = status,
+        ),
+        [
+          _("Save to playlist"),
+          `win.add-playlist-to-playlist("${album.audioPlaylistId}")`,
+        ],
+        album.artists.length > 1
+          ? [
+            _("Go to artist"),
+            `navigator.visit("muzika:artist:${album.artists[0].id}")`,
+          ]
+          : null,
+      ];
+    });
   }
 
   show_inline_song(content: InlineSong) {

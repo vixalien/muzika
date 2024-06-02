@@ -819,10 +819,10 @@ levn@^0.4.1:
     prelude-ls "^1.2.1"
     type-check "~0.4.0"
 
-libmuse@^0.0.97:
-  version "0.0.97"
-  resolved "https://registry.yarnpkg.com/libmuse/-/libmuse-0.0.97.tgz#b132d11f558e37f77a0814f28fa7f298e81aa1bc"
-  integrity sha512-9ZRHjGxYY7ENn2EOiPt7qCb/f5BMIdsQeJQ0sK93LQusyxaUtzmIM4BLOwWG+kc1AfvJY+V9xxuvm0rynqKRrA==
+libmuse@^0.0.99:
+  version "0.0.99"
+  resolved "https://registry.yarnpkg.com/libmuse/-/libmuse-0.0.99.tgz#ec69e14157aa98cd018d3dc606d52a6075a8c57f"
+  integrity sha512-YmGBghDxYlmCZAQCsDCkcoyNQbpgCocM8AQ3UydVIwRFNIlnFNRBwhSDhEC4xGup+z7zD2seuly8mMD8tAGMxQ==
   dependencies:
     jsonpath-plus "8.1.0"
     lodash-es "4.17.21"

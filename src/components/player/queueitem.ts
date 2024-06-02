@@ -8,6 +8,7 @@ import { pretty_subtitles } from "src/util/text.js";
 import { setup_link_label } from "src/util/label.js";
 import { MenuHelper } from "src/util/menu/index.js";
 import { menuLikeRow } from "src/util/menu/like.js";
+import { menuLibraryRow } from "src/util/menu/library.js";
 
 export class QueueItem extends Gtk.Box {
   static {
@@ -65,6 +66,10 @@ export class QueueItem extends Gtk.Box {
         [_("Start radio"), `queue.play-song("${item.videoId}?radio=true")`],
         [_("Play next"), `queue.add-song("${item.videoId}?next=true")`],
         [_("Add to queue"), `queue.add-song("${item.videoId}")`],
+        menuLibraryRow(
+          item.feedbackTokens,
+          (tokens) => item.feedbackTokens = tokens,
+        ),
         [_("Save to playlist"), `win.add-to-playlist("${item.videoId}")`],
         item.album
           ? [
