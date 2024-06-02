@@ -8,7 +8,7 @@ import {
   add_history_item,
   get_option,
   get_queue,
-  get_queue_ids,
+  get_queue_tracks,
   get_song,
 } from "libmuse";
 import type {
@@ -376,8 +376,8 @@ export class MuzikaPlayer extends MuzikaMediaStream {
     this.queue.repeat = PlayerStateSettings.get_enum("repeat");
 
     const [tracks, original] = await Promise.all([
-      get_queue_ids(tracks_ids),
-      get_queue_ids(original_ids),
+      get_queue_tracks(tracks_ids),
+      get_queue_tracks(original_ids),
     ]);
 
     this.queue.list.splice(

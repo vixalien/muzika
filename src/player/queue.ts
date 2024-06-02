@@ -3,7 +3,7 @@ import Gio from "gi://Gio";
 import GLib from "gi://GLib";
 import Gtk from "gi://Gtk?version=4.0";
 
-import { get_queue, get_queue_ids } from "libmuse";
+import { get_queue, get_queue_tracks } from "libmuse";
 import type { Queue as MuseQueue, QueueTrack } from "libmuse";
 
 import { ObjectContainer } from "../util/objectcontainer.js";
@@ -624,7 +624,7 @@ export class Queue extends GObject.Object {
         options.play ? get_queue(video_ids[0], null) : clone(this.queue!),
         // don't fetch the queue track again if it's only one. it will be got
         // from the above call
-        video_ids.length === 1 ? [] : get_queue_ids(video_ids),
+        video_ids.length === 1 ? [] : get_queue_tracks(video_ids),
       ]);
 
       queue.tracks.push(...tracks);
@@ -692,13 +692,13 @@ export class Queue extends GObject.Object {
   ) {
     const queue = await this.add_playlist2(playlist_id, video_id, options);
 
-    if (queue.playlist) {
+    if (queue.playlistName) {
+      if (options?.play) return;
+
       const normalized_title = GLib.markup_escape_text(
-        queue.playlist,
+        queue.playlistName,
         -1,
       );
-
-      if (options?.play) return;
 
       add_toast(
         options?.next

@@ -1,7 +1,7 @@
 import GObject from "gi://GObject";
 import Gtk from "gi://Gtk?version=4.0";
 
-import { get_queue, get_queue_ids } from "libmuse";
+import { get_queue, get_queue_tracks } from "libmuse";
 import type { QueueOptions, QueueTrack } from "libmuse";
 
 import { omit } from "lodash-es";
@@ -52,7 +52,7 @@ import { get_player } from "src/application";
 //     return video_ids.map((id) => cache_maps.queue_tracks.get(id)!);
 //   }
 
-//   const tracks = await get_queue_ids(video_ids);
+//   const tracks = await get_queue_tracks(video_ids);
 
 //   for (const track of tracks) {
 //     cache_maps.queue_tracks.set(track.videoId, track);
