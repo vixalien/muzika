@@ -20,7 +20,10 @@ import { SignalListeners } from "src/util/signal-listener.js";
 import { MenuHelper } from "src/util/menu/index.js";
 import { menuLikeRow } from "src/util/menu/like.js";
 import { setup_link_label } from "src/util/label.js";
-import { menuLibraryRow } from "src/util/menu/library.js";
+import {
+  menuLibraryRow,
+  menuPlaylistLibraryRow,
+} from "src/util/menu/library.js";
 
 GObject.type_ensure(DynamicImage.$gtype);
 
@@ -408,29 +411,36 @@ export class TopResultCard extends Adw.Bin {
       this._secondary.sensitive = false;
     }
 
-    this.menu_helper.props = [
-      playlist.shuffleId
-        ? [
-          _("Shuffle play"),
-          `queue.play-playlist("${playlist.shuffleId}?next=true")`,
-        ]
-        : null,
-      playlist.radioId
-        ? [
-          _("Start radio"),
-          `queue.play-playlist("${playlist.radioId}?next=true")`,
-        ]
-        : null,
-      [
-        _("Play next"),
-        `queue.add-playlist("${playlist.browseId}?next=true")`,
-      ],
-      [_("Add to queue"), `queue.add-playlist("${playlist.browseId}")`],
-      [
-        _("Save to playlist"),
-        `win.add-playlist-to-playlist("${playlist.browseId}")`,
-      ],
-    ];
+    this.menu_helper.set_builder(() => {
+      return [
+        playlist.shuffleId
+          ? [
+            _("Shuffle play"),
+            `queue.play-playlist("${playlist.shuffleId}?next=true")`,
+          ]
+          : null,
+        playlist.radioId
+          ? [
+            _("Start radio"),
+            `queue.play-playlist("${playlist.radioId}?next=true")`,
+          ]
+          : null,
+        [
+          _("Play next"),
+          `queue.add-playlist("${playlist.browseId}?next=true")`,
+        ],
+        [_("Add to queue"), `queue.add-playlist("${playlist.browseId}")`],
+        menuPlaylistLibraryRow(
+          playlist.browseId,
+          playlist.libraryLikeStatus,
+          (status) => playlist.libraryLikeStatus = status,
+        ),
+        [
+          _("Save to playlist"),
+          `win.add-playlist-to-playlist("${playlist.browseId}")`,
+        ],
+      ];
+    });
   }
 
   show_top_result(top_result: TopResult) {

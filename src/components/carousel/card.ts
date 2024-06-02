@@ -21,7 +21,10 @@ import { MenuHelper } from "src/util/menu/index.js";
 import { menuLikeRow } from "src/util/menu/like.js";
 import { setup_link_label } from "src/util/label.js";
 import { get_state_pspec } from "../dynamic-action.js";
-import { menuLibraryRow } from "src/util/menu/library.js";
+import {
+  menuLibraryRow,
+  menuPlaylistLibraryRow,
+} from "src/util/menu/library.js";
 
 enum CarouselImageType {
   AVATAR,
@@ -321,29 +324,36 @@ export class CarouselCard extends Gtk.Box {
     this.setup_image(CarouselImageType.PLAYLIST_IMAGE, playlist.thumbnails);
     this.setup_playlist(playlist.playlistId);
 
-    this.menu_helper.props = [
-      playlist.shuffleId
-        ? [
-          _("Shuffle play"),
-          `queue.play-playlist("${playlist.shuffleId}?next=true")`,
-        ]
-        : null,
-      playlist.radioId
-        ? [
-          _("Start radio"),
-          `queue.play-playlist("${playlist.radioId}?next=true")`,
-        ]
-        : null,
-      [
-        _("Play next"),
-        `queue.add-playlist("${playlist.playlistId}?next=true")`,
-      ],
-      [_("Add to queue"), `queue.add-playlist("${playlist.playlistId}")`],
-      [
-        _("Save to playlist"),
-        `win.add-playlist-to-playlist("${playlist.playlistId}")`,
-      ],
-    ];
+    this.menu_helper.set_builder(() => {
+      return [
+        playlist.shuffleId
+          ? [
+            _("Shuffle play"),
+            `queue.play-playlist("${playlist.shuffleId}?next=true")`,
+          ]
+          : null,
+        playlist.radioId
+          ? [
+            _("Start radio"),
+            `queue.play-playlist("${playlist.radioId}?next=true")`,
+          ]
+          : null,
+        [
+          _("Play next"),
+          `queue.add-playlist("${playlist.playlistId}?next=true")`,
+        ],
+        [_("Add to queue"), `queue.add-playlist("${playlist.playlistId}")`],
+        menuPlaylistLibraryRow(
+          playlist.playlistId,
+          playlist.libraryLikeStatus,
+          (status) => playlist.libraryLikeStatus = status,
+        ),
+        [
+          _("Save to playlist"),
+          `win.add-playlist-to-playlist("${playlist.playlistId}")`,
+        ],
+      ];
+    });
   }
 
   show_watch_playlist(playlist: WatchPlaylist) {
@@ -390,35 +400,42 @@ export class CarouselCard extends Gtk.Box {
     this.setup_image(CarouselImageType.PLAYLIST_IMAGE, album.thumbnails);
     this.setup_playlist(album.audioPlaylistId);
 
-    this.menu_helper.props = [
-      album.shuffleId
-        ? [
-          _("Shuffle play"),
-          `queue.play-playlist("${album.shuffleId}?next=true")`,
-        ]
-        : null,
-      album.radioId
-        ? [
-          _("Start radio"),
-          `queue.play-playlist("${album.radioId}?next=true")`,
-        ]
-        : null,
-      [
-        _("Play next"),
-        `queue.add-playlist("${album.audioPlaylistId}?next=true")`,
-      ],
-      [_("Add to queue"), `queue.add-playlist("${album.audioPlaylistId}")`],
-      [
-        _("Save to playlist"),
-        `win.add-playlist-to-playlist("${album.audioPlaylistId}")`,
-      ],
-      album.artists.length > 1
-        ? [
-          _("Go to artist"),
-          `navigator.visit("muzika:artist:${album.artists[0].id}")`,
-        ]
-        : null,
-    ];
+    this.menu_helper.set_builder(() => {
+      return [
+        album.shuffleId
+          ? [
+            _("Shuffle play"),
+            `queue.play-playlist("${album.shuffleId}?next=true")`,
+          ]
+          : null,
+        album.radioId
+          ? [
+            _("Start radio"),
+            `queue.play-playlist("${album.radioId}?next=true")`,
+          ]
+          : null,
+        [
+          _("Play next"),
+          `queue.add-playlist("${album.audioPlaylistId}?next=true")`,
+        ],
+        [_("Add to queue"), `queue.add-playlist("${album.audioPlaylistId}")`],
+        menuPlaylistLibraryRow(
+          album.audioPlaylistId,
+          album.libraryLikeStatus,
+          (status) => album.libraryLikeStatus = status,
+        ),
+        [
+          _("Save to playlist"),
+          `win.add-playlist-to-playlist("${album.audioPlaylistId}")`,
+        ],
+        album.artists.length > 1
+          ? [
+            _("Go to artist"),
+            `navigator.visit("muzika:artist:${album.artists[0].id}")`,
+          ]
+          : null,
+      ];
+    });
   }
 
   show_item(content: MixedCardItem) {

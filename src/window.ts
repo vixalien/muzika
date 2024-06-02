@@ -29,7 +29,12 @@ import Adw from "gi://Adw";
 import GLib from "gi://GLib";
 import Gio from "gi://Gio";
 
-import { edit_song_library_status, get_option, rate_song } from "libmuse";
+import {
+  edit_song_library_status,
+  get_option,
+  rate_playlist,
+  rate_song,
+} from "libmuse";
 import type { LikeStatus } from "libmuse";
 
 import { Navigator } from "./navigation.js";
@@ -253,6 +258,28 @@ export class Window extends Adw.ApplicationWindow {
             videoId,
             status as LikeStatus,
             oldStatus as LikeStatus || undefined,
+          );
+        },
+      },
+
+      {
+        name: "rate-playlist",
+        parameter_type: "(ssb)",
+        activate: (_, parameter) => {
+          if (!parameter) return;
+
+          const [videoId, status, album] = parameter.deep_unpack() as [
+            string,
+            string,
+            boolean,
+          ];
+
+          if (!videoId || !status) return;
+
+          this.rate_playlist(
+            videoId,
+            status as LikeStatus,
+            album,
           );
         },
       },
@@ -508,6 +535,43 @@ export class Window extends Adw.ApplicationWindow {
         this.add_toast(_("An error happened while rating song"));
 
         console.error("An error happened while rating song", error);
+      });
+  }
+
+  private rate_playlist(
+    playlistId: string,
+    status: LikeStatus,
+    album = false,
+  ) {
+    console.log("rating playlist", playlistId, status, album);
+
+    rate_playlist(playlistId, status)
+      .then(() => {
+        let title;
+
+        switch (status as LikeStatus) {
+          case "LIKE":
+            if (album) {
+              title = _("Added album to library");
+            } else {
+              title = _("Added playlist to library");
+            }
+            break;
+          default:
+            if (album) {
+              title = _("Removed album to library");
+            } else {
+              title = _("Removed playlist to library");
+            }
+            break;
+        }
+
+        this.add_toast(title);
+      })
+      .catch((error) => {
+        this.add_toast(_("An error happened while editing library"));
+
+        console.error("An error happened while editing library", error);
       });
   }
 

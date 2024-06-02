@@ -2,7 +2,7 @@ import Gio from "gi://Gio";
 import GLib from "gi://GLib";
 import Gtk from "gi://Gtk?version=4.0";
 
-import { ParsedSong } from "libmuse";
+import { LikeStatus, ParsedSong } from "libmuse";
 import { MenuProp } from ".";
 
 type MenuTokens = ParsedSong["feedbackTokens"];
@@ -56,6 +56,60 @@ export function menuLibraryRow(
     button.connect("clicked", () => {
       popover.popdown();
       cb?.(getNewTokens(tokens));
+    });
+
+    return button;
+  };
+
+  return menu;
+}
+
+export type LibraryPlaylistRowCAllback = (status: LikeStatus) => void;
+
+export function menuPlaylistLibraryRow(
+  playlistId: string,
+  likeStatus: LikeStatus | null,
+  cb?: LibraryPlaylistRowCAllback,
+  album = false,
+): MenuProp {
+  if (!playlistId) return null;
+
+  let label: string,
+    newStatus: LikeStatus;
+
+  if (likeStatus && likeStatus === "LIKE") {
+    label = album
+      ? _("Remove album from library")
+      : _("Remove playlist from library");
+    newStatus = "INDIFFERENT";
+  } else {
+    label = album ? _("Add album to library") : _("Add playlist to library");
+    newStatus = "LIKE";
+  }
+
+  const menu = new Gio.MenuItem();
+  menu.set_label(label);
+  menu.set_attribute_value("custom", GLib.Variant.new_string("library-button"));
+
+  (menu as any)["__child"] = (popover: Gtk.Popover) => {
+    const label_widget = new Gtk.Label({
+      label,
+      halign: Gtk.Align.START,
+    });
+
+    const button = new Gtk.Button({
+      css_name: "modelbutton",
+      child: label_widget,
+    });
+    button.set_detailed_action_name(
+      `win.rate-playlist(\("${playlistId}", "${newStatus}", ${
+        album ?? false
+      }\))`,
+    );
+
+    button.connect("clicked", () => {
+      popover.popdown();
+      cb?.(newStatus);
     });
 
     return button;
