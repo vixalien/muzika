@@ -140,6 +140,10 @@ export class PlaylistListView extends Gtk.ListView {
 
     item.dynamic_image.selected = list_item.selected;
 
+    if (this.is_album) {
+      item.dynamic_image.track_number = list_item.position + 1;
+    }
+
     item.set_item(
       list_item.position,
       playlist_item,
