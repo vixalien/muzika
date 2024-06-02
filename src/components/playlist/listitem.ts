@@ -10,6 +10,7 @@ import { SignalListeners } from "src/util/signal-listener.js";
 import { MenuHelper } from "src/util/menu/index.js";
 import { menuLikeRow } from "src/util/menu/like";
 import { setup_link_label } from "src/util/label.js";
+import { menuLibraryRow } from "src/util/menu/library";
 
 export class PlaylistListItem extends Gtk.Box {
   static {
@@ -140,6 +141,10 @@ export class PlaylistListItem extends Gtk.Box {
         [_("Start radio"), `queue.play-song("${item.videoId}?radio=true")`],
         [_("Play next"), `queue.add-song("${item.videoId}?next=true")`],
         [_("Add to queue"), `queue.add-song("${item.videoId}")`],
+        menuLibraryRow(
+          item.feedbackTokens,
+          (tokens) => item.feedbackTokens = tokens,
+        ),
         [_("Save to playlist"), `win.add-to-playlist("${item.videoId}")`],
         is_editable
           ? [_("Remove from playlist"), `playlist.remove-tracks([${position}])`]

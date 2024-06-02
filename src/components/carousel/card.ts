@@ -291,6 +291,10 @@ export class CarouselCard extends Gtk.Box {
         [_("Start radio"), `queue.play-song("${video.videoId}?radio=true")`],
         [_("Play next"), `queue.add-song("${video.videoId}?next=true")`],
         [_("Add to queue"), `queue.add-song("${video.videoId}")`],
+        menuLibraryRow(
+          video.feedbackTokens,
+          (tokens) => video.feedbackTokens = tokens,
+        ),
         [_("Save to playlist"), `win.add-to-playlist("${video.videoId}")`],
         video.album
           ? [

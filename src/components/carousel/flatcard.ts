@@ -31,6 +31,7 @@ import { MixedCardItem } from "../library/mixedcard.js";
 import { MenuHelper } from "src/util/menu/index.js";
 import { menuLikeRow } from "src/util/menu/like.js";
 import { setup_link_label } from "src/util/label.js";
+import { menuLibraryRow } from "src/util/menu/library.js";
 
 GObject.type_ensure(DynamicImage.$gtype);
 
@@ -205,6 +206,10 @@ export class FlatCard extends Gtk.Box {
         [_("Start radio"), `queue.play-song("${song.videoId}?radio=true")`],
         [_("Play next"), `queue.add-song("${song.videoId}?next=true")`],
         [_("Add to queue"), `queue.add-song("${song.videoId}")`],
+        menuLibraryRow(
+          song.feedbackTokens,
+          (tokens) => song.feedbackTokens = tokens,
+        ),
         [_("Save to playlist"), `win.add-to-playlist("${song.videoId}")`],
         song.album
           ? [
@@ -274,6 +279,10 @@ export class FlatCard extends Gtk.Box {
         [_("Start radio"), `queue.play-song("${song.videoId}?radio=true")`],
         [_("Play next"), `queue.add-song("${song.videoId}?next=true")`],
         [_("Add to queue"), `queue.add-song("${song.videoId}")`],
+        menuLibraryRow(
+          song.feedbackTokens,
+          (tokens) => song.feedbackTokens = tokens,
+        ),
         [_("Save to playlist"), `win.add-to-playlist("${song.videoId}")`],
         song.album
           ? [
@@ -483,6 +492,10 @@ export class FlatCard extends Gtk.Box {
         [_("Start radio"), `queue.play-song("${song.videoId}?radio=true")`],
         [_("Play next"), `queue.add-song("${song.videoId}?next=true")`],
         [_("Add to queue"), `queue.add-song("${song.videoId}")`],
+        menuLibraryRow(
+          song.feedbackTokens,
+          (tokens) => song.feedbackTokens = tokens,
+        ),
         [_("Save to playlist"), `win.add-to-playlist("${song.videoId}")`],
         song.album
           ? [
@@ -606,6 +619,10 @@ export class FlatCard extends Gtk.Box {
         [_("Start radio"), `queue.play-song("${video.videoId}?radio=true")`],
         [_("Play next"), `queue.add-song("${video.videoId}?next=true")`],
         [_("Add to queue"), `queue.add-song("${video.videoId}")`],
+        menuLibraryRow(
+          video.feedbackTokens,
+          (tokens) => video.feedbackTokens = tokens,
+        ),
         [_("Save to playlist"), `win.add-to-playlist("${video.videoId}")`],
         video.artists && video.artists.length > 1
           ? [
