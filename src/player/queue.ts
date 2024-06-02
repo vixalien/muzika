@@ -1,8 +1,9 @@
 import GObject from "gi://GObject";
 import Gio from "gi://Gio";
 import GLib from "gi://GLib";
+import Gtk from "gi://Gtk?version=4.0";
 
-import { get_queue } from "libmuse";
+import { get_queue, get_queue_ids } from "libmuse";
 import type { Queue as MuseQueue, QueueTrack } from "libmuse";
 
 import { ObjectContainer } from "../util/objectcontainer.js";
@@ -10,12 +11,13 @@ import { AddActionEntries, build_action } from "src/util/action.js";
 import { Application } from "src/application.js";
 import { list_model_to_array } from "src/util/list.js";
 import { ngettext } from "gettext";
-import {
-  get_track_queue,
-  get_track_settings,
-  get_tracklist,
-} from "./helpers.js";
+// import {
+//   get_track_queue,
+//   get_track_settings,
+//   get_tracklist,
+// } from "./helpers.js";
 import { add_toast } from "src/util/window.js";
+import { clone } from "lodash-es";
 
 const vprintf = imports.format.vprintf;
 
@@ -25,10 +27,6 @@ export enum RepeatMode {
   NONE = 0,
   ALL = 1,
   ONE = 2,
-}
-
-export interface QueueMeta extends QueueTrack {
-  playlist: string | null;
 }
 
 // Durstenfeld's modification of Fisher-Yates shuffle
@@ -47,18 +45,56 @@ export enum PreferredMediaType {
   VIDEO,
 }
 
+export class QueueChip extends GObject.Object {
+  static {
+    GObject.registerClass({
+      GTypeName: "QueueChip",
+      Properties: {
+        "title": GObject.param_spec_string(
+          "title",
+          "Title",
+          "The label of this chip",
+          null,
+          GObject.ParamFlags.READWRITE | GObject.ParamFlags.CONSTRUCT_ONLY,
+        ),
+        "playlist-id": GObject.param_spec_string(
+          "playlist-id",
+          "Playlist ID",
+          "The playlist ID this chip activates",
+          null,
+          GObject.ParamFlags.READWRITE | GObject.ParamFlags.CONSTRUCT_ONLY,
+        ),
+        "params": GObject.param_spec_string(
+          "params",
+          "Params",
+          "The unique params for this playlist",
+          null,
+          GObject.ParamFlags.READWRITE | GObject.ParamFlags.CONSTRUCT_ONLY,
+        ),
+      },
+    }, this);
+  }
+
+  constructor(props: QueueChipsConstructorProperties) {
+    super(props);
+  }
+
+  title!: string;
+  playlist_id!: string;
+  params!: string;
+}
+
+interface QueueChipsConstructorProperties {
+  title: string;
+  playlist_id: string;
+  params: string;
+}
+
 export class Queue extends GObject.Object {
   static {
     GObject.registerClass({
       GTypeName: "Queue",
       Properties: {
-        history: GObject.param_spec_object(
-          "history",
-          "History",
-          "A Gio.ListStore that stores all the previously played songs",
-          Gio.ListStore.$gtype,
-          GObject.ParamFlags.READABLE,
-        ),
         list: GObject.param_spec_object(
           "list",
           "List",
@@ -112,13 +148,6 @@ export class Queue extends GObject.Object {
           false,
           GObject.ParamFlags.READWRITE,
         ),
-        settings: GObject.param_spec_object(
-          "settings",
-          "Settings",
-          "The current queue settings",
-          ObjectContainer.$gtype,
-          GObject.ParamFlags.READWRITE,
-        ),
         "active-chip": GObject.param_spec_string(
           "active-chip",
           "Active chip",
@@ -140,13 +169,31 @@ export class Queue extends GObject.Object {
           "Current Is Video",
           "Whether the currently playing track has a video",
           false,
+          GObject.ParamFlags.READABLE,
+        ),
+        "playlist-id": GObject.param_spec_string(
+          "playlist-id",
+          "Playlist ID",
+          "The currently playing playlist ID",
+          null,
           GObject.ParamFlags.READWRITE,
+        ),
+        "playlist-name": GObject.param_spec_string(
+          "playlist-name",
+          "Playlist Name",
+          "The currently playing playlist's name",
+          null,
+          GObject.ParamFlags.READWRITE,
+        ),
+        chips: GObject.param_spec_object(
+          "chips",
+          "Chips",
+          "The player chips based on different moods",
+          Gtk.SingleSelection.$gtype,
+          GObject.ParamFlags.READABLE,
         ),
       },
       Signals: {
-        "prepare-next": {
-          param_types: [GObject.TYPE_STRING],
-        },
         "play": {},
       },
     }, this);
@@ -154,10 +201,10 @@ export class Queue extends GObject.Object {
 
   preferred_media_type = PreferredMediaType.AUTO;
 
-  private _list: Gio.ListStore<ObjectContainer<QueueMeta>> = new Gio
+  private _list: Gio.ListStore<ObjectContainer<QueueTrack>> = new Gio
     .ListStore();
   // original is used to store unshuffled list
-  _original: Gio.ListStore<ObjectContainer<QueueMeta>> = new Gio
+  _original: Gio.ListStore<ObjectContainer<QueueTrack>> = new Gio
     .ListStore();
 
   get list() {
@@ -170,26 +217,20 @@ export class Queue extends GObject.Object {
     this.change_position(-1);
   }
 
-  private get_correct_counterpart(track: ObjectContainer<QueueMeta> | null) {
-    if (!track || !track.object) return null;
+  private get_correct_counterpart(track: ObjectContainer<QueueTrack> | null) {
+    if (!track?.object.counterpart) return null;
 
-    let correct_track: ObjectContainer<QueueMeta> | null = null;
+    let correct_track: ObjectContainer<QueueTrack> | null = null;
 
     switch (this.preferred_media_type) {
       case PreferredMediaType.SONG: {
-        if (
-          track.object.videoType !== "MUSIC_VIDEO_TYPE_ATV" &&
-          track.object.counterpart
-        ) {
+        if (is_track_video(track.object)) {
           correct_track = this.get_counterpart(track.object)!;
         }
         break;
       }
       case PreferredMediaType.VIDEO: {
-        if (
-          track.object.videoType === "MUSIC_VIDEO_TYPE_ATV" &&
-          track.object.counterpart
-        ) {
+        if (!is_track_video(track.object)) {
           correct_track = this.get_counterpart(track.object)!;
         }
         break;
@@ -197,6 +238,30 @@ export class Queue extends GObject.Object {
     }
 
     return correct_track;
+  }
+
+  private queue?: MuseQueue;
+
+  set_queue(queue: MuseQueue) {
+    this.queue = queue;
+    const chips_model = this.chips.model as Gio.ListStore;
+
+    chips_model.splice(
+      0,
+      chips_model.n_items,
+      queue.chips.map((chip) => new QueueChip(chip as any)),
+    );
+
+    this.notify("playlist-id");
+    this.notify("playlist-name");
+  }
+
+  get playlist_id() {
+    return this.queue?.playlistId ?? null;
+  }
+
+  get playlist_name() {
+    return this.queue?.playlist ?? null;
   }
 
   get current() {
@@ -225,6 +290,8 @@ export class Queue extends GObject.Object {
   }
 
   change_position(position: number, force = false) {
+    if (position === -1) return null;
+
     if (position != this._position || force) {
       this._position = position;
 
@@ -235,80 +302,27 @@ export class Queue extends GObject.Object {
     }
   }
 
-  private increment_position(n: number) {
-    this.change_position(this.position + n);
-  }
-
-  private _settings: ObjectContainer<QueueSettings> = new ObjectContainer(
-    null as any,
-  );
-
-  get settings() {
-    return this._settings;
-  }
-
-  private set settings(settings: ObjectContainer<QueueSettings>) {
-    this._settings = settings;
-    this.notify("settings");
-  }
-
-  set_settings(settings: QueueSettings) {
-    this.settings = new ObjectContainer(settings);
-  }
-
-  private settings_abort_controller?: AbortController;
-
-  private update_track_settings() {
-    if (this.settings_abort_controller) {
-      this.settings_abort_controller.abort();
-      this.settings_abort_controller = undefined;
-    }
-
-    if (this.current?.object.videoId) {
-      this.settings_abort_controller = new AbortController();
-
-      get_track_settings(
-        this.current?.object.videoId,
-        this.settings_abort_controller.signal,
-      )
-        .then((settings) => {
-          if (this.settings) {
-            this.set_settings({
-              ...this.settings?.object,
-              current: settings.current,
-              lyrics: settings.lyrics,
-              related: settings.related,
-            });
-          } else {
-            this.set_settings(settings);
-          }
-        })
-        .catch(() => {})
-        .finally(() => {
-          this.settings_abort_controller = undefined;
-        });
-    }
-  }
-
   _shuffle = false;
 
   get shuffle() {
     return this._shuffle;
   }
 
-  set shuffle(shuffled: boolean) {
-    this._shuffle = shuffled;
+  set shuffle(value: boolean) {
+    if (value === this.shuffle) return;
+
+    this._shuffle = value;
     this.notify("shuffle");
 
-    if (shuffled) {
-      this._original.remove_all();
-
+    if (value) {
       const items = list_model_to_array(this._list);
 
-      // store the items into original
-      for (const item of items) {
-        this._original.append(item);
-      }
+      // backup the items into original
+      this._original.splice(
+        0,
+        this._original.n_items,
+        items,
+      );
 
       // add the items back to the list
       this._list.splice(
@@ -329,15 +343,13 @@ export class Queue extends GObject.Object {
     }
   }
 
-  private _active_chip: string | null = null;
+  private _chips = new Gtk.SingleSelection<QueueChip>({
+    model: Gio.ListStore.new(QueueChip.$gtype),
+    can_unselect: true,
+  });
 
-  get active_chip() {
-    return this._active_chip;
-  }
-
-  set active_chip(chip: string | null) {
-    this._active_chip = chip;
-    this.notify("active-chip");
+  get chips() {
+    return this._chips;
   }
 
   app: Application;
@@ -346,6 +358,11 @@ export class Queue extends GObject.Object {
     super();
 
     this.app = options.app;
+
+    this.chips.connect(
+      "selection-changed",
+      this.active_chip_changed_cb.bind(this),
+    );
   }
 
   get_action_group() {
@@ -358,42 +375,37 @@ export class Queue extends GObject.Object {
         activate: (_, param) => {
           if (!param) return;
 
-          const url = new URL(`muzika:${param.get_string()[0]}`);
+          const url = new URL(`muzika:${param.get_string()}`);
           const params = url.searchParams;
 
-          this.play_playlist(url.pathname, params.get("video") ?? undefined, {
-            shuffle: params.has("shuffle"),
-            radio: params.has("radio"),
-          });
+          return this.add_playlist_action_cb(
+            url.pathname,
+            params.get("video") ?? undefined,
+            {
+              next: params.has("next"),
+              shuffle: params.has("shuffle"),
+              play: true,
+            },
+          );
         },
       },
       {
         name: "add-playlist",
         parameter_type: "s",
-        activate: (__, param) => {
+        activate: async (__, param) => {
           if (!param) return;
 
           const url = new URL(`muzika:${param.get_string()}`);
           const params = url.searchParams;
 
-          this.add_playlist(url.pathname, params.get("video") ?? undefined, {
-            next: params.has("next"),
-            shuffle: params.has("shuffle"),
-          }).then((queue) => {
-            if (!queue.playlist) return;
-
-            const normalized_title = GLib.markup_escape_text(
-              queue.playlist,
-              -1,
-            );
-
-            add_toast(
-              params.has("next")
-                ? vprintf(_("Playing “%s” next"), [normalized_title])
-                // Translators: %s is a playlist name
-                : vprintf(_("Added “%s” to queue"), [normalized_title]),
-            );
-          });
+          return this.add_playlist_action_cb(
+            url.pathname,
+            params.get("video") ?? undefined,
+            {
+              next: params.has("next"),
+              shuffle: params.has("shuffle"),
+            },
+          );
         },
       },
       {
@@ -405,21 +417,11 @@ export class Queue extends GObject.Object {
           const url = new URL(`muzika:${param.get_string()[0]}`);
           const params = url.searchParams;
 
-          const ids = url.pathname.split(",");
-
-          if (ids.length == 1) {
-            // notify when starting radio, and the current track is playing already
-            if (
-              params.has("radio") && this.current?.object.videoId === ids[0]
-            ) {
-              add_toast(_("Starting Radio"));
-            }
-            this.play_song(ids[0]);
-          } else {
-            this.play_songs(ids, {
-              shuffle: params.has("shuffle"),
-            });
-          }
+          return this.add_song_action_cb(url.pathname.split(","), {
+            next: params.has("next"),
+            shuffle: params.has("shuffle"),
+            play: true,
+          });
         },
       },
       {
@@ -431,43 +433,10 @@ export class Queue extends GObject.Object {
           const url = new URL(`muzika:${param.get_string()[0]}`);
           const params = url.searchParams;
 
-          this.add_songs(url.pathname.split(","), {
+          return this.add_song_action_cb(url.pathname.split(","), {
             next: params.has("next"),
             shuffle: params.has("shuffle"),
-          }).then((tracks) => {
-            const normalized_title = GLib.markup_escape_text(
-              tracks[0].title,
-              -1,
-            );
-
-            add_toast(
-              params.has("next")
-                ? ngettext(
-                  // Translators: %s is a song's name
-                  vprintf(_("Playing “%s” next"), [normalized_title]),
-                  vprintf(_("Playing %d songs next"), [tracks.length]),
-                  tracks.length,
-                )
-                : ngettext(
-                  // Translators: %s is a song's name
-                  vprintf(_("Added “%s” to queue"), [normalized_title]),
-                  vprintf(_("Added %d songs to queue"), [tracks.length]),
-                  tracks.length,
-                ),
-            );
-          });
-        },
-      },
-      {
-        name: "previous",
-        activate: () => {
-          this.previous();
-        },
-      },
-      {
-        name: "next",
-        activate: () => {
-          this.next();
+          }).catch(console.error);
         },
       },
     ]);
@@ -497,17 +466,33 @@ export class Queue extends GObject.Object {
       }],
     }));
 
-    this.connect("notify::can-play-previous", () => {
-      action_group.action_enabled_changed("previous", this.can_play_previous);
-    });
+    action_group.add_action(build_action({
+      name: "previous",
+      parameter_type: null,
+      activate: () => this.previous(),
+      bind_enabled: [this, "can-play-previous"],
+    }));
 
-    action_group.action_enabled_changed("previous", this.can_play_previous);
+    action_group.add_action(build_action({
+      name: "next",
+      parameter_type: null,
+      activate: () => this.next(),
+      bind_enabled: [this, "can-play-next"],
+    }));
 
-    this.connect("notify::can-play-next", () => {
-      action_group.action_enabled_changed("next", this.can_play_next);
-    });
+    action_group.add_action(build_action({
+      name: "active-chip",
+      parameter_type: GLib.VariantType.new("s"),
+      activate: (_, param) => {
+        const playlist_id = param.get_string()[0];
 
-    action_group.action_enabled_changed("next", this.can_play_next);
+        if (playlist_id) this.change_active_chip(playlist_id);
+      },
+      state: GLib.Variant.new_string(this.get_active_chip()?.playlist_id ?? ""),
+      bind_state_full: [this.chips, "selected-item", (_, chip) => {
+        return [true, GLib.Variant.new_string(chip?.playlist_id)];
+      }],
+    }));
 
     return action_group;
   }
@@ -523,145 +508,201 @@ export class Queue extends GObject.Object {
     this.notify("can-play-previous");
   }
 
-  // TODO:
-  // this.track_options_settings.set(video_id, _omit(queue, ["tracks"]));
-  /**
-   * This functions gets and caches the track
-   */
+  private async active_chip_changed_cb() {
+    if (!this.queue) return;
 
-  async change_active_chip(chip: string | null) {
-    const found_chip = this.settings?.object?.chips.find((c) =>
-      c.playlistId == chip
-    );
+    const chip = this.chips.selected_item as QueueChip;
 
-    if (chip && found_chip) {
-      const local_settings = this.settings;
-
-      await get_queue(null, found_chip.playlistId, {
-        params: found_chip.params,
-      }).then((queue) => {
-        // don't do anything if the queue has changed
-        if (local_settings != this.settings) {
-          this.active_chip = null;
-        }
-
-        this.list.splice(
-          this.position + 1,
-          this.list.n_items - this.position - 1,
-          tracks_to_meta(queue.tracks, found_chip.playlistId)
-            .map((track) => new ObjectContainer(track)),
-        );
-
-        this.active_chip = chip;
-
-        this.notify("can-play-previous");
-        this.notify("can-play-next");
+    if (chip) {
+      const queue = await get_queue(null, chip.playlist_id, {
+        params: chip.params,
       });
-    }
 
-    this.active_chip = chip;
+      this.add_tracks("remaining", queue.tracks);
+
+      this.notify("can-play-previous");
+      this.notify("can-play-next");
+    }
   }
 
-  async add_playlist(
-    playlist_id: string,
-    video_id?: string,
-    options: AddPlaylistOptions = {},
+  /**
+   * Add tracks to the queue
+   * @param position where to add the queue.
+   * - `next` tracks will be added after the currently playing track.
+   * - `end` add tracks to the end of the queue
+   * - `clear` removes all tracks and adds the following ones
+   * - `remaining` removes all the next tracks and replaces them with the givens
+   * @param tracks tracks to add
+   */
+  private add_tracks(
+    position: number | "next" | "end" | "clear" | "remaining",
+    tracks: QueueTrack[],
   ) {
-    if (options.play) {
-      this.emit("prepare-next", video_id ?? "");
+    let insert: number, n_removals = 0;
+
+    switch (position) {
+      case "end":
+        insert = this._list.n_items;
+        break;
+      case "next":
+        insert = this.position + 1;
+        break;
+      case "clear":
+        insert = 0;
+        n_removals = this.list.n_items;
+        break;
+      case "remaining":
+        insert = this.position + 1;
+        n_removals = this.list.n_items - this.position - 1;
+        break;
+      default:
+        insert = position;
+        break;
     }
 
+    this.list.splice(
+      insert,
+      n_removals,
+      tracks.map((track) => new ObjectContainer(track)),
+    );
+
+    if (this.shuffle) {
+      this._original.splice(
+        insert,
+        n_removals,
+        tracks.map((track) => new ObjectContainer(track)),
+      );
+    }
+  }
+
+  async add_playlist2(
+    playlist_id: string,
+    video_id?: string,
+    options: AddPlaylist2Options = {},
+  ) {
+    if (options.play) this.emit("play");
+
     const queue = await get_queue(video_id ?? null, playlist_id, {
-      shuffle: options.shuffle ?? false,
+      shuffle: options.shuffle,
       signal: options.signal,
-      radio: options.radio ?? false,
+      radio: options.radio,
     });
 
     if (options.play) {
       this.clear();
       this.preferred_media_type = PreferredMediaType.AUTO;
+      this.set_queue(queue);
     }
 
-    if (options.next) {
-      this.play_next(
-        tracks_to_meta(queue.tracks, playlist_id),
-        queue.current?.index,
-      );
-    } else {
-      this.add(tracks_to_meta(queue.tracks, playlist_id), queue.current?.index);
-    }
+    this.add_tracks(options.next ? "next" : "end", queue.tracks);
 
     if (options.play) {
-      this.set_settings(_omit(queue, ["tracks"]));
-
-      const position = queue.current?.index
-        ? queue.current?.index % queue.tracks.length
-        : 0;
-
-      this.change_position(position);
+      this.preferred_media_type = PreferredMediaType.AUTO;
+      this.change_position(queue.current?.index ?? 0, true);
     }
 
     return queue;
   }
 
-  async add_songs(song_ids: string[], options: AddSongOptions = {}) {
-    if (options.play) {
-      this.emit("prepare-next", song_ids[0]);
-    }
+  async add_songs2(
+    video_ids: string[],
+    options: AddSong2Options = {},
+  ): Promise<MuseQueue> {
+    if (options.play) this.emit("play");
 
-    let tracks: QueueTrack[], first_track_options: QueueSettings | undefined;
+    let queue: MuseQueue, tracks: QueueTrack[] = [];
 
-    if (song_ids.length === 1 && options.radio) {
-      // fast path to get the track options and tracklist at the same time
-      const queue = await get_track_queue(song_ids[0], { radio: true });
-
-      tracks = queue.tracks;
-      first_track_options = _omit(queue, ["tracks"]);
+    // fast path to return both the queue and tracks at the same time
+    // if there's no queue, instead of adding tracks just get a new queue
+    if (video_ids.length == 1 || !this.queue) {
+      queue = await get_queue(video_ids[0], null, { radio: options.radio });
     } else {
-      [tracks, first_track_options] = await Promise.all([
-        get_tracklist(song_ids).then((tracks) => tracks ?? []),
-        options.play ? get_track_settings(song_ids[0]) : undefined,
+      // must already have a queue to add tracks
+      if (!this.queue) return this.queue!;
+
+      [queue, tracks] = await Promise.all([
+        options.play ? get_queue(video_ids[0], null) : clone(this.queue!),
+        // don't fetch the queue track again if it's only one. it will be got
+        // from the above call
+        video_ids.length === 1 ? [] : get_queue_ids(video_ids),
       ]);
+
+      queue.tracks.push(...tracks);
     }
 
+    if (options.play && queue) this.set_queue(queue);
+
+    this.add_tracks(
+      options.play ? "clear" : options.next ? "next" : "end",
+      queue.tracks,
+    );
+
     if (options.play) {
-      this.clear();
       this.preferred_media_type = PreferredMediaType.AUTO;
+      this.change_position(0, true);
     }
 
-    if (options.next) {
-      this.play_next(tracks_to_meta(tracks));
-    } else {
-      this.add(tracks_to_meta(tracks));
-    }
-
-    if (first_track_options) {
-      this.set_settings(first_track_options);
-    }
-
-    if (options.play) {
-      this.change_position(0);
-    }
-
-    return tracks;
+    return queue;
   }
 
-  async play_playlist(...options: Parameters<Queue["add_playlist"]>) {
-    await this.add_playlist(options[0], options[1], {
-      ...options[2],
-      play: true,
+  private async add_song_action_cb(
+    video_ids: string[],
+    options?: AddSong2Options,
+  ) {
+    if (options?.radio && this.current?.object.videoId === video_ids[0]) {
+      // notify when starting radio, and the current track is playing already
+      add_toast(_("Starting Radio"));
+    }
+
+    const queue = await this.add_songs2(video_ids, {
+      ...options,
+      play: options?.play ?? options?.radio,
     });
+
+    if (!queue) return;
+
+    const normalized_title = GLib.markup_escape_text(
+      queue.tracks[0].title,
+      -1,
+    );
+
+    add_toast(
+      options?.next
+        ? ngettext(
+          // Translators: %s is a song's name
+          vprintf(_("Playing “%s” next"), [normalized_title]),
+          vprintf(_("Playing %d songs next"), [queue.tracks.length]),
+          queue.tracks.length,
+        )
+        : ngettext(
+          // Translators: %s is a song's name
+          vprintf(_("Added “%s” to queue"), [normalized_title]),
+          vprintf(_("Added %d songs to queue"), [queue.tracks.length]),
+          queue.tracks.length,
+        ),
+    );
   }
 
-  async play_songs(...options: Parameters<Queue["add_songs"]>) {
-    await this.add_songs(options[0], {
-      ...options[1],
-      play: true,
-    });
-  }
+  private async add_playlist_action_cb(
+    playlist_id: string,
+    video_id?: string,
+    options?: AddPlaylist2Options,
+  ) {
+    const queue = await this.add_playlist2(playlist_id, video_id, options);
 
-  async play_song(song_id: string, signal?: AbortSignal) {
-    await this.play_songs([song_id], { signal, radio: true });
+    if (queue.playlist) {
+      const normalized_title = GLib.markup_escape_text(
+        queue.playlist,
+        -1,
+      );
+
+      add_toast(
+        options?.next
+          ? vprintf(_("Playing “%s” next"), [normalized_title])
+          // Translators: %s is a playlist name
+          : vprintf(_("Added “%s” to queue"), [normalized_title]),
+      );
+    }
   }
 
   peek_next(): [number, QueueTrack | null] {
@@ -675,28 +716,22 @@ export class Queue extends GObject.Object {
       }
     } else {
       if (this.position >= this.list.n_items - 1) {
-        position = -1;
+        return [-1, null];
       } else {
         position = this.position + 1;
       }
     }
 
-    const item = this.list.get_item(position);
-
-    const correct_item = this.get_correct_counterpart(item) ?? item;
-
-    if (correct_item) {
-      this.list.splice(position, 1, [correct_item]);
-    }
-
-    return [position, correct_item?.object ?? null];
+    return [position, this.update_counterpart()?.object ?? null];
   }
 
   next(): QueueTrack | null {
     const [position, track] = this.peek_next();
 
-    this.update_position(position);
-    this.emit("play");
+    if (position > -1) {
+      this.change_position(position);
+      this.emit("play");
+    }
 
     return track;
   }
@@ -716,18 +751,12 @@ export class Queue extends GObject.Object {
   repeat_or_next(): QueueTrack | null {
     const [position, track] = this.peek_repeat_or_next();
 
-    this.update_position(position);
-    this.emit("play");
+    if (position > -1) {
+      this.change_position(position);
+      this.emit("play");
+    }
 
     return track;
-  }
-
-  private update_position(position: number, force = false) {
-    if (position === -1) return null;
-
-    this.change_position(position, force);
-
-    this.update_track_settings();
   }
 
   peek_previous(): [number, QueueTrack | null] {
@@ -745,89 +774,33 @@ export class Queue extends GObject.Object {
       position = this.position - 1;
     }
 
-    const item = this.list.get_item(position);
-
-    const correct_item = this.get_correct_counterpart(item) ?? item;
-
-    if (correct_item) {
-      this.list.splice(position, 1, [correct_item]);
-    }
-
-    return [position, correct_item?.object ?? null];
+    return [position, this.update_counterpart()?.object ?? null];
   }
 
   previous(): QueueTrack | null {
     const [position, track] = this.peek_previous();
 
-    this.update_position(position);
-    this.emit("play");
+    if (position > -1) {
+      this.change_position(position);
+      this.emit("play");
+    }
 
     return track;
   }
 
-  private add_to_queue_at_position(
-    tracks: QueueMeta[],
-    position: number,
-    new_position?: number,
-  ) {
-    this.list.splice(
-      position,
-      0,
-      tracks.map((song) => new ObjectContainer(song)),
-    );
-
-    if (this.shuffle) {
-      this._original.splice(
-        position,
-        0,
-        tracks.map((song) => new ObjectContainer(song)),
-      );
-    }
-
-    if (new_position != null) {
-      this.change_position(new_position);
-      this.update_track_settings();
-    } else if (this.position < 0) {
-      this.change_position(0);
-      this.update_track_settings();
-    } else {
-      this.notify("can-play-previous");
-      this.notify("can-play-next");
-    }
-  }
-
-  private play_next(
-    tracks: QueueMeta[],
-    new_position?: number,
-  ) {
-    this.add_to_queue_at_position(
-      tracks,
-      this.position + 1,
-      new_position,
-    );
-  }
-
-  add(tracks: QueueMeta[], new_position?: number) {
-    this.add_to_queue_at_position(
-      tracks,
-      this.list.n_items,
-      new_position,
-    );
-  }
-
-  private get_counterpart(track: QueueMeta) {
+  private get_counterpart(track: QueueTrack) {
     const counterpart = track.counterpart;
 
     if (!counterpart) return null;
 
     return new ObjectContainer(
-      track_to_meta({
+      {
         ...counterpart,
         counterpart: {
           ...track,
           counterpart: null,
         },
-      }),
+      },
     );
   }
 
@@ -836,54 +809,59 @@ export class Queue extends GObject.Object {
       ? PreferredMediaType.SONG
       : PreferredMediaType.VIDEO;
 
+    this.update_counterpart();
+  }
+
+  private update_counterpart() {
     const item = this.list.get_item(this.position);
 
-    const correct_item = this.get_correct_counterpart(item) ?? item;
+    const correct_item = this.get_correct_counterpart(item);
 
     if (correct_item) {
       this.list.splice(this.position, 1, [correct_item]);
-      this.update_position(this.position, true);
+      this.change_position(this.position, true);
+    }
+
+    return correct_item ?? item;
+  }
+
+  private change_active_chip(playlist_id: string) {
+    const index = list_model_to_array(this.chips)
+      .findIndex((chip) => {
+        return chip.playlist_id === playlist_id;
+      });
+
+    if (index >= 0) {
+      this.chips.select_item(index, true);
     }
   }
-}
 
-interface AddSongOptions {
-  shuffle?: boolean;
-  next?: boolean;
-  signal?: AbortSignal;
-  play?: boolean;
-  radio?: boolean;
-}
-
-interface AddPlaylistOptions {
-  shuffle?: boolean;
-  next?: boolean;
-  signal?: AbortSignal;
-  play?: boolean;
-  radio?: boolean;
-}
-
-function _omit<Object extends Record<string, any>, Key extends keyof Object>(
-  object: Object,
-  keys: Key[],
-): Omit<Object, Key> {
-  const new_object = { ...object };
-  for (const key of keys) {
-    delete new_object[key];
+  private get_active_chip() {
+    return this._chips.selected_item as QueueChip;
   }
-  return new_object;
 }
 
-export function tracks_to_meta(
-  tracks: QueueTrack[],
-  playlist: string | null = null,
-): QueueMeta[] {
-  return tracks.map((track) => ({ ...track, playlist }));
+interface AddSong2Options {
+  shuffle?: boolean;
+  next?: boolean;
+  signal?: AbortSignal;
+  play?: boolean;
+  radio?: boolean;
 }
 
-export function track_to_meta(
-  track: QueueTrack,
-  playlist: string | null = null,
-) {
-  return { ...track, playlist };
+interface AddPlaylist2Options {
+  shuffle?: boolean;
+  next?: boolean;
+  signal?: AbortSignal;
+  play?: boolean;
+  radio?: boolean;
+}
+
+function is_track_video(track: QueueTrack) {
+  return track.videoType !== "MUSIC_VIDEO_TYPE_ATV";
+}
+
+interface AddTracksOptions {
+  clear?: boolean;
+  remove_rest?: boolean;
 }

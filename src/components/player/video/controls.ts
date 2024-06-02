@@ -57,20 +57,25 @@ export class VideoControls extends Adw.Bin {
 
   vfunc_unmap(): void {
     this.listeners.clear();
-    this._mini.clear_listeners();
-    this._full.clear_listeners();
 
     super.vfunc_unmap();
   }
 
   vfunc_map(): void {
-    this.listeners.connect(this._mini, "notify::inhibit-hide", () => {
-      this.inhibit_hide = this._mini.inhibit_hide;
-    });
-
-    this.listeners.connect(this._full, "notify::inhibit-hide", () => {
-      this.inhibit_hide = this._full.inhibit_hide;
-    });
+    this.listeners.add_bindings(
+      this.bind_property(
+        "inhibit-hide",
+        this._mini,
+        "inhibit-hide",
+        GObject.BindingFlags.SYNC_CREATE | GObject.BindingFlags.BIDIRECTIONAL,
+      ),
+      this.bind_property(
+        "inhibit-hide",
+        this._full,
+        "inhibit-hide",
+        GObject.BindingFlags.SYNC_CREATE | GObject.BindingFlags.BIDIRECTIONAL,
+      ),
+    );
 
     super.vfunc_map();
   }

@@ -7,7 +7,7 @@ import type { QueueTrack } from "libmuse";
 import { PlayerScale } from "./scale.js";
 import { escape_label, pretty_subtitles } from "src/util/text.js";
 import { MuzikaPlayer } from "src/player";
-import { micro_to_string, seconds_to_string } from "src/util/time.js";
+import { micro_to_string } from "src/util/time.js";
 import { PlayerPreview } from "./preview.js";
 import { SignalListeners } from "src/util/signal-listener.js";
 import { get_player } from "src/application.js";
@@ -15,6 +15,7 @@ import { bind_play_icon, bind_repeat_button } from "src/player/helpers.js";
 import { setup_link_label } from "src/util/label.js";
 
 GObject.type_ensure(PlayerPreview.$gtype);
+GObject.type_ensure(PlayerScale.$gtype);
 
 export class FullPlayerView extends Gtk.ActionBar {
   static {
@@ -48,15 +49,10 @@ export class FullPlayerView extends Gtk.ActionBar {
 
   player: MuzikaPlayer;
 
-  scale: PlayerScale;
-
   constructor() {
     super();
 
     this.player = get_player();
-
-    this.scale = new PlayerScale();
-    this.scale.insert_after(this._scale_and_timer, this._progress_label);
 
     this._volume_button.adjustment = Gtk.Adjustment.new(
       this.player.volume,
@@ -92,29 +88,41 @@ export class FullPlayerView extends Gtk.ActionBar {
 
     this.listeners.add_bindings(
       bind_play_icon(this._play_image),
-    );
-
-    this.listeners.connect(this.player, "notify::duration", () => {
-      this._duration_label.label = micro_to_string(this.player.duration);
-    });
-
-    // buttons
-
-    this.listeners.add_bindings(
       ...bind_repeat_button(this._repeat_button),
+      this.player.bind_property(
+        "cubic-volume",
+        this._volume_button.adjustment,
+        "value",
+        GObject.BindingFlags.BIDIRECTIONAL | GObject.BindingFlags.SYNC_CREATE,
+      ),
+      // @ts-expect-error incorrect types
+      this.player.bind_property_full(
+        "duration",
+        this._duration_label,
+        "label",
+        GObject.BindingFlags.DEFAULT | GObject.BindingFlags.SYNC_CREATE,
+        (_, __) => {
+          return [true, micro_to_string(this.player.duration)];
+        },
+        null,
+      ),
+      // @ts-expect-error incorrect types
+      this.player.bind_property_full(
+        "timestamp",
+        this._progress_label,
+        "label",
+        GObject.BindingFlags.DEFAULT | GObject.BindingFlags.SYNC_CREATE,
+        (_, __) => {
+          return [
+            true,
+            micro_to_string(
+              this.player.initial_seek_to ?? this.player.timestamp,
+            ),
+          ];
+        },
+        null,
+      ),
     );
-
-    // setting up volume button
-
-    this._volume_button.adjustment.value = this.player.cubic_volume;
-
-    this.listeners.connect(this.player, "notify::cubic-volume", () => {
-      this._volume_button.adjustment.value = this.player.cubic_volume;
-    });
-
-    this.listeners.connect(this._volume_button, "value-changed", () => {
-      this.player.cubic_volume = this._volume_button.adjustment.value;
-    });
 
     this.listeners.connect(this._volume_button, "query-tooltip", (
       _widget: Gtk.VolumeButton,
@@ -127,14 +135,6 @@ export class FullPlayerView extends Gtk.ActionBar {
         `${Math.round(this._volume_button.adjustment.value * 100)}%`,
       );
       return true;
-    });
-
-    this.listeners.connect(this.player, "notify::timestamp", () => {
-      this._progress_label.label = micro_to_string(this.player.timestamp);
-    });
-
-    this.listeners.connect(this.scale, "notify::value", (_, value) => {
-      this._progress_label.label = micro_to_string(value);
     });
 
     [this._title, this._subtitle].forEach((label) => {
@@ -162,10 +162,6 @@ export class FullPlayerView extends Gtk.ActionBar {
 
     this._subtitle.set_markup(subtitle.markup);
     this._subtitle.tooltip_text = subtitle.plain;
-
-    this._duration_label.label = track.duration_seconds
-      ? seconds_to_string(track.duration_seconds)
-      : track.duration ?? "00:00";
   }
 
   private gesture_pressed_cb(gesture: Gtk.Gesture) {

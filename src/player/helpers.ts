@@ -2,90 +2,85 @@ import GObject from "gi://GObject";
 import Gtk from "gi://Gtk?version=4.0";
 
 import { get_queue, get_queue_ids } from "libmuse";
-import type { QueueTrack, QueueOptions } from "libmuse";
+import type { QueueOptions, QueueTrack } from "libmuse";
 
 import { omit } from "lodash-es";
 
 import { QueueSettings, RepeatMode } from "./queue";
 import { get_player } from "src/application";
 
-function create_cache_map<T extends any>() {
-  return new Map<string, T>();
-}
+// function create_cache_map<T extends any>() {
+//   return new Map<string, T>();
+// }
 
-const cache_maps = {
-  track_settings: create_cache_map<QueueSettings>(),
-  queue_tracks: create_cache_map<QueueTrack>(),
-  songs: create_cache_map<QueueTrack>(),
-};
+// const cache_maps = {
+//   track_settings: create_cache_map<QueueSettings>(),
+//   queue_tracks: create_cache_map<QueueTrack>(),
+//   songs: create_cache_map<QueueTrack>(),
+// };
 
-/**
- * track_settings are additional metadata about the track
- * it includes stuff like the lyrics, related info etc
- */
-export async function get_track_settings(
-  video_id: string,
-  signal?: AbortSignal,
-) {
-  if (!cache_maps.track_settings.has(video_id)) {
-    const queue = await get_queue(video_id, null, { signal });
+// /**
+//  * track_settings are additional metadata about the track
+//  * it includes stuff like the lyrics, related info etc
+//  */
+// export async function get_track_settings(
+//   video_id: string,
+//   signal?: AbortSignal,
+// ) {
+//   if (!cache_maps.track_settings.has(video_id)) {
+//     if (cache_maps.queue_tracks.has(video_id)) {
+//       return cache_maps.queue_tracks.get(video_id) as QueueSettings | undefined;
+//     }
 
-    cache_maps.track_settings.set(video_id, omit(queue, ["tracks"]));
+//     const queue = await get_queue(video_id, null, { signal, autoplay: false });
 
-    for (const track of queue.tracks) {
-      cache_maps.queue_tracks.set(
-        track.videoId,
-        track,
-      );
-    }
-  }
+//     cache_maps.track_settings.set(video_id, omit(queue, ["tracks"]));
 
-  return cache_maps.track_settings.get(video_id)!;
-}
+//     for (const track of queue.tracks) {
+//       cache_maps.queue_tracks.set(track.videoId, track);
+//     }
+//   }
 
-/**
- * a queue track is a distinct track in the queue
- */
-export async function get_tracklist(video_ids: string[]) {
-  if (video_ids.every((id) => cache_maps.queue_tracks.has(id))) {
-    return video_ids.map((id) => cache_maps.queue_tracks.get(id)!);
-  }
+//   return cache_maps.track_settings.get(video_id)!;
+// }
 
-  const tracks = await get_queue_ids(video_ids);
+// /**
+//  * a queue track is a distinct track in the queue
+//  */
+// export async function get_tracklist(video_ids: string[]) {
+//   if (video_ids.every((id) => cache_maps.queue_tracks.has(id))) {
+//     return video_ids.map((id) => cache_maps.queue_tracks.get(id)!);
+//   }
 
-  for (const track of tracks) {
-    cache_maps.queue_tracks.set(
-      track.videoId,
-      track,
-    );
-  }
+//   const tracks = await get_queue_ids(video_ids);
 
-  return tracks;
-}
+//   for (const track of tracks) {
+//     cache_maps.queue_tracks.set(track.videoId, track);
+//   }
 
-export async function get_track_queue(
-  video_id: string,
-  options: QueueOptions = {},
-) {
-  const queue = await get_queue(video_id, null, options);
+//   return tracks;
+// }
 
-  for (const track of queue.tracks) {
-    cache_maps.queue_tracks.set(
-      track.videoId,
-      track,
-    );
-  }
+// export async function get_track_queue(
+//   video_id: string,
+//   options: QueueOptions = {},
+// ) {
+//   const queue = await get_queue(video_id, null, options);
 
-  return queue;
-}
+//   for (const track of queue.tracks) {
+//     cache_maps.queue_tracks.set(track.videoId, track);
+//   }
 
-export async function get_song(videoId: string) {
-  if (!cache_maps.songs.has(videoId)) {
-    cache_maps.songs.set(videoId, await get_song(videoId));
-  }
+//   return queue;
+// }
 
-  return cache_maps.songs.get(videoId)!;
-}
+// export async function get_song(videoId: string, signal?: AbortSignal) {
+//   if (!cache_maps.songs.has(videoId)) {
+//     cache_maps.songs.set(videoId, await get_song(videoId, signal));
+//   }
+
+//   return cache_maps.songs.get(videoId)!;
+// }
 
 export function bind_repeat_button(button: Gtk.ToggleButton) {
   const queue = get_player().queue;

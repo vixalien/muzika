@@ -1,5 +1,6 @@
 import Gtk from "gi://Gtk?version=4.0";
 import GObject from "gi://GObject";
+import GLib from "gi://GLib";
 import Adw from "gi://Adw";
 
 import type { QueueTrack } from "libmuse";
@@ -10,6 +11,7 @@ import { MuzikaPlayer } from "src/player";
 import { escape_label } from "src/util/text";
 import { get_player } from "src/application";
 import { setup_link_label } from "src/util/label";
+import { list_model_to_array } from "src/util/list";
 
 export class QueueView extends Gtk.Stack {
   static {
@@ -45,13 +47,46 @@ export class QueueView extends Gtk.Stack {
 
     this.player = get_player();
 
-    this.player.queue.connect("notify::settings", () => {
-      this.update_settings();
-    });
+    // @ts-expect-error incorrect types
+    this.player.queue.list.bind_property_full(
+      "n-items",
+      this,
+      "visible-child",
+      GObject.BindingFlags.SYNC_CREATE,
+      (_, count) => {
+        return [true, count > 0 ? this._queue_box : this._no_queue];
+      },
+      null,
+    );
 
-    this.player.queue.list.connect("notify::n-items", () => {
-      this.update_visible_child();
-    });
+    this.player.queue.bind_property(
+      "playlist-name",
+      this._playlist_label,
+      "tooltip-text",
+      GObject.BindingFlags.SYNC_CREATE,
+    );
+
+    // @ts-expect-error incorrect types
+    this.player.queue.bind_property_full(
+      "playlist-name",
+      this._playlist_label,
+      "label",
+      GObject.BindingFlags.SYNC_CREATE,
+      (__, from) => {
+        const playlist_id = this.player.queue.playlist_id;
+        const playlist_name = escape_label(from ?? _("Queue"));
+
+        if (playlist_id && !playlist_id.startsWith("RDA")) {
+          return [
+            true,
+            `<a href="muzika:playlist:${playlist_id}">${playlist_name}</a>`,
+          ];
+        } else {
+          return [true, playlist_name];
+        }
+      },
+      null,
+    );
 
     this.player.queue.connect("notify::position", () => {
       if (this.player.queue.position < 0) {
@@ -60,6 +95,11 @@ export class QueueView extends Gtk.Stack {
         this._list_view.model.select_item(this.player.queue.position, true);
       }
     });
+
+    this.player.queue.chips.connect(
+      "items-changed",
+      this.update_chips.bind(this),
+    );
 
     // set up the list view
 
@@ -73,37 +113,10 @@ export class QueueView extends Gtk.Stack {
     this._list_view.remove_css_class("view");
     this._list_view.remove_css_class("background");
 
-    this._list_view.connect("activate", (_, position) => {
-      this.player.queue.change_position(position);
-      this.player.queue.emit("play");
-    });
-
-    this.update_visible_child();
-    this.update_settings();
-
     setup_link_label(this._playlist_label);
   }
 
-  update_visible_child() {
-    this.visible_child = this.player.queue.list.n_items > 0
-      ? this._queue_box
-      : this._no_queue;
-  }
-
-  update_settings() {
-    const settings = this.player.queue.settings.object;
-    const playlist_name = escape_label(settings?.playlist ?? _("Queue"));
-
-    // radio playlists can't be visited
-    if (settings?.playlistId && !settings.playlistId.startsWith("RDA")) {
-      this._playlist_label.label =
-        `<a href="muzika:playlist:${settings.playlistId}">${playlist_name}</a>`;
-    } else {
-      this._playlist_label.label = playlist_name;
-    }
-
-    this._playlist_label.tooltip_text = settings?.playlist ?? _("Queue");
-
+  update_chips() {
     this.params_map.clear();
 
     let first_param: Gtk.Widget | null = null;
@@ -112,28 +125,16 @@ export class QueueView extends Gtk.Stack {
       this._params_box.remove(first_param);
     }
 
-    if (settings?.chips && settings.chips.length > 0) {
+    const chips = list_model_to_array(this.player.queue.chips);
+
+    if (chips.length > 0) {
       this._params.show();
 
-      let first_button: Gtk.ToggleButton | null = null;
-
-      settings.chips.forEach((chip) => {
-        const button = Gtk.ToggleButton.new_with_label(chip.title);
-
-        if (!first_button) {
-          first_button = button;
-
-          if (!this.player.queue.active_chip) {
-            button.set_active(true);
-          }
-        } else {
-          button.set_group(first_button);
-        }
-
-        button.connect("toggled", (button) => {
-          if (button.active) {
-            this.player.queue.change_active_chip(chip.playlistId);
-          }
+      chips.forEach((chip) => {
+        const button = new Gtk.ToggleButton({
+          label: chip.title,
+          action_target: GLib.Variant.new_string(chip.playlist_id),
+          action_name: `queue.active-chip`,
         });
 
         this._params_box.append(button);
@@ -160,7 +161,10 @@ export class QueueView extends Gtk.Stack {
     }
   }
 
-  activate_cb() {}
+  activate_cb(_: Gtk.ListView, position: number) {
+    this.player.queue.change_position(position);
+    this.player.queue.emit("play");
+  }
 
   vfunc_map(): void {
     this._list_view.scroll_to(

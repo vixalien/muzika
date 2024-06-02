@@ -4,11 +4,13 @@ import GLib from "gi://GLib";
 
 import type { QueueTrack } from "libmuse";
 
-import { PlayerProgressBar } from "./progress.js";
 import { MuzikaPlayer } from "src/player";
 import { SignalListeners } from "src/util/signal-listener.js";
 import { get_player } from "src/application.js";
 import { bind_play_icon } from "src/player/helpers.js";
+import { PlayerProgressBar } from "./progress";
+
+GObject.type_ensure(PlayerProgressBar.$gtype);
 
 export class MiniPlayerView extends Gtk.Overlay {
   static {
@@ -29,20 +31,13 @@ export class MiniPlayerView extends Gtk.Overlay {
 
   player: MuzikaPlayer;
 
-  progress_bar: PlayerProgressBar;
-
   constructor() {
     super();
 
     this.player = get_player();
-
-    this.progress_bar = new PlayerProgressBar();
-    this.add_overlay(this.progress_bar);
   }
 
   song_changed() {
-    this.progress_bar.value = this.player.timestamp;
-
     const song = this.player.queue.current?.object;
     if (song) {
       this.show_song(song!);
@@ -64,18 +59,6 @@ export class MiniPlayerView extends Gtk.Overlay {
     this.listeners.add_bindings(
       bind_play_icon(this._play_button),
     );
-
-    this.listeners.connect(this.player, "notify::duration", () => {
-      this.progress_bar.set_duration(this.player.duration);
-    });
-
-    this.progress_bar.set_duration(this.player.duration);
-
-    this.listeners.connect(this.player, "notify::timestamp", () => {
-      this.progress_bar.update_position(this.player.timestamp);
-    });
-
-    this.progress_bar.update_position(this.player.timestamp);
   }
 
   show_song(track: QueueTrack) {

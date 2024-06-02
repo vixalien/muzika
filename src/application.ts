@@ -20,7 +20,17 @@ export class Application extends Adw.Application {
   window?: Window;
 
   static {
-    GObject.registerClass(this);
+    GObject.registerClass({
+      Properties: {
+        player: GObject.param_spec_object(
+          "player",
+          "Player",
+          "The Muzika player",
+          MuzikaPlayer.$gtype,
+          GObject.ParamFlags.READABLE,
+        ),
+      },
+    }, this);
   }
 
   private init_actions() {
@@ -57,11 +67,16 @@ export class Application extends Adw.Application {
   }
 
   argv: string[] = [];
-  player: MuzikaPlayer;
   mpris: MPRIS;
 
   set_argv(argv: string[]) {
     this.argv = argv;
+  }
+
+  private _player = new MuzikaPlayer({ app: this });
+
+  get player() {
+    return this._player;
   }
 
   constructor(argv: string[]) {
@@ -88,8 +103,6 @@ export class Application extends Adw.Application {
         return GLib.SOURCE_REMOVE;
       },
     );
-
-    this.player = new MuzikaPlayer({ app: this });
 
     this.mpris = new MPRIS(this);
   }
@@ -131,7 +144,7 @@ export class Application extends Adw.Application {
     cache.flush();
     cache.dump();
 
-    this.player.save_state();
+    this.player.save_state_settings();
     this.player.unprepare();
 
     super.vfunc_shutdown();

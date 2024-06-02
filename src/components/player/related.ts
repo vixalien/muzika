@@ -47,11 +47,14 @@ export class RelatedView extends Gtk.Stack {
   controller: AbortController | null = null;
 
   async load_related() {
-    const new_related = this.player.queue.settings.object?.related ?? null;
+    const new_related = this.player.now_playing?.object?.meta?.related ?? null;
 
     if (new_related === this.loaded_related) {
       return;
     }
+
+    this._loading.start();
+    this.set_visible_child(this._loading);
 
     if (this.controller) {
       this.controller.abort();
@@ -105,17 +108,8 @@ export class RelatedView extends Gtk.Stack {
     super.vfunc_map();
 
     this.listeners.connect(
-      this.player.queue,
-      "notify::current",
-      () => {
-        this._loading.start();
-        this.set_visible_child(this._loading);
-      },
-    );
-
-    this.listeners.connect(
-      this.player.queue,
-      "notify::settings",
+      this.player,
+      "notify::now-playing",
       this.load_related.bind(this),
     );
 

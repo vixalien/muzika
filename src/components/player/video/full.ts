@@ -42,91 +42,63 @@ export class FullVideoControls extends Adw.Bin {
 
   inhibit_hide = false;
 
-  song_changed() {
-    const player = get_player();
-
-    this._progress_label.label = micro_to_string(player.timestamp);
-
-    const track = player.queue.current?.object;
-
-    if (track) {
-      this._progress_label.label = micro_to_string(player.timestamp);
-
-      this._duration_label.label = track.duration_seconds
-        ? seconds_to_string(track.duration_seconds)
-        : track.duration ?? "00:00";
-      {}
-    }
-  }
-
-  private media_info_changed() {
-    const player = get_player();
-
-    const song = player.now_playing?.object.song;
-    const media_info = player.media_info;
-
-    this._menu_button.set_menu_model(null);
-
-    if (song && media_info) {
-      this._menu_button.set_menu_model(generate_song_menu(song, media_info));
-      const popover = this._menu_button.popover as Gtk.PopoverMenu;
-      popover.add_child(new VolumeControls(), "volume-controls");
-    }
-  }
-
   private listeners = new SignalListeners();
 
   private setup_player() {
     const player = get_player();
 
-    this.song_changed();
-    this.media_info_changed();
-
-    // update the player when the current song changes
-    this.listeners.connect(
-      player.queue,
-      "notify::current",
-      this.song_changed.bind(this),
-    );
-
-    this.listeners.connect(
-      player,
-      "notify::media-info",
-      this.media_info_changed.bind(this),
-    );
-
     this.listeners.add_bindings(
+      /// @ts-expect-error incorrect types
+      player.bind_property_full(
+        "timestamp",
+        this._progress_label,
+        "label",
+        GObject.BindingFlags.SYNC_CREATE,
+        (_, from) => {
+          return [true, micro_to_string(player.initial_seek_to ?? from)];
+        },
+        null,
+      ),
+      /// @ts-expect-error incorrect types
+      player.bind_property_full(
+        "duration",
+        this._duration_label,
+        "label",
+        GObject.BindingFlags.SYNC_CREATE,
+        (_, from) => {
+          return [true, micro_to_string(from)];
+        },
+        null,
+      ),
       bind_play_icon(this._play_button),
-    );
+      /// @ts-expect-error incorrect types
+      player.bind_property_full(
+        "media-info",
+        this._menu_button,
+        "menu-model",
+        GObject.BindingFlags.SYNC_CREATE,
+        (_, media_info) => {
+          const song = player.now_playing?.object.song;
 
-    this._duration_label.label = micro_to_string(player.duration);
-
-    this.listeners.connect(
-      player,
-      "notify::duration",
-      () => {
-        this._duration_label.label = micro_to_string(player.duration);
-      },
-    );
-
-    // buttons
-
-    // this.setup_volume_button();
-
-    this.listeners.connect(
-      player,
-      "notify::timestamp",
-      () => {
-        this._progress_label.label = micro_to_string(player.timestamp);
-      },
-    );
-
-    this.listeners.connect(
-      this._menu_button,
-      "notify::active",
-      () => {
-        this.inhibit_hide = this._menu_button.active;
-      },
+          if (media_info && song) {
+            GLib.idle_add(GLib.PRIORITY_DEFAULT_IDLE, () => {
+              const popover = this._menu_button.popover as Gtk.PopoverMenu;
+              popover.add_child(new VolumeControls(), "volume-controls");
+              return GLib.SOURCE_REMOVE;
+            });
+            return [true, generate_song_menu(song, media_info)];
+          } else {
+            return [true, null];
+          }
+        },
+        null,
+      ),
+      this._menu_button.bind_property(
+        "active",
+        this,
+        "inhibit-hide",
+        GObject.BindingFlags.SYNC_CREATE,
+      ),
     );
   }
 

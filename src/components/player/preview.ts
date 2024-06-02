@@ -60,7 +60,13 @@ export class PlayerPreview extends Gtk.Stack {
 
   setup_player() {
     const player = get_player();
-    this._picture.paintable = player.paintable!;
+
+    this.listeners.add_binding(player.bind_property(
+      "paintable",
+      this._picture,
+      "paintable",
+      GObject.BindingFlags.SYNC_CREATE,
+    ));
 
     this.listeners.connect(
       player.queue,
@@ -72,6 +78,7 @@ export class PlayerPreview extends Gtk.Stack {
   }
 
   teardown_player() {
+    this.listeners.clear();
     this._picture.paintable = null!;
   }
 
@@ -118,7 +125,6 @@ export class PlayerPreview extends Gtk.Stack {
 
   vfunc_unmap(): void {
     this.teardown_player();
-    this.listeners.clear();
     super.vfunc_unmap();
   }
 }

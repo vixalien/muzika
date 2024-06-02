@@ -86,25 +86,25 @@ export class PlayerNowPlayingDetails extends Adw.NavigationPage {
     // blocked by:
 
     // @ts-expect-error
-    player.queue.bind_property_full(
-      "settings",
+    player.bind_property_full(
+      "now-playing",
       this._lyrics_page,
       "visible",
       GObject.BindingFlags.DEFAULT | GObject.BindingFlags.SYNC_CREATE,
       (_, __) => {
-        return [true, player.queue.settings.object?.lyrics != null];
+        return [true, player.now_playing?.object?.meta.lyrics != null];
       },
       null,
     );
 
     // @ts-expect-error
-    player.queue.bind_property_full(
-      "settings",
+    player.bind_property_full(
+      "now-playing",
       this._related_page,
       "visible",
       GObject.BindingFlags.DEFAULT | GObject.BindingFlags.SYNC_CREATE,
       (_, __) => {
-        return [true, player.queue.settings.object?.related != null];
+        return [true, player.now_playing?.object?.meta.related != null];
       },
       null,
     );

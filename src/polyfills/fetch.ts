@@ -22,9 +22,9 @@ Gio._promisify(
 );
 
 Gio._promisify(
-  Gio.OutputStream.prototype,
-  "splice_async",
-  "splice_finish",
+  Gio.InputStream.prototype,
+  "close_async",
+  "close_finish",
 );
 
 export interface FetchOptions {
@@ -182,7 +182,7 @@ if (!SOUP_CACHE_DIR.query_exists(null)) {
   SOUP_CACHE_DIR.make_directory_with_parents(null);
 }
 
-console.info("caching soup requests at", SOUP_CACHE_DIR.get_path());
+console.log("caching soup requests at", SOUP_CACHE_DIR.get_path());
 
 const SESSION = new Soup.Session({
   // change from the default of 10 and 2 respectively
@@ -201,6 +201,7 @@ cache.set_max_size(16e+6);
 cache.load();
 
 SESSION.add_feature(cache);
+SESSION.add_feature(new Soup.ContentSniffer());
 
 export async function fetch(url: string | URL, options: FetchOptions = {}) {
   if (typeof url !== "string" && ("href" in (url as URL))) {
@@ -208,27 +209,16 @@ export async function fetch(url: string | URL, options: FetchOptions = {}) {
   }
 
   const method = options.method?.toUpperCase() || "GET";
-
   const uri = GLib.Uri.parse(url as string, GLib.UriFlags.NONE);
+  const message = new Soup.Message({ method, uri });
 
-  const message = new Soup.Message({
-    method,
-    uri,
+  // copy request headers from `Headers` to `SoupMessage`
+  const request_headers = new Headers(options.headers || {});
+  request_headers.forEach((value, key) => {
+    message.request_headers.append(key, value);
   });
-  const headers = options.headers || {};
 
-  const request_headers = message.get_request_headers();
-
-  if (options.headers instanceof Headers) {
-    options.headers.forEach((value, key) => {
-      request_headers.append(key, value);
-    });
-  } else {
-    for (const header in headers) {
-      request_headers.append(header, headers[header]);
-    }
-  }
-
+  // set message request body
   if (typeof options.body === "string") {
     message.set_request_body_from_bytes(
       null,
@@ -240,72 +230,92 @@ export async function fetch(url: string | URL, options: FetchOptions = {}) {
     );
   }
 
-  const cancellable = Gio.Cancellable.new();
-
+  // setup a `Gio.Cancellable` that tracks the signal listener
+  let cancellable: Gio.Cancellable | null = null;
   if (options.signal) {
-    options.signal.addEventListener("abort", () => {
-      cancellable.cancel();
-    });
+    cancellable = Gio.Cancellable.new();
+    options.signal.addEventListener("abort", cancel_request);
+  } else {
+    cancellable = null;
   }
 
-  return new Promise<GResponse>(async (resolve, reject) => {
-    const inputStream = await SESSION.send_async(
-      message,
-      GLib.PRIORITY_DEFAULT_IDLE,
-      cancellable,
-    ).catch((e) => {
-      if (
-        (e instanceof Gio.IOErrorEnum) &&
-        (e.code === Gio.IOErrorEnum.CANCELLED)
-      ) {
-        if (options.signal && options.signal.reason instanceof DOMException) {
-          reject(options.signal.reason);
-        } else {
-          reject(new DOMException("The request was aborted", "AbortError"));
-        }
+  function cancel_request() {
+    cancellable?.cancel();
+    clear_cancellable();
+  }
+
+  function clear_cancellable() {
+    options.signal?.removeEventListener("abort", cancel_request);
+  }
+
+  const inputStream = await SESSION.send_async(
+    message,
+    GLib.PRIORITY_DEFAULT_IDLE,
+    cancellable,
+  ).catch((e) => {
+    if (
+      (e instanceof Gio.IOErrorEnum) &&
+      (e.code === Gio.IOErrorEnum.CANCELLED)
+    ) {
+      if (options.signal && options.signal.reason instanceof DOMException) {
+        throw (options.signal.reason);
       } else {
-        reject(e);
+        throw (new DOMException("The request was aborted", "AbortError"));
       }
-    });
-
-    if (!inputStream) {
-      reject(new Error("Couldn't connect to the internet. Are you offline?"));
-      return;
+    } else {
+      throw e;
     }
-
-    // @ts-expect-error allow iterating the inputStream
-    inputStream[Symbol.asyncIterator] = async function* () {
-      const outputStream = Gio.MemoryOutputStream.new_resizable();
-      await outputStream.splice_async(
-        inputStream,
-        Gio.OutputStreamSpliceFlags.CLOSE_SOURCE |
-          Gio.OutputStreamSpliceFlags.CLOSE_TARGET,
-        GLib.PRIORITY_DEFAULT_IDLE,
-        null,
-      );
-
-      yield outputStream.steal_as_bytes().toArray();
-    };
-
-    const response_headers = message.get_response_headers();
-    const headers = new Headers();
-
-    response_headers.foreach((name, value) => {
-      headers.append(name, value);
-    });
-
-    // @ts-expect-error ReadableStream types
-    const stream = new ReadableStream.from(inputStream);
-
-    const response = new GResponse(stream, {
-      status: message.status_code,
-      statusText: message.reason_phrase,
-      headers,
-      url: url as string,
-    });
-
-    resolve(response);
   });
+
+  if (!inputStream) {
+    throw new Error("Couldn't connect to the internet. Are you offline?");
+  }
+
+  // convert response headers from `Soup.MessageHeaders` to `Headers`
+  const response_headers = new Headers();
+  message.response_headers.foreach((name, value) => {
+    response_headers.append(name, value);
+  });
+
+  const stream = new ReadableStream({
+    async pull(controller) {
+      async function close() {
+        await inputStream?.close_async(
+          GLib.PRIORITY_DEFAULT_IDLE,
+          cancellable,
+        );
+        controller.close();
+        clear_cancellable();
+      }
+
+      if (inputStream.is_closed()) return close();
+
+      const bytes = await inputStream.read_bytes_async(
+        8 * 1024,
+        GLib.PRIORITY_DEFAULT_IDLE,
+        cancellable,
+      );
+      const array = bytes.toArray();
+
+      if (bytes.get_size() > 0) {
+        controller.enqueue(array);
+      } else {
+        return close();
+      }
+    },
+    cancel() {
+      inputStream.close();
+    },
+  });
+
+  const response = new GResponse(stream, {
+    status: message.status_code,
+    statusText: message.reason_phrase,
+    headers: response_headers,
+    url: url as string,
+  });
+
+  return response;
 }
 
 // @ts-ignore
