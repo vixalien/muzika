@@ -40,21 +40,16 @@ import type { LikeStatus } from "libmuse";
 import { Navigator } from "./navigation.js";
 import { get_player } from "./application.js";
 import { Settings } from "./util/settings.js";
-import {
-  PlayerNowPlayingDetails,
-} from "./components/player/now-playing/details.js";
 import { LoginDialog } from "./pages/login.js";
 import { AddActionEntries } from "./util/action.js";
 import { PlayerView } from "./components/player/view.js";
 import { VideoPlayerView } from "./components/player/video/view.js";
 import { SaveToPlaylistDialog } from "./components/playlist/save-to-playlist.js";
-import { PlayerNowPlayingView } from "./components/player/now-playing/view.js";
+import { MuzikaNPView } from "./components/player/now-playing/view.js";
 import { WindowSidebar } from "./sidebar.js";
 import { set_background_status } from "./util/portals.js";
 
-// make sure to first register PlayerSidebar
-GObject.type_ensure(PlayerNowPlayingDetails.$gtype);
-GObject.type_ensure(PlayerNowPlayingView.$gtype);
+GObject.type_ensure(MuzikaNPView.$gtype);
 GObject.type_ensure(PlayerView.$gtype);
 GObject.type_ensure(WindowSidebar.$gtype);
 GObject.type_ensure(VideoPlayerView.$gtype);
@@ -70,12 +65,9 @@ export class Window extends Adw.ApplicationWindow {
         InternalChildren: [
           "navigation_view",
           "toolbar_view",
-          "now_playing_split_view",
           "split_view",
           "main_stack",
           "video_player_view",
-          "now_playing_details",
-          "now_playing_view",
           "sidebar",
         ],
         Children: [
@@ -97,12 +89,9 @@ export class Window extends Adw.ApplicationWindow {
 
   private _navigation_view!: Adw.NavigationView;
   private _toolbar_view!: Adw.ToolbarView;
-  private _now_playing_split_view!: Adw.NavigationSplitView;
   private _split_view!: Adw.NavigationSplitView;
   private _main_stack!: Gtk.Stack;
   private _video_player_view!: VideoPlayerView;
-  private _now_playing_details!: PlayerNowPlayingDetails;
-  private _now_playing_view!: PlayerNowPlayingView;
   private _sidebar!: WindowSidebar;
 
   navigator: Navigator;
@@ -163,10 +152,6 @@ export class Window extends Adw.ApplicationWindow {
     );
 
     this.add_actions();
-
-    this._now_playing_view.connect("bottom-bar-clicked", () => {
-      this._now_playing_split_view.show_content = true;
-    });
 
     this.connect("notify::visible", () => {
       if (!this.visible) {

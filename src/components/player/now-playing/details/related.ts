@@ -4,21 +4,21 @@ import Adw from "gi://Adw";
 
 import { get_song_related } from "libmuse";
 
-import { Carousel } from "../carousel";
 import { MuzikaPlayer } from "src/player";
 import { get_player } from "src/application";
 import { SignalListeners } from "src/util/signal-listener";
+import { Carousel } from "src/components/carousel";
 
 export interface RelatedViewOptions {
   player: MuzikaPlayer;
 }
 
-export class RelatedView extends Gtk.Stack {
+export class MuzikaNPRelated extends Gtk.Stack {
   static {
     GObject.registerClass({
-      GTypeName: "RelatedView",
+      GTypeName: "MuzikaNPRelated",
       Template:
-        "resource:///com/vixalien/muzika/ui/components/player/related.ui",
+        "resource:///com/vixalien/muzika/ui/components/player/now-playing/details/related.ui",
       InternalChildren: [
         "no_related",
         "loading",
@@ -28,10 +28,10 @@ export class RelatedView extends Gtk.Stack {
     }, this);
   }
 
-  _no_related!: Adw.StatusPage;
-  _loading!: Gtk.Spinner;
-  _related_window!: Gtk.ScrolledWindow;
-  _box!: Gtk.Box;
+  private _no_related!: Adw.StatusPage;
+  private _loading!: Gtk.Spinner;
+  private _related_window!: Gtk.ScrolledWindow;
+  private _box!: Gtk.Box;
 
   player: MuzikaPlayer;
 
