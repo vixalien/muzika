@@ -36,12 +36,12 @@ export class TimedLyricLineRow extends Gtk.ListBoxRow {
   }
 }
 
-export class LyricsView extends Gtk.Stack {
+export class MuzikaNPLyrics extends Gtk.Stack {
   static {
     GObject.registerClass({
-      GTypeName: "LyricsView",
+      GTypeName: "MuzikaNPLyrics",
       Template:
-        "resource:///com/vixalien/muzika/ui/components/player/lyrics.ui",
+        "resource:///com/vixalien/muzika/ui/components/player/now-playing/details/lyrics.ui",
       InternalChildren: [
         "no_lyrics",
         "loading",
@@ -178,7 +178,6 @@ export class LyricsView extends Gtk.Stack {
 
     if (this.pending_animation) {
       this.pending_animation.pause();
-
       this.pending_animation = null;
     }
 
@@ -203,7 +202,7 @@ export class LyricsView extends Gtk.Stack {
         this._timed_window,
         this._timed_window.vadjustment.value,
         Math.min(Math.max(scroll_to, 0), this._timed_window.vadjustment.upper),
-        LyricsView.ANIMATION_DURATION,
+        MuzikaNPLyrics.ANIMATION_DURATION,
         property_target,
       );
 
@@ -255,7 +254,7 @@ export class LyricsView extends Gtk.Stack {
 
     const line_id = this.lyrics.timed_lyrics.findIndex((line) => {
       const timestamp_milli = (player.timestamp / 1000) +
-        LyricsView.ANIMATION_DURATION / 2;
+      MuzikaNPLyrics.ANIMATION_DURATION / 2;
       return timestamp_milli >= line.start && timestamp_milli <= line.end;
     });
 
