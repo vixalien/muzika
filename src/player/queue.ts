@@ -666,6 +666,8 @@ export class Queue extends GObject.Object {
       -1,
     );
 
+    if (options?.play) return;
+
     add_toast(
       options?.next
         ? ngettext(
@@ -695,6 +697,8 @@ export class Queue extends GObject.Object {
         queue.playlist,
         -1,
       );
+
+      if (options?.play) return;
 
       add_toast(
         options?.next
