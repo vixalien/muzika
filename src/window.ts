@@ -543,8 +543,6 @@ export class Window extends Adw.ApplicationWindow {
     status: LikeStatus,
     album = false,
   ) {
-    console.log("rating playlist", playlistId, status, album);
-
     rate_playlist(playlistId, status)
       .then(() => {
         let title;
