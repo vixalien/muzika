@@ -42,7 +42,6 @@
     "modules/libportal.json",
     "modules/yarn-deps.json",
     "modules/gst-plugin-gtk4.json",
-    "modules/libadwaita.json",
     {
       "name": "muzika",
       "buildsystem": "meson",
