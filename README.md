@@ -38,7 +38,7 @@ automatically when new code is pushed to main thanks to
 Install it with:
 
 ```bash
-flatpak install com.vixalien.muzika.flatpak
+flatpak install --user com.vixalien.muzika.flatpak
 ```
 
 ### From source
