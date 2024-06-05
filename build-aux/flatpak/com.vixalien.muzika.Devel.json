@@ -11,9 +11,6 @@
     "nightly"
   ],
   "build-options": {
-    "env": {
-      "CARGO_HOME": "/run/build/cargo-c/cargo"
-    },
     "append-path": "/usr/lib/sdk/node18/bin:/usr/lib/sdk/rust-stable/bin:/app/bin"
   },
   "command": "com.vixalien.muzika.Devel",
