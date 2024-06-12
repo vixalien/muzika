@@ -63,7 +63,7 @@ export class MuzikaNPView extends Adw.Bin {
     this._headerbar.show_end_title_buttons =
       this._headerbar
         .show_start_title_buttons =
-        show ? true : false;
+        show;
   }
 
   private listeners = new SignalListeners();
