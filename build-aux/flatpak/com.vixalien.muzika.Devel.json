@@ -11,9 +11,6 @@
     "nightly"
   ],
   "build-options": {
-    "env": {
-      "CARGO_HOME": "/run/build/cargo-c/cargo"
-    },
     "append-path": "/usr/lib/sdk/node18/bin:/usr/lib/sdk/rust-stable/bin:/app/bin"
   },
   "command": "com.vixalien.muzika.Devel",
@@ -42,10 +39,10 @@
     "/yarn-mirror"
   ],
   "modules": [
-    "modules/gst-plugin-gtk4.json",
     "modules/blueprint-compiler.json",
     "modules/libportal.json",
     "modules/yarn-deps.json",
+    "modules/gst-plugin-gtk4.json",
     {
       "name": "muzika",
       "buildsystem": "meson",

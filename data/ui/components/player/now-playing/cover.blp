@@ -1,0 +1,245 @@
+using Gtk 4.0;
+using Adw 1;
+
+template $MuzikaNPCover : Adw.Bin {
+  Adw.BreakpointBin {
+    width-request: 360;
+    height-request: 200;
+
+    Adw.Breakpoint {
+      condition ("max-height: 420sp")
+
+      setters {
+        song_box.orientation: horizontal;
+        title.xalign: 0;
+        title.justify: left;
+        subtitle.xalign: 0;
+        subtitle.justify: left;
+      }
+    }
+
+    Adw.Clamp {
+      width-request: 200;
+      maximum-size: 1060;
+      tightening-threshold: 800;
+
+      Box content_box {
+        orientation: vertical;
+        spacing: 12;
+        valign: center;
+        margin-top: 12;
+        margin-bottom: 12;
+        margin-start: 24;
+        margin-end: 24;
+
+        Box song_box {
+          orientation: vertical;
+          spacing: 12;
+
+          Overlay {
+            halign: center;
+
+            Adw.Bin {
+              $FixedRatioThumbnail picture {
+                aspect-ratio: 1.00;
+                overflow: hidden;
+
+                styles ["card", "black-bg"]
+              }
+            }
+
+            [overlay]
+            Box overlay_box {
+              halign: end;
+              valign: end;
+              margin-end: 12;
+              margin-bottom: 12;
+              spacing: 6;
+
+              Button expand_button {
+                icon-name: "go-up-symbolic";
+                action-name: "win.visible-view";
+                action-target: "'video'";
+                visible: false;
+
+                styles ["osd", "circular"]
+              }
+
+              Button fullscreen_button {
+                icon-name: "view-fullscreen-symbolic";
+                action-name: "win.visible-view";
+                action-target: "'fullscreen-video'";
+                visible: false;
+
+                styles ["osd", "circular"]
+              }
+            }
+            
+            EventControllerMotion {
+              enter => $show_fullscreen_button();
+              leave => $hide_fullscreen_button();
+            }
+
+            // allow clicking on the view to show the fullscreen button
+            GestureClick {
+              touch-only: true;
+              pressed => $toggle_fullscreen_button();
+            }
+          }
+        }
+
+        Adw.Clamp {
+
+        Box {
+        orientation: vertical;
+        spacing: 12;
+
+        Box {
+          orientation: horizontal;
+
+          ToggleButton like_button {
+            icon-name: "thumbs-up-symbolic";
+            valign: center;
+            toggled => $like_cb();
+
+            styles [
+              "circular",
+              "large",
+              "flat",
+            ]
+          }
+
+          Box {
+            orientation: vertical;
+            spacing: 3;
+            hexpand: true;
+
+            Label title {
+              justify: center;
+              wrap: true;
+              activate-link => $activate_link_cb();
+
+              styles ["song-title", "flat-links"]
+            }
+
+            Label subtitle {
+              justify: center;
+              wrap: true;
+              activate-link => $activate_link_cb();
+
+              styles ["song-artist", "flat-links", "dim-label"]
+            }
+          }
+
+          ToggleButton dislike_button {
+            icon-name: "thumbs-down-symbolic";
+            valign: center;
+            toggled => $dislike_cb();
+
+            styles [
+              "circular",
+              "large",
+              "flat",
+            ]
+          }
+        }
+
+        Box controls {
+          orientation: vertical;
+
+          $PlayerScale {}
+
+          Box labels {
+            margin-start: 12;
+            margin-end: 12;
+
+            Label timestamp {
+              styles ["caption", "numeric"]
+            }
+
+            Label duration {
+              hexpand: true;
+              halign: end;
+
+              styles ["caption", "numeric"]
+            }
+          }
+        }
+
+        Box {
+          spacing: 12;
+          halign: center;
+
+          ToggleButton shuffle_button {
+            icon-name: "media-playlist-shuffle-symbolic";
+            tooltip-text: _("Toggle Shuffle");
+            action-name: "queue.toggle-shuffle";
+            valign: center;
+
+            styles [
+              "circular",
+              "large",
+              "flat",
+            ]
+          }
+
+          Button prev_button {
+            icon-name: "media-skip-backward-symbolic";
+            tooltip-text: _("Previous");
+            action-name: "queue.previous";
+            valign: center;
+
+            styles [
+              "circular",
+              "large",
+              "flat",
+            ]
+          }
+
+          Button play_button {
+            tooltip-text: _("Toggle Play/Pause");
+            action-name: "player.play-pause";
+
+            styles [
+              "pill",
+              "suggested-action",
+            ]
+
+            Image play_image {
+              pixel-size: 26;
+            }
+          }
+
+          Button next_button {
+            icon-name: "media-skip-forward-symbolic";
+            tooltip-text: _("Next");
+            action-name: "queue.next";
+            valign: center;
+
+            styles [
+              "circular",
+              "large",
+              "flat",
+            ]
+          }
+
+          ToggleButton repeat_button {
+            icon-name: "media-playlist-consecutive-symbolic";
+            tooltip-text: _("Toggle Repeat State");
+            valign: center;
+            action-name: "queue.toggle-repeat";
+
+            styles [
+              "circular",
+              "large",
+              "flat",
+            ]
+          }
+        }
+        }
+
+        }
+      }
+    }
+  }
+}

@@ -8,10 +8,10 @@ template $VideoPlayerView : Adw.Bin {
       height-request: 200;
       
       Adw.Breakpoint {
-        condition ("max-width: 700sp")
+        condition ("min-width: 700sp")
 
         setters {
-          controls.show-mini: true;
+          controls.show-mini: false;
         }
       }
 

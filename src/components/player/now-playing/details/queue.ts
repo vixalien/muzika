@@ -6,18 +6,18 @@ import Adw from "gi://Adw";
 import type { QueueTrack } from "libmuse";
 
 import { ObjectContainer } from "src/util/objectcontainer";
-import { QueueItem } from "./queueitem";
+import { MuzikaNPQueueItem } from "./queueitem";
 import { MuzikaPlayer } from "src/player";
 import { escape_label } from "src/util/text";
 import { get_player } from "src/application";
 import { setup_link_label } from "src/util/label";
 import { list_model_to_array } from "src/util/list";
 
-export class QueueView extends Gtk.Stack {
+export class MuzikaNPQueue extends Gtk.Stack {
   static {
     GObject.registerClass({
-      GTypeName: "QueueView",
-      Template: "resource:///com/vixalien/muzika/ui/components/player/queue.ui",
+      GTypeName: "MuzikaNPQueue",
+      Template: "resource:///com/vixalien/muzika/ui/components/player/now-playing/details/queue.ui",
       InternalChildren: [
         "no_queue",
         "list_view",
@@ -148,7 +148,7 @@ export class QueueView extends Gtk.Stack {
     const container = list_item.get_item() as ObjectContainer<QueueTrack>;
     const track = container.object;
 
-    const card = new QueueItem();
+    const card = new MuzikaNPQueueItem();
     card.set_track(track);
 
     list_item.set_child(card);
