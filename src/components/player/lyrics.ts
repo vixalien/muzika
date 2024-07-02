@@ -139,8 +139,7 @@ export class LyricsView extends Gtk.Stack {
 
     if (!lyrics.lyrics) {
       this.set_visible_child(this._no_lyrics);
-    }
-    else if (
+    } else if (
       lyrics.timed && Gtk.Settings.get_default()!.gtk_enable_animations === true
     ) {
       lyrics.timed_lyrics.forEach((line) => {
@@ -185,14 +184,9 @@ export class LyricsView extends Gtk.Stack {
     const [success, rect] = row.compute_bounds(this._timed_listbox);
 
     if (success) {
-      const scroll_to = rect.get_y() - 180;
-
-      // don't scroll if the scroll value is near the target (in one direction)
-      if (
-        Math.abs(scroll_to - this._timed_window.vadjustment.value) < 40
-      ) {
-        return;
-      }
+      // this is where we want the row to be placed
+      const third_of_height = this._timed_window.get_height() * 1 / 3;
+      const scroll_to = rect.get_y() - (third_of_height - row.get_height());
 
       const property_target = Adw.PropertyAnimationTarget.new(
         this._timed_window.vadjustment,
@@ -254,8 +248,7 @@ export class LyricsView extends Gtk.Stack {
     }
 
     const line_id = this.lyrics.timed_lyrics.findIndex((line) => {
-      const timestamp_milli = (player.timestamp / 1000) +
-        LyricsView.ANIMATION_DURATION / 2;
+      const timestamp_milli = player.timestamp / 1000;
       return timestamp_milli >= line.start && timestamp_milli <= line.end;
     });
 

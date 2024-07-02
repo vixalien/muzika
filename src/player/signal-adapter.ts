@@ -53,7 +53,7 @@ export class MuzikaPlaySignalAdapter extends GObject.Object {
     this._play = play;
 
     const bus = this._play.get_message_bus()!;
-    bus.add_signal_watch();
+    bus.add_signal_watch_full(GLib.PRIORITY_DEFAULT_IDLE);
 
     bus.connect("message", this.on_message.bind(this));
   }
