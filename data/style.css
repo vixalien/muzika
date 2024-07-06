@@ -306,13 +306,8 @@ button.large {
 }
 
 .song-title {
-  font-size: 15pt;
+  font-size: 14pt;
   font-weight: 800;
-}
-
-.song-title,
-.song-artists {
-  min-height: 1.5em;
 }
 
 .pill.outline {
