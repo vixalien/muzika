@@ -1,6 +1,5 @@
 import Gtk from "gi://Gtk?version=4.0";
 import GObject from "gi://GObject";
-import GLib from "gi://GLib";
 
 import type { QueueTrack } from "libmuse";
 
@@ -9,6 +8,7 @@ import { SignalListeners } from "src/util/signal-listener.js";
 import { get_player } from "src/application.js";
 import { bind_play_icon } from "src/player/helpers.js";
 import { PlayerProgressBar } from "./progress";
+import { pretty_subtitles } from "src/util/text";
 
 GObject.type_ensure(PlayerProgressBar.$gtype);
 
@@ -35,29 +35,57 @@ export class MiniPlayerView extends Gtk.Overlay {
     super();
 
     this.player = get_player();
-  }
 
-  song_changed() {
-    const song = this.player.queue.current?.object;
-    if (song) {
-      this.show_song(song!);
-    }
+    // we can't put this in `setup_player` because that method is only ever
+    // called on map, and invisible widgets can't be mapped
+    // @ts-expect-error incorrect types
+    this.player.queue.bind_property_full(
+      "current",
+      this,
+      "visible",
+      GObject.BindingFlags.SYNC_CREATE,
+      (_, from) => {
+        return [true, !!from];
+      },
+      null,
+    );
   }
 
   private listeners = new SignalListeners();
 
   setup_player() {
-    this.song_changed();
-
-    // update the player when the current song changes
-    this.listeners.connect(
-      this.player.queue,
-      "notify::current",
-      this.song_changed.bind(this),
-    );
+    const player = get_player();
 
     this.listeners.add_bindings(
       bind_play_icon(this._play_button),
+      // @ts-expect-error incorrect types
+      player.queue.bind_property_full(
+        "current",
+        this._title,
+        "label",
+        GObject.BindingFlags.SYNC_CREATE,
+        () => {
+          const track = player.queue.current?.object;
+          if (!track) return [false, null];
+
+          return [true, track.title];
+        },
+        null,
+      ),
+      // @ts-expect-error incorrect types
+      player.queue.bind_property_full(
+        "current",
+        this._subtitle,
+        "label",
+        GObject.BindingFlags.SYNC_CREATE,
+        () => {
+          const track = player.queue.current?.object;
+          if (!track) return [false, null];
+
+          return [true, pretty_subtitles(track.artists).plain];
+        },
+        null,
+      ),
     );
   }
 
@@ -75,14 +103,5 @@ export class MiniPlayerView extends Gtk.Overlay {
   vfunc_unmap(): void {
     this.listeners.clear();
     super.vfunc_unmap();
-  }
-
-  private gesture_pressed_cb(gesture: Gtk.Gesture) {
-    gesture.set_state(Gtk.EventSequenceState.CLAIMED);
-
-    this.activate_action(
-      "win.visible-view",
-      GLib.Variant.new_string("now-playing"),
-    );
   }
 }

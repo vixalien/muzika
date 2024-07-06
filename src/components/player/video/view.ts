@@ -43,13 +43,35 @@ export class VideoPlayerView extends Adw.Bin {
       GObject.BindingFlags.SYNC_CREATE,
     );
 
-    // player
+    // @ts-expect-error incorrect types
+    player.bind_property_full(
+      "now-playing",
+      this._window_title,
+      "title",
+      GObject.BindingFlags.SYNC_CREATE,
+      () => {
+        const track = player.now_playing?.object.song;
 
-    player.connect("notify::now-playing", () => {
-      this.song_changed();
-    });
+        if (!track) return [false, null];
+        return [true, track.videoDetails.title];
+      },
+      null,
+    );
 
-    this.song_changed();
+    // @ts-expect-error incorrect types
+    player.bind_property_full(
+      "now-playing",
+      this._window_title,
+      "subtitle",
+      GObject.BindingFlags.SYNC_CREATE,
+      () => {
+        const track = player.now_playing?.object.song;
+
+        if (!track) return [false, null];
+        return [true, track.videoDetails.author];
+      },
+      null,
+    );
 
     // hover
     const hover = new Gtk.EventControllerMotion();
@@ -89,36 +111,25 @@ export class VideoPlayerView extends Adw.Bin {
     });
   }
 
-  private song_changed() {
-    const player = get_player();
-
-    const track = player.now_playing?.object.song;
-
-    if (track) {
-      this._window_title.title = track.videoDetails.title;
-      this._window_title.subtitle = track.videoDetails.author;
-    }
-  }
-
-  rooted = false;
-
   vfunc_root(): void {
-    if (this.rooted) {
-      super.vfunc_root();
-      return;
-    }
-
-    const window = this.get_root() as Gtk.Window;
-
-    window.connect("notify::fullscreened", () => {
-      this._fullscreen.set_icon_name(
-        window.fullscreened
-          ? "view-restore-symbolic"
-          : "view-fullscreen-symbolic",
-      );
-    });
-
     super.vfunc_root();
+
+    const window = this.root as Gtk.Window;
+
+    // @ts-expect-error incorrect types
+    window.bind_property_full(
+      "fullscreened",
+      this._fullscreen,
+      "icon-name",
+      GObject.BindingFlags.SYNC_CREATE,
+      (_, from) => {
+        return [
+          true,
+          from ? "view-restore-symbolic" : "view-fullscreen-symbolic",
+        ];
+      },
+      null,
+    );
   }
 
   private timeout_id: number | null = null;

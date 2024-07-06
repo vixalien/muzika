@@ -89,34 +89,33 @@ export class MuzikaNPLyrics extends Gtk.Stack {
     this._loading.start();
     this.set_visible_child(this._loading);
 
-    if (this.controller) {
-      this.controller.abort();
-    }
-
+    this.controller?.abort();
     this.controller = new AbortController();
 
-    if (new_lyrics) {
-      this.set_visible_child(this._loading);
-      this._loading.start();
-
-      await get_lyrics(new_lyrics, {
-        signal: this.controller.signal,
-      }).then((lyrics) => {
-        this.loaded_lyrics = new_lyrics;
-        this.show_lyrics(lyrics);
-      }).catch((err) => {
-        if (err.name === "AbortError") {
-          return;
-        } else {
-          throw err;
-        }
-      }).finally(() => {
-        this._loading.stop();
-      });
-    } else {
+    if (!new_lyrics) {
       this.loaded_lyrics = null;
       this.set_visible_child(this._no_lyrics);
+      return;
     }
+
+    this.set_visible_child(this._loading);
+    this._loading.start();
+
+    const lyrics = await get_lyrics(new_lyrics, {
+      signal: this.controller.signal,
+    })
+      .catch((err) => {
+        if (err.name !== "AbortError") throw err;
+        return null;
+      })
+      .finally(() => {
+        this._loading.stop();
+      });
+
+    if (!lyrics) return;
+
+    this.loaded_lyrics = new_lyrics;
+    this.show_lyrics(lyrics);
   }
 
   clear_views() {

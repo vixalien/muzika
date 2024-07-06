@@ -56,50 +56,45 @@ export class MuzikaNPRelated extends Gtk.Stack {
     this._loading.start();
     this.set_visible_child(this._loading);
 
-    if (this.controller) {
-      this.controller.abort();
-    }
-
+    this.controller?.abort();
     this.controller = new AbortController();
 
-    if (new_related) {
-      this.set_visible_child(this._loading);
-      this._loading.start();
-
-      await get_song_related(new_related, {
-        signal: this.controller.signal,
-      }).then((result) => {
-        let child: Gtk.Widget | null = null;
-
-        while (child = this._box.get_first_child()) {
-          this._box.remove(child);
-        }
-
-        for (const content of result) {
-          const carousel = new Carousel();
-          carousel.show_content(content);
-          this._box.append(carousel);
-
-          const spacer = new Gtk.Separator();
-          spacer.add_css_class("spacer");
-          this._box.append(spacer);
-        }
-
-        this.loaded_related = new_related;
-        this.set_visible_child(this._related_window);
-      }).catch((err) => {
-        if (err.name === "AbortError") {
-          return;
-        } else {
-          throw err;
-        }
-      }).finally(() => {
-        this._loading.stop();
-      });
-    } else {
+    if (!new_related) {
       this.loaded_related = null;
       this.set_visible_child(this._no_related);
+      return;
     }
+
+    this.set_visible_child(this._loading);
+    this._loading.start();
+
+    const result = await get_song_related(new_related, {
+      signal: this.controller.signal,
+    }).catch((err) => {
+      if (err.name !== "AbortError") throw err;
+    }).finally(() => {
+      this._loading.stop();
+    });
+
+    if (!result) return;
+
+    let child: Gtk.Widget | null = null;
+    while (child = this._box.get_first_child()) {
+      this._box.remove(child);
+    }
+
+    for (const content of result) {
+      const carousel = new Carousel();
+      carousel.show_content(content);
+      this._box.append(carousel);
+
+      const spacer = new Gtk.Separator();
+      spacer.add_css_class("spacer");
+      this._box.append(spacer);
+    }
+
+    this.loaded_related = new_related;
+    this.set_visible_child(this._related_window);
   }
 
   private listeners = new SignalListeners();
