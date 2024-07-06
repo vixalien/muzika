@@ -62,7 +62,8 @@ template $VideoPlayerView : Adw.Bin {
 
     Shortcut {
       trigger: "Escape";
-      action: "action(win.toggle-show-video)";
+      action: "action(win.visible-view)";
+      arguments: "'main'";
     }
 
     Shortcut {

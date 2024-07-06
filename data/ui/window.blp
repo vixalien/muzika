@@ -5,30 +5,26 @@ template $MuzikaWindow : Adw.ApplicationWindow {
   default-width: 1000;
   default-height: 800;
   width-request: 360;
-  height-request: 400;
+  height-request: 294;
 
   Adw.Breakpoint {
     condition ("max-width: 600sp")
 
     setters {
       split_view.collapsed: true;
-      now_playing_view.show-mini: true;
     }
-    
-    apply => $on_breakpoint_apply();
-    unapply => $on_breakpoint_unapply();
   }
 
-  Adw.ToolbarView toolbar_view {
-    reveal-bottom-bars: false;
-    bottom-bar-style: raised;
-    content: Adw.ToastOverlay toast_overlay {
-      Stack main_stack {
-        transition-type: slide_up_down;
-        
-        StackPage {
-          name: "main";
-          child: Adw.NavigationSplitView split_view {
+  // this should toast overlay should update it's margin-bottom
+  // based on the now_playing_view's bottom bar height
+  Stack main_stack {
+    transition-type: slide_up_down;
+
+    StackPage {
+      name: "main";
+      child: $MuzikaNPView {
+        Adw.ToastOverlay toast_overlay {
+          Adw.NavigationSplitView split_view {
             min-sidebar-width: 250;
             max-sidebar-width: 350;
             show-content: true;
@@ -43,22 +39,14 @@ template $MuzikaWindow : Adw.ApplicationWindow {
             }
 
             ;
-          };
+          }
         }
+      };
+    }
 
-        StackPage {
-          name: "now-playing";
-          child: $MuzikaNPView now_playing_view {};
-        }
-
-        StackPage {
-          name: "video";
-          child: $VideoPlayerView video_player_view {};
-        }
-      }
-    };
-
-    [bottom]
-    $PlayerView {}
+    StackPage {
+      name: "video";
+      child: $VideoPlayerView video_player_view {};
+    }
   }
 }

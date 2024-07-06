@@ -1,5 +1,6 @@
 using Gtk 4.0;
 using Adw 1;
+using Gio 2.0;
 
 template $MuzikaNPView : Adw.Bin {
   ShortcutController {
@@ -7,127 +8,171 @@ template $MuzikaNPView : Adw.Bin {
 
     Shortcut {
       trigger: "Escape";
-      action: "action(win.show-main-view)";
+      action: "action(win.visible-view)";
+      arguments: "'main'";
     }
   }
 
-  Adw.MultiLayoutView multi_layout_view {
-    Adw.Layout {
-      name: "full";
-      content: Box {
-        Adw.ToolbarView cover {
-          hexpand: true;
+  child: Adw.BreakpointBin {
+    width-request: 360;
+    height-request: 294;
 
-          [top]
-          Adw.LayoutSlot {
-            id: "header";
-          }
+    Adw.Breakpoint {
+      condition ("max-width: 800sp")
 
-          Adw.LayoutSlot {
-            id: "cover";
-          }
-        }
+      setters {
+        multi_layout_view.layout-name: "mini";
+      }
+    }
 
-        Adw.ToolbarView details {
-          halign: end;
+    Adw.MultiLayoutView multi_layout_view {
+      Adw.Layout {
+        name: "full";
+        content: Adw.ToolbarView {
+          bottom-bar-style: raised;
 
-          styles ["sidebar-pane"]
+          Adw.OverlaySplitView {
+            show-sidebar: bind details_tracker.active;
+            sidebar-position: end;
+            max-sidebar-width: 350;
+            min-sidebar-width: 250;
 
-          [top]
-          Adw.HeaderBar other_headerbar {
-            title-widget: Adw.ViewSwitcher {
-              stack: stack;
-              policy: wide;
+            sidebar: Adw.ToolbarView {
+              [top]
+              Adw.HeaderBar {
+                title-widget: Label {
+                  label: bind ((stack.pages as <Adw.ViewStackPages>).selected-page.title);
+                };
+              }
+
+              Adw.LayoutSlot {
+                id: "viewstack";
+              }
+            };
+            content: Adw.LayoutSlot {
+              id: "child";
             };
           }
 
-          Adw.LayoutSlot {
-            id: "viewstack";
+          [bottom]
+          $FullPlayerView {
+            details-stack: viewstack;
+            show-details: bind details_tracker.active bidirectional;
           }
-        }
-      };
-    }
+        };
+      }
 
-    Adw.Layout {
-      name: "mini";
-      content: Adw.ToolbarView {
-        [top]
-        Adw.LayoutSlot {
-          id: "header";
+      Adw.Layout {
+        name: "mini";
+        content: Adw.BottomSheet {
+          show-drag-handle: false;
+          full-width: true;
+          open: bind now_playing_tracker.active;
+
+          content: Adw.LayoutSlot {
+            id: "child";
+          };
+          bottom-bar: $MiniPlayerView {};
+          sheet: $MuzikaMaxHeight {
+            Adw.ToolbarView {
+              [top]
+              Adw.LayoutSlot {
+                id: "header";
+              }
+
+              Stack stack {
+                transition-type: crossfade;
+
+                StackPage {
+                  name: "cover";
+                  child: $MuzikaNPCover {};
+                }
+
+                StackPage {
+                  name: "details";
+                  child: Adw.LayoutSlot {
+                    id: "viewstack";
+                  };
+                }
+              }
+
+              [bottom]
+              $MuzikaNPDetailsSwitcher {
+                margin-bottom: 3;
+                margin-top: 3;
+                details-stack: viewstack;
+                show-details: bind details_tracker.active bidirectional;
+              }
+            }
+          };
+        };
+      }
+
+      [viewstack]
+      Adw.ViewStack viewstack {
+        vhomogeneous: false;
+
+        Adw.ViewStackPage {
+          name: "queue";
+          icon-name: "playlist2-symbolic";
+          title: _("Queue");
+          child: $MuzikaNPQueue {};
         }
 
-        Adw.LayoutSlot {
-          id: "cover";
+        Adw.ViewStackPage lyrics_page {
+          name: "lyrics";
+          icon-name: "subtitles-symbolic";
+          title: _("Lyrics");
+          child: $MuzikaNPLyrics {};
         }
 
-        [bottom]
-        Adw.LayoutSlot {
-          id: "switcher";
+        Adw.ViewStackPage related_page {
+          name: "related";
+          icon-name: "navigate-symbolic";
+          title: _("Related");
+          child: $MuzikaNPRelated {};
         }
-      };
-    }
+      }
 
-    [header]
-    Adw.HeaderBar headerbar {
-      [start]
-      Button {
-        icon-name: "go-down-symbolic";
+      [header]
+      Adw.HeaderBar headerbar {
+        title-widget: Box {
+          styles ["linked"]
+
+          ToggleButton music_counterpart {
+            label: _("Song");
+
+            clicked => $switch_counterpart();
+          }
+
+          ToggleButton video_counterpart {
+            label: _("Video");
+            group: music_counterpart;
+
+            clicked => $switch_counterpart();
+          }
+        };
+      }
+
+      [child]
+      Label {
+        label: "Content";
+      }
+      
+      [details]
+      // this is a very back hack
+      Gtk.ToggleButton details_tracker {
+        visible: false;
+        action-name: "win.now-playing-details";
+        action-target: "true";
+      }
+
+      [tracker]
+      // same as above
+      Gtk.ToggleButton now_playing_tracker {
         action-name: "win.visible-view";
-        action-target: "'main'";
-      }
-
-      title-widget: Box {
-        styles ["linked"]
-
-        ToggleButton music_counterpart {
-          label: _("Song");
-
-          clicked => $switch_counterpart();
-        }
-
-        ToggleButton video_counterpart {
-          label: _("Video");
-          group: music_counterpart;
-
-          clicked => $switch_counterpart();
-        }
-      };
-    }
-
-    [cover]
-    $MuzikaNPCover {}
-
-    [viewstack]
-    Adw.ViewStack stack {
-      vhomogeneous: false;
-
-      Adw.ViewStackPage {
-        name: "queue";
-        icon-name: "playlist2-symbolic";
-        title: _("Queue");
-        child: $MuzikaNPQueue {};
-      }
-
-      Adw.ViewStackPage lyrics_page {
-        name: "lyrics";
-        icon-name: "subtitles-symbolic";
-        title: _("Lyrics");
-        child: $MuzikaNPLyrics {};
-      }
-
-      Adw.ViewStackPage related_page {
-        name: "related";
-        icon-name: "navigate-symbolic";
-        title: _("Related");
-        child: $MuzikaNPRelated {};
+        action-target: "'now-playing'";
       }
     }
-
-    [switcher]
-    $MuzikaNPDetailsSwitcher {
-      stack: stack;
-      margin-bottom: 3;
-      margin-top: 3;
-    }
-  }
+  };
 }

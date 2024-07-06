@@ -64,7 +64,6 @@ export class Window extends Adw.ApplicationWindow {
         Template: "resource:///com/vixalien/muzika/ui/window.ui",
         InternalChildren: [
           "navigation_view",
-          "toolbar_view",
           "split_view",
           "main_stack",
           "video_player_view",
@@ -88,10 +87,8 @@ export class Window extends Adw.ApplicationWindow {
   }
 
   private _navigation_view!: Adw.NavigationView;
-  private _toolbar_view!: Adw.ToolbarView;
   private _split_view!: Adw.NavigationSplitView;
   private _main_stack!: Gtk.Stack;
-  private _video_player_view!: VideoPlayerView;
   private _sidebar!: WindowSidebar;
 
   navigator: Navigator;
@@ -139,17 +136,9 @@ export class Window extends Adw.ApplicationWindow {
 
     const player = get_player();
 
-    player.queue.connect(
-      "notify::current",
-      this.update_show_player_controls.bind(this),
-    );
-
     this.insert_action_group("navigator", this.navigator.get_action_group());
     this.insert_action_group("player", player.get_action_group());
-    this.insert_action_group(
-      "queue",
-      player.queue.get_action_group(),
-    );
+    this.insert_action_group("queue", player.queue.get_action_group());
 
     this.add_actions();
 
@@ -292,6 +281,15 @@ export class Window extends Adw.ApplicationWindow {
         },
       },
       {
+        name: "now-playing-details",
+        state: "false",
+        parameter_type: "b",
+        activate: (action, param) => {
+          if (!param) return;
+          action.set_state(param);
+        },
+      },
+      {
         name: "edit-library",
         parameter_type: "(ss)",
         activate: (_, parameter) => {
@@ -418,6 +416,11 @@ export class Window extends Adw.ApplicationWindow {
       return true;
     }
 
+    // now-playing shows the main view
+    if (view === "now-playing") {
+      view = "main";
+    }
+
     // `down` pops down the view to show either the video or now_playing views
     // depending on what was used last
     if (view === "down") {
@@ -432,30 +435,11 @@ export class Window extends Adw.ApplicationWindow {
       this.unfullscreen();
     }
 
-    this.update_show_player_controls();
-
     return true;
   }
 
   private get_view_name() {
     return this._main_stack.visible_child_name;
-  }
-
-  private update_show_player_controls() {
-    let show_bottom_bars = true;
-
-    if (this.get_view_name() !== "main") {
-      // hide the player bar when the view is not the main view
-      show_bottom_bars = false;
-    } else if (this.get_view_name() === "now-playing" && this.large_viewport) {
-      // hide the bottom bar when showing the now playing screen on mobile
-      show_bottom_bars = false;
-    } else if (get_player().queue.current?.object == null) {
-      // also hide the player bar when there is no current track playing
-      show_bottom_bars = false;
-    }
-
-    this._toolbar_view.reveal_bottom_bars = show_bottom_bars;
   }
 
   private toggle_show_video() {
@@ -472,18 +456,6 @@ export class Window extends Adw.ApplicationWindow {
     } else {
       this.fullscreen();
     }
-  }
-
-  private large_viewport = false;
-
-  private on_breakpoint_apply() {
-    this.large_viewport = true;
-    this.update_show_player_controls();
-  }
-
-  private on_breakpoint_unapply() {
-    this.large_viewport = false;
-    this.update_show_player_controls();
   }
 
   private rate_song(

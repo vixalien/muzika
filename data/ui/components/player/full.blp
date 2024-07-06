@@ -164,10 +164,8 @@ template $FullPlayerView : ActionBar {
       tooltip-text: _("Adjust Volume");
     }
 
-    ToggleButton {
-      icon-name: "go-up-symbolic";
-      action-name: "win.visible-view";
-      action-target: "'now-playing'";
+    $MuzikaNPDetailsSwitcher switcher {
+      show-buttons: true;
     }
   }
 }

@@ -5,13 +5,15 @@ import Adw from "gi://Adw";
 import { MuzikaNPCover } from "./cover";
 import { get_player } from "src/application";
 import { SignalListeners } from "src/util/signal-listener";
-import { MuzikaNPDetailsSwitcher } from "./switchers";
+import { MuzikaNPDetailsSwitcher } from "./switcher";
 import { MuzikaNPQueue } from "./details/queue";
 import { MuzikaNPRelated } from "./details/related";
 import { MuzikaNPLyrics } from "./details/lyrics";
+import { MuzikaMaxHeight } from "src/components/maxheight";
 
 GObject.type_ensure(MuzikaNPCover.$gtype);
 GObject.type_ensure(MuzikaNPDetailsSwitcher.$gtype);
+GObject.type_ensure(MuzikaMaxHeight.$gtype);
 
 GObject.type_ensure(MuzikaNPQueue.$gtype);
 GObject.type_ensure(MuzikaNPLyrics.$gtype);
@@ -29,7 +31,9 @@ export class MuzikaNPView extends Adw.Bin {
         "video_counterpart",
         "music_counterpart",
         "lyrics_page",
-        "related_page"
+        "related_page",
+        "details_tracker",
+        "stack",
       ],
       Properties: {
         "show-mini": GObject.ParamSpec.boolean(
@@ -40,6 +44,7 @@ export class MuzikaNPView extends Adw.Bin {
           false,
         ),
       },
+      Implements: [Gtk.Buildable],
     }, this);
   }
 
@@ -49,9 +54,23 @@ export class MuzikaNPView extends Adw.Bin {
   private _headerbar!: Adw.HeaderBar;
   private _lyrics_page!: MuzikaNPLyrics;
   private _related_page!: MuzikaNPRelated;
+  private _details_tracker!: Adw.Bin;
+  private _stack!: Gtk.Stack;
 
   constructor(params?: Partial<Adw.Bin.ConstructorProperties>) {
     super(params);
+
+    // @ts-expect-error incorrect types
+    this._details_tracker.bind_property_full(
+      "active",
+      this._stack,
+      "visible-child-name",
+      GObject.BindingFlags.SYNC_CREATE,
+      (_, from) => {
+        return [true, from ? "details" : "cover"];
+      },
+      null,
+    );
   }
 
   get show_mini(): boolean {
@@ -144,5 +163,17 @@ export class MuzikaNPView extends Adw.Bin {
   vfunc_unmap(): void {
     this.listeners.clear();
     super.vfunc_unmap();
+  }
+
+  vfunc_add_child(
+    builder: Gtk.Builder,
+    child: GObject.Object,
+    type?: string | null | undefined,
+  ): void {
+    if (child instanceof Gtk.Widget) {
+      return this._multi_layout_view.set_child("child", child);
+    }
+
+    // super.vfunc_add_child(builder, child, type);
   }
 }
