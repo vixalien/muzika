@@ -7,14 +7,10 @@ template $MuzikaNPCover : Adw.Bin {
     height-request: 200;
 
     Adw.Breakpoint {
-      condition ("max-height: 420sp")
+      condition ("max-height: 380sp")
 
       setters {
         song_box.orientation: horizontal;
-        title.xalign: 0;
-        title.justify: left;
-        subtitle.xalign: 0;
-        subtitle.justify: left;
       }
     }
 
@@ -22,6 +18,8 @@ template $MuzikaNPCover : Adw.Bin {
       width-request: 200;
       maximum-size: 1060;
       tightening-threshold: 800;
+
+      Adw.Clamp {
 
       Box content_box {
         orientation: vertical;
@@ -36,16 +34,14 @@ template $MuzikaNPCover : Adw.Bin {
           orientation: vertical;
           spacing: 12;
 
-          Overlay {
+          Overlay cover_art {
             halign: center;
 
-            Adw.Bin {
-              $FixedRatioThumbnail picture {
-                aspect-ratio: 1.00;
-                overflow: hidden;
+            $FixedRatioThumbnail picture {
+              aspect-ratio: 1.00;
+              overflow: hidden;
 
-                styles ["card", "black-bg"]
-              }
+              styles ["card", "black-bg"]
             }
 
             [overlay]
@@ -86,65 +82,62 @@ template $MuzikaNPCover : Adw.Bin {
               pressed => $toggle_fullscreen_button();
             }
           }
-        }
 
-        Adw.Clamp {
+          Box track_meta {
+            orientation: horizontal;
+            spacing: 6;
 
-        Box {
-        orientation: vertical;
-        spacing: 12;
+            Box {
+              orientation: vertical;
+              spacing: 3;
+              hexpand: true;
 
-        Box {
-          orientation: horizontal;
+              Label title {
+                use-markup: true;
+                xalign: 0;
+                wrap: true;
+                activate-link => $activate_link_cb();
 
-          ToggleButton like_button {
-            icon-name: "thumbs-up-symbolic";
-            valign: center;
-            toggled => $like_cb();
+                styles ["song-title", "flat-links"]
+              }
 
-            styles [
-              "circular",
-              "large",
-              "flat",
-            ]
-          }
+              Label subtitle {
+                use-markup: true;
+                xalign: 0;
+                wrap: true;
+                activate-link => $activate_link_cb();
 
-          Box {
-            orientation: vertical;
-            spacing: 3;
-            hexpand: true;
-
-            Label title {
-              justify: center;
-              wrap: true;
-              activate-link => $activate_link_cb();
-
-              styles ["song-title", "flat-links"]
+                styles ["song-artist", "flat-links", "dim-label"]
+              }
             }
 
-            Label subtitle {
-              justify: center;
-              wrap: true;
-              activate-link => $activate_link_cb();
+            ToggleButton like_button {
+              icon-name: "thumbs-up-symbolic";
+              valign: center;
+              toggled => $like_cb();
 
-              styles ["song-artist", "flat-links", "dim-label"]
+              styles [
+                "circular",
+                "large",
+                "flat",
+              ]
             }
-          }
 
-          ToggleButton dislike_button {
-            icon-name: "thumbs-down-symbolic";
-            valign: center;
-            toggled => $dislike_cb();
+            ToggleButton dislike_button {
+              icon-name: "thumbs-down-symbolic";
+              valign: center;
+              toggled => $dislike_cb();
 
-            styles [
-              "circular",
-              "large",
-              "flat",
-            ]
+              styles [
+                "circular",
+                "large",
+                "flat",
+              ]
+            }
           }
         }
 
-        Box controls {
+        Box scale {
           orientation: vertical;
 
           $PlayerScale {}
@@ -166,7 +159,7 @@ template $MuzikaNPCover : Adw.Bin {
           }
         }
 
-        Box {
+        Box player_controls {
           spacing: 12;
           halign: center;
 
@@ -236,9 +229,8 @@ template $MuzikaNPCover : Adw.Bin {
             ]
           }
         }
-        }
+      }
 
-        }
       }
     }
   }

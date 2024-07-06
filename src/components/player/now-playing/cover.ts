@@ -4,16 +4,20 @@ import GObject from "gi://GObject";
 import GLib from "gi://GLib";
 import Adw from "gi://Adw";
 
-import type { LikeStatus, QueueTrack } from "libmuse";
+import type { LikeStatus } from "libmuse";
 
 import { get_player } from "src/application";
 import { MuzikaPlayer } from "src/player";
-import { escape_label, pretty_subtitles } from "src/util/text";
 import { SignalListeners } from "src/util/signal-listener";
 import { load_thumbnails } from "src/components/webimage";
 import { micro_to_string } from "src/util/time";
 import { FixedRatioThumbnail } from "src/components/fixed-ratio-thumbnail";
-import { bind_play_icon, bind_repeat_button } from "src/player/helpers";
+import {
+  bind_play_icon,
+  bind_repeat_button,
+  bind_track_artists,
+  bind_track_title,
+} from "src/player/helpers";
 import { get_button_props } from "src/util/menu/like";
 
 export class MuzikaNPCover extends Adw.Bin {
@@ -36,29 +40,10 @@ export class MuzikaNPCover extends Adw.Bin {
         "like_button",
         "dislike_button",
       ],
-      Properties: {
-        switcher_stack: GObject.param_spec_object(
-          "switcher-stack",
-          "Switcher Stack",
-          "The Stack associated with the switcher",
-          Adw.ViewStack.$gtype,
-          GObject.ParamFlags.READWRITE,
-        ),
-        switcher_visible: GObject.param_spec_boolean(
-          "switcher-visible",
-          "Switcher Visible",
-          "Whether to show the switcher stack",
-          false,
-          GObject.ParamFlags.READWRITE,
-        ),
-      },
-      Signals: {
-        "bottom-bar-clicked": {},
-      },
     }, this);
   }
 
-  player: MuzikaPlayer;
+  private player: MuzikaPlayer;
 
   private _title!: Gtk.Label;
   private _subtitle!: Gtk.Label;
@@ -103,6 +88,8 @@ export class MuzikaNPCover extends Adw.Bin {
     );
 
     this.listeners.add_bindings(
+      ...bind_track_title(this._title),
+      ...bind_track_artists(this._subtitle),
       // @ts-expect-error incorrect types
       this.player.bind_property_full(
         "duration",
@@ -136,14 +123,10 @@ export class MuzikaNPCover extends Adw.Bin {
   }
 
   song_changed() {
-    // this.scale.value = this.player.timestamp;
-
-    // this._progress_label.label = micro_to_string(this.player.timestamp);
-
     const song = this.player.queue.current?.object;
 
     if (song) {
-      this.show_song(song!);
+      this.show_song();
       this.update_thumbnail();
     }
   }
@@ -175,38 +158,12 @@ export class MuzikaNPCover extends Adw.Bin {
     this._pending_animation.play();
   }
 
-  show_song(track: QueueTrack) {
+  show_song() {
     // thumbnail
 
     this._overlay_box.visible = this.player.queue.current_is_video;
-
     this.animate_aspect_ratio();
-
-    // labels
-
-    if (track.album) {
-      this._title.set_markup(
-        `<a href="muzika:album:${track.album.id}?track=${track.videoId}">${
-          escape_label(track.title)
-        }</a>`,
-      );
-      this._title.tooltip_text = track.title;
-    } else {
-      this._title.use_markup = false;
-      this._title.label = track.title;
-      this._title.tooltip_text = track.title;
-    }
-
-    const subtitle = pretty_subtitles(track.artists);
-
-    this._subtitle.set_markup(subtitle.markup);
-    this._subtitle.tooltip_text = subtitle.plain;
-
     this.update_like_buttons();
-
-    // this._duration_label.label = track.duration_seconds
-    //   ? seconds_to_string(track.duration_seconds)
-    //   : track.duration ?? "00:00";
   }
 
   /**
