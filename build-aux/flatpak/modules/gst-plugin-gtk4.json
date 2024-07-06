@@ -11,7 +11,7 @@
     "gst-plugin-gtk4-sources.json"
   ],
   "build-commands": [
-    "cargo cinstall --offline --release --features=wayland,x11glx,x11egl --library-type=cdylib --prefix=/app"
+    "cargo cinstall --offline --release --features=wayland,x11glx,x11egl --library-type=cdylib --prefix=/app --libdir=/app/lib"
   ],
   "build-options": {
     "env": {

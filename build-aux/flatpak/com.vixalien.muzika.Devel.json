@@ -26,8 +26,7 @@
     "--socket=fallback-x11",
     "--env=GJS_DISABLE_JIT=1",
     "--own-name=org.mpris.MediaPlayer2.Muzika",
-    "--talk-name=org.freedesktop.secrets",
-    "--env=GST_PLUGIN_PATH=/app/lib64/gstreamer-1.0"
+    "--talk-name=org.freedesktop.secrets"
   ],
   "cleanup": [
     "/include",
