@@ -177,21 +177,9 @@ export class Window extends Adw.ApplicationWindow {
         },
       },
       {
-        name: "show-main-view",
-        activate: (_) => {
-          this.show_view("main");
-        },
-      },
-      {
-        name: "toggle-show-video",
-        activate: (_) => {
-          this.toggle_show_video();
-        },
-      },
-      {
         name: "fullscreen",
         activate: (_) => {
-          this.fullscreen_video();
+          this.toggle_fullscreen_video();
         },
       },
       {
@@ -412,7 +400,7 @@ export class Window extends Adw.ApplicationWindow {
     if (!this.allowed_views.includes(view)) return false;
 
     if (view === "fullscreen-video") {
-      this.fullscreen_video();
+      this.toggle_fullscreen_video();
       return true;
     }
 
@@ -446,7 +434,7 @@ export class Window extends Adw.ApplicationWindow {
     this.show_view(this.get_view_name() === "video" ? "down" : "video");
   }
 
-  private fullscreen_video() {
+  private toggle_fullscreen_video() {
     if (!get_player().queue.current_is_video) return;
 
     this.show_view("video");
