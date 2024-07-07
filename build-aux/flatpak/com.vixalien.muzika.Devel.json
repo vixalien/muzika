@@ -4,17 +4,14 @@
   "runtime-version": "master",
   "sdk": "org.gnome.Sdk",
   "sdk-extensions": [
-    "org.freedesktop.Sdk.Extension.node18",
+    "org.freedesktop.Sdk.Extension.node20",
     "org.freedesktop.Sdk.Extension.rust-stable"
   ],
   "tags": [
     "nightly"
   ],
   "build-options": {
-    "env": {
-      "CARGO_HOME": "/run/build/cargo-c/cargo"
-    },
-    "append-path": "/usr/lib/sdk/node18/bin:/usr/lib/sdk/rust-stable/bin:/app/bin"
+    "append-path": "/usr/lib/sdk/node20/bin:/usr/lib/sdk/rust-stable/bin:/app/bin"
   },
   "command": "com.vixalien.muzika.Devel",
   "finish-args": [

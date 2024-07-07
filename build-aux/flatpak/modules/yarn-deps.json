@@ -2,7 +2,7 @@
   "name": "yarn-deps",
   "buildsystem": "simple",
   "build-commands": [
-    "/usr/lib/sdk/node18/enable.sh",
+    "/usr/lib/sdk/node20/enable.sh",
     "mkdir -p /app",
     "ls $FLATPAK_BUILDER_BUILDDIR",
     "cp -r $FLATPAK_BUILDER_BUILDDIR/flatpak-node/yarn-mirror/ /app",
