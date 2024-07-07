@@ -26,7 +26,6 @@
     <file preprocess="xml-stripblanks">ui/components/player/now-playing/details/queueitem.ui</file>
     <file preprocess="xml-stripblanks">ui/components/player/now-playing/details/related.ui</file>
     <file preprocess="xml-stripblanks">ui/components/player/now-playing/cover.ui</file>
-    <file preprocess="xml-stripblanks">ui/components/player/now-playing/view.ui</file>
     <file preprocess="xml-stripblanks">ui/components/player/video/controls.ui</file>
     <file preprocess="xml-stripblanks">ui/components/player/video/view.ui</file>
     <file preprocess="xml-stripblanks">ui/components/player/video/volume-controls.ui</file>
@@ -42,6 +41,9 @@
     <file preprocess="xml-stripblanks">ui/components/search/section.ui</file>
     <file preprocess="xml-stripblanks">ui/components/search/topresult.ui</file>
     <file preprocess="xml-stripblanks">ui/components/search/topresultsection.ui</file>
+    <!-- layout -->
+    <file preprocess="xml-stripblanks">ui/layout/shell.ui</file>
+    <file preprocess="xml-stripblanks">ui/layout/sidebar.ui</file>
     <!-- pages -->
     <file preprocess="xml-stripblanks">ui/pages/album.ui</file>
     <file preprocess="xml-stripblanks">ui/pages/artist-albums.ui</file>
@@ -61,7 +63,6 @@
     <file preprocess="xml-stripblanks">ui/pages/preferences.ui</file>
     <file preprocess="xml-stripblanks">ui/pages/search.ui</file>
     <!-- window -->
-    <file preprocess="xml-stripblanks">ui/sidebar.ui</file>
     <file preprocess="xml-stripblanks">ui/window.ui</file>
     <!-- help overlay -->
     <file preprocess="xml-stripblanks" alias="gtk/help-overlay.ui">ui/gtk/help-overlay.ui</file>

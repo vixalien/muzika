@@ -3,18 +3,19 @@ import Gtk from "gi://Gtk?version=4.0";
 import Adw from "gi://Adw";
 import Gio from "gi://Gio";
 
-import { get_navigator } from "./navigation.js";
 import { get_current_user, get_option } from "libmuse";
-import { NavbarView } from "./components/navbar/index.js";
 
-NavbarView;
+import { get_navigator } from "../navigation";
+import { NavbarView } from "../components/navbar/index";
+
+GObject.type_ensure(NavbarView.$gtype);
 
 export class WindowSidebar extends Adw.NavigationPage {
   static {
     GObject.registerClass(
       {
         GTypeName: "WindowSidebar",
-        Template: "resource:///com/vixalien/muzika/ui/sidebar.ui",
+        Template: "resource:///com/vixalien/muzika/ui/layout/sidebar.ui",
         InternalChildren: [
           "account",
           "login",

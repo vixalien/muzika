@@ -2,14 +2,15 @@ import GObject from "gi://GObject";
 import Gtk from "gi://Gtk?version=4.0";
 import Adw from "gi://Adw";
 
-import { MuzikaNPCover } from "./cover";
 import { get_player } from "src/application";
-import { SignalListeners } from "src/util/signal-listener";
-import { MuzikaNPDetailsSwitcher } from "./switcher";
-import { MuzikaNPQueue } from "./details/queue";
-import { MuzikaNPRelated } from "./details/related";
-import { MuzikaNPLyrics } from "./details/lyrics";
 import { MuzikaMaxHeight } from "src/components/maxheight";
+import { SignalListeners } from "src/util/signal-listener";
+
+import { MuzikaNPCover } from "src/components/player/now-playing/cover";
+import { MuzikaNPDetailsSwitcher } from "src/components/player/now-playing/switcher";
+import { MuzikaNPQueue } from "src/components/player/now-playing/details/queue";
+import { MuzikaNPRelated } from "src/components/player/now-playing/details/related";
+import { MuzikaNPLyrics } from "src/components/player/now-playing/details/lyrics";
 
 GObject.type_ensure(MuzikaNPCover.$gtype);
 GObject.type_ensure(MuzikaNPDetailsSwitcher.$gtype);
@@ -19,12 +20,12 @@ GObject.type_ensure(MuzikaNPQueue.$gtype);
 GObject.type_ensure(MuzikaNPLyrics.$gtype);
 GObject.type_ensure(MuzikaNPRelated.$gtype);
 
-export class MuzikaNPView extends Adw.Bin {
+export class MuzikaShell extends Adw.Bin {
   static {
     GObject.registerClass({
-      GTypeName: "MuzikaNPView",
+      GTypeName: "MuzikaShell",
       Template:
-        "resource:///com/vixalien/muzika/ui/components/player/now-playing/view.ui",
+        "resource:///com/vixalien/muzika/ui/layout/shell.ui",
       InternalChildren: [
         "multi_layout_view",
         "headerbar",

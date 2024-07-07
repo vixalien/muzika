@@ -45,11 +45,11 @@ import { AddActionEntries } from "./util/action.js";
 import { PlayerView } from "./components/player/view.js";
 import { VideoPlayerView } from "./components/player/video/view.js";
 import { SaveToPlaylistDialog } from "./components/playlist/save-to-playlist.js";
-import { MuzikaNPView } from "./components/player/now-playing/view.js";
-import { WindowSidebar } from "./sidebar.js";
+import { MuzikaShell } from "./layout/shell.js";
+import { WindowSidebar } from "./layout/sidebar.js";
 import { set_background_status } from "./util/portals.js";
 
-GObject.type_ensure(MuzikaNPView.$gtype);
+GObject.type_ensure(MuzikaShell.$gtype);
 GObject.type_ensure(PlayerView.$gtype);
 GObject.type_ensure(WindowSidebar.$gtype);
 GObject.type_ensure(VideoPlayerView.$gtype);
@@ -295,7 +295,7 @@ export class Window extends Adw.ApplicationWindow {
 
     get_option("auth").addEventListener("token-changed", () => {
       this.update_auth_actions();
-      this._sidebar.token_changed();
+      // this._sidebar.token_changed();
     });
 
     this.update_auth_actions();
