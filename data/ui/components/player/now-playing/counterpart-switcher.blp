@@ -1,0 +1,19 @@
+using Gtk 4.0;
+using Adw 1;
+
+template $MuzikaNPCounterpartSwitcher : Box {
+  styles ["linked"]
+
+  ToggleButton music_counterpart {
+    label: _("Song");
+
+    clicked => $switch_counterpart_cb();
+  }
+
+  ToggleButton video_counterpart {
+    label: _("Video");
+    group: music_counterpart;
+
+    clicked => $switch_counterpart_cb();
+  }
+}

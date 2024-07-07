@@ -136,6 +136,7 @@ export class MuzikaNPDetailsSwitcher extends Gtk.Box {
   }
 
   private init_switchers() {
+    if (!this._details_stack) return;
     this.recreate_switchers();
 
     this.pages_listener.clear();

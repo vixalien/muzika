@@ -40,7 +40,7 @@ template $MuzikaShell : Adw.Bin {
               [top]
               Adw.HeaderBar {
                 title-widget: Label {
-                  label: bind ((stack.pages as <Adw.ViewStackPages>).selected-page.title);
+                  label: bind ((viewstack.pages as <Adw.ViewStackPages>).selected-page.title);
                 };
               }
 
@@ -66,43 +66,18 @@ template $MuzikaShell : Adw.Bin {
         content: Adw.BottomSheet {
           show-drag-handle: false;
           full-width: true;
-          open: bind now_playing_tracker.active;
+          open: bind now_playing_tracker.active bidirectional;
 
           content: Adw.LayoutSlot {
             id: "child";
           };
           bottom-bar: $MiniPlayerView {};
-          sheet: $MuzikaMaxHeight {
-            Adw.ToolbarView {
-              [top]
-              Adw.LayoutSlot {
-                id: "header";
-              }
-
-              Stack stack {
-                transition-type: crossfade;
-
-                StackPage {
-                  name: "cover";
-                  child: $MuzikaNPCover {};
-                }
-
-                StackPage {
-                  name: "details";
-                  child: Adw.LayoutSlot {
-                    id: "viewstack";
-                  };
-                }
-              }
-
-              [bottom]
-              $MuzikaNPDetailsSwitcher {
-                margin-bottom: 3;
-                margin-top: 3;
-                details-stack: viewstack;
-                show-details: bind details_tracker.active bidirectional;
-              }
-            }
+          sheet: $MuzikaNPSheet {
+            details-stack: viewstack;
+            details: Adw.LayoutSlot {
+              id: "viewstack";
+            };
+            show-details: bind details_tracker.active bidirectional;
           };
         };
       }
@@ -131,26 +106,6 @@ template $MuzikaShell : Adw.Bin {
           title: _("Related");
           child: $MuzikaNPRelated {};
         }
-      }
-
-      [header]
-      Adw.HeaderBar headerbar {
-        title-widget: Box {
-          styles ["linked"]
-
-          ToggleButton music_counterpart {
-            label: _("Song");
-
-            clicked => $switch_counterpart();
-          }
-
-          ToggleButton video_counterpart {
-            label: _("Video");
-            group: music_counterpart;
-
-            clicked => $switch_counterpart();
-          }
-        };
       }
       
       [details]
