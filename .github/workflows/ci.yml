@@ -43,8 +43,9 @@ jobs:
 
       - name: Setup Flatpak SDK Extensions
         run: |
-          flatpak --system install -y --noninteractive flathub org.freedesktop.Sdk.Extension.node20/${{ matrix.arch }}/24.08beta
-          flatpak --system install -y --noninteractive flathub org.freedesktop.Sdk.Extension.rust-stable/${{ matrix.arch }}/24.08beta
+          flatpak --system remote-add -y --if-not-exists flathub-beta https://flathub.org/beta-repo/flathub-beta.flatpakrepo
+          flatpak --system install -y --noninteractive flathub-beta org.freedesktop.Sdk.Extension.node20/${{ matrix.arch }}/24.08beta
+          flatpak --system install -y --noninteractive flathub-beta org.freedesktop.Sdk.Extension.rust-stable/${{ matrix.arch }}/24.08beta
 
       - name: Build
         id: build
