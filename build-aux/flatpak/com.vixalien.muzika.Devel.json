@@ -38,10 +38,10 @@
     "/yarn-mirror"
   ],
   "modules": [
+    "modules/gst-plugin-gtk4.json",
     "modules/blueprint-compiler.json",
     "modules/libportal.json",
     "modules/yarn-deps.json",
-    "modules/gst-plugin-gtk4.json",
     {
       "name": "muzika",
       "buildsystem": "meson",
