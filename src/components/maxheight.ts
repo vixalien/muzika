@@ -52,7 +52,7 @@ export class MuzikaMaxHeight extends Gtk.Widget {
       measured[1] = 9999;
     }
 
-    return [...measured.slice(0, 2) as [number, number], -1, -1];
+    return [measured[0], measured[1], -1, -1];
   }
 
   vfunc_snapshot(snapshot: Gtk.Snapshot): void {
