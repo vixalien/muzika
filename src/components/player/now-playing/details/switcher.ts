@@ -131,7 +131,6 @@ export class MuzikaNPDetailsSwitcher extends Gtk.Box {
     list_model_to_array(this.pages).forEach((page) => {
       const button = this.create_switcher_button(page);
       this.append(button);
-      return button;
     });
   }
 
