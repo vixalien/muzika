@@ -174,6 +174,7 @@ export class MuzikaNPDetailsSwitcher extends Gtk.Box {
       position + removed,
       ...(
         new Array(added)
+          .fill(null)
           .map((index) => {
             const page = this.pages.get_item(position + index);
             if (!page) return null;
