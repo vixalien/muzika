@@ -3,10 +3,7 @@ import GObject from "gi://GObject";
 import GLib from "gi://GLib";
 import Adw from "gi://Adw";
 
-import type { QueueTrack } from "libmuse";
-
 import { PlayerScale } from "./scale.js";
-import { escape_label, pretty_subtitles } from "src/util/text.js";
 import { MuzikaPlayer } from "src/player";
 import { micro_to_string } from "src/util/time.js";
 import { PlayerPreview } from "./preview.js";
@@ -19,7 +16,7 @@ import {
   bind_track_title,
 } from "src/player/helpers.js";
 import { setup_link_label } from "src/util/label.js";
-import { MuzikaNPDetailsSwitcher } from "./now-playing/switcher.js";
+import { MuzikaNPDetailsSwitcher } from "./now-playing/details/switcher";
 
 GObject.type_ensure(PlayerPreview.$gtype);
 GObject.type_ensure(PlayerScale.$gtype);
@@ -177,28 +174,6 @@ export class FullPlayerView extends Gtk.ActionBar {
     [this._title, this._subtitle].forEach((label) => {
       setup_link_label(label);
     });
-  }
-
-  show_song(track: QueueTrack) {
-    // labels
-
-    if (track.album) {
-      this._title.set_markup(
-        `<a href="muzika:album:${track.album.id}?track=${track.videoId}">${
-          escape_label(track.title)
-        }</a>`,
-      );
-      this._title.tooltip_text = track.title;
-    } else {
-      this._title.use_markup = false;
-      this._title.label = track.title;
-      this._title.tooltip_text = track.title;
-    }
-
-    const subtitle = pretty_subtitles(track.artists);
-
-    this._subtitle.set_markup(subtitle.markup);
-    this._subtitle.tooltip_text = subtitle.plain;
   }
 
   private gesture_pressed_cb(gesture: Gtk.Gesture) {

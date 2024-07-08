@@ -89,11 +89,6 @@ export class MiniPlayerView extends Gtk.Overlay {
     );
   }
 
-  show_song(track: QueueTrack) {
-    this._title.label = track.title;
-    this._subtitle.label = track.artists[0].name;
-  }
-
   vfunc_map(): void {
     this.listeners.clear();
     this.setup_player();
