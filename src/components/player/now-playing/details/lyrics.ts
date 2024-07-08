@@ -106,7 +106,6 @@ export class MuzikaNPLyrics extends Gtk.Stack {
     })
       .catch((err) => {
         if (err.name !== "AbortError") throw err;
-        return null;
       })
       .finally(() => {
         this._loading.stop();

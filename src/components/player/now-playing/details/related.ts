@@ -70,11 +70,13 @@ export class MuzikaNPRelated extends Gtk.Stack {
 
     const result = await get_song_related(new_related, {
       signal: this.controller.signal,
-    }).catch((err) => {
-      if (err.name !== "AbortError") throw err;
-    }).finally(() => {
-      this._loading.stop();
-    });
+    })
+      .catch((err) => {
+        if (err.name !== "AbortError") throw err;
+      })
+      .finally(() => {
+        this._loading.stop();
+      });
 
     if (!result) return;
 
