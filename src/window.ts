@@ -283,7 +283,7 @@ export class Window extends Adw.ApplicationWindow {
         name: "visible-view",
         parameter_type: "s",
         state: '"main"',
-        activate: (action, param) => {
+        change_state: (action, param) => {
           const string = param?.get_string()[0];
           if (string && this.show_view(string)) {
             action.set_state(GLib.Variant.new_string(string));
@@ -291,12 +291,31 @@ export class Window extends Adw.ApplicationWindow {
         },
       },
       {
+        name: "now-playing",
+        state: "false",
+        change_state: (action, param) => {
+          if (!param) return;
+          if (param?.get_boolean()) {
+            this.show_view("now-playing");
+          } else {
+            this.show_view("main");
+          }
+          action.set_state(param);
+        },
+        activate(action) {
+          const value = action.get_state()?.get_boolean() ?? false;
+          action.set_state(GLib.Variant.new_boolean(value));
+        },
+      },
+      {
         name: "now-playing-details",
         state: "false",
-        parameter_type: "b",
-        activate: (action, param) => {
-          if (!param) return;
-          action.set_state(param);
+        change_state: (action, param) => {
+          if (param) action.set_state(param);
+        },
+        activate(action) {
+          const value = action.get_state()?.get_boolean() ?? false;
+          action.set_state(GLib.Variant.new_boolean(value));
         },
       },
       {

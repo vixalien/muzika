@@ -16,7 +16,7 @@ GObject.type_ensure(MuzikaNPQueue.$gtype);
 GObject.type_ensure(MuzikaNPLyrics.$gtype);
 GObject.type_ensure(MuzikaNPRelated.$gtype);
 
-export class MuzikaShell extends Adw.Bin {
+export class MuzikaShell extends Gtk.Box {
   static {
     GObject.registerClass({
       GTypeName: "MuzikaShell",
@@ -111,11 +111,14 @@ export class MuzikaShell extends Adw.Bin {
     child: GObject.Object,
     type?: string | null | undefined,
   ): void {
-    if (child instanceof Gtk.Widget) {
-      return this._multi_layout_view.set_child("child", child);
+    // this._multi_layout_view is only set after initializing
+    if (this._multi_layout_view) {
+      if (child instanceof Gtk.Widget) {
+        return this._multi_layout_view.set_child("child", child);
+      }
     }
 
-    // super.vfunc_add_child(builder, child, type);
+    super.vfunc_add_child(builder, child, type);
   }
 
   private calculate_bottom_bar_height(

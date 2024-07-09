@@ -1,7 +1,7 @@
 using Gtk 4.0;
 using Adw 1;
 
-template $MuzikaShell : Adw.Bin {
+template $MuzikaShell : Box {
   bottom-bar-height: bind $calculate_bottom_bar_height(
     multi_layout_view.layout-name,
     bottom_sheet.bottom-bar-height,
@@ -18,7 +18,17 @@ template $MuzikaShell : Adw.Bin {
     }
   }
 
-  child: Adw.BreakpointBin {
+  Switch now_playing_tracker {
+    action-name: "win.now-playing";
+    visible: false;
+  }
+
+  Switch now_playing_details_tracker {
+    action-name: "win.now-playing-details";
+    visible: false;
+  }
+
+  Adw.BreakpointBin {
     width-request: 360;
     height-request: 294;
 
@@ -37,7 +47,7 @@ template $MuzikaShell : Adw.Bin {
           bottom-bar-style: raised;
 
           Adw.OverlaySplitView {
-            show-sidebar: bind details_tracker.active;
+            show-sidebar: bind now_playing_details_tracker.active;
             sidebar-position: end;
             max-sidebar-width: 350;
             min-sidebar-width: 250;
@@ -62,7 +72,7 @@ template $MuzikaShell : Adw.Bin {
           [bottom]
           $FullPlayerView {
             details-stack: viewstack;
-            show-details: bind details_tracker.active bidirectional;
+            show-details: bind now_playing_details_tracker.active bidirectional;
           }
         };
       }
@@ -83,7 +93,7 @@ template $MuzikaShell : Adw.Bin {
             details: Adw.LayoutSlot {
               id: "viewstack";
             };
-            show-details: bind details_tracker.active bidirectional;
+            show-details: bind now_playing_details_tracker.active bidirectional;
           };
         };
       }
@@ -113,21 +123,6 @@ template $MuzikaShell : Adw.Bin {
           child: $MuzikaNPRelated {};
         }
       }
-      
-      [details]
-      // this is a very bad hack
-      Gtk.ToggleButton details_tracker {
-        visible: false;
-        action-name: "win.now-playing-details";
-        action-target: "true";
-      }
-
-      [tracker]
-      // same as above
-      Gtk.ToggleButton now_playing_tracker {
-        action-name: "win.visible-view";
-        action-target: "'now-playing'";
-      }
     }
-  };
+  }
 }
