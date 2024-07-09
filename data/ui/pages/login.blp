@@ -18,10 +18,11 @@ template $LoginDialog : Adw.Dialog {
           Stack stack {
             vexpand: true;
 
-            Spinner spinner {
-              spinning: true;
+            Adw.Spinner spinner {
               halign: center;
+              valign: center;
               width-request: 48;
+              height-request: 48;
             }
 
             Box flow {
