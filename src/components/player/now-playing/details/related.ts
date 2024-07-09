@@ -27,7 +27,7 @@ export class MuzikaNPRelated extends Gtk.Stack {
   }
 
   private _no_related!: Adw.StatusPage;
-  private _loading!: Gtk.Spinner;
+  private _loading!: Adw.Spinner;
   private _related_window!: Gtk.ScrolledWindow;
   private _box!: Gtk.Box;
 
@@ -51,7 +51,6 @@ export class MuzikaNPRelated extends Gtk.Stack {
       return;
     }
 
-    this._loading.start();
     this.set_visible_child(this._loading);
 
     this.controller?.abort();
@@ -64,16 +63,12 @@ export class MuzikaNPRelated extends Gtk.Stack {
     }
 
     this.set_visible_child(this._loading);
-    this._loading.start();
 
     const result = await get_song_related(new_related, {
       signal: this.controller.signal,
     })
       .catch((err) => {
         if (err.name !== "AbortError") throw err;
-      })
-      .finally(() => {
-        this._loading.stop();
       });
 
     if (!result) return;
