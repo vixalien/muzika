@@ -112,7 +112,7 @@ export class DynamicAction extends Adw.Bin {
   private _play_image!: Gtk.Image;
   private _persistent_play_image!: Gtk.Image;
   private _wave!: Gtk.Image;
-  private _spinner!: Gtk.Spinner;
+  private _spinner!: Adw.Spinner;
 
   private images = [
     this._play_image,
@@ -213,8 +213,6 @@ export class DynamicAction extends Adw.Bin {
   private update_stack(force = false) {
     if (this.locked && !force) return;
 
-    let stop_spinning = true;
-
     let visible = true;
 
     switch (this.state) {
@@ -230,9 +228,7 @@ export class DynamicAction extends Adw.Bin {
         }
         break;
       case DynamicActionState.LOADING:
-        stop_spinning = false;
         this._stack.visible_child = this._loading;
-        this._spinner.spinning = true;
         break;
       case DynamicActionState.PLAYING:
         if (this.hovering) {
@@ -247,10 +243,6 @@ export class DynamicAction extends Adw.Bin {
     }
 
     this._stack.visible = visible;
-
-    if ((stop_spinning || !this._stack.visible) && this._spinner.spinning) {
-      this._spinner.spinning = false;
-    }
   }
 
   // property: persistent-play-button
@@ -274,7 +266,7 @@ export class DynamicAction extends Adw.Bin {
     const size = this._fill ? this._size : 16;
 
     set_properties(this.images, "pixel_size", size);
-    set_properties(this._spinner, "width_request", size);
+    set_properties(this._spinner, ["width_request", "height_request"], size);
   }
 
   // property: locked
