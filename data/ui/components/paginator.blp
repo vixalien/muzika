@@ -1,4 +1,5 @@
 using Gtk 4.0;
+using Adw 1;
 
 template $Paginator : Revealer {
   Box {
@@ -24,8 +25,9 @@ template $Paginator : Revealer {
       }
 
       [spinner]
-      Spinner spinner {
+      Adw.Spinner spinner {
         halign: center;
+        valign: center;
         width-request: 30;
         height-request: 30;
       }

@@ -34,7 +34,7 @@ export class Paginator extends Gtk.Revealer {
 
   _stack!: Gtk.Stack;
   _button!: Gtk.Button;
-  _spinner!: Gtk.Spinner;
+  _spinner!: Adw.Spinner;
 
   private _loading = false;
 
@@ -47,10 +47,8 @@ export class Paginator extends Gtk.Revealer {
 
     if (value) {
       this._stack.visible_child = this._spinner;
-      this._spinner.start();
     } else {
       this._stack.visible_child = this._button;
-      this._spinner.stop();
     }
   }
 

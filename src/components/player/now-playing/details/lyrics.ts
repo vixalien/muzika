@@ -107,10 +107,9 @@ export class MuzikaNPLyrics extends Gtk.Stack {
 
     const lyrics = await get_lyrics(new_lyrics, {
       signal: this.controller.signal,
-    })
-      .catch((err) => {
-        if (err.name !== "AbortError") throw err;
-      });
+    }).catch((err) => {
+      if (err.name !== "AbortError") throw err;
+    });
 
     if (!lyrics) return;
 
