@@ -62,7 +62,7 @@ export class MuzikaNPLyrics extends Gtk.Stack {
   }
 
   private _no_lyrics!: Adw.StatusPage;
-  private _loading!: Gtk.Spinner;
+  private _loading!: Adw.Spinner;
   private _lyrics_window!: Gtk.ScrolledWindow;
   private _view!: Gtk.TextView;
   private _buffer!: Gtk.TextBuffer;
@@ -92,7 +92,6 @@ export class MuzikaNPLyrics extends Gtk.Stack {
       return;
     }
 
-    this._loading.start();
     this.set_visible_child(this._loading);
 
     this.controller?.abort();
@@ -105,16 +104,12 @@ export class MuzikaNPLyrics extends Gtk.Stack {
     }
 
     this.set_visible_child(this._loading);
-    this._loading.start();
 
     const lyrics = await get_lyrics(new_lyrics, {
       signal: this.controller.signal,
     })
       .catch((err) => {
         if (err.name !== "AbortError") throw err;
-      })
-      .finally(() => {
-        this._loading.stop();
       });
 
     if (!lyrics) return;
