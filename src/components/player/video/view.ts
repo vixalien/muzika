@@ -22,6 +22,17 @@ export class VideoPlayerView extends Adw.Bin {
         "window_title",
         "controls",
       ],
+      Properties: {
+        bottom_bar_height: GObject.ParamSpec.uint(
+          "bottom-bar-height",
+          "Bottom Bar Height",
+          "The height of the video player controls",
+          GObject.ParamFlags.READWRITE,
+          0,
+          GLib.MAXUINT32,
+          0,
+        ),
+      },
     }, this);
   }
 

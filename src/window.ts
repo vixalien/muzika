@@ -25,6 +25,7 @@
 
 import GObject from "gi://GObject";
 import Gtk from "gi://Gtk?version=4.0";
+import Gdk from "gi://Gdk?version=4.0";
 import Adw from "gi://Adw";
 import GLib from "gi://GLib";
 import Gio from "gi://Gio";
@@ -80,6 +81,15 @@ export class Window extends Adw.ApplicationWindow {
             GObject.ParamFlags.READWRITE,
             Navigator.$gtype,
           ),
+          bottom_bar_height: GObject.ParamSpec.uint(
+            "bottom-bar-height",
+            "Bottom Bar Height",
+            "The height of the video player controls",
+            GObject.ParamFlags.READWRITE,
+            0,
+            GLib.MAXUINT32,
+            0,
+          ),
         },
       },
       this,
@@ -90,12 +100,24 @@ export class Window extends Adw.ApplicationWindow {
   private _split_view!: Adw.NavigationSplitView;
   private _main_stack!: Gtk.Stack;
   private _sidebar!: WindowSidebar;
+  private toast_css_provider: Gtk.CssProvider;
 
   navigator: Navigator;
   toast_overlay!: Adw.ToastOverlay;
 
   constructor(params?: Partial<Adw.ApplicationWindow.ConstructorProperties>) {
     super(params);
+
+    this.toast_css_provider = new Gtk.CssProvider();
+
+    const default_provider = Gdk.Display.get_default();
+    if (default_provider) {
+      Gtk.StyleContext.add_provider_for_display(
+        default_provider,
+        this.toast_css_provider,
+        Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION,
+      );
+    }
 
     Settings.bind(
       "width",
@@ -536,5 +558,29 @@ export class Window extends Adw.ApplicationWindow {
             : _("Couldn't remove from library"),
         );
       });
+  }
+
+  private calculate_bottom_bar_height(
+    _: this,
+    page: "main" | "video",
+    main_bottom_bar_height: number,
+    video_bottom_bar_height: number,
+  ) {
+    return page === "main" ? main_bottom_bar_height : video_bottom_bar_height;
+  }
+
+  private _bottom_bar_height = 0;
+
+  get bottom_bar_height() {
+    return this._bottom_bar_height;
+  }
+
+  set bottom_bar_height(value: number) {
+    if (value === this.bottom_bar_height) return;
+    if (!this.toast_css_provider) return;
+
+    this.toast_css_provider.load_from_string(
+      `.main-toast-overlay { --toast-margin: ${value}px; }`,
+    );
   }
 }

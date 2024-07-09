@@ -6,6 +6,11 @@ template $MuzikaWindow : Adw.ApplicationWindow {
   default-height: 800;
   width-request: 360;
   height-request: 294;
+  bottom-bar-height: bind $calculate_bottom_bar_height(
+    main_stack.visible-child-name,
+    shell.bottom-bar-height,
+    video_player_view.bottom-bar-height
+  ) as <uint>;
 
   Adw.Breakpoint {
     condition ("max-width: 600sp")
@@ -15,38 +20,35 @@ template $MuzikaWindow : Adw.ApplicationWindow {
     }
   }
 
-  // this should toast overlay should update it's margin-bottom
-  // based on the now_playing_view's bottom bar height
-  Stack main_stack {
-    transition-type: slide_up_down;
+  Adw.ToastOverlay toast_overlay {
+    styles ["main-toast-overlay"]
 
-    StackPage {
-      name: "main";
-      child: $MuzikaShell {
-        Adw.ToastOverlay toast_overlay {
+    Stack main_stack {
+      transition-type: slide_up_down;
+
+      StackPage {
+        name: "main";
+        child: $MuzikaShell shell {
           Adw.NavigationSplitView split_view {
             min-sidebar-width: 250;
             max-sidebar-width: 350;
             show-content: true;
             sidebar: $WindowSidebar sidebar {};
 
-            content: 
-            Adw.NavigationPage {
+            content: Adw.NavigationPage {
               Adw.NavigationView navigation_view {
                 vexpand: true;
                 width-request: 300;
               }
-            }
-
-            ;
+            };
           }
-        }
-      };
-    }
+        };
+      }
 
-    StackPage {
-      name: "video";
-      child: $VideoPlayerView video_player_view {};
+      StackPage {
+        name: "video";
+        child: $VideoPlayerView video_player_view {};
+      }
     }
   }
 }

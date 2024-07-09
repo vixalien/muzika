@@ -2,6 +2,12 @@ using Gtk 4.0;
 using Adw 1;
 
 template $MuzikaShell : Adw.Bin {
+  bottom-bar-height: bind $calculate_bottom_bar_height(
+    multi_layout_view.layout-name,
+    bottom_sheet.bottom-bar-height,
+    full_layout_view.bottom-bar-height
+  ) as <uint>;
+
   ShortcutController {
     scope: managed;
 
@@ -27,7 +33,7 @@ template $MuzikaShell : Adw.Bin {
     Adw.MultiLayoutView multi_layout_view {
       Adw.Layout {
         name: "full";
-        content: Adw.ToolbarView {
+        content: Adw.ToolbarView full_layout_view {
           bottom-bar-style: raised;
 
           Adw.OverlaySplitView {
@@ -63,7 +69,7 @@ template $MuzikaShell : Adw.Bin {
 
       Adw.Layout {
         name: "mini";
-        content: Adw.BottomSheet {
+        content: Adw.BottomSheet bottom_sheet {
           show-drag-handle: false;
           full-width: true;
           open: bind now_playing_tracker.active bidirectional;

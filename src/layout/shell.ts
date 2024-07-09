@@ -1,6 +1,7 @@
 import GObject from "gi://GObject";
 import Gtk from "gi://Gtk?version=4.0";
 import Adw from "gi://Adw";
+import GLib from "gi://GLib";
 
 import { get_player } from "src/application";
 import { SignalListeners } from "src/util/signal-listener";
@@ -32,6 +33,15 @@ export class MuzikaShell extends Adw.Bin {
           "Show the minimal video player",
           GObject.ParamFlags.READWRITE,
           false,
+        ),
+        bottom_bar_height: GObject.ParamSpec.uint(
+          "bottom-bar-height",
+          "Bottom Bar Height",
+          "The height of the video player controls",
+          GObject.ParamFlags.READWRITE,
+          0,
+          GLib.MAXUINT32,
+          0,
         ),
       },
       Implements: [Gtk.Buildable],
@@ -106,5 +116,14 @@ export class MuzikaShell extends Adw.Bin {
     }
 
     // super.vfunc_add_child(builder, child, type);
+  }
+
+  private calculate_bottom_bar_height(
+    _: this,
+    layout: "mini" | "full",
+    mini_bottom_bar_height: number,
+    full_bottom_bar_height: number,
+  ) {
+    return layout === "mini" ? mini_bottom_bar_height : full_bottom_bar_height;
   }
 }
