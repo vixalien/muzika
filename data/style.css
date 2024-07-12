@@ -334,3 +334,8 @@ button.large {
   margin-bottom: calc(var(--toast-margin, 0px) + 24px);
   transition: 0.3s margin-bottom;
 }
+
+.full-player-view > revealer > box {
+  padding-left: 9px;
+  padding-right: 9px;
+}
