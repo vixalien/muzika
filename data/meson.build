@@ -66,12 +66,16 @@ endif
 
 subdir('ui')
 
+gresource_conf = configuration_data()
+gresource_conf.merge_from(app_conf)
+gresource_conf.set('ui-resources', ui_xml)
+
 data_res = gnome.compile_resources(
   application_id + '.data',
   configure_file(
     input: base_name + '.data.gresource.xml.in',
     output: application_id + '.data.gresource.xml.in',
-    configuration: app_conf,
+    configuration: gresource_conf,
   ),
   gresource_bundle: true,
   install: true,

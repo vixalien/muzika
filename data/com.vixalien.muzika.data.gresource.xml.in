@@ -5,70 +5,8 @@
     <file preprocess="xml-stripblanks">@app-id@.metainfo.xml</file>
     <!-- style -->
     <file>style.css</file>
-    <!-- components -->
-    <file preprocess="xml-stripblanks">ui/components/carousel/card.ui</file>
-    <file preprocess="xml-stripblanks">ui/components/carousel/carousel.ui</file>
-    <file preprocess="xml-stripblanks">ui/components/carousel/flatcard.ui</file>
-    <file preprocess="xml-stripblanks">ui/components/carousel/moodbox.ui</file>
-    <file preprocess="xml-stripblanks">ui/components/dynamic-action.ui</file>
-    <file preprocess="xml-stripblanks">ui/components/dynamic-image.ui</file>
-    <file preprocess="xml-stripblanks">ui/components/library/history.ui</file>
-    <file preprocess="xml-stripblanks">ui/components/library/songs.ui</file>
-    <file preprocess="xml-stripblanks">ui/components/library/view.ui</file>
-    <file preprocess="xml-stripblanks">ui/components/loading.ui</file>
-    <file preprocess="xml-stripblanks">ui/components/nav/page.ui</file>
-    <file preprocess="xml-stripblanks">ui/components/navbar/button.ui</file>
-    <file preprocess="xml-stripblanks">ui/components/navbar/index.ui</file>
-    <file preprocess="xml-stripblanks">ui/components/navbar/title.ui</file>
-    <file preprocess="xml-stripblanks">ui/components/paginator.ui</file>
-    <file preprocess="xml-stripblanks">ui/components/player/now-playing/details/lyrics.ui</file>
-    <file preprocess="xml-stripblanks">ui/components/player/now-playing/details/queue.ui</file>
-    <file preprocess="xml-stripblanks">ui/components/player/now-playing/details/queueitem.ui</file>
-    <file preprocess="xml-stripblanks">ui/components/player/now-playing/details/related.ui</file>
-    <file preprocess="xml-stripblanks">ui/components/player/now-playing/counterpart-switcher.ui</file>
-    <file preprocess="xml-stripblanks">ui/components/player/now-playing/cover.ui</file>
-    <file preprocess="xml-stripblanks">ui/components/player/now-playing/sheet.ui</file>
-    <file preprocess="xml-stripblanks">ui/components/player/video/controls.ui</file>
-    <file preprocess="xml-stripblanks">ui/components/player/video/view.ui</file>
-    <file preprocess="xml-stripblanks">ui/components/player/video/volume-controls.ui</file>
-    <file preprocess="xml-stripblanks">ui/components/player/full.ui</file>
-    <file preprocess="xml-stripblanks">ui/components/player/mini.ui</file>
-    <file preprocess="xml-stripblanks">ui/components/player/preview.ui</file>
-    <file preprocess="xml-stripblanks">ui/components/playlist/add-to-playlist-item.ui</file>
-    <file preprocess="xml-stripblanks">ui/components/playlist/bar.ui</file>
-    <file preprocess="xml-stripblanks">ui/components/playlist/edit.ui</file>
-    <file preprocess="xml-stripblanks">ui/components/playlist/header.ui</file>
-    <file preprocess="xml-stripblanks">ui/components/playlist/listitem.ui</file>
-    <file preprocess="xml-stripblanks">ui/components/playlist/save-to-playlist.ui</file>
-    <file preprocess="xml-stripblanks">ui/components/search/section.ui</file>
-    <file preprocess="xml-stripblanks">ui/components/search/topresult.ui</file>
-    <file preprocess="xml-stripblanks">ui/components/search/topresultsection.ui</file>
-    <!-- layout -->
-    <file preprocess="xml-stripblanks">ui/layout/panes.ui</file>
-    <file preprocess="xml-stripblanks">ui/layout/shell.ui</file>
-    <file preprocess="xml-stripblanks">ui/layout/sidebar.ui</file>
-    <!-- pages -->
-    <file preprocess="xml-stripblanks">ui/pages/album.ui</file>
-    <file preprocess="xml-stripblanks">ui/pages/artist-albums.ui</file>
-    <file preprocess="xml-stripblanks">ui/pages/artist.ui</file>
-    <file preprocess="xml-stripblanks">ui/pages/authentication-error.ui</file>
-    <file preprocess="xml-stripblanks">ui/pages/channel.ui</file>
-    <file preprocess="xml-stripblanks">ui/pages/charts.ui</file>
-    <file preprocess="xml-stripblanks">ui/pages/channel-playlists.ui</file>
-    <file preprocess="xml-stripblanks">ui/pages/error.ui</file>
-    <file preprocess="xml-stripblanks">ui/pages/explore.ui</file>
-    <file preprocess="xml-stripblanks">ui/pages/home.ui</file>
-    <file preprocess="xml-stripblanks">ui/pages/login.ui</file>
-    <file preprocess="xml-stripblanks">ui/pages/mood-playlists.ui</file>
-    <file preprocess="xml-stripblanks">ui/pages/moods.ui</file>
-    <file preprocess="xml-stripblanks">ui/pages/new-releases.ui</file>
-    <file preprocess="xml-stripblanks">ui/pages/playlist.ui</file>
-    <file preprocess="xml-stripblanks">ui/pages/preferences.ui</file>
-    <file preprocess="xml-stripblanks">ui/pages/search.ui</file>
-    <!-- window -->
-    <file preprocess="xml-stripblanks">ui/window.ui</file>
-    <!-- help overlay -->
-    <file preprocess="xml-stripblanks" alias="gtk/help-overlay.ui">ui/gtk/help-overlay.ui</file>
+    <!-- UI -->
+    @ui-resources@
     <!-- icons -->
     <file preprocess="xml-stripblanks">icons/scalable/actions/compass2-symbolic.svg</file>
     <file preprocess="xml-stripblanks">icons/scalable/actions/explicit-symbolic.svg</file>
