@@ -4,8 +4,8 @@ using Adw 1;
 template $MuzikaShell : Box {
   bottom-bar-height: bind $calculate_bottom_bar_height(
     multi_layout_view.layout-name,
-    bottom_sheet.bottom-bar-height,
-    full_layout_view.bottom-bar-height
+    mobile_bottom_sheet.bottom-bar-height,
+    desktop_bottom_sheet.bottom-bar-height
   ) as <uint>;
 
   ShortcutController {
@@ -29,72 +29,91 @@ template $MuzikaShell : Box {
   }
 
   Adw.BreakpointBin {
+    hexpand: true;
     width-request: 360;
     height-request: 294;
 
     Adw.Breakpoint {
-      condition ("max-width: 800sp")
+      condition ("min-width: 900sp")
 
       setters {
-        multi_layout_view.layout-name: "mini";
+        multi_layout_view.layout-name: "desktop";
       }
     }
 
     Adw.MultiLayoutView multi_layout_view {
       Adw.Layout {
-        name: "full";
-        content: Adw.ToolbarView full_layout_view {
-          bottom-bar-style: raised;
-
-          Adw.OverlaySplitView {
-            show-sidebar: bind now_playing_details_tracker.active;
-            sidebar-position: end;
-            max-sidebar-width: 350;
-            min-sidebar-width: 250;
-
-            sidebar: Adw.ToolbarView {
-              [top]
-              Adw.HeaderBar {
-                title-widget: Label {
-                  label: bind ((viewstack.pages as <Adw.ViewStackPages>).selected-page.title);
-                };
-              }
-
-              Adw.LayoutSlot {
-                id: "viewstack";
-              }
-            };
-            content: Adw.LayoutSlot {
-              id: "child";
-            };
-          }
-
-          [bottom]
-          $FullPlayerView {
-            details-stack: viewstack;
-            show-details: bind now_playing_details_tracker.active bidirectional;
-          }
-        };
-      }
-
-      Adw.Layout {
-        name: "mini";
-        content: Adw.BottomSheet bottom_sheet {
+        name: "mobile";
+        content: Adw.BottomSheet mobile_bottom_sheet {
           show-drag-handle: false;
           full-width: true;
           open: bind now_playing_tracker.active bidirectional;
 
-          content: Adw.LayoutSlot {
-            id: "child";
+          content: $MuzikaPanes {
+            sidebar: Adw.LayoutSlot {
+              id: "sidebar";
+            };
+            content: Adw.LayoutSlot {
+              id: "content";
+            };
           };
           bottom-bar: $MiniPlayerView {};
-          sheet: $MuzikaNPSheet {
+          sheet: $MuzikaNPSheet sheet {
             details-stack: viewstack;
             details: Adw.LayoutSlot {
               id: "viewstack";
             };
             show-details: bind now_playing_details_tracker.active bidirectional;
           };
+        };
+      }
+
+      Adw.Layout {
+        name: "desktop";
+        content: Adw.BottomSheet desktop_bottom_sheet {
+          can-open: false;
+          full-width: true;
+
+          content: $MuzikaPanes {
+            sidebar: Adw.LayoutSlot {
+              id: "sidebar";
+            };
+            content: Adw.LayoutSlot {
+              id: "overlay";
+            };
+          };
+          bottom-bar: $FullPlayerView {
+            details-stack: viewstack;
+            show-details: bind now_playing_details_tracker.active bidirectional;
+          };
+        };
+      }
+
+      [sidebar]
+      $WindowSidebar sidebar {}
+
+      [overlay]
+      Adw.OverlaySplitView {
+        sidebar-position: end;
+        max-sidebar-width: 350;
+        min-sidebar-width: 250;
+        show-sidebar: bind now_playing_details_tracker.active;
+
+        sidebar: Adw.ToolbarView {
+          [top]
+          Adw.HeaderBar {
+            title-widget: Label {
+              label: bind ((viewstack.pages as <Adw.ViewStackPages>).selected-page.title);
+            };
+          }
+
+          Adw.LayoutSlot {
+            id: "viewstack";
+          }
+        };
+
+        content: Adw.LayoutSlot {
+          id: "content";
         };
       }
 

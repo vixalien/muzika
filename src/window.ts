@@ -65,10 +65,8 @@ export class Window extends Adw.ApplicationWindow {
         Template: "resource:///com/vixalien/muzika/ui/window.ui",
         InternalChildren: [
           "navigation_view",
-          "split_view",
           "main_stack",
           "video_player_view",
-          "sidebar",
         ],
         Children: [
           "toast_overlay",
@@ -97,9 +95,7 @@ export class Window extends Adw.ApplicationWindow {
   }
 
   private _navigation_view!: Adw.NavigationView;
-  private _split_view!: Adw.NavigationSplitView;
   private _main_stack!: Gtk.Stack;
-  private _sidebar!: WindowSidebar;
   private toast_css_provider: Gtk.CssProvider;
 
   navigator: Navigator;
@@ -150,10 +146,6 @@ export class Window extends Adw.ApplicationWindow {
 
     this.navigator.connect("navigate", () => {
       this.show_view("main");
-    });
-
-    this._sidebar.connect("show-content", () => {
-      this._split_view.show_content = true;
     });
 
     const player = get_player();

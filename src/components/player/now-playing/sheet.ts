@@ -83,14 +83,12 @@ export class MuzikaNPSheet extends Adw.Bin {
 
     this.connect("notify::details", () => {
       const prev = this._stack.get_child_by_name("details");
-      if (prev) {
-        this._stack.remove(prev);
-      }
+      if (prev === this.details) return;
+      if (prev) this._stack.remove(prev);
 
-      this._stack.add_named(this.details!, "details");
-
-      if (this.show_details) {
-        this._stack.visible_child_name = "details";
+      if (this.details) {
+        this._stack.add_named(this.details!, "details");
+        if (this.show_details) this._stack.visible_child_name = "details";
       }
     });
   }

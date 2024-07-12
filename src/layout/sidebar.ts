@@ -10,21 +10,13 @@ import { NavbarView } from "../components/navbar/index";
 
 GObject.type_ensure(NavbarView.$gtype);
 
-export class WindowSidebar extends Adw.NavigationPage {
+export class WindowSidebar extends Adw.Bin {
   static {
     GObject.registerClass(
       {
         GTypeName: "WindowSidebar",
         Template: "resource:///com/vixalien/muzika/ui/layout/sidebar.ui",
-        InternalChildren: [
-          "account",
-          "login",
-          "navbar",
-        ],
-        Properties: {},
-        Signals: {
-          "show-content": {},
-        },
+        InternalChildren: ["account", "login", "navbar"],
       },
       this,
     );
@@ -41,12 +33,14 @@ export class WindowSidebar extends Adw.NavigationPage {
   }
 
   private navbar_searched_cb() {
-    this.emit("show-content");
+    get_navigator().emit("show-content");
   }
 
   private navbar_activated_cb(_: NavbarView, uri: string) {
-    this.emit("show-content");
-    get_navigator().switch_stack(uri);
+    const navigator = get_navigator();
+
+    navigator.emit("show-content");
+    navigator.switch_stack(uri);
   }
 
   async token_changed() {

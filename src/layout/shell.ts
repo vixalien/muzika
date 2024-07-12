@@ -10,8 +10,11 @@ import { MuzikaNPQueue } from "src/components/player/now-playing/details/queue";
 import { MuzikaNPRelated } from "src/components/player/now-playing/details/related";
 import { MuzikaNPLyrics } from "src/components/player/now-playing/details/lyrics";
 import { MuzikaNPSheet } from "src/components/player/now-playing/sheet";
+import { MuzikaPanes } from "./panes";
 
 GObject.type_ensure(MuzikaNPSheet.$gtype);
+GObject.type_ensure(MuzikaPanes.$gtype);
+
 GObject.type_ensure(MuzikaNPQueue.$gtype);
 GObject.type_ensure(MuzikaNPLyrics.$gtype);
 GObject.type_ensure(MuzikaNPRelated.$gtype);
@@ -54,14 +57,6 @@ export class MuzikaShell extends Gtk.Box {
 
   constructor(params?: Partial<Adw.Bin.ConstructorProperties>) {
     super(params);
-  }
-
-  get show_mini(): boolean {
-    return this._multi_layout_view.layout_name === "mini";
-  }
-
-  set show_mini(show: boolean) {
-    this._multi_layout_view.layout_name = show ? "mini" : "full";
   }
 
   private listeners = new SignalListeners();
@@ -112,10 +107,8 @@ export class MuzikaShell extends Gtk.Box {
     type?: string | null | undefined,
   ): void {
     // this._multi_layout_view is only set after initializing
-    if (this._multi_layout_view) {
-      if (child instanceof Gtk.Widget) {
-        return this._multi_layout_view.set_child("child", child);
-      }
+    if (this._multi_layout_view && child instanceof Gtk.Widget) {
+    return this._multi_layout_view.set_child("content", child);
     }
 
     super.vfunc_add_child(builder, child, type);
@@ -123,10 +116,12 @@ export class MuzikaShell extends Gtk.Box {
 
   private calculate_bottom_bar_height(
     _: this,
-    layout: "mini" | "full",
-    mini_bottom_bar_height: number,
-    full_bottom_bar_height: number,
+    layout: "mobile" | "desktop",
+    mobile_bottom_bar_height: number,
+    desktop_bottom_bar_height: number,
   ) {
-    return layout === "mini" ? mini_bottom_bar_height : full_bottom_bar_height;
+    return layout === "mobile"
+      ? mobile_bottom_bar_height
+      : desktop_bottom_bar_height;
   }
 }

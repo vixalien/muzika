@@ -12,14 +12,6 @@ template $MuzikaWindow : Adw.ApplicationWindow {
     video_player_view.bottom-bar-height
   ) as <uint>;
 
-  Adw.Breakpoint {
-    condition ("max-width: 600sp")
-
-    setters {
-      split_view.collapsed: true;
-    }
-  }
-
   Adw.ToastOverlay toast_overlay {
     styles ["main-toast-overlay"]
 
@@ -29,18 +21,9 @@ template $MuzikaWindow : Adw.ApplicationWindow {
       StackPage {
         name: "main";
         child: $MuzikaShell shell {
-          Adw.NavigationSplitView split_view {
-            min-sidebar-width: 250;
-            max-sidebar-width: 350;
-            show-content: true;
-            sidebar: $WindowSidebar sidebar {};
-
-            content: Adw.NavigationPage {
-              Adw.NavigationView navigation_view {
-                vexpand: true;
-                width-request: 300;
-              }
-            };
+          Adw.NavigationView navigation_view {
+            vexpand: true;
+            width-request: 300;
           }
         };
       }

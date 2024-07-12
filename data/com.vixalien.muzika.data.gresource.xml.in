@@ -44,6 +44,7 @@
     <file preprocess="xml-stripblanks">ui/components/search/topresult.ui</file>
     <file preprocess="xml-stripblanks">ui/components/search/topresultsection.ui</file>
     <!-- layout -->
+    <file preprocess="xml-stripblanks">ui/layout/panes.ui</file>
     <file preprocess="xml-stripblanks">ui/layout/shell.ui</file>
     <file preprocess="xml-stripblanks">ui/layout/sidebar.ui</file>
     <!-- pages -->
