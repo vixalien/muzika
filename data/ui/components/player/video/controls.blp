@@ -2,9 +2,156 @@ using Gtk 4.0;
 using Adw 1;
 
 template $VideoControls : Adw.Bin {
-  Stack stack {
-    $FullVideoControls full {}
+  Adw.Clamp {
+    margin-end: 6;
+    margin-bottom: 6;
+    margin-start: 6;
+    valign: end;
+    maximum-size: 800;
+    tightening-threshold: 600;
 
-    $MiniVideoControls mini {}
+    Adw.MultiLayoutView multi_layout_view {
+      Adw.Layout {
+        name: "mini";
+        content: Box {
+          orientation: vertical;
+
+          styles [
+            "osd",
+            "toolbar",
+          ]
+
+          Box {
+            orientation: vertical;
+
+            Adw.LayoutSlot {
+              id: "scale";
+            }
+
+            Box {
+              Adw.LayoutSlot {
+                id: "progress";
+              }
+
+              Separator {
+                hexpand: true;
+
+                styles ["spacer"]
+              }
+
+              Adw.LayoutSlot {
+                id: "duration";
+              }
+            }
+          }
+
+          CenterBox {
+            [center]
+            Adw.LayoutSlot {
+              id: "controls";
+            }
+
+            [end]
+            Adw.LayoutSlot {
+              id: "menu";
+            }
+          }
+        };
+      }
+
+      Adw.Layout {
+        name: "full";
+        content: Box {
+          orientation: horizontal;
+
+          styles [
+            "osd",
+            "toolbar",
+          ]
+
+          Adw.LayoutSlot {
+            id: "controls";
+          }
+
+          Adw.LayoutSlot {
+            id: "progress";
+          }
+
+          Adw.LayoutSlot {
+            id: "scale";
+          }
+
+          Adw.LayoutSlot {
+            id: "duration";
+          }
+
+          Adw.LayoutSlot {
+            id: "menu";
+          }
+        };
+      }
+
+      [scale]
+      $PlayerScale scale {}
+
+      [progress]
+      Label progress_label {
+        styles [
+          "numeric",
+          "caption",
+        ]
+      }
+
+      [duration]
+      Label duration_label {
+        styles [
+          "numeric",
+          "caption",
+        ]
+      }
+
+      [controls]
+      Box {
+        spacing: 6;
+        halign: center;
+
+        Button {
+          icon-name: "skip-backwards-10-symbolic";
+          action-name: "player.skip-backwards";
+
+          styles [
+            "flat",
+          ]
+        }
+
+        Button play_button {
+          icon-name: "media-playback-start-symbolic";
+          action-name: "player.play-pause";
+
+          styles [
+            "flat",
+          ]
+        }
+
+        Button {
+          icon-name: "skip-forward-10-symbolic";
+          action-name: "player.skip-forward";
+
+          styles [
+            "flat",
+          ]
+        }
+      }
+
+      [menu]
+      MenuButton menu_button {
+        icon-name: "view-more-symbolic";
+        direction: up;
+
+        styles [
+          "flat",
+        ]
+      }
+    }
   }
 }

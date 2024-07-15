@@ -297,6 +297,7 @@ export class Queue extends GObject.Object {
 
       this.notify("position");
       this.notify("current");
+      this.notify("current-is-video");
       this.notify("can-play-next");
       this.notify("can-play-previous");
     }

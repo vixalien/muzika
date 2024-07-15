@@ -25,6 +25,7 @@
 
 import GObject from "gi://GObject";
 import Gtk from "gi://Gtk?version=4.0";
+import Gdk from "gi://Gdk?version=4.0";
 import Adw from "gi://Adw";
 import GLib from "gi://GLib";
 import Gio from "gi://Gio";
@@ -40,21 +41,16 @@ import type { LikeStatus } from "libmuse";
 import { Navigator } from "./navigation.js";
 import { get_player } from "./application.js";
 import { Settings } from "./util/settings.js";
-import {
-  PlayerNowPlayingDetails,
-} from "./components/player/now-playing/details.js";
 import { LoginDialog } from "./pages/login.js";
 import { AddActionEntries } from "./util/action.js";
 import { PlayerView } from "./components/player/view.js";
 import { VideoPlayerView } from "./components/player/video/view.js";
 import { SaveToPlaylistDialog } from "./components/playlist/save-to-playlist.js";
-import { PlayerNowPlayingView } from "./components/player/now-playing/view.js";
-import { WindowSidebar } from "./sidebar.js";
+import { MuzikaShell } from "./layout/shell.js";
+import { WindowSidebar } from "./layout/sidebar.js";
 import { set_background_status } from "./util/portals.js";
 
-// make sure to first register PlayerSidebar
-GObject.type_ensure(PlayerNowPlayingDetails.$gtype);
-GObject.type_ensure(PlayerNowPlayingView.$gtype);
+GObject.type_ensure(MuzikaShell.$gtype);
 GObject.type_ensure(PlayerView.$gtype);
 GObject.type_ensure(WindowSidebar.$gtype);
 GObject.type_ensure(VideoPlayerView.$gtype);
@@ -69,14 +65,8 @@ export class Window extends Adw.ApplicationWindow {
         Template: "resource:///com/vixalien/muzika/ui/window.ui",
         InternalChildren: [
           "navigation_view",
-          "toolbar_view",
-          "now_playing_split_view",
-          "split_view",
           "main_stack",
           "video_player_view",
-          "now_playing_details",
-          "now_playing_view",
-          "sidebar",
         ],
         Children: [
           "toast_overlay",
@@ -89,6 +79,15 @@ export class Window extends Adw.ApplicationWindow {
             GObject.ParamFlags.READWRITE,
             Navigator.$gtype,
           ),
+          bottom_bar_height: GObject.ParamSpec.uint(
+            "bottom-bar-height",
+            "Bottom Bar Height",
+            "The height of the video player controls",
+            GObject.ParamFlags.READWRITE,
+            0,
+            GLib.MAXUINT32,
+            0,
+          ),
         },
       },
       this,
@@ -96,20 +95,25 @@ export class Window extends Adw.ApplicationWindow {
   }
 
   private _navigation_view!: Adw.NavigationView;
-  private _toolbar_view!: Adw.ToolbarView;
-  private _now_playing_split_view!: Adw.NavigationSplitView;
-  private _split_view!: Adw.NavigationSplitView;
   private _main_stack!: Gtk.Stack;
-  private _video_player_view!: VideoPlayerView;
-  private _now_playing_details!: PlayerNowPlayingDetails;
-  private _now_playing_view!: PlayerNowPlayingView;
-  private _sidebar!: WindowSidebar;
+  private toast_css_provider: Gtk.CssProvider;
 
   navigator: Navigator;
   toast_overlay!: Adw.ToastOverlay;
 
   constructor(params?: Partial<Adw.ApplicationWindow.ConstructorProperties>) {
     super(params);
+
+    this.toast_css_provider = new Gtk.CssProvider();
+
+    const default_provider = Gdk.Display.get_default();
+    if (default_provider) {
+      Gtk.StyleContext.add_provider_for_display(
+        default_provider,
+        this.toast_css_provider,
+        Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION,
+      );
+    }
 
     Settings.bind(
       "width",
@@ -144,29 +148,13 @@ export class Window extends Adw.ApplicationWindow {
       this.show_view("main");
     });
 
-    this._sidebar.connect("show-content", () => {
-      this._split_view.show_content = true;
-    });
-
     const player = get_player();
-
-    player.queue.connect(
-      "notify::current",
-      this.update_show_player_controls.bind(this),
-    );
 
     this.insert_action_group("navigator", this.navigator.get_action_group());
     this.insert_action_group("player", player.get_action_group());
-    this.insert_action_group(
-      "queue",
-      player.queue.get_action_group(),
-    );
+    this.insert_action_group("queue", player.queue.get_action_group());
 
     this.add_actions();
-
-    this._now_playing_view.connect("bottom-bar-clicked", () => {
-      this._now_playing_split_view.show_content = true;
-    });
 
     this.connect("notify::visible", () => {
       if (!this.visible) {
@@ -203,21 +191,9 @@ export class Window extends Adw.ApplicationWindow {
         },
       },
       {
-        name: "show-main-view",
-        activate: (_) => {
-          this.show_view("main");
-        },
-      },
-      {
-        name: "toggle-show-video",
-        activate: (_) => {
-          this.toggle_show_video();
-        },
-      },
-      {
         name: "fullscreen",
         activate: (_) => {
-          this.fullscreen_video();
+          this.toggle_fullscreen_video();
         },
       },
       {
@@ -299,11 +275,39 @@ export class Window extends Adw.ApplicationWindow {
         name: "visible-view",
         parameter_type: "s",
         state: '"main"',
-        activate: (action, param) => {
+        change_state: (action, param) => {
           const string = param?.get_string()[0];
           if (string && this.show_view(string)) {
             action.set_state(GLib.Variant.new_string(string));
           }
+        },
+      },
+      {
+        name: "now-playing",
+        state: "false",
+        change_state: (action, param) => {
+          if (!param) return;
+          if (param.get_boolean()) {
+            this.show_view("now-playing");
+          } else {
+            this.show_view("main");
+          }
+          action.set_state(param);
+        },
+        activate(action) {
+          const value = action.get_state()?.get_boolean() ?? false;
+          action.set_state(GLib.Variant.new_boolean(value));
+        },
+      },
+      {
+        name: "now-playing-details",
+        state: "false",
+        change_state: (action, param) => {
+          if (param) action.set_state(param);
+        },
+        activate(action) {
+          const value = action.get_state()?.get_boolean() ?? false;
+          action.set_state(GLib.Variant.new_boolean(value));
         },
       },
       {
@@ -324,7 +328,7 @@ export class Window extends Adw.ApplicationWindow {
 
     get_option("auth").addEventListener("token-changed", () => {
       this.update_auth_actions();
-      this._sidebar.token_changed();
+      // this._sidebar.token_changed();
     });
 
     this.update_auth_actions();
@@ -429,8 +433,13 @@ export class Window extends Adw.ApplicationWindow {
     if (!this.allowed_views.includes(view)) return false;
 
     if (view === "fullscreen-video") {
-      this.fullscreen_video();
+      this.toggle_fullscreen_video();
       return true;
+    }
+
+    // now-playing shows the main view
+    if (view === "now-playing") {
+      view = "main";
     }
 
     // `down` pops down the view to show either the video or now_playing views
@@ -447,8 +456,6 @@ export class Window extends Adw.ApplicationWindow {
       this.unfullscreen();
     }
 
-    this.update_show_player_controls();
-
     return true;
   }
 
@@ -456,28 +463,11 @@ export class Window extends Adw.ApplicationWindow {
     return this._main_stack.visible_child_name;
   }
 
-  private update_show_player_controls() {
-    let show_bottom_bars = true;
-
-    if (this.get_view_name() !== "main") {
-      // hide the player bar when the view is not the main view
-      show_bottom_bars = false;
-    } else if (this.get_view_name() === "now-playing" && this.large_viewport) {
-      // hide the bottom bar when showing the now playing screen on mobile
-      show_bottom_bars = false;
-    } else if (get_player().queue.current?.object == null) {
-      // also hide the player bar when there is no current track playing
-      show_bottom_bars = false;
-    }
-
-    this._toolbar_view.reveal_bottom_bars = show_bottom_bars;
-  }
-
   private toggle_show_video() {
     this.show_view(this.get_view_name() === "video" ? "down" : "video");
   }
 
-  private fullscreen_video() {
+  private toggle_fullscreen_video() {
     if (!get_player().queue.current_is_video) return;
 
     this.show_view("video");
@@ -487,18 +477,6 @@ export class Window extends Adw.ApplicationWindow {
     } else {
       this.fullscreen();
     }
-  }
-
-  private large_viewport = false;
-
-  private on_breakpoint_apply() {
-    this.large_viewport = true;
-    this.update_show_player_controls();
-  }
-
-  private on_breakpoint_unapply() {
-    this.large_viewport = false;
-    this.update_show_player_controls();
   }
 
   private rate_song(
@@ -591,5 +569,29 @@ export class Window extends Adw.ApplicationWindow {
             : _("Couldn't remove from library"),
         );
       });
+  }
+
+  private calculate_bottom_bar_height(
+    _: this,
+    page: "main" | "video",
+    main_bottom_bar_height: number,
+    video_bottom_bar_height: number,
+  ) {
+    return page === "main" ? main_bottom_bar_height : video_bottom_bar_height;
+  }
+
+  private _bottom_bar_height = 0;
+
+  get bottom_bar_height() {
+    return this._bottom_bar_height;
+  }
+
+  set bottom_bar_height(value: number) {
+    if (value === this.bottom_bar_height) return;
+    if (!this.toast_css_provider) return;
+
+    this.toast_css_provider.load_from_string(
+      `.main-toast-overlay { --toast-margin: ${value}px; }`,
+    );
   }
 }

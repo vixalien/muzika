@@ -3,19 +3,19 @@ import GObject from "gi://GObject";
 
 import type { QueueTrack } from "libmuse";
 
-import { load_thumbnails } from "../webimage.js";
 import { pretty_subtitles } from "src/util/text.js";
 import { setup_link_label } from "src/util/label.js";
 import { MenuHelper } from "src/util/menu/index.js";
 import { menuLikeRow } from "src/util/menu/like.js";
 import { menuLibraryRow } from "src/util/menu/library.js";
+import { load_thumbnails } from "src/components/webimage";
 
-export class QueueItem extends Gtk.Box {
+export class MuzikaNPQueueItem extends Gtk.Box {
   static {
     GObject.registerClass({
-      GTypeName: "QueueItem",
+      GTypeName: "MuzikaNPQueueItem",
       Template:
-        "resource:///com/vixalien/muzika/ui/components/player/queueitem.ui",
+        "resource:///com/vixalien/muzika/ui/components/player/now-playing/details/queueitem.ui",
       InternalChildren: [
         "image",
         "title",

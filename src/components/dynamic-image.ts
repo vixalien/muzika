@@ -507,6 +507,7 @@ export class DynamicImage extends Gtk.Overlay {
     const child = this.visible_child as Adw.Avatar;
 
     this.thumbnails = thumbnails;
+    child.text = thumbnails[0].url;
     // TODO: load the thumbnails on map
 
     load_thumbnails(child, thumbnails, this.size);

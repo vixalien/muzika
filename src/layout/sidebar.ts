@@ -3,27 +3,20 @@ import Gtk from "gi://Gtk?version=4.0";
 import Adw from "gi://Adw";
 import Gio from "gi://Gio";
 
-import { get_navigator } from "./navigation.js";
 import { get_current_user, get_option } from "libmuse";
-import { NavbarView } from "./components/navbar/index.js";
 
-NavbarView;
+import { get_navigator } from "../navigation";
+import { NavbarView } from "../components/navbar/index";
 
-export class WindowSidebar extends Adw.NavigationPage {
+GObject.type_ensure(NavbarView.$gtype);
+
+export class WindowSidebar extends Adw.Bin {
   static {
     GObject.registerClass(
       {
         GTypeName: "WindowSidebar",
-        Template: "resource:///com/vixalien/muzika/ui/sidebar.ui",
-        InternalChildren: [
-          "account",
-          "login",
-          "navbar",
-        ],
-        Properties: {},
-        Signals: {
-          "show-content": {},
-        },
+        Template: "resource:///com/vixalien/muzika/ui/layout/sidebar.ui",
+        InternalChildren: ["account", "login", "navbar"],
       },
       this,
     );
@@ -40,12 +33,14 @@ export class WindowSidebar extends Adw.NavigationPage {
   }
 
   private navbar_searched_cb() {
-    this.emit("show-content");
+    get_navigator().emit("show-content");
   }
 
   private navbar_activated_cb(_: NavbarView, uri: string) {
-    this.emit("show-content");
-    get_navigator().switch_stack(uri);
+    const navigator = get_navigator();
+
+    navigator.emit("show-content");
+    navigator.switch_stack(uri);
   }
 
   async token_changed() {

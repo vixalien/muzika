@@ -8,6 +8,7 @@ import { omit } from "lodash-es";
 
 import { QueueSettings, RepeatMode } from "./queue";
 import { get_player } from "src/application";
+import { escape_label, pretty_subtitles } from "src/util/text";
 
 // function create_cache_map<T extends any>() {
 //   return new Map<string, T>();
@@ -161,4 +162,83 @@ export function bind_play_icon(image: Gtk.Image | Gtk.Button) {
     },
     null,
   );
+}
+
+export function bind_track_title(label: Gtk.Label) {
+  const player = get_player();
+
+  return [
+    // @ts-expect-error incorrect types
+    player.queue.bind_property_full(
+      "current",
+      label,
+      "label",
+      GObject.BindingFlags.SYNC_CREATE,
+      () => {
+        const track = player.queue.current?.object;
+        if (!track) return [false, null];
+
+        if (track.album) {
+          return [
+            true,
+            `<a href="muzika:album:${track.album.id}?track=${track.videoId}">${
+              escape_label(track.title)
+            }</a>`,
+          ];
+        }
+
+        return [true, escape_label(track.title)];
+      },
+      null,
+    ),
+    // @ts-expect-error incorrect types
+    player.queue.bind_property_full(
+      "current",
+      label,
+      "tooltip-text",
+      GObject.BindingFlags.SYNC_CREATE,
+      () => {
+        const track = player.queue.current?.object;
+        if (!track) return [false, null];
+
+        return [true, escape_label(track.title)];
+      },
+      null,
+    ),
+  ];
+}
+
+export function bind_track_artists(label: Gtk.Label) {
+  const player = get_player();
+
+  return [
+    // @ts-expect-error incorrect types
+    player.queue.bind_property_full(
+      "current",
+      label,
+      "label",
+      GObject.BindingFlags.SYNC_CREATE,
+      () => {
+        const track = player.queue.current?.object;
+        if (!track) return [false, null];
+
+        return [true, pretty_subtitles(track.artists).markup];
+      },
+      null,
+    ),
+    // @ts-expect-error incorrect types
+    player.queue.bind_property_full(
+      "current",
+      label,
+      "tooltip-text",
+      GObject.BindingFlags.SYNC_CREATE,
+      () => {
+        const track = player.queue.current?.object;
+        if (!track) return [false, null];
+
+        return [true, pretty_subtitles(track.artists).plain];
+      },
+      null,
+    ),
+  ];
 }

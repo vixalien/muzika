@@ -160,7 +160,6 @@ export class InlineTabSwitcher extends Gtk.Widget {
       const separator = (button as any).separator as Gtk.Widget;
       button.unparent();
       separator.unparent();
-      tab.connect("notify", this.tab_updated_cb.bind(this));
     });
 
     this.buttons.clear();

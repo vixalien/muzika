@@ -1,0 +1,28 @@
+using Gtk 4.0;
+using Adw 1;
+
+template $MuzikaNPSheet : Adw.Bin {
+  $MuzikaMaxHeight {
+    Adw.ToolbarView {
+      [top]
+      Adw.HeaderBar {
+        title-widget: $MuzikaNPCounterpartSwitcher {};
+      }
+
+      Stack stack {
+        transition-type: crossfade;
+
+        StackPage {
+          name: "cover";
+          child: $MuzikaNPCover {};
+        }
+      }
+
+      [bottom]
+      $MuzikaNPDetailsSwitcher switcher {
+        margin-bottom: 3;
+        margin-top: 3;
+      }
+    }
+  }
+}

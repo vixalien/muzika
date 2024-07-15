@@ -52,6 +52,7 @@ export class Navigator extends GObject.Object {
         "search-changed": {
           param_types: [GObject.TYPE_STRING],
         },
+        "show-content": {},
       },
       Properties: {
         loading: GObject.ParamSpec.boolean(

@@ -36,12 +36,12 @@ export class TimedLyricLineRow extends Gtk.ListBoxRow {
   }
 }
 
-export class LyricsView extends Gtk.Stack {
+export class MuzikaNPLyrics extends Gtk.Stack {
   static {
     GObject.registerClass({
-      GTypeName: "LyricsView",
+      GTypeName: "MuzikaNPLyrics",
       Template:
-        "resource:///com/vixalien/muzika/ui/components/player/lyrics.ui",
+        "resource:///com/vixalien/muzika/ui/components/player/now-playing/details/lyrics.ui",
       InternalChildren: [
         "no_lyrics",
         "loading",
@@ -89,34 +89,32 @@ export class LyricsView extends Gtk.Stack {
     this._loading.start();
     this.set_visible_child(this._loading);
 
-    if (this.controller) {
-      this.controller.abort();
-    }
-
+    this.controller?.abort();
     this.controller = new AbortController();
 
-    if (new_lyrics) {
-      this.set_visible_child(this._loading);
-      this._loading.start();
-
-      await get_lyrics(new_lyrics, {
-        signal: this.controller.signal,
-      }).then((lyrics) => {
-        this.loaded_lyrics = new_lyrics;
-        this.show_lyrics(lyrics);
-      }).catch((err) => {
-        if (err.name === "AbortError") {
-          return;
-        } else {
-          throw err;
-        }
-      }).finally(() => {
-        this._loading.stop();
-      });
-    } else {
+    if (!new_lyrics) {
       this.loaded_lyrics = null;
       this.set_visible_child(this._no_lyrics);
+      return;
     }
+
+    this.set_visible_child(this._loading);
+    this._loading.start();
+
+    const lyrics = await get_lyrics(new_lyrics, {
+      signal: this.controller.signal,
+    })
+      .catch((err) => {
+        if (err.name !== "AbortError") throw err;
+      })
+      .finally(() => {
+        this._loading.stop();
+      });
+
+    if (!lyrics) return;
+
+    this.loaded_lyrics = new_lyrics;
+    this.show_lyrics(lyrics);
   }
 
   clear_views() {
@@ -177,7 +175,6 @@ export class LyricsView extends Gtk.Stack {
 
     if (this.pending_animation) {
       this.pending_animation.pause();
-
       this.pending_animation = null;
     }
 
@@ -197,7 +194,7 @@ export class LyricsView extends Gtk.Stack {
         this._timed_window,
         this._timed_window.vadjustment.value,
         Math.min(Math.max(scroll_to, 0), this._timed_window.vadjustment.upper),
-        LyricsView.ANIMATION_DURATION,
+        MuzikaNPLyrics.ANIMATION_DURATION,
         property_target,
       );
 

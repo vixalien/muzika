@@ -2,16 +2,18 @@ using Gtk 4.0;
 using Adw 1;
 
 template $VideoPlayerView : Adw.Bin {
+  bottom-bar-height: bind toolbar_view.bottom-bar-height;
+
   WindowHandle {
     Adw.BreakpointBin {
       width-request: 200;
       height-request: 200;
       
       Adw.Breakpoint {
-        condition ("max-width: 700sp")
+        condition ("min-width: 700sp")
 
         setters {
-          controls.show-mini: true;
+          controls.show-mini: false;
         }
       }
 
@@ -62,7 +64,8 @@ template $VideoPlayerView : Adw.Bin {
 
     Shortcut {
       trigger: "Escape";
-      action: "action(win.toggle-show-video)";
+      action: "action(win.visible-view)";
+      arguments: "'main'";
     }
 
     Shortcut {

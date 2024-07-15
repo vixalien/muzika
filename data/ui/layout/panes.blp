@@ -1,0 +1,27 @@
+using Gtk 4.0;
+using Adw 1;
+
+template $MuzikaPanes : Adw.BreakpointBin {
+  width-request: 360;
+  height-request: 294;
+
+  Adw.Breakpoint {
+    condition ("max-width: 600sp")
+
+    setters {
+      split_view.collapsed: true;
+    }
+  }
+
+  Adw.NavigationSplitView split_view {
+    min-sidebar-width: 250;
+    max-sidebar-width: 350;
+    show-content: true;
+    sidebar: Adw.NavigationPage sidebar_page {
+      title: "Sidebar";
+    };
+    content: Adw.NavigationPage content_page {
+      title: "Window";
+    };
+  }
+}

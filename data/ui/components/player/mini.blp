@@ -26,7 +26,6 @@ template $MiniPlayerView : Overlay {
         homogeneous: true;
 
         Label title {
-          label: "Title";
           halign: start;
           ellipsize: end;
 
@@ -40,10 +39,6 @@ template $MiniPlayerView : Overlay {
           halign: start;
           ellipsize: end;
         }
-      }
-
-      GestureClick {
-        pressed => $gesture_pressed_cb();
       }
     }
 

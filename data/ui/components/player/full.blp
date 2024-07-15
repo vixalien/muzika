@@ -3,9 +3,9 @@ using Adw 1;
 using Gdk 4.0;
 
 template $FullPlayerView : ActionBar {
-  // to make the thumbnail look aligned
-  margin-start: 6;
-  margin-end: 6;
+  styles [
+    "full-player-view"
+  ]
 
   [start]
   Box song_info_box {
@@ -164,10 +164,8 @@ template $FullPlayerView : ActionBar {
       tooltip-text: _("Adjust Volume");
     }
 
-    ToggleButton {
-      icon-name: "go-up-symbolic";
-      action-name: "win.visible-view";
-      action-target: "'now-playing'";
+    $MuzikaNPDetailsSwitcher switcher {
+      show-buttons: true;
     }
   }
 }
