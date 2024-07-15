@@ -108,7 +108,7 @@ export class MuzikaShell extends Gtk.Box {
   ): void {
     // this._multi_layout_view is only set after initializing
     if (this._multi_layout_view && child instanceof Gtk.Widget) {
-    return this._multi_layout_view.set_child("content", child);
+      return this._multi_layout_view.set_child("content", child);
     }
 
     super.vfunc_add_child(builder, child, type);
