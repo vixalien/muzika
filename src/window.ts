@@ -287,7 +287,7 @@ export class Window extends Adw.ApplicationWindow {
         state: "false",
         change_state: (action, param) => {
           if (!param) return;
-          if (param?.get_boolean()) {
+          if (param.get_boolean()) {
             this.show_view("now-playing");
           } else {
             this.show_view("main");
