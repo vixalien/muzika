@@ -1,0 +1,66 @@
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+name: CD
+jobs:
+  flatpak:
+    name: Flatter
+    runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/andyholmes/flatter/gnome:master
+      options: --privileged
+    permissions:
+      contents: write
+
+    strategy:
+      matrix:
+        arch: [x86_64, aarch64]
+      max-parallel: 1
+      fail-fast: false
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup QEMU
+        if: matrix.arch == 'aarch64'
+        id: qemu
+        uses: docker/setup-qemu-action@v3
+        with:
+          platforms: arm64
+
+      - name: Setup GPG
+        id: gpg
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        uses: crazy-max/ghaction-import-gpg@v6
+        with:
+          gpg_private_key: ${{ secrets.GPG_PRIVATE_KEY }}
+          passphrase: ${{ secrets.GPG_PASSPHRASE }}
+
+      - name: Setup Flatpak SDK Extensions
+        run: |
+          flatpak --system remote-add --if-not-exists flathub-beta https://flathub.org/beta-repo/flathub-beta.flatpakrepo
+          flatpak --system install -y --noninteractive flathub-beta org.freedesktop.Sdk.Extension.node20/${{ matrix.arch }}/24.08beta
+          flatpak --system install -y --noninteractive flathub-beta org.freedesktop.Sdk.Extension.rust-stable/${{ matrix.arch }}/24.08beta
+
+      - name: Build
+        id: build
+        uses: andyholmes/flatter@main
+        with:
+          files: build-aux/flatpak/com.vixalien.muzika.Devel.json
+          arch: ${{ matrix.arch }}
+          gpg-sign: ${{ steps.gpg.outputs.fingerprint }}
+          upload-bundles: true
+          flatpak-build-bundle-args: |
+            --repo-url=https://vixalien.github.io/muzika/repo
+
+      - name: Deploy
+        uses: JamesIves/github-pages-deploy-action@releases/v4
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        with:
+          folder: ${{ steps.build.outputs.repository }}
+          target-folder: repo
