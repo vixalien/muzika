@@ -23,39 +23,43 @@ GObject.type_ensure(PlayerScale.$gtype);
 
 export class FullPlayerView extends Gtk.ActionBar {
   static {
-    GObject.registerClass({
-      GTypeName: "FullPlayerView",
-      Template: "resource:///com/vixalien/muzika/ui/components/player/full.ui",
-      Properties: {
-        details_stack: GObject.param_spec_object(
-          "details-stack",
-          "Detais View Stack",
-          "The view stack to show details switchers for",
-          Adw.ViewStack.$gtype,
-          GObject.ParamFlags.READWRITE,
-        ),
-        show_details: GObject.param_spec_boolean(
-          "show-details",
-          "Show Details",
-          "If the details should be shown",
-          false,
-          GObject.ParamFlags.READWRITE,
-        ),
+    GObject.registerClass(
+      {
+        GTypeName: "FullPlayerView",
+        Template:
+          "resource:///com/vixalien/muzika/ui/components/player/full.ui",
+        Properties: {
+          details_stack: GObject.param_spec_object(
+            "details-stack",
+            "Detais View Stack",
+            "The view stack to show details switchers for",
+            Adw.ViewStack.$gtype,
+            GObject.ParamFlags.READWRITE,
+          ),
+          show_details: GObject.param_spec_boolean(
+            "show-details",
+            "Show Details",
+            "If the details should be shown",
+            false,
+            GObject.ParamFlags.READWRITE,
+          ),
+        },
+        InternalChildren: [
+          "title",
+          "subtitle",
+          "shuffle_button",
+          "prev_button",
+          "play_image",
+          "next_button",
+          "repeat_button",
+          "progress_label",
+          "duration_label",
+          "volume_button",
+          "switcher",
+        ],
       },
-      InternalChildren: [
-        "title",
-        "subtitle",
-        "shuffle_button",
-        "prev_button",
-        "play_image",
-        "next_button",
-        "repeat_button",
-        "progress_label",
-        "duration_label",
-        "volume_button",
-        "switcher",
-      ],
-    }, this);
+      this,
+    );
   }
 
   show_details = false;
@@ -135,7 +139,7 @@ export class FullPlayerView extends Gtk.ActionBar {
         this._duration_label,
         "label",
         GObject.BindingFlags.DEFAULT | GObject.BindingFlags.SYNC_CREATE,
-        (_, __) => {
+        () => {
           return [true, micro_to_string(this.player.duration)];
         },
         null,
@@ -146,7 +150,7 @@ export class FullPlayerView extends Gtk.ActionBar {
         this._progress_label,
         "label",
         GObject.BindingFlags.DEFAULT | GObject.BindingFlags.SYNC_CREATE,
-        (_, __) => {
+        () => {
           return [
             true,
             micro_to_string(
@@ -158,18 +162,22 @@ export class FullPlayerView extends Gtk.ActionBar {
       ),
     );
 
-    this.listeners.connect(this._volume_button, "query-tooltip", (
-      _widget: Gtk.VolumeButton,
-      _x: number,
-      _y: number,
-      _keyboard_mode: boolean,
-      tooltip: Gtk.Tooltip,
-    ) => {
-      tooltip.set_text(
-        `${Math.round(this._volume_button.adjustment.value * 100)}%`,
-      );
-      return true;
-    });
+    this.listeners.connect(
+      this._volume_button,
+      "query-tooltip",
+      (
+        _widget: Gtk.VolumeButton,
+        _x: number,
+        _y: number,
+        _keyboard_mode: boolean,
+        tooltip: Gtk.Tooltip,
+      ) => {
+        tooltip.set_text(
+          `${Math.round(this._volume_button.adjustment.value * 100)}%`,
+        );
+        return true;
+      },
+    );
 
     [this._title, this._subtitle].forEach((label) => {
       setup_link_label(label);
@@ -179,10 +187,7 @@ export class FullPlayerView extends Gtk.ActionBar {
   private gesture_pressed_cb(gesture: Gtk.Gesture) {
     gesture.set_state(Gtk.EventSequenceState.CLAIMED);
 
-    this.activate_action(
-      "win.visible-view",
-      GLib.Variant.new_string("video"),
-    );
+    this.activate_action("win.visible-view", GLib.Variant.new_string("video"));
   }
 
   vfunc_map(): void {

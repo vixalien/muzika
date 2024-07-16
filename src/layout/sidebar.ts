@@ -53,10 +53,9 @@ export class WindowSidebar extends Adw.Bin {
       return;
     }
 
-    const account = await get_current_user()
-      .catch(() => {
-        console.error("Couldn't get logged in user");
-      });
+    const account = await get_current_user().catch(() => {
+      console.error("Couldn't get logged in user");
+    });
 
     if (!account) return;
 
@@ -66,10 +65,7 @@ export class WindowSidebar extends Adw.Bin {
       account.name,
       `navigator.visit("muzika:channel:${account.channel_id}")`,
     );
-    menu.append(
-      _("Logout"),
-      "win.logout",
-    );
+    menu.append(_("Logout"), "win.logout");
 
     this._account.menu_model = menu;
   }

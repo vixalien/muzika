@@ -18,81 +18,85 @@ export interface FixedRatioThumbnailProps
 
 export class FixedRatioThumbnail extends Gtk.Widget implements Gtk.Orientable {
   static {
-    GObject.registerClass({
-      GTypeName: "FixedRatioThumbnail",
-      Properties: {
-        paintable: GObject.ParamSpec.object(
-          "paintable",
-          "Paintable",
-          "The currently displayed paintable",
-          GObject.ParamFlags.READWRITE,
-          Gdk.Paintable,
-        ),
-        min_width: GObject.ParamSpec.int(
-          "min-width",
-          "Minimum Width",
-          "The minimum width of this image",
-          GObject.ParamFlags.READWRITE,
-          0,
-          GLib.MAXINT32,
-          0,
-        ),
-        max_width: GObject.ParamSpec.int(
-          "max-width",
-          "Maximum Width",
-          "The maximum width of this image",
-          GObject.ParamFlags.READWRITE,
-          -1,
-          GLib.MAXINT32,
-          -1,
-        ),
-        min_height: GObject.ParamSpec.int(
-          "min-height",
-          "Minimum Height",
-          "The minimum height of this image",
-          GObject.ParamFlags.READWRITE,
-          0,
-          GLib.MAXINT32,
-          0,
-        ),
-        max_height: GObject.ParamSpec.int(
-          "max-height",
-          "Maximum Height",
-          "The maximum height of this image",
-          GObject.ParamFlags.READWRITE,
-          -1,
-          GLib.MAXINT32,
-          -1,
-        ),
-        orientation: GObject.ParamSpec.enum(
-          "orientation",
-          "Orientation",
-          "The orientation of the image",
-          GObject.ParamFlags.READWRITE,
-          Gtk.Orientation,
-          Gtk.Orientation.HORIZONTAL,
-        ),
-        can_expand: GObject.ParamSpec.boolean(
-          "can-expand",
-          "Can Expand",
-          "Whether to expand the image to fill the available space",
-          GObject.ParamFlags.READWRITE,
-          false,
-        ),
-        aspect_ratio: GObject.ParamSpec.float(
-          "aspect-ratio",
-          "Aspect Ratio",
-          "The preferred aspect ratio. If this is -1, the aspect ratio is inferred",
-          GObject.ParamFlags.READWRITE,
-          -1,
-          GLib.MAXINT32,
-          -1,
-        ),
+    GObject.registerClass(
+      {
+        GTypeName: "FixedRatioThumbnail",
+        Properties: {
+          paintable: GObject.ParamSpec.object(
+            "paintable",
+            "Paintable",
+            "The currently displayed paintable",
+            GObject.ParamFlags.READWRITE,
+            Gdk.Paintable,
+          ),
+          min_width: GObject.ParamSpec.int(
+            "min-width",
+            "Minimum Width",
+            "The minimum width of this image",
+            GObject.ParamFlags.READWRITE,
+            0,
+            GLib.MAXINT32,
+            0,
+          ),
+          max_width: GObject.ParamSpec.int(
+            "max-width",
+            "Maximum Width",
+            "The maximum width of this image",
+            GObject.ParamFlags.READWRITE,
+            -1,
+            GLib.MAXINT32,
+            -1,
+          ),
+          min_height: GObject.ParamSpec.int(
+            "min-height",
+            "Minimum Height",
+            "The minimum height of this image",
+            GObject.ParamFlags.READWRITE,
+            0,
+            GLib.MAXINT32,
+            0,
+          ),
+          max_height: GObject.ParamSpec.int(
+            "max-height",
+            "Maximum Height",
+            "The maximum height of this image",
+            GObject.ParamFlags.READWRITE,
+            -1,
+            GLib.MAXINT32,
+            -1,
+          ),
+          orientation: GObject.ParamSpec.enum(
+            "orientation",
+            "Orientation",
+            "The orientation of the image",
+            GObject.ParamFlags.READWRITE,
+            Gtk.Orientation,
+            Gtk.Orientation.HORIZONTAL,
+          ),
+          can_expand: GObject.ParamSpec.boolean(
+            "can-expand",
+            "Can Expand",
+            "Whether to expand the image to fill the available space",
+            GObject.ParamFlags.READWRITE,
+            false,
+          ),
+          aspect_ratio: GObject.ParamSpec.float(
+            "aspect-ratio",
+            "Aspect Ratio",
+            "The preferred aspect ratio. If this is -1, the aspect ratio is inferred",
+            GObject.ParamFlags.READWRITE,
+            -1,
+            GLib.MAXINT32,
+            -1,
+          ),
+        },
+        Implements: [Gtk.Orientable],
       },
-      Implements: [Gtk.Orientable],
-    }, this);
+      this,
+    );
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-useless-constructor
   constructor(props?: Partial<FixedRatioThumbnailProps>) {
     super(props);
   }
@@ -161,7 +165,7 @@ export class FixedRatioThumbnail extends Gtk.Widget implements Gtk.Orientable {
 
   // property: min-width
 
-  private _min_width: number = 0;
+  private _min_width = 0;
 
   get min_width(): number {
     return this._min_width;
@@ -178,7 +182,7 @@ export class FixedRatioThumbnail extends Gtk.Widget implements Gtk.Orientable {
 
   // property: min-height
 
-  private _min_height: number = 0;
+  private _min_height = 0;
 
   get min_height(): number {
     return this._min_height;
@@ -195,7 +199,7 @@ export class FixedRatioThumbnail extends Gtk.Widget implements Gtk.Orientable {
 
   // property: max-width
 
-  private _max_width: number = -1;
+  private _max_width = -1;
 
   get max_width(): number {
     return this._max_width;
@@ -212,7 +216,7 @@ export class FixedRatioThumbnail extends Gtk.Widget implements Gtk.Orientable {
 
   // property: max-height
 
-  private _max_height: number = -1;
+  private _max_height = -1;
 
   get max_height(): number {
     return this._max_height;
@@ -229,7 +233,7 @@ export class FixedRatioThumbnail extends Gtk.Widget implements Gtk.Orientable {
 
   // property: max-height
 
-  private _can_expand: boolean = false;
+  private _can_expand = false;
 
   get can_expand(): boolean {
     return this._can_expand;
@@ -276,9 +280,8 @@ export class FixedRatioThumbnail extends Gtk.Widget implements Gtk.Orientable {
     orientation: Gtk.Orientation,
     for_size: number,
   ): [number, number, number, number] {
-    let minimal_size: number,
-      natural_size: number,
-      minimum_baseline = -1,
+    let minimal_size: number, natural_size: number;
+    const minimum_baseline = -1,
       natural_baseline = -1;
 
     const expand = this.can_expand;
@@ -388,21 +391,21 @@ export class FixedRatioThumbnail extends Gtk.Widget implements Gtk.Orientable {
     this.queue_draw();
   }
 
-  private paintable_invalidate_contents_binded = this
-    .paintable_invalidate_contents.bind(this);
+  private paintable_invalidate_contents_binded =
+    this.paintable_invalidate_contents.bind(this);
 
   private paintable_invalidate_size() {
     this.queue_resize();
   }
 
-  private paintable_invalidate_size_binded = this
-    .paintable_invalidate_size.bind(this);
+  private paintable_invalidate_size_binded =
+    this.paintable_invalidate_size.bind(this);
 }
 
 function min_if_present(...values: (number | null)[]) {
-  return Math.min(...values.filter((v) => v && v > 0) as number[]);
+  return Math.min(...(values.filter((v) => v && v > 0) as number[]));
 }
 
 function max_if_present(...values: (number | null)[]) {
-  return Math.max(...values.filter((v) => v && v > 0) as number[]);
+  return Math.max(...(values.filter((v) => v && v > 0) as number[]));
 }

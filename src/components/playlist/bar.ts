@@ -15,41 +15,45 @@ const vprintf = imports.format.vprintf;
 
 export class PlaylistBar extends Adw.Bin {
   static {
-    GObject.registerClass({
-      GTypeName: "PlaylistBar",
-      Template: "resource:///com/vixalien/muzika/ui/components/playlist/bar.ui",
-      InternalChildren: ["select_all", "label", "more", "delete", "revealer"],
-      Properties: {
-        "selection-mode": GObject.param_spec_boolean(
-          "selection-mode",
-          "Selection Mode",
-          "Whether this bar is in selection mode",
-          false,
-          GObject.ParamFlags.READWRITE,
-        ),
-        editable: GObject.param_spec_boolean(
-          "editable",
-          "Editable",
-          "Whether the playlist is editable",
-          false,
-          GObject.ParamFlags.READWRITE,
-        ),
-        model: GObject.param_spec_object(
-          "model",
-          "Model",
-          "The list model this bar is displaying",
-          Gtk.SelectionModel.$gtype,
-          GObject.ParamFlags.READWRITE,
-        ),
-        revealed: GObject.param_spec_boolean(
-          "revealed",
-          "Revealed",
-          "Whether this bar is revealed",
-          false,
-          GObject.ParamFlags.READWRITE,
-        ),
+    GObject.registerClass(
+      {
+        GTypeName: "PlaylistBar",
+        Template:
+          "resource:///com/vixalien/muzika/ui/components/playlist/bar.ui",
+        InternalChildren: ["select_all", "label", "more", "delete", "revealer"],
+        Properties: {
+          "selection-mode": GObject.param_spec_boolean(
+            "selection-mode",
+            "Selection Mode",
+            "Whether this bar is in selection mode",
+            false,
+            GObject.ParamFlags.READWRITE,
+          ),
+          editable: GObject.param_spec_boolean(
+            "editable",
+            "Editable",
+            "Whether the playlist is editable",
+            false,
+            GObject.ParamFlags.READWRITE,
+          ),
+          model: GObject.param_spec_object(
+            "model",
+            "Model",
+            "The list model this bar is displaying",
+            Gtk.SelectionModel.$gtype,
+            GObject.ParamFlags.READWRITE,
+          ),
+          revealed: GObject.param_spec_boolean(
+            "revealed",
+            "Revealed",
+            "Whether this bar is revealed",
+            false,
+            GObject.ParamFlags.READWRITE,
+          ),
+        },
       },
-    }, this);
+      this,
+    );
   }
 
   private _select_all!: Gtk.ToggleButton;
@@ -115,8 +119,8 @@ export class PlaylistBar extends Adw.Bin {
 
   // property: model
 
-  private _model: Gtk.SelectionModel<ObjectContainer<PlaylistItem>> = Gtk
-    .NoSelection.new(
+  private _model: Gtk.SelectionModel<ObjectContainer<PlaylistItem>> =
+    Gtk.NoSelection.new(
       Gio.ListStore.new(Gtk.Widget.$gtype),
     ) as Gtk.NoSelection<ObjectContainer<PlaylistItem>>;
 
@@ -173,11 +177,14 @@ export class PlaylistBar extends Adw.Bin {
     if (items > 1 || this.selection_mode) {
       this.revealed = true;
 
-      this._label.label = items === 0 ? _("No song selected") : ngettext(
-        vprintf(_("%d song selected"), [items]),
-        vprintf(_("%d songs selected"), [items]),
-        items,
-      );
+      this._label.label =
+        items === 0
+          ? _("No song selected")
+          : ngettext(
+              vprintf(_("%d song selected"), [items]),
+              vprintf(_("%d songs selected"), [items]),
+              items,
+            );
 
       this.update_model();
     } else {

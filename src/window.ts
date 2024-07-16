@@ -68,9 +68,7 @@ export class Window extends Adw.ApplicationWindow {
           "main_stack",
           "video_player_view",
         ],
-        Children: [
-          "toast_overlay",
-        ],
+        Children: ["toast_overlay"],
         Properties: {
           navigator: GObject.ParamSpec.object(
             "navigator",
@@ -192,7 +190,7 @@ export class Window extends Adw.ApplicationWindow {
       },
       {
         name: "fullscreen",
-        activate: (_) => {
+        activate: () => {
           this.toggle_fullscreen_video();
         },
       },
@@ -233,7 +231,7 @@ export class Window extends Adw.ApplicationWindow {
           this.rate_song(
             videoId,
             status as LikeStatus,
-            oldStatus as LikeStatus || undefined,
+            (oldStatus as LikeStatus) || undefined,
           );
         },
       },
@@ -252,11 +250,7 @@ export class Window extends Adw.ApplicationWindow {
 
           if (!videoId || !status) return;
 
-          this.rate_playlist(
-            videoId,
-            status as LikeStatus,
-            album,
-          );
+          this.rate_playlist(videoId, status as LikeStatus, album);
         },
       },
       {
@@ -363,8 +357,8 @@ export class Window extends Adw.ApplicationWindow {
       Adw.ResponseAppearance.DESTRUCTIVE,
     );
 
-    const response = await dialog.choose(this, null)
-      .catch(console.error);
+    // @ts-expect-error incorrect types
+    const response = await dialog.choose(this, null).catch(console.error);
 
     if (response === "logout") {
       get_option("auth").token = null;
@@ -392,7 +386,8 @@ export class Window extends Adw.ApplicationWindow {
       controller.abort();
     });
 
-    this.login_dialog.login(controller.signal)
+    this.login_dialog
+      .login(controller.signal)
       .then(() => {
         this.add_toast(_("Successfully logged in!"));
         this.navigator.reload();
@@ -411,8 +406,8 @@ export class Window extends Adw.ApplicationWindow {
       .finally(() => {
         // it seems you can't quickyl close a dialog after opening it
         GLib.timeout_add(100, GLib.PRIORITY_LOW, () => {
-          this.login_dialog!.force_close();
-          this.login_dialog!.disconnect(listener);
+          this.login_dialog?.force_close();
+          this.login_dialog?.disconnect(listener);
 
           return GLib.SOURCE_REMOVE;
         });
@@ -516,11 +511,7 @@ export class Window extends Adw.ApplicationWindow {
       });
   }
 
-  private rate_playlist(
-    playlistId: string,
-    status: LikeStatus,
-    album = false,
-  ) {
+  private rate_playlist(playlistId: string, status: LikeStatus, album = false) {
     rate_playlist(playlistId, status)
       .then(() => {
         let title;
@@ -551,16 +542,14 @@ export class Window extends Adw.ApplicationWindow {
       });
   }
 
-  private edit_library(
-    action: "add" | "remove",
-    token: string,
-  ) {
+  private edit_library(action: "add" | "remove", token: string) {
     edit_song_library_status([token])
       .then(() => {
         this.add_toast(
           action === "add" ? _("Added to library") : _("Removed from library"),
         );
-      }).catch((error) => {
+      })
+      .catch((error) => {
         console.error("An error happened while rating song", action, error);
 
         this.add_toast(

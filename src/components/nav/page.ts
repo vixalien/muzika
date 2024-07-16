@@ -17,34 +17,32 @@ export interface PageState<State> {
 // register Loading
 GObject.type_ensure(Loading.$gtype);
 
-export class Page<Data extends unknown, State extends unknown = null>
-  extends Adw.NavigationPage {
+export class Page<Data, State = null> extends Adw.NavigationPage {
   static {
-    GObject.registerClass({
-      GTypeName: "Page",
-      Template: "resource:///com/vixalien/muzika/ui/components/nav/page.ui",
-      InternalChildren: [
-        "stack",
-        "loading",
-        "content",
-      ],
-      Properties: {
-        content: GObject.ParamSpec.object(
-          "content",
-          "Content",
-          "The content to show on this page",
-          GObject.ParamFlags.READWRITE,
-          Gtk.Widget.$gtype,
-        ),
-        "is-loading": GObject.ParamSpec.boolean(
-          "is-loading",
-          "Is Loading",
-          "Whether the page is loading",
-          GObject.ParamFlags.READWRITE,
-          true,
-        ),
+    GObject.registerClass(
+      {
+        GTypeName: "Page",
+        Template: "resource:///com/vixalien/muzika/ui/components/nav/page.ui",
+        InternalChildren: ["stack", "loading", "content"],
+        Properties: {
+          content: GObject.ParamSpec.object(
+            "content",
+            "Content",
+            "The content to show on this page",
+            GObject.ParamFlags.READWRITE,
+            Gtk.Widget.$gtype,
+          ),
+          "is-loading": GObject.ParamSpec.boolean(
+            "is-loading",
+            "Is Loading",
+            "Whether the page is loading",
+            GObject.ParamFlags.READWRITE,
+            true,
+          ),
+        },
       },
-    }, this);
+      this,
+    );
   }
 
   private _stack!: Gtk.Stack;
@@ -78,11 +76,9 @@ export class Page<Data extends unknown, State extends unknown = null>
   last_match?: MatchResult<Record<string, string>>;
 
   private __state: PageState<State> | null = null;
-  private __error: any;
+  private __error: unknown;
 
-  constructor(
-    meta: MuzikaPageMeta<Data, State>,
-  ) {
+  constructor(meta: MuzikaPageMeta<Data, State>) {
     super();
 
     this.uri = meta.uri;
@@ -95,12 +91,14 @@ export class Page<Data extends unknown, State extends unknown = null>
 
   vfunc_hidden(): void {
     if (this.__error) {
-      this.page = this._content.child = null as any;
+      // @ts-expect-error cleaning up
+      this.page = this._content.child = null;
     } else if (this.page) {
       this.__state = {
         state: this.page.get_state(),
       };
-      this.page = this._content.child = null as any;
+      // @ts-expect-error cleaning up
+      this.page = this._content.child = null;
     }
   }
 
@@ -119,7 +117,7 @@ export class Page<Data extends unknown, State extends unknown = null>
     }
   }
 
-  show_error(error: any) {
+  show_error(error: unknown) {
     this.__error = error;
 
     let error_page: Gtk.Widget;
@@ -144,20 +142,24 @@ export class Page<Data extends unknown, State extends unknown = null>
     this.last_match = match;
 
     try {
-      const result = await this.meta.load({
-        match,
-        set_title: this.set_title.bind(this),
-        signal,
-        url: new URL("muzika:" + uri),
-      })?.catch((error) => {
-        throw error;
-      });
+      const result = await this.meta
+        .load({
+          match,
+          set_title: this.set_title.bind(this),
+          signal,
+          url: new URL("muzika:" + uri),
+        })
+        ?.catch((error) => {
+          throw error;
+        });
 
       this.loading = false;
       this.__error = null;
 
+      if (!result) return;
+
       const page = this.meta.build();
-      page.present(result!);
+      page.present(result);
 
       this._content.child = this.page = page;
     } catch (error) {

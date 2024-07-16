@@ -3,7 +3,7 @@ import GLib from "gi://GLib";
 import Gtk from "gi://Gtk?version=4.0";
 
 import { LikeStatus, ParsedSong } from "libmuse";
-import { MenuProp } from ".";
+import { MenuItemWithChild, MenuProp } from ".";
 
 type MenuTokens = ParsedSong["feedbackTokens"];
 
@@ -41,7 +41,7 @@ export function menuLibraryRow(
   menu.set_label(label);
   menu.set_attribute_value("custom", GLib.Variant.new_string("library-button"));
 
-  (menu as any)["__child"] = (popover: Gtk.Popover) => {
+  (menu as MenuItemWithChild)["__child"] = (popover: Gtk.Popover) => {
     const label_widget = new Gtk.Label({
       label,
       halign: Gtk.Align.START,
@@ -74,8 +74,7 @@ export function menuPlaylistLibraryRow(
 ): MenuProp {
   if (!playlistId) return null;
 
-  let label: string,
-    newStatus: LikeStatus;
+  let label: string, newStatus: LikeStatus;
 
   if (likeStatus && likeStatus === "LIKE") {
     label = album
@@ -91,7 +90,7 @@ export function menuPlaylistLibraryRow(
   menu.set_label(label);
   menu.set_attribute_value("custom", GLib.Variant.new_string("library-button"));
 
-  (menu as any)["__child"] = (popover: Gtk.Popover) => {
+  (menu as MenuItemWithChild)["__child"] = (popover: Gtk.Popover) => {
     const label_widget = new Gtk.Label({
       label,
       halign: Gtk.Align.START,
@@ -102,9 +101,7 @@ export function menuPlaylistLibraryRow(
       child: label_widget,
     });
     button.set_detailed_action_name(
-      `win.rate-playlist(\("${playlistId}", "${newStatus}", ${
-        album ?? false
-      }\))`,
+      `win.rate-playlist(("${playlistId}", "${newStatus}", ${album ?? false}))`,
     );
 
     button.connect("clicked", () => {
@@ -119,5 +116,5 @@ export function menuPlaylistLibraryRow(
 }
 
 function get_action_string(action: "add" | "remove", token: string) {
-  return `win.edit-library(\("${action}", "${token}"\))`;
+  return `win.edit-library(("${action}", "${token}"))`;
 }

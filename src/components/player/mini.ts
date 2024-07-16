@@ -1,8 +1,6 @@
 import Gtk from "gi://Gtk?version=4.0";
 import GObject from "gi://GObject";
 
-import type { QueueTrack } from "libmuse";
-
 import { MuzikaPlayer } from "src/player";
 import { SignalListeners } from "src/util/signal-listener.js";
 import { get_player } from "src/application.js";
@@ -14,15 +12,15 @@ GObject.type_ensure(PlayerProgressBar.$gtype);
 
 export class MiniPlayerView extends Gtk.Overlay {
   static {
-    GObject.registerClass({
-      GTypeName: "MiniPlayerView",
-      Template: "resource:///com/vixalien/muzika/ui/components/player/mini.ui",
-      InternalChildren: [
-        "title",
-        "subtitle",
-        "play_button",
-      ],
-    }, this);
+    GObject.registerClass(
+      {
+        GTypeName: "MiniPlayerView",
+        Template:
+          "resource:///com/vixalien/muzika/ui/components/player/mini.ui",
+        InternalChildren: ["title", "subtitle", "play_button"],
+      },
+      this,
+    );
   }
 
   private _title!: Gtk.Label;

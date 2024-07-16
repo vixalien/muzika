@@ -15,20 +15,23 @@ export interface FlatListViewConstructorProperties
 
 export class FlatListView extends Gtk.ListView {
   static {
-    GObject.registerClass({
-      GTypeName: "FlatListView",
-      Properties: {
-        "child-type": GObject.ParamSpec.uint(
-          "child-type",
-          "Child Type",
-          "The type of children rendered by this listview",
-          GObject.ParamFlags.READWRITE,
-          FlatViewChildType.INLINE_SONG,
-          FlatViewChildType.MIXED_CARD,
-          FlatViewChildType.INLINE_SONG,
-        ),
+    GObject.registerClass(
+      {
+        GTypeName: "FlatListView",
+        Properties: {
+          "child-type": GObject.ParamSpec.uint(
+            "child-type",
+            "Child Type",
+            "The type of children rendered by this listview",
+            GObject.ParamFlags.READWRITE,
+            FlatViewChildType.INLINE_SONG,
+            FlatViewChildType.MIXED_CARD,
+            FlatViewChildType.INLINE_SONG,
+          ),
+        },
       },
-    }, this);
+      this,
+    );
   }
 
   private _items!: PlayableList<FlatCardItem>;
@@ -88,7 +91,7 @@ export class FlatListView extends Gtk.ListView {
           break;
       }
 
-      (container as any).binding = container.bind_property(
+      (container as ContainerWithBinding).binding = container.bind_property(
         "state",
         card,
         "state",
@@ -102,7 +105,7 @@ export class FlatListView extends Gtk.ListView {
       InlineSong | SearchContent
     >;
 
-    ((container as any).binding as GObject.Binding)?.unbind();
+    ((container as ContainerWithBinding).binding as GObject.Binding)?.unbind();
   }
 
   vfunc_map(): void {
@@ -115,3 +118,7 @@ export class FlatListView extends Gtk.ListView {
     super.vfunc_unmap();
   }
 }
+
+type ContainerWithBinding = PlayableContainer<MixedCardItem> & {
+  binding: GObject.Binding;
+};

@@ -32,79 +32,75 @@ import { SignalListeners } from "src/util/signal-listener";
 
 export class AnnotatedView extends Gtk.Widget {
   static {
-    GObject.registerClass({
-      GTypeName: "AnnotatedView",
-      Implements: [
-        Gtk.Buildable,
-        Gtk.Scrollable,
-      ],
-      Properties: {
-        header: GObject.param_spec_object(
-          "header",
-          "Header",
-          "The header widget",
-          Gtk.Widget.$gtype,
-          GObject.ParamFlags.READWRITE,
-        ),
-        footer: GObject.param_spec_object(
-          "footer",
-          "Footer",
-          "The footer widget",
-          Gtk.Widget.$gtype,
-          GObject.ParamFlags.READWRITE,
-        ),
-        child: GObject.param_spec_object(
-          "child",
-          "child",
-          "The Child widget",
-          Gtk.Scrollable.$gtype,
-          GObject.ParamFlags.READWRITE,
-        ),
-        hadjustment: GObject.param_spec_object(
-          "hadjustment",
-          "Hadjustment",
-          "Horizontal Adjustment",
-          Gtk.Adjustment.$gtype,
-          GObject.ParamFlags.READWRITE | GObject.ParamFlags.EXPLICIT_NOTIFY,
-        ),
-        vadjustment: GObject.param_spec_object(
-          "vadjustment",
-          "Vadjustment",
-          "Vertical Adjustment",
-          Gtk.Adjustment.$gtype,
-          GObject.ParamFlags.READWRITE | GObject.ParamFlags.EXPLICIT_NOTIFY,
-        ),
-        vscroll_policy: GObject.param_spec_enum(
-          "vscroll-policy",
-          "VScroll-Policy",
-          "Vertical Scroll Policy",
-          Gtk.ScrollablePolicy.$gtype,
-          Gtk.ScrollablePolicy.MINIMUM,
-          GObject.ParamFlags.READWRITE | GObject.ParamFlags.EXPLICIT_NOTIFY,
-        ),
-        hscroll_policy: GObject.param_spec_enum(
-          "hscroll-policy",
-          "HScroll-Policy",
-          "Horizontal Scroll Policy",
-          Gtk.ScrollablePolicy.$gtype,
-          Gtk.ScrollablePolicy.MINIMUM,
-          GObject.ParamFlags.READWRITE | GObject.ParamFlags.EXPLICIT_NOTIFY,
-        ),
-        spacing: GObject.param_spec_uint(
-          "spacing",
-          "Spacing",
-          "The separation between elements",
-          0,
-          GLib.MAXUINT32,
-          0,
-          GObject.ParamFlags.READWRITE | GObject.ParamFlags.EXPLICIT_NOTIFY,
-        ),
+    GObject.registerClass(
+      {
+        GTypeName: "AnnotatedView",
+        Implements: [Gtk.Buildable, Gtk.Scrollable],
+        Properties: {
+          header: GObject.param_spec_object(
+            "header",
+            "Header",
+            "The header widget",
+            Gtk.Widget.$gtype,
+            GObject.ParamFlags.READWRITE,
+          ),
+          footer: GObject.param_spec_object(
+            "footer",
+            "Footer",
+            "The footer widget",
+            Gtk.Widget.$gtype,
+            GObject.ParamFlags.READWRITE,
+          ),
+          child: GObject.param_spec_object(
+            "child",
+            "child",
+            "The Child widget",
+            Gtk.Scrollable.$gtype,
+            GObject.ParamFlags.READWRITE,
+          ),
+          hadjustment: GObject.param_spec_object(
+            "hadjustment",
+            "Hadjustment",
+            "Horizontal Adjustment",
+            Gtk.Adjustment.$gtype,
+            GObject.ParamFlags.READWRITE | GObject.ParamFlags.EXPLICIT_NOTIFY,
+          ),
+          vadjustment: GObject.param_spec_object(
+            "vadjustment",
+            "Vadjustment",
+            "Vertical Adjustment",
+            Gtk.Adjustment.$gtype,
+            GObject.ParamFlags.READWRITE | GObject.ParamFlags.EXPLICIT_NOTIFY,
+          ),
+          vscroll_policy: GObject.param_spec_enum(
+            "vscroll-policy",
+            "VScroll-Policy",
+            "Vertical Scroll Policy",
+            Gtk.ScrollablePolicy.$gtype,
+            Gtk.ScrollablePolicy.MINIMUM,
+            GObject.ParamFlags.READWRITE | GObject.ParamFlags.EXPLICIT_NOTIFY,
+          ),
+          hscroll_policy: GObject.param_spec_enum(
+            "hscroll-policy",
+            "HScroll-Policy",
+            "Horizontal Scroll Policy",
+            Gtk.ScrollablePolicy.$gtype,
+            Gtk.ScrollablePolicy.MINIMUM,
+            GObject.ParamFlags.READWRITE | GObject.ParamFlags.EXPLICIT_NOTIFY,
+          ),
+          spacing: GObject.param_spec_uint(
+            "spacing",
+            "Spacing",
+            "The separation between elements",
+            0,
+            GLib.MAXUINT32,
+            0,
+            GObject.ParamFlags.READWRITE | GObject.ParamFlags.EXPLICIT_NOTIFY,
+          ),
+        },
       },
-    }, this);
-  }
-
-  constructor() {
-    super();
+      this,
+    );
   }
 
   // property header
@@ -213,6 +209,7 @@ export class AnnotatedView extends Gtk.Widget {
 
   private clear_adjustment(orientation: Gtk.Orientation) {
     this.adjustment_listeners[orientation].clear();
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     this.adjustment[orientation] = null!;
   }
 
@@ -304,9 +301,8 @@ export class AnnotatedView extends Gtk.Widget {
     let value = adjustment.value;
 
     // getting the handler ID registered while setting the adjustment
-    const handler = this.adjustment_listeners[orientation].listeners.get(
-      adjustment,
-    )?.[0];
+    const handler =
+      this.adjustment_listeners[orientation].listeners.get(adjustment)?.[0];
 
     if (handler) {
       GObject.signal_handler_block(adjustment, handler);
@@ -335,7 +331,7 @@ export class AnnotatedView extends Gtk.Widget {
     }
   }
 
-  vfunc_size_allocate(width: number, height: number, baseline: number): void {
+  vfunc_size_allocate(width: number, height: number): void {
     const children = [this._header, this._child, this._footer];
 
     this.adjustment[Gtk.Orientation.VERTICAL].freeze_notify();
@@ -362,13 +358,13 @@ export class AnnotatedView extends Gtk.Widget {
       totals[Gtk.Orientation.VERTICAL] + total_spacing,
     );
 
-    let x = this.adjustment[Gtk.Orientation.HORIZONTAL].value,
-      y = this.adjustment[Gtk.Orientation.VERTICAL].value;
+    const x = this.adjustment[Gtk.Orientation.HORIZONTAL].value;
+    let y = this.adjustment[Gtk.Orientation.VERTICAL].value;
 
     // give each child an allocation
     for (const child of children) {
       if (child && child.visible) {
-        const child_size = sizes.get(child)!;
+        const child_size = sizes.get(child);
 
         if (!child_size) throw new Error("oops...");
 
@@ -379,7 +375,8 @@ export class AnnotatedView extends Gtk.Widget {
         allocation.x = -x;
         allocation.y = -y;
 
-        let y_offset, visible_height;
+        let y_offset = 0,
+          visible_height = 0;
 
         // scroll the child widget direct using it's scrollable interface
         if (child === this._child && isScrollable(child)) {
@@ -403,7 +400,8 @@ export class AnnotatedView extends Gtk.Widget {
         y -= this.spacing;
 
         if (
-          (allocation.height + allocation.y) < 0 || (allocation.y) > height ||
+          allocation.height + allocation.y < 0 ||
+          allocation.y > height ||
           allocation.height <= 0
         ) {
           child.unmap();
@@ -413,8 +411,8 @@ export class AnnotatedView extends Gtk.Widget {
 
           if (child === this._child && isScrollable(child)) {
             // scroll the scrollable child after allocating
-            child_adjustment.value = y_offset!;
-            child_adjustment.page_size = visible_height!;
+            child_adjustment.value = y_offset;
+            child_adjustment.page_size = visible_height;
           }
         }
       }
@@ -446,12 +444,14 @@ export class AnnotatedView extends Gtk.Widget {
     }
 
     for (const widget of widgets) {
-      const width = orientation === Gtk.Orientation.HORIZONTAL
-        ? max_width - getTotal(orientation)
-        : max_width;
-      const height = orientation === Gtk.Orientation.VERTICAL
-        ? max_height - getTotal(orientation)
-        : max_height;
+      const width =
+        orientation === Gtk.Orientation.HORIZONTAL
+          ? max_width - getTotal(orientation)
+          : max_width;
+      const height =
+        orientation === Gtk.Orientation.VERTICAL
+          ? max_height - getTotal(orientation)
+          : max_height;
 
       const size = this.get_widget_size(widget, width, height);
 
@@ -469,10 +469,7 @@ export class AnnotatedView extends Gtk.Widget {
         getTotal(Gtk.Orientation.VERTICAL),
       );
     } else {
-      totals = orientedPair(
-        getTotal(Gtk.Orientation.HORIZONTAL),
-        max_height,
-      );
+      totals = orientedPair(getTotal(Gtk.Orientation.HORIZONTAL), max_height);
     }
 
     return { totals, sizes };
@@ -526,5 +523,5 @@ export class AnnotatedView extends Gtk.Widget {
 function isScrollable(
   widget: Gtk.Widget,
 ): widget is Gtk.Widget & Gtk.Scrollable {
-  return ("hadjustment" in widget) && ("vadjustment" in widget);
+  return "hadjustment" in widget && "vadjustment" in widget;
 }

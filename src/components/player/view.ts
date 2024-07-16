@@ -1,7 +1,5 @@
 import GObject from "gi://GObject";
 import Adw from "gi://Adw";
-import GLib from "gi://GLib";
-import Gtk from "gi://Gtk?version=4.0";
 
 import { MiniPlayerView } from "./mini.js";
 import { FullPlayerView } from "./full.js";
@@ -13,9 +11,12 @@ export interface PlayerViewOptions {
 
 export class PlayerView extends Adw.Bin {
   static {
-    GObject.registerClass({
-      GTypeName: "PlayerView",
-    }, this);
+    GObject.registerClass(
+      {
+        GTypeName: "PlayerView",
+      },
+      this,
+    );
   }
 
   squeezer: Adw.Squeezer;

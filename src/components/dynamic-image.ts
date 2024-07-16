@@ -24,12 +24,17 @@ export enum DynamicImageStorageType {
 }
 
 export type DynamicImageInnerChild<Type extends DynamicImageStorageType> =
-  Type extends DynamicImageStorageType.EMPTY ? Adw.Bin
-    : Type extends DynamicImageStorageType.TRACK_NUMBER ? Gtk.Label
-    : Type extends DynamicImageStorageType.COVER_THUMBNAIL ? Gtk.Picture
-    : Type extends DynamicImageStorageType.AVATAR ? Adw.Avatar
-    : Type extends DynamicImageStorageType.VIDEO_THUMBNAIL ? Gtk.Image
-    : never;
+  Type extends DynamicImageStorageType.EMPTY
+    ? Adw.Bin
+    : Type extends DynamicImageStorageType.TRACK_NUMBER
+      ? Gtk.Label
+      : Type extends DynamicImageStorageType.COVER_THUMBNAIL
+        ? Gtk.Picture
+        : Type extends DynamicImageStorageType.AVATAR
+          ? Adw.Avatar
+          : Type extends DynamicImageStorageType.VIDEO_THUMBNAIL
+            ? Gtk.Image
+            : never;
 
 export interface DynamicImageConstructorProperties
   extends Gtk.Overlay.ConstructorProperties {
@@ -43,97 +48,100 @@ export interface DynamicImageConstructorProperties
 
 export class DynamicImage extends Gtk.Overlay {
   static {
-    GObject.registerClass({
-      GTypeName: "DynamicImage",
-      Template:
-        "resource:///com/vixalien/muzika/ui/components/dynamic-image.ui",
-      InternalChildren: ["container", "action", "check"],
-      Properties: {
-        "size": GObject.ParamSpec.int(
-          "size",
-          "Size",
-          "The size of the dynamic image",
-          GObject.ParamFlags.READWRITE,
-          0,
-          1000000,
-          0,
-        ),
-        "action-size": GObject.ParamSpec.int(
-          "action-size",
-          "Action Size",
-          "The size of the inset dynamic action",
-          GObject.ParamFlags.READWRITE,
-          0,
-          1000000,
-          0,
-        ),
-        "state": get_state_pspec(),
-        "storage-type": GObject.ParamSpec.uint(
-          "storage-type",
-          "Storage Type",
-          "The current type of child being shown by this dynamic image",
-          GObject.ParamFlags.READABLE,
-          DynamicImageStorageType.EMPTY,
-          DynamicImageStorageType.AVATAR,
-          DynamicImageStorageType.EMPTY,
-        ),
-        "track-number": GObject.ParamSpec.int(
-          "track-number",
-          "Track Number",
-          "Track Number displayed by this dynamic image",
-          GObject.ParamFlags.READWRITE,
-          0,
-          1000000,
-          0,
-        ),
-        "playlist": GObject.ParamSpec.boolean(
-          "playlist",
-          "Playlist",
-          "Whether this dynamic image is showing a playlist",
-          GObject.ParamFlags.READWRITE,
-          false,
-        ),
-        "persistent-play-button": GObject.ParamSpec.boolean(
-          "persistent-play-button",
-          "Persistent Play Button",
-          "Whether to always show the play button",
-          GObject.ParamFlags.READWRITE,
-          false,
-        ),
-        can_expand: GObject.ParamSpec.boolean(
-          "can-expand",
-          "Can Expand",
-          "Whether to expand the image to fill the available space",
-          GObject.ParamFlags.READWRITE,
-          false,
-        ),
-        "selection-mode": GObject.ParamSpec.boolean(
-          "selection-mode",
-          "Selection mode",
-          "Whether the image is in selection mode",
-          GObject.ParamFlags.READWRITE,
-          false,
-        ),
-        selected: GObject.ParamSpec.boolean(
-          "selected",
-          "Selected",
-          "Whether the image is selected",
-          GObject.ParamFlags.READWRITE,
-          false,
-        ),
-        "action-locked": GObject.ParamSpec.boolean(
-          "action-locked",
-          "Action Locked",
-          "Whether the action is locked",
-          GObject.ParamFlags.READWRITE,
-          false,
-        ),
+    GObject.registerClass(
+      {
+        GTypeName: "DynamicImage",
+        Template:
+          "resource:///com/vixalien/muzika/ui/components/dynamic-image.ui",
+        InternalChildren: ["container", "action", "check"],
+        Properties: {
+          size: GObject.ParamSpec.int(
+            "size",
+            "Size",
+            "The size of the dynamic image",
+            GObject.ParamFlags.READWRITE,
+            0,
+            1000000,
+            0,
+          ),
+          "action-size": GObject.ParamSpec.int(
+            "action-size",
+            "Action Size",
+            "The size of the inset dynamic action",
+            GObject.ParamFlags.READWRITE,
+            0,
+            1000000,
+            0,
+          ),
+          state: get_state_pspec(),
+          "storage-type": GObject.ParamSpec.uint(
+            "storage-type",
+            "Storage Type",
+            "The current type of child being shown by this dynamic image",
+            GObject.ParamFlags.READABLE,
+            DynamicImageStorageType.EMPTY,
+            DynamicImageStorageType.AVATAR,
+            DynamicImageStorageType.EMPTY,
+          ),
+          "track-number": GObject.ParamSpec.int(
+            "track-number",
+            "Track Number",
+            "Track Number displayed by this dynamic image",
+            GObject.ParamFlags.READWRITE,
+            0,
+            1000000,
+            0,
+          ),
+          playlist: GObject.ParamSpec.boolean(
+            "playlist",
+            "Playlist",
+            "Whether this dynamic image is showing a playlist",
+            GObject.ParamFlags.READWRITE,
+            false,
+          ),
+          "persistent-play-button": GObject.ParamSpec.boolean(
+            "persistent-play-button",
+            "Persistent Play Button",
+            "Whether to always show the play button",
+            GObject.ParamFlags.READWRITE,
+            false,
+          ),
+          can_expand: GObject.ParamSpec.boolean(
+            "can-expand",
+            "Can Expand",
+            "Whether to expand the image to fill the available space",
+            GObject.ParamFlags.READWRITE,
+            false,
+          ),
+          "selection-mode": GObject.ParamSpec.boolean(
+            "selection-mode",
+            "Selection mode",
+            "Whether the image is in selection mode",
+            GObject.ParamFlags.READWRITE,
+            false,
+          ),
+          selected: GObject.ParamSpec.boolean(
+            "selected",
+            "Selected",
+            "Whether the image is selected",
+            GObject.ParamFlags.READWRITE,
+            false,
+          ),
+          "action-locked": GObject.ParamSpec.boolean(
+            "action-locked",
+            "Action Locked",
+            "Whether the action is locked",
+            GObject.ParamFlags.READWRITE,
+            false,
+          ),
+        },
+        Signals: {
+          play: {},
+          pause: {},
+        },
       },
-      Signals: {
-        play: {},
-        pause: {},
-      },
-    }, this);
+      this,
+    );
   }
 
   private _container!: Adw.Bin;
@@ -170,7 +178,8 @@ export class DynamicImage extends Gtk.Overlay {
     if (
       this.storage_type !== DynamicImageStorageType.COVER_THUMBNAIL &&
       this.storage_type !== DynamicImageStorageType.VIDEO_THUMBNAIL
-    ) return;
+    )
+      return;
 
     const all_classes = [
       "icon-dropshadow",
@@ -189,9 +198,11 @@ export class DynamicImage extends Gtk.Overlay {
       classes.push("br-9");
     }
 
-    all_classes.filter((c) => !classes.includes(c)).forEach((c) => {
-      this.remove_css_class(c);
-    });
+    all_classes
+      .filter((c) => !classes.includes(c))
+      .forEach((c) => {
+        this.remove_css_class(c);
+      });
 
     classes.forEach((c) => {
       this.add_css_class(c);
@@ -547,7 +558,7 @@ export class DynamicImage extends Gtk.Overlay {
       });
     } else if (this.videoId) {
       this.state = DynamicActionState.LOADING;
-      player.queue.add_songs2([this.videoId], { radio: true, play: true })
+      player.queue.add_songs2([this.videoId], { radio: true, play: true });
     }
   }
 

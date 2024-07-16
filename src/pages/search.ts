@@ -9,7 +9,7 @@ import type { Filter, SearchOptions, SearchResults, SearchRuns } from "libmuse";
 import { SearchSection } from "../components/search/section.js";
 import { TopResultSection } from "../components/search/topresultsection.js";
 import { Paginator } from "../components/paginator.js";
-import { InlineTabSwitcher, Tab } from "../components/inline-tab-switcher.js";
+import { InlineTabSwitcher } from "../components/inline-tab-switcher.js";
 import { MuzikaPageWidget, PageLoadContext } from "src/navigation.js";
 import { escape_label } from "src/util/text.js";
 import {
@@ -33,26 +33,31 @@ interface SearchData {
 
 GObject.type_ensure(InlineTabSwitcher.$gtype);
 
-export class SearchPage extends Adw.Bin
-  implements MuzikaPageWidget<SearchData, SearchState> {
+export class SearchPage
+  extends Adw.Bin
+  implements MuzikaPageWidget<SearchData, SearchState>
+{
   static {
-    GObject.registerClass({
-      GTypeName: "SearchPage",
-      Template: "resource:///com/vixalien/muzika/ui/pages/search.ui",
-      InternalChildren: [
-        "sections",
-        "stack",
-        "no_results",
-        "breakpoint",
-        "paginator",
-        "scrolled",
-        "context_label",
-        "scope_window",
-        "scope_switcher",
-        "filter_window",
-        "filter_box",
-      ],
-    }, this);
+    GObject.registerClass(
+      {
+        GTypeName: "SearchPage",
+        Template: "resource:///com/vixalien/muzika/ui/pages/search.ui",
+        InternalChildren: [
+          "sections",
+          "stack",
+          "no_results",
+          "breakpoint",
+          "paginator",
+          "scrolled",
+          "context_label",
+          "scope_window",
+          "scope_switcher",
+          "filter_window",
+          "filter_box",
+        ],
+      },
+      this,
+    );
   }
 
   private _sections!: Gtk.Box;
@@ -140,7 +145,7 @@ export class SearchPage extends Adw.Bin
           this.args[0],
           {
             ...this.args[1],
-            filter: selected ? undefined : filter ?? undefined,
+            filter: selected ? undefined : (filter ?? undefined),
           },
           true,
         );
@@ -160,11 +165,9 @@ export class SearchPage extends Adw.Bin
   show_did_you_mean() {
     if (!this.results?.did_you_mean) return;
 
-    const link = `<a href="${
-      escape_label(
-        search_args_to_url(this.results.did_you_mean.query, this.args[1]),
-      )
-    }">${search_runs_to_string(this.results.did_you_mean.search)}</a>`;
+    const link = `<a href="${escape_label(
+      search_args_to_url(this.results.did_you_mean.query, this.args[1]),
+    )}">${search_runs_to_string(this.results.did_you_mean.search)}</a>`;
 
     this._context_label.visible = true;
     this._context_label.label = vprintf(_("Did you mean: %s"), [link]);
@@ -173,27 +176,24 @@ export class SearchPage extends Adw.Bin
   show_autocorrect() {
     if (!this.results?.autocorrect) return;
 
-    const original_link = `<a href="${
-      escape_label(
-        search_args_to_url(this.results.autocorrect.original.query, {
-          ...this.args[1],
-          autocorrect: false,
-        }),
-      )
-    }">${search_runs_to_string(this.results.autocorrect.original.search)}</a>`;
+    const original_link = `<a href="${escape_label(
+      search_args_to_url(this.results.autocorrect.original.query, {
+        ...this.args[1],
+        autocorrect: false,
+      }),
+    )}">${search_runs_to_string(this.results.autocorrect.original.search)}</a>`;
 
-    const corrected_link = `<a href="${
-      escape_label(
-        search_args_to_url(
-          this.results.autocorrect.corrected.query,
-          this.args[1],
-        ),
-      )
-    }">${search_runs_to_string(this.results.autocorrect.corrected.search)}</a>`;
+    const corrected_link = `<a href="${escape_label(
+      search_args_to_url(
+        this.results.autocorrect.corrected.query,
+        this.args[1],
+      ),
+    )}">${search_runs_to_string(this.results.autocorrect.corrected.search)}</a>`;
 
     this._context_label.visible = true;
     this._context_label.label =
-      vprintf(_("Showing results for: %s"), [corrected_link]) + "\n" +
+      vprintf(_("Showing results for: %s"), [corrected_link]) +
+      "\n" +
       vprintf(_("Search instead for: %s"), [original_link]);
   }
 
@@ -241,7 +241,9 @@ export class SearchPage extends Adw.Bin
 
     get_more_search_results(this.results.continuation, this.args[1] ?? {})
       .then((results) => {
-        this.results!.continuation = results.continuation;
+        if (!this.results) return;
+
+        this.results.continuation = results.continuation;
 
         const first_section = this._sections.get_first_child() as SearchSection;
 
@@ -263,11 +265,15 @@ export class SearchPage extends Adw.Bin
   static load(context: PageLoadContext) {
     const autocorrect = context.url.searchParams.get("autocorrect");
 
-    const args = [decodeURIComponent(context.match.params.query), {
-      signal: context.signal,
-      ...Object.fromEntries(context.url.searchParams as any),
-      autocorrect: autocorrect ? autocorrect === "true" : undefined,
-    }] as const;
+    const args = [
+      decodeURIComponent(context.match.params.query),
+      {
+        signal: context.signal,
+        // @ts-expect-error idk why tbh
+        ...Object.fromEntries(context.url.searchParams),
+        autocorrect: autocorrect ? autocorrect === "true" : undefined,
+      },
+    ] as const;
 
     return search(...args).then((results) => {
       return {
@@ -279,6 +285,7 @@ export class SearchPage extends Adw.Bin
 
   get_state(): SearchState {
     return {
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       results: this.results!,
       args: this.args,
       vscroll: this._scrolled.get_vadjustment().get_value(),
@@ -297,14 +304,11 @@ export function search_args_to_url(
   options: SearchOptions = {},
   replace = false,
 ) {
-  const opts = options as Record<string, any>;
-  if (replace) opts.replace = true;
   const params = new URLSearchParams(
-    Object.entries(opts)
-      .filter(([_, v]) => v != null)
+    Object.entries({ ...options, replace } as unknown as Record<string, string>)
+      .filter(([, v]) => v != null)
       .filter(([k]) => k !== "signal"),
-  )
-    .toString();
+  ).toString();
   let url_string = `muzika:search:${encodeURIComponent(query)}`;
   if (params) url_string += `?${params}`;
 
@@ -335,13 +339,15 @@ function filter_to_string(filter: Filter) {
 }
 
 function search_runs_to_string(runs: SearchRuns) {
-  return runs.map((run) => {
-    if (run.italics) {
-      return `<i>${escape_label(run.text)}</i>`;
-    } else if (run.bold) {
-      return `<b>${escape_label(run.text)}</b>`;
-    } else {
-      return escape_label(run.text);
-    }
-  }).join("");
+  return runs
+    .map((run) => {
+      if (run.italics) {
+        return `<i>${escape_label(run.text)}</i>`;
+      } else if (run.bold) {
+        return `<b>${escape_label(run.text)}</b>`;
+      } else {
+        return escape_label(run.text);
+      }
+    })
+    .join("");
 }

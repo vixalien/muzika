@@ -20,15 +20,20 @@ import { add_toast } from "src/util/window.js";
 // make sure paginator is registered before LibrarySongsPage
 GObject.type_ensure(Paginator.$gtype);
 
-export class LibrarySongsPage extends Adw.Bin
-  implements MuzikaPageWidget<LoadedSongs, LibrarySongsState> {
+export class LibrarySongsPage
+  extends Adw.Bin
+  implements MuzikaPageWidget<LoadedSongs, LibrarySongsState>
+{
   static {
-    GObject.registerClass({
-      GTypeName: "LibrarySongsPage",
-      Template:
-        "resource:///com/vixalien/muzika/ui/components/library/songs.ui",
-      InternalChildren: ["item_view", "drop_down", "paginator", "scrolled"],
-    }, this);
+    GObject.registerClass(
+      {
+        GTypeName: "LibrarySongsPage",
+        Template:
+          "resource:///com/vixalien/muzika/ui/components/library/songs.ui",
+        InternalChildren: ["item_view", "drop_down", "paginator", "scrolled"],
+      },
+      this,
+    );
   }
 
   private _drop_down!: Gtk.DropDown;
@@ -67,11 +72,11 @@ export class LibrarySongsPage extends Adw.Bin
   handle_order_changed(order_name: string) {
     const order = alphabetical_orders.get(order_name);
 
-    this.order = order as Order ?? undefined;
+    this.order = (order as Order) ?? undefined;
 
     if (!order) return;
 
-    let url = `muzika:${this.uri}?order=${order}`;
+    const url = `muzika:${this.uri}?order=${order}`;
 
     this.activate_action("navigator.replace", GLib.Variant.new_string(url));
   }
@@ -83,8 +88,10 @@ export class LibrarySongsPage extends Adw.Bin
 
     this.loader({ continuation: this.results.continuation })
       .then((library) => {
-        this.results!.items.push(...library.items);
-        this.results!.continuation = library.continuation;
+        if (!this.results) return;
+
+        this.results.items.push(...library.items);
+        this.results.continuation = library.continuation;
 
         this.show_library(library);
       })
@@ -119,6 +126,7 @@ export class LibrarySongsPage extends Adw.Bin
 
   get_state(): LibrarySongsState {
     return {
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       results: this.results!,
       order: this.order,
       vscroll: this._scrolled.get_vadjustment().get_value(),
@@ -156,12 +164,11 @@ export class LibrarySongsPage extends Adw.Bin
   static load(context: PageLoadContext): Promise<LoadedSongs> {
     return get_library_songs({
       signal: context.signal,
-      order: context.url.searchParams.get("order") as Order ??
-        undefined,
+      order: (context.url.searchParams.get("order") as Order) ?? undefined,
     }).then((results) => {
       return {
         results,
-        order: context.url.searchParams.get("order") as Order ?? undefined,
+        order: (context.url.searchParams.get("order") as Order) ?? undefined,
       };
     });
   }

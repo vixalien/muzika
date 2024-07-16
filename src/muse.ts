@@ -1,12 +1,8 @@
-import Gio from "gi://Gio";
-import GLib from "gi://GLib";
-
 // URL, URLSearchParams
 import "core-js/features/url";
 
 // Headers
 import { Headers } from "headers-polyfill";
-/// @ts-ignore
 globalThis.Headers = Headers;
 
 // Headers

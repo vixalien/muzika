@@ -20,13 +20,13 @@ export class AbortSignal extends EventTarget implements globalThis.AbortSignal {
     return this._aborted;
   }
 
-  private _reason: any = null;
+  private _reason: unknown = null;
 
   get reason() {
     return this._reason;
   }
 
-  private _onabort: ((this: globalThis.AbortSignal, ev: Event) => any) | null =
+  private _onabort: ((this: globalThis.AbortSignal, ev: Event) => void) | null =
     null;
 
   get onabort() {

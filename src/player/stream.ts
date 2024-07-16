@@ -17,48 +17,51 @@ import { Queue } from "./queue";
 
 export class MuzikaMediaStream extends Gtk.MediaStream {
   static {
-    GObject.registerClass({
-      GTypeName: "MuzikaMediaStream",
-      Properties: {
-        queue: GObject.param_spec_object(
-          "queue",
-          "Queue",
-          "The queue",
-          Queue.$gtype,
-          GObject.ParamFlags.READABLE,
-        ),
-        is_buffering: GObject.param_spec_boolean(
-          "is-buffering",
-          "Is Buffering",
-          "Whether the player is buffering",
-          false,
-          GObject.ParamFlags.READWRITE,
-        ),
-        paintable: GObject.param_spec_object(
-          "paintable",
-          "Paintable",
-          "The GdkPaintable representing the video",
-          Gdk.Paintable.$gtype,
-          GObject.ParamFlags.READWRITE,
-        ),
-        media_info: GObject.param_spec_object(
-          "media-info",
-          "Media Info",
-          "The media info",
-          GstPlay.PlayMediaInfo.$gtype,
-          GObject.ParamFlags.READABLE,
-        ),
-        cubic_volume: GObject.param_spec_double(
-          "cubic-volume",
-          "Cubic Volume",
-          "The volume that is suitable for display",
-          0.0,
-          1.0,
-          1.0,
-          GObject.ParamFlags.READWRITE,
-        ),
+    GObject.registerClass(
+      {
+        GTypeName: "MuzikaMediaStream",
+        Properties: {
+          queue: GObject.param_spec_object(
+            "queue",
+            "Queue",
+            "The queue",
+            Queue.$gtype,
+            GObject.ParamFlags.READABLE,
+          ),
+          is_buffering: GObject.param_spec_boolean(
+            "is-buffering",
+            "Is Buffering",
+            "Whether the player is buffering",
+            false,
+            GObject.ParamFlags.READWRITE,
+          ),
+          paintable: GObject.param_spec_object(
+            "paintable",
+            "Paintable",
+            "The GdkPaintable representing the video",
+            Gdk.Paintable.$gtype,
+            GObject.ParamFlags.READWRITE,
+          ),
+          media_info: GObject.param_spec_object(
+            "media-info",
+            "Media Info",
+            "The media info",
+            GstPlay.PlayMediaInfo.$gtype,
+            GObject.ParamFlags.READABLE,
+          ),
+          cubic_volume: GObject.param_spec_double(
+            "cubic-volume",
+            "Cubic Volume",
+            "The volume that is suitable for display",
+            0.0,
+            1.0,
+            1.0,
+            GObject.ParamFlags.READWRITE,
+          ),
+        },
       },
-    }, this);
+      this,
+    );
   }
 
   paintable!: Gdk.Paintable;
@@ -69,7 +72,7 @@ export class MuzikaMediaStream extends Gtk.MediaStream {
     this._play = new GstPlay.Play();
 
     const pipeline = this._play.get_pipeline() as Gst.Pipeline;
-    let flags = pipeline.flags;
+    const flags = pipeline.flags;
     // add download flag
     // flags |= 0x00000080;
     pipeline.flags = flags;
@@ -101,7 +104,7 @@ export class MuzikaMediaStream extends Gtk.MediaStream {
     const sink = Gst.ElementFactory.make(
       "gtk4paintablesink",
       "sink",
-    )! as GstVideo.VideoSink;
+    ) as GstVideo.VideoSink;
 
     if (!sink) {
       throw new Error(
@@ -281,7 +284,7 @@ export class MuzikaMediaStream extends Gtk.MediaStream {
     }
   }
 
-  private duration_changed_cb(_play: GstPlay.Play): void {
+  private duration_changed_cb(): void {
     this.notify("duration");
   }
 
@@ -300,6 +303,7 @@ export class MuzikaMediaStream extends Gtk.MediaStream {
     this.on_stream_error_cb(error);
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   protected eos_cb(_play: GstPlay.Play): boolean {
     if (this._play.duration - this._play.position >= Gst.SECOND) {
       // this means an error occured, we might need to refresh the uri
@@ -325,12 +329,12 @@ export class MuzikaMediaStream extends Gtk.MediaStream {
     this.notify("media-info");
   }
 
-  private volume_changed_cb(_play: GstPlay.Play): void {
+  private volume_changed_cb(): void {
     this.notify("volume");
     this.notify("cubic-volume");
   }
 
-  private mute_changed_cb(_play: GstPlay.Play): void {
+  private mute_changed_cb(): void {
     this.notify("muted");
   }
 
@@ -359,9 +363,6 @@ export class MuzikaMediaStream extends Gtk.MediaStream {
     );
 
     this._play.uri = info.get_uri();
-  }
-
-  protected start_playback() {
   }
 
   stop() {
@@ -398,6 +399,7 @@ export class MuzikaMediaStream extends Gtk.MediaStream {
               const uri = info.get_uri();
               this._play.set_uri(uri);
               resolve(info);
+              break;
             }
             case GstPbUtils.DiscovererResult.MISSING_PLUGINS:
               reject(
@@ -409,6 +411,7 @@ export class MuzikaMediaStream extends Gtk.MediaStream {
                   ),
                 ),
               );
+              break;
             case GstPbUtils.DiscovererResult.ERROR:
               reject(
                 error ??
@@ -420,6 +423,7 @@ export class MuzikaMediaStream extends Gtk.MediaStream {
                     ),
                   ),
               );
+              break;
             case GstPbUtils.DiscovererResult.URI_INVALID:
               reject(
                 error ??
@@ -429,6 +433,7 @@ export class MuzikaMediaStream extends Gtk.MediaStream {
                     _("File uses an invalid URI"),
                   ),
               );
+              break;
             case GstPbUtils.DiscovererResult.TIMEOUT:
               reject(
                 error ??
@@ -440,6 +445,7 @@ export class MuzikaMediaStream extends Gtk.MediaStream {
                     ),
                   ),
               );
+              break;
           }
         },
       );

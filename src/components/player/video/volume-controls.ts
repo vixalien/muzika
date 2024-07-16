@@ -6,12 +6,15 @@ import { get_player } from "src/application";
 
 export class VolumeControls extends Gtk.Box {
   static {
-    GObject.registerClass({
-      GTypeName: "VolumeControls",
-      Template:
-        "resource:///com/vixalien/muzika/ui/components/player/video/volume-controls.ui",
-      InternalChildren: ["button", "adjustment", "scale"],
-    }, this);
+    GObject.registerClass(
+      {
+        GTypeName: "VolumeControls",
+        Template:
+          "resource:///com/vixalien/muzika/ui/components/player/video/volume-controls.ui",
+        InternalChildren: ["button", "adjustment", "scale"],
+      },
+      this,
+    );
   }
 
   private _button!: Gtk.ToggleButton;
@@ -19,10 +22,6 @@ export class VolumeControls extends Gtk.Box {
   private _scale!: Gtk.Scale;
 
   listeners = new SignalListeners();
-
-  constructor() {
-    super();
-  }
 
   update_icon(muted: boolean, volume: number) {
     let icon_name: string;

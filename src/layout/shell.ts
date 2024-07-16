@@ -21,40 +21,40 @@ GObject.type_ensure(MuzikaNPRelated.$gtype);
 
 export class MuzikaShell extends Gtk.Box {
   static {
-    GObject.registerClass({
-      GTypeName: "MuzikaShell",
-      Template: "resource:///com/vixalien/muzika/ui/layout/shell.ui",
-      InternalChildren: [
-        "multi_layout_view",
-        "lyrics_page",
-        "related_page",
-      ],
-      Properties: {
-        "show-mini": GObject.ParamSpec.boolean(
-          "show-mini",
-          "Show Mini",
-          "Show the minimal video player",
-          GObject.ParamFlags.READWRITE,
-          false,
-        ),
-        bottom_bar_height: GObject.ParamSpec.uint(
-          "bottom-bar-height",
-          "Bottom Bar Height",
-          "The height of the video player controls",
-          GObject.ParamFlags.READWRITE,
-          0,
-          GLib.MAXUINT32,
-          0,
-        ),
+    GObject.registerClass(
+      {
+        GTypeName: "MuzikaShell",
+        Template: "resource:///com/vixalien/muzika/ui/layout/shell.ui",
+        InternalChildren: ["multi_layout_view", "lyrics_page", "related_page"],
+        Properties: {
+          "show-mini": GObject.ParamSpec.boolean(
+            "show-mini",
+            "Show Mini",
+            "Show the minimal video player",
+            GObject.ParamFlags.READWRITE,
+            false,
+          ),
+          bottom_bar_height: GObject.ParamSpec.uint(
+            "bottom-bar-height",
+            "Bottom Bar Height",
+            "The height of the video player controls",
+            GObject.ParamFlags.READWRITE,
+            0,
+            GLib.MAXUINT32,
+            0,
+          ),
+        },
+        Implements: [Gtk.Buildable],
       },
-      Implements: [Gtk.Buildable],
-    }, this);
+      this,
+    );
   }
 
   private _multi_layout_view!: Adw.MultiLayoutView;
   private _lyrics_page!: MuzikaNPLyrics;
   private _related_page!: MuzikaNPRelated;
 
+  // eslint-disable-next-line @typescript-eslint/no-useless-constructor
   constructor(params?: Partial<Adw.Bin.ConstructorProperties>) {
     super(params);
   }
@@ -65,24 +65,24 @@ export class MuzikaShell extends Gtk.Box {
     const player = get_player();
 
     this.listeners.add_bindings(
-      // @ts-expect-error
+      // @ts-expect-error incorrect types
       player.bind_property_full(
         "now-playing",
         this._lyrics_page,
         "visible",
         GObject.BindingFlags.DEFAULT | GObject.BindingFlags.SYNC_CREATE,
-        (_, __) => {
+        () => {
           return [true, player.now_playing?.object?.meta.lyrics != null];
         },
         null,
       ),
-      // @ts-expect-error
+      // @ts-expect-error incorrect types
       player.bind_property_full(
         "now-playing",
         this._related_page,
         "visible",
         GObject.BindingFlags.DEFAULT | GObject.BindingFlags.SYNC_CREATE,
-        (_, __) => {
+        () => {
           return [true, player.now_playing?.object?.meta.related != null];
         },
         null,

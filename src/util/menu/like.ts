@@ -3,6 +3,7 @@ import GLib from "gi://GLib";
 import Gtk from "gi://Gtk?version=4.0";
 
 import { LikeStatus } from "libmuse";
+import { MenuItemWithChild } from ".";
 
 export type LikeRowCallback = (status: LikeStatus) => void;
 
@@ -16,7 +17,7 @@ export function menuLikeRow(
   menu.set_label(_("Change rating of track"));
   menu.set_attribute_value("custom", GLib.Variant.new_string("rate-button"));
 
-  (menu as any)["__child"] = (popover: Gtk.Popover) => {
+  (menu as MenuItemWithChild)["__child"] = (popover: Gtk.Popover) => {
     const box = new Gtk.Box({
       orientation: Gtk.Orientation.HORIZONTAL,
       spacing: 3,
@@ -26,10 +27,10 @@ export function menuLikeRow(
     const { like_button, dislike_button } = create_like_buttons({
       status,
       parent: popover,
-      cb: ((newStatus) => {
+      cb: (newStatus) => {
         popover.popdown();
         cb?.(newStatus);
-      }),
+      },
       videoId,
     });
 
@@ -49,9 +50,12 @@ export interface CreateLikeButtonsProps {
   cb?: LikeRowCallback;
 }
 
-export function create_like_buttons(
-  { status, parent, videoId, cb }: CreateLikeButtonsProps,
-) {
+export function create_like_buttons({
+  status,
+  parent,
+  videoId,
+  cb,
+}: CreateLikeButtonsProps) {
   const change_rating = (newStatus: LikeStatus) => {
     cb?.(newStatus);
     parent.activate_action(

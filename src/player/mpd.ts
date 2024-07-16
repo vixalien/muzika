@@ -8,168 +8,139 @@ export function convert_formats_to_dash(song: Song) {
 
   const duration = get_presentation_duration(formats);
 
-  const translable_caption = song.captions?.find((caption) =>
-    caption.translatable
+  const translable_caption = song.captions?.find(
+    (caption) => caption.translatable,
   );
 
-  return `<?xml version="1.0"?>\n` + objectToSchema({
-    "@name": "MPD",
-    "xmlns:xsi": "http://www.w3.org/2001/XMLSchema-instance",
-    "xmlns": "urn:mpeg:dash:schema:mpd:2011",
-    "xsi:schemaLocation": "urn:mpeg:dash:schema:mpd:2011 DASH-MPD.xsd",
-    "xmlns:yt": "http://youtube.com/yt/2012/10/10",
-    "profiles": "urn:mpeg:dash:profile:isoff-on-demand:2011",
-    "type": "static",
-    "mediaPresentationDuration": duration,
-    "minBufferTime": "PT1.500S",
-    "#children": [
-      {
-        "@name": "ProgramInformation",
-        "moreInformationURL": "https://github.com/vixalien/muzika",
-        "#children": "Dashed Song",
-      },
-      {
-        "@name": "Period",
-        "#children": [
-          ...formats.reduce((acc, format, index) => {
-            if (format.has_audio && format.has_video) return acc;
+  return (
+    `<?xml version="1.0"?>\n` +
+    objectToSchema({
+      "@name": "MPD",
+      "xmlns:xsi": "http://www.w3.org/2001/XMLSchema-instance",
+      xmlns: "urn:mpeg:dash:schema:mpd:2011",
+      "xsi:schemaLocation": "urn:mpeg:dash:schema:mpd:2011 DASH-MPD.xsd",
+      "xmlns:yt": "http://youtube.com/yt/2012/10/10",
+      profiles: "urn:mpeg:dash:profile:isoff-on-demand:2011",
+      type: "static",
+      mediaPresentationDuration: duration,
+      minBufferTime: "PT1.500S",
+      "#children": [
+        {
+          "@name": "ProgramInformation",
+          moreInformationURL: "https://github.com/vixalien/muzika",
+          "#children": "Dashed Song",
+        },
+        {
+          "@name": "Period",
+          "#children": [
+            ...formats.reduce(
+              (acc, format) => {
+                if (format.has_audio && format.has_video) return acc;
 
-            const representation: Record<string, any> = {
-              "@name": "Representation",
-              "id": format.itag,
-              "mimeType": escape_attribute(format.mime_type.split(";")[0]),
-              "codecs": escape_attribute(format.codecs.split(", ").join(",")),
-              "bandwidth": format.average_bitrate || format.bitrate,
-              "audioSamplingRate": format_has_audio(format)
-                ? format.sample_rate
-                : null,
-              "#children": [
-                ...(format_has_audio(format)
-                  ? [{
-                    "@name": "AudioChannelConfiguration",
-                    "schemeIdUri":
-                      "urn:mpeg:dash:23003:3:audio_channel_configuration:2011",
-                    "value": format.channels,
-                  }]
-                  : []),
-                {
-                  "@name": "BaseURL",
-                  "@noindent": true,
-                  "#children": getInitializationUrl(format),
-                },
-                ...(
-                  format.index_range
-                    ? [
-                      {
-                        "@name": "SegmentBase",
-                        "indexRangeExact": "true",
-                        "indexRange":
-                          `${format.index_range.start}-${format.index_range.end}`,
-                        "#children": [
-                          ...(
-                            format.init_range
-                              ? [
-                                {
-                                  "@name": "Initialization",
-                                  "range":
-                                    `${format.init_range.start}-${format.init_range.end}`,
-                                },
-                              ]
-                              : []
-                          ),
-                        ],
-                      },
-                    ]
-                    : []
-                ),
-              ],
-            };
-
-            if (format.has_video) {
-              representation.width = format.width;
-              representation.height = format.height;
-              representation.frameRate = format.fps;
-              representation.par = get_ratio(format.width, format.height);
-              representation.sar = "1:1";
-            }
-
-            if (format.has_audio) {
-              representation.audioSamplingRate =
-                (format as AudioFormat).sample_rate;
-            }
-
-            const definition: Record<string, any> = {
-              "@name": "AdaptationSet",
-              "mimeType": escape_attribute(format.mime_type.split(";")[0]),
-              "segmentAlignment": "true",
-              // "contentType": format.has_audio ? "audio" : "video",
-              "#children": [
-                {
-                  "@name": "Role",
-                  "schemeIdUri": "urn:mpeg:dash:role:2011",
-                  "value": "main",
-                },
-                representation,
-              ],
-            };
-            const existing = acc.find((item) => {
-              return item.mimeType === definition.mimeType;
-            });
-
-            if (existing) {
-              existing["#children"].push(representation);
-            } else {
-              acc.push(definition);
-            }
-
-            return acc;
-          }, [] as Record<string, any>[]),
-          // see https://gitlab.freedesktop.org/gstreamer/gstreamer/-/issues/2872
-          ...song.captions.map((caption, index) => {
-            const url = new URL(caption.url);
-            url.searchParams.set("fmt", "vtt");
-
-            return {
-              "@name": "AdaptationSet",
-              "mimeType": "text/vtt",
-              "lang": caption.lang,
-              "#children": [
-                {
+                const representation: Record<string, unknown> = {
                   "@name": "Representation",
-                  "id": `caption-${index}`,
-                  "bandwidth": 256,
+                  id: format.itag,
+                  mimeType: escape_attribute(format.mime_type.split(";")[0]),
+                  codecs: escape_attribute(format.codecs.split(", ").join(",")),
+                  bandwidth: format.average_bitrate || format.bitrate,
+                  audioSamplingRate: format_has_audio(format)
+                    ? format.sample_rate
+                    : null,
                   "#children": [
+                    ...(format_has_audio(format)
+                      ? [
+                          {
+                            "@name": "AudioChannelConfiguration",
+                            schemeIdUri:
+                              "urn:mpeg:dash:23003:3:audio_channel_configuration:2011",
+                            value: format.channels,
+                          },
+                        ]
+                      : []),
                     {
                       "@name": "BaseURL",
                       "@noindent": true,
-                      "#children": escape_uri(url.toString()),
+                      "#children": getInitializationUrl(format),
                     },
+                    ...(format.index_range
+                      ? [
+                          {
+                            "@name": "SegmentBase",
+                            indexRangeExact: "true",
+                            indexRange: `${format.index_range.start}-${format.index_range.end}`,
+                            "#children": [
+                              ...(format.init_range
+                                ? [
+                                    {
+                                      "@name": "Initialization",
+                                      range: `${format.init_range.start}-${format.init_range.end}`,
+                                    },
+                                  ]
+                                : []),
+                            ],
+                          },
+                        ]
+                      : []),
                   ],
-                },
-              ],
-            };
-          }),
-          ...(translable_caption
-            ? languages.map((lang) => {
-              const url = new URL(translable_caption.url);
+                };
+
+                if (format.has_video) {
+                  representation.width = format.width;
+                  representation.height = format.height;
+                  representation.frameRate = format.fps;
+                  representation.par = get_ratio(format.width, format.height);
+                  representation.sar = "1:1";
+                }
+
+                if (format.has_audio) {
+                  representation.audioSamplingRate = (
+                    format as AudioFormat
+                  ).sample_rate;
+                }
+
+                const definition: Record<string, unknown> = {
+                  "@name": "AdaptationSet",
+                  mimeType: escape_attribute(format.mime_type.split(";")[0]),
+                  segmentAlignment: "true",
+                  // "contentType": format.has_audio ? "audio" : "video",
+                  "#children": [
+                    {
+                      "@name": "Role",
+                      schemeIdUri: "urn:mpeg:dash:role:2011",
+                      value: "main",
+                    },
+                    representation,
+                  ],
+                };
+                const existing = acc.find((item) => {
+                  return item.mimeType === definition.mimeType;
+                });
+
+                if (existing) {
+                  (existing["#children"] as unknown[]).push(representation);
+                } else {
+                  acc.push(definition);
+                }
+
+                return acc;
+              },
+              [] as Record<string, unknown>[],
+            ),
+            // see https://gitlab.freedesktop.org/gstreamer/gstreamer/-/issues/2872
+            ...song.captions.map((caption, index) => {
+              const url = new URL(caption.url);
               url.searchParams.set("fmt", "vtt");
-              url.searchParams.set("tlang", lang.code);
 
               return {
                 "@name": "AdaptationSet",
-                "mimeType": "text/vtt",
-                "lang": lang.code,
+                mimeType: "text/vtt",
+                lang: caption.lang,
                 "#children": [
                   {
                     "@name": "Representation",
-                    "id": `caption-translated-${lang.code}`,
-                    "bandwidth": 256,
+                    id: `caption-${index}`,
+                    bandwidth: 256,
                     "#children": [
-                      {
-                        "@name": "Role",
-                        "schemeIdUri": "urn:mpeg:dash:role:2011",
-                        "value": "dub",
-                      },
                       {
                         "@name": "BaseURL",
                         "@noindent": true,
@@ -179,12 +150,44 @@ export function convert_formats_to_dash(song: Song) {
                   },
                 ],
               };
-            })
-            : []),
-        ],
-      },
-    ],
-  });
+            }),
+            ...(translable_caption
+              ? languages.map((lang) => {
+                  const url = new URL(translable_caption.url);
+                  url.searchParams.set("fmt", "vtt");
+                  url.searchParams.set("tlang", lang.code);
+
+                  return {
+                    "@name": "AdaptationSet",
+                    mimeType: "text/vtt",
+                    lang: lang.code,
+                    "#children": [
+                      {
+                        "@name": "Representation",
+                        id: `caption-translated-${lang.code}`,
+                        bandwidth: 256,
+                        "#children": [
+                          {
+                            "@name": "Role",
+                            schemeIdUri: "urn:mpeg:dash:role:2011",
+                            value: "dub",
+                          },
+                          {
+                            "@name": "BaseURL",
+                            "@noindent": true,
+                            "#children": escape_uri(url.toString()),
+                          },
+                        ],
+                      },
+                    ],
+                  };
+                })
+              : []),
+          ],
+        },
+      ],
+    })
+  );
 }
 
 function format_duration(duration: number) {
@@ -210,16 +213,11 @@ function get_presentation_duration(media: Format[]) {
 }
 
 function escape_attribute(str: string) {
-  return str
-    .replace(/\"/g, '\\"')
-    .replace(/\'/g, "\\'");
+  return str.replace(/"/g, '\\"').replace(/'/g, "\\'");
 }
 
 function escape_uri(uri: string) {
-  return uri
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;");
+  return uri.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 }
 
 function getInitializationUrl(format: Format) {
@@ -233,8 +231,8 @@ function indent(str: string) {
     .join("\n");
 }
 
-function objectToSchema(obj: any) {
-  const attributes: Record<string, any> = {};
+function objectToSchema(obj: Record<string, unknown>) {
+  const attributes: Record<string, unknown> = {};
 
   const noindent = Object.hasOwn(obj, "@noindent");
 
@@ -249,11 +247,9 @@ function objectToSchema(obj: any) {
 
     if (key === "#children") {
       if (Array.isArray(value)) {
-        body += value
-          .map((child) => indent(objectToSchema(child)))
-          .join("\n");
+        body += value.map((child) => indent(objectToSchema(child))).join("\n");
       } else {
-        body += (noindent ? "" : "  ") + value.toString();
+        body += (noindent ? "" : "  ") + value?.toString();
       }
       continue;
     }
@@ -265,7 +261,9 @@ function objectToSchema(obj: any) {
     .map(([key, value]) => `${key}="${value}"`)
     .join(" ");
 
-  const body_text = noindent ? body : `
+  const body_text = noindent
+    ? body
+    : `
 ${body}
 `;
 
@@ -278,7 +276,7 @@ ${body}
 
 function get_ratio(a: number, b: number) {
   for (let base = b; base > 1; base--) {
-    if ((a % base) == 0 && (b % base) == 0) {
+    if (a % base == 0 && b % base == 0) {
       a = a / base;
       b = b / base;
     }

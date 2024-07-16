@@ -19,14 +19,19 @@ export interface MoodsPageState extends VScrollState {
   contents: MoodCategories;
 }
 
-export class MoodsPage extends Adw.Bin
-  implements MuzikaPageWidget<MoodCategories, MoodsPageState> {
+export class MoodsPage
+  extends Adw.Bin
+  implements MuzikaPageWidget<MoodCategories, MoodsPageState>
+{
   static {
-    GObject.registerClass({
-      GTypeName: "MoodsPage",
-      Template: "resource:///com/vixalien/muzika/ui/pages/moods.ui",
-      InternalChildren: ["scrolled", "box"],
-    }, this);
+    GObject.registerClass(
+      {
+        GTypeName: "MoodsPage",
+        Template: "resource:///com/vixalien/muzika/ui/pages/moods.ui",
+        InternalChildren: ["scrolled", "box"],
+      },
+      this,
+    );
   }
 
   private _scrolled!: Gtk.ScrolledWindow;
@@ -50,6 +55,7 @@ export class MoodsPage extends Adw.Bin
 
   get_state() {
     return {
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       contents: this.contents!,
       vscroll: this._scrolled.get_vadjustment().get_value(),
     };
@@ -72,9 +78,7 @@ export class MoodsPage extends Adw.Bin
     return;
   }
 
-  private add_carousel(
-    data: MoodCategories["categories"][0],
-  ) {
+  private add_carousel(data: MoodCategories["categories"][0]) {
     if (!data || data.items.length === 0) return;
 
     const carousel = new Carousel();
@@ -82,7 +86,8 @@ export class MoodsPage extends Adw.Bin
     carousel.show_content({
       title: data.title,
       display: "mood",
-      contents: data.items as any[],
+      // @ts-expect-error idk what's going on here
+      contents: data.items,
     });
 
     this._box.append(carousel);

@@ -7,16 +7,15 @@ import { load_thumbnails } from "../webimage.js";
 
 export class AddToPlaylistItemCard extends Gtk.Box {
   static {
-    GObject.registerClass({
-      GTypeName: "AddToPlaylistItemCard",
-      Template:
-        "resource:///com/vixalien/muzika/ui/components/playlist/add-to-playlist-item.ui",
-      InternalChildren: [
-        "title",
-        "subtitle",
-        "image",
-      ],
-    }, this);
+    GObject.registerClass(
+      {
+        GTypeName: "AddToPlaylistItemCard",
+        Template:
+          "resource:///com/vixalien/muzika/ui/components/playlist/add-to-playlist-item.ui",
+        InternalChildren: ["title", "subtitle", "image"],
+      },
+      this,
+    );
   }
 
   item?: AddToPlaylistItem;
@@ -24,10 +23,6 @@ export class AddToPlaylistItemCard extends Gtk.Box {
   private _title!: Gtk.Label;
   private _subtitle!: Gtk.Label;
   private _image!: Gtk.Image;
-
-  constructor() {
-    super();
-  }
 
   show_item(item: AddToPlaylistItem) {
     this.item = item;

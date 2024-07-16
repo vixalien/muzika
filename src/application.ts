@@ -20,17 +20,20 @@ export class Application extends Adw.Application {
   window?: Window;
 
   static {
-    GObject.registerClass({
-      Properties: {
-        player: GObject.param_spec_object(
-          "player",
-          "Player",
-          "The Muzika player",
-          MuzikaPlayer.$gtype,
-          GObject.ParamFlags.READABLE,
-        ),
+    GObject.registerClass(
+      {
+        Properties: {
+          player: GObject.param_spec_object(
+            "player",
+            "Player",
+            "The Muzika player",
+            MuzikaPlayer.$gtype,
+            GObject.ParamFlags.READABLE,
+          ),
+        },
       },
-    }, this);
+      this,
+    );
   }
 
   private init_actions() {

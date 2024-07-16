@@ -16,51 +16,54 @@ interface PlaylistListItemWithSignals extends PlaylistListItem {
 
 export class PlaylistListView extends Gtk.ListView {
   static {
-    GObject.registerClass({
-      GTypeName: "PlaylistListView",
-      Properties: {
-        is_album: GObject.param_spec_boolean(
-          "is-album",
-          "Represents an album",
-          "Whether this playlist represents an album",
-          false,
-          GObject.ParamFlags.READWRITE,
-        ),
-        is_editable: GObject.param_spec_boolean(
-          "is-editable",
-          "Is editable",
-          "Whether the playlist items can be edited (or deleted)",
-          false,
-          GObject.ParamFlags.READWRITE,
-        ),
-        playlist_id: GObject.param_spec_string(
-          "playlist-id",
-          "Playlist ID",
-          "The playlist ID",
-          null,
-          GObject.ParamFlags.READWRITE,
-        ),
-        selection_mode: GObject.param_spec_boolean(
-          "selection-mode",
-          "Selection Mode",
-          "Whether the selection mode is toggled on",
-          false,
-          GObject.ParamFlags.READWRITE,
-        ),
-        show_add_button: GObject.param_spec_boolean(
-          "show-add-button",
-          "Show the add button",
-          "Show a button to trigger the 'Save to playlist' action",
-          false,
-          GObject.ParamFlags.READWRITE | GObject.ParamFlags.CONSTRUCT,
-        ),
-      },
-      Signals: {
-        "add": {
-          param_types: [GObject.TYPE_INT],
+    GObject.registerClass(
+      {
+        GTypeName: "PlaylistListView",
+        Properties: {
+          is_album: GObject.param_spec_boolean(
+            "is-album",
+            "Represents an album",
+            "Whether this playlist represents an album",
+            false,
+            GObject.ParamFlags.READWRITE,
+          ),
+          is_editable: GObject.param_spec_boolean(
+            "is-editable",
+            "Is editable",
+            "Whether the playlist items can be edited (or deleted)",
+            false,
+            GObject.ParamFlags.READWRITE,
+          ),
+          playlist_id: GObject.param_spec_string(
+            "playlist-id",
+            "Playlist ID",
+            "The playlist ID",
+            null,
+            GObject.ParamFlags.READWRITE,
+          ),
+          selection_mode: GObject.param_spec_boolean(
+            "selection-mode",
+            "Selection Mode",
+            "Whether the selection mode is toggled on",
+            false,
+            GObject.ParamFlags.READWRITE,
+          ),
+          show_add_button: GObject.param_spec_boolean(
+            "show-add-button",
+            "Show the add button",
+            "Show a button to trigger the 'Save to playlist' action",
+            false,
+            GObject.ParamFlags.READWRITE | GObject.ParamFlags.CONSTRUCT,
+          ),
+        },
+        Signals: {
+          add: {
+            param_types: [GObject.TYPE_INT],
+          },
         },
       },
-    }, this);
+      this,
+    );
   }
 
   is_album!: boolean;
@@ -85,14 +88,15 @@ export class PlaylistListView extends Gtk.ListView {
       "selection-mode",
       this,
       "single-click-activate",
-      GObject.BindingFlags.DEFAULT | GObject.BindingFlags.INVERT_BOOLEAN |
+      GObject.BindingFlags.DEFAULT |
+        GObject.BindingFlags.INVERT_BOOLEAN |
         GObject.BindingFlags.SYNC_CREATE,
     );
 
     this.connect("activate", (_, position) => {
-      const container = this.model.get_item(position) as ObjectContainer<
-        PlaylistItem
-      >;
+      const container = this.model.get_item(
+        position,
+      ) as ObjectContainer<PlaylistItem>;
 
       if (this.playlist_id) {
         this.activate_action(
@@ -155,7 +159,7 @@ export class PlaylistListView extends Gtk.ListView {
 
     listeners.add(
       item,
-      item.connect("add", (_) => {
+      item.connect("add", () => {
         this.emit("add", list_item.position);
       }),
     );

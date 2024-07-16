@@ -33,15 +33,13 @@ export class SignalListeners {
     this.bindings.length = 0;
   }
 
-  connect<
-    Signal extends string,
-    Obj extends GObject.Object,
-  >(
+  connect<Signal extends string, Obj extends GObject.Object>(
     widget: Obj,
     signal: Signal,
-    fn: (...args: any[]) => any,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    fn: (...args: any[]) => unknown,
   ) {
-    const listener = widget.connect(signal, fn as any);
+    const listener = widget.connect(signal, fn);
     this.add(widget, listener);
     return listener;
   }

@@ -27,50 +27,56 @@ export interface PageLoadContext {
   set_title(title: string): void;
 }
 
-export type MuzikaPageMeta<Data = unknown, State = unknown> = {
+export interface MuzikaPageMeta<Data = unknown, State = unknown> {
   title: string;
   uri: string;
   build(): MuzikaPageWidget<Data, State>;
-  load(context: PageLoadContext): void | Promise<void | Data>;
-};
+  load(context: PageLoadContext): null | Promise<null | Data>;
+}
 
 export class Navigator extends GObject.Object {
   private _view: Adw.NavigationView;
 
-  private match_map: Map<MatchFunction, MuzikaPageMeta> = new Map();
+  private match_map = new Map<
+    MatchFunction<Partial<Record<string, string | string[]>>>,
+    MuzikaPageMeta
+  >();
 
-  private stacks: Map<string, Adw.NavigationPage[]> = new Map();
+  private stacks = new Map<string, Adw.NavigationPage[]>();
 
   loading = false;
 
   static {
-    GObject.registerClass({
-      Signals: {
-        navigate: {},
-        "load-start": {},
-        "load-end": {},
-        "search-changed": {
-          param_types: [GObject.TYPE_STRING],
+    GObject.registerClass(
+      {
+        Signals: {
+          navigate: {},
+          "load-start": {},
+          "load-end": {},
+          "search-changed": {
+            param_types: [GObject.TYPE_STRING],
+          },
+          "show-content": {},
         },
-        "show-content": {},
+        Properties: {
+          loading: GObject.ParamSpec.boolean(
+            "loading",
+            "Loading",
+            "Whether something is loading currently",
+            GObject.ParamFlags.READWRITE,
+            false,
+          ),
+          current_uri: GObject.ParamSpec.string(
+            "current-uri",
+            "Current URI",
+            "The current URI",
+            GObject.ParamFlags.READABLE,
+            "",
+          ),
+        },
       },
-      Properties: {
-        loading: GObject.ParamSpec.boolean(
-          "loading",
-          "Loading",
-          "Whether something is loading currently",
-          GObject.ParamFlags.READWRITE,
-          false,
-        ),
-        current_uri: GObject.ParamSpec.string(
-          "current-uri",
-          "Current URI",
-          "The current URI",
-          GObject.ParamFlags.READABLE,
-          "",
-        ),
-      },
-    }, this);
+      this,
+    );
   }
 
   private _visible_page_signal: number;
@@ -152,7 +158,7 @@ export class Navigator extends GObject.Object {
       },
       {
         name: "back",
-        activate: (_) => {
+        activate: () => {
           this.back();
         },
       },
@@ -174,7 +180,7 @@ export class Navigator extends GObject.Object {
       this.abort_controller.abort();
     }
 
-    this.abort_controller = new AbortController();
+    return (this.abort_controller = new AbortController());
   }
 
   private reset_abort_controller() {
@@ -186,9 +192,10 @@ export class Navigator extends GObject.Object {
 
     if (!page || page.loading || !(page instanceof Page)) return;
 
-    this.abort_current();
+    const abort_controller = this.abort_current();
 
-    return page.reload(this.abort_controller!.signal)
+    return page
+      .reload(abort_controller.signal)
       ?.catch((error) => {
         if (error instanceof DOMException && error.name == "AbortError") return;
         page.show_error(error);
@@ -203,11 +210,12 @@ export class Navigator extends GObject.Object {
     match: MatchResult<Record<string, string>>,
     meta: MuzikaPageMeta,
   ) {
-    this.abort_current();
+    const abort_controller = this.abort_current();
 
     const page = new Page(meta);
     this._view.push(page);
-    page.load(uri, match, this.abort_controller!.signal)
+    page
+      .load(uri, match, abort_controller.signal)
       .then(() => {
         this.reset_abort_controller();
       })
@@ -256,7 +264,7 @@ export class Navigator extends GObject.Object {
     if (search_match) {
       this.emit(
         "search-changed",
-        decodeURIComponent((search_match.params as any).query),
+        decodeURIComponent(search_match.params.query?.toString() ?? ""),
       );
     }
 
@@ -300,18 +308,15 @@ export class Navigator extends GObject.Object {
       return;
     }
 
-    this.abort_current();
+    const abort_controller = this.abort_current();
 
     if (match) {
-      page.load;
-      return page.load(
-        uri,
-        match.match,
-        this.abort_controller!.signal,
-      )
+      return page
+        .load(uri, match.match, abort_controller.signal)
         ?.then(() => {
           this.reset_abort_controller();
-        }).catch((error) => {
+        })
+        .catch((error) => {
           if (error instanceof DOMException && error.name == "AbortError") {
             return;
           }
@@ -353,7 +358,7 @@ export class Navigator extends GObject.Object {
 }
 
 export function get_navigator(widget?: Gtk.Widget) {
-  const window = ((widget?.root) || get_window()) as Window;
+  const window = (widget?.root || get_window()) as Window;
 
   return window.navigator;
 }

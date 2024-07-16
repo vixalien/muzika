@@ -22,23 +22,26 @@ export class Carousel<
   },
 > extends Gtk.Box {
   static {
-    GObject.registerClass({
-      GTypeName: "Carousel",
-      Template:
-        "resource:///com/vixalien/muzika/ui/components/carousel/carousel.ui",
-      InternalChildren: [
-        "title",
-        "subtitle",
-        "text",
-        "text_view",
-        "scrolled",
-        "buttons",
-        "left_button",
-        "right_button",
-        "carousel_stack",
-        "more_button",
-      ],
-    }, this);
+    GObject.registerClass(
+      {
+        GTypeName: "Carousel",
+        Template:
+          "resource:///com/vixalien/muzika/ui/components/carousel/carousel.ui",
+        InternalChildren: [
+          "title",
+          "subtitle",
+          "text",
+          "text_view",
+          "scrolled",
+          "buttons",
+          "left_button",
+          "right_button",
+          "carousel_stack",
+          "more_button",
+        ],
+      },
+      this,
+    );
   }
 
   content?: Content;
@@ -58,6 +61,7 @@ export class Carousel<
 
   model = Gio.ListStore.new(GObject.TYPE_OBJECT);
 
+  // eslint-disable-next-line @typescript-eslint/no-useless-constructor
   constructor(params?: Partial<Gtk.Box.ConstructorProperties>) {
     super(params);
   }
@@ -89,9 +93,9 @@ export class Carousel<
     const animation = Adw.TimedAnimation.new(
       this._scrolled,
       hadjustment.value,
-      (direction === Gtk.DirectionType.RIGHT)
-        ? (hadjustment.value + hadjustment.page_size)
-        : (hadjustment.value - hadjustment.page_size),
+      direction === Gtk.DirectionType.RIGHT
+        ? hadjustment.value + hadjustment.page_size
+        : hadjustment.value - hadjustment.page_size,
       400,
       target,
     );
@@ -103,8 +107,8 @@ export class Carousel<
     const hadjustment = this._scrolled.get_hadjustment();
 
     if (
-      (hadjustment.get_upper() - hadjustment.get_lower()) ==
-        hadjustment.page_size
+      hadjustment.get_upper() - hadjustment.get_lower() ==
+      hadjustment.page_size
     ) {
       this._left_button.hide();
       this._right_button.hide();
@@ -116,7 +120,8 @@ export class Carousel<
         this._left_button.set_sensitive(false);
         this._right_button.set_sensitive(true);
       } else if (
-        hadjustment.value >= (hadjustment.get_upper() - hadjustment.page_size)
+        hadjustment.value >=
+        hadjustment.get_upper() - hadjustment.page_size
       ) {
         this._left_button.set_sensitive(true);
         this._right_button.set_sensitive(false);
@@ -135,7 +140,9 @@ export class Carousel<
       0,
       contents
         .filter((content) => content != null)
-        .map((content) => PlayableContainer.new_from_mixed_card_item(content!)),
+        .map((content) =>
+          PlayableContainer.new_from_mixed_card_item(content as MixedCardItem),
+        ),
     );
 
     this._scrolled.child = listview;
@@ -149,7 +156,9 @@ export class Carousel<
       0,
       contents
         .filter((content) => content != null)
-        .map((content) => PlayableContainer.new_from_mixed_card_item(content!)),
+        .map((content) =>
+          PlayableContainer.new_from_mixed_card_item(content as MixedCardItem),
+        ),
     );
 
     this._scrolled.child = flatsongview;
@@ -163,15 +172,13 @@ export class Carousel<
       0,
       contents
         .filter((content) => content != null)
-        .map((content) => PlayableContainer.new(content!)),
+        .map((content) => PlayableContainer.new(content as ParsedMoodOrGenre)),
     );
 
     this._scrolled.child = moodview;
   }
 
-  show_content(
-    content: Content,
-  ) {
+  show_content(content: Content) {
     this._title.set_label(content.title ?? "");
 
     if (content.subtitle) {
@@ -194,7 +201,8 @@ export class Carousel<
       if (content.display == "list") {
         this.show_gridview(content.contents);
       } else if (content.display == "mood") {
-        this.show_moodview(content.contents as any[]);
+        // @ts-expect-error TODO fix this later
+        this.show_moodview(content.contents);
       } else {
         this.show_listview(content.contents);
       }

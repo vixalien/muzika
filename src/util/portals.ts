@@ -24,15 +24,17 @@ export function request_background() {
   const window = get_window();
   const parent = window ? XdpGtk4.parent_new_gtk(window) : null;
 
-  return portal.request_background(
-    parent,
-    _("Muzika needs to run in the background to play music"),
-    [pkg.name],
-    Xdp.BackgroundFlags.NONE,
-    null,
-  ).catch(() => {
-    console.error("Permission to run in the background not granted");
-  });
+  return portal
+    .request_background(
+      parent,
+      _("Muzika needs to run in the background to play music"),
+      [pkg.name],
+      Xdp.BackgroundFlags.NONE,
+      null,
+    )
+    .catch(() => {
+      console.error("Permission to run in the background not granted");
+    });
 }
 
 export function set_background_status() {

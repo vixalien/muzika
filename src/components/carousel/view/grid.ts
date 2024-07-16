@@ -12,9 +12,12 @@ export type RequiredMixedItem = NonNullable<MixedItem>;
 
 export class CarouselGridView extends Gtk.GridView {
   static {
-    GObject.registerClass({
-      GTypeName: "CarouselGridView",
-    }, this);
+    GObject.registerClass(
+      {
+        GTypeName: "CarouselGridView",
+      },
+      this,
+    );
   }
 
   private _items!: PlayableList<MixedCardItem>;
@@ -54,8 +57,7 @@ export class CarouselGridView extends Gtk.GridView {
     const card = new CarouselCard();
     card.dynamic_image.hexpand =
       card.dynamic_image.vexpand =
-      card.dynamic_image
-        .can_expand =
+      card.dynamic_image.can_expand =
         true;
     list_item.set_child(card);
   }
@@ -67,7 +69,7 @@ export class CarouselGridView extends Gtk.GridView {
     if (container.object) {
       card.show_item(container.object);
 
-      (container as any).binding = container.bind_property(
+      (container as ContainerWithBinding).binding = container.bind_property(
         "state",
         card,
         "state",
@@ -79,7 +81,7 @@ export class CarouselGridView extends Gtk.GridView {
   unbind_cb(_factory: Gtk.ListItemFactory, list_item: Gtk.ListItem) {
     const container = list_item.item as PlayableContainer<MixedCardItem>;
 
-    ((container as any).binding as GObject.Binding)?.unbind();
+    ((container as ContainerWithBinding).binding as GObject.Binding)?.unbind();
   }
 
   vfunc_map(): void {
@@ -92,3 +94,7 @@ export class CarouselGridView extends Gtk.GridView {
     super.vfunc_unmap();
   }
 }
+
+type ContainerWithBinding = PlayableContainer<MixedCardItem> & {
+  binding: GObject.Binding;
+};

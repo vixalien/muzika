@@ -21,14 +21,19 @@ export interface ChartsPageState extends VScrollState {
   contents: Charts;
 }
 
-export class ChartsPage extends Adw.Bin
-  implements MuzikaPageWidget<Charts, ChartsPageState> {
+export class ChartsPage
+  extends Adw.Bin
+  implements MuzikaPageWidget<Charts, ChartsPageState>
+{
   static {
-    GObject.registerClass({
-      GTypeName: "ChartsPage",
-      Template: "resource:///com/vixalien/muzika/ui/pages/charts.ui",
-      InternalChildren: ["scrolled", "box", "drop_down"],
-    }, this);
+    GObject.registerClass(
+      {
+        GTypeName: "ChartsPage",
+        Template: "resource:///com/vixalien/muzika/ui/pages/charts.ui",
+        InternalChildren: ["scrolled", "box", "drop_down"],
+      },
+      this,
+    );
   }
 
   private _scrolled!: Gtk.ScrolledWindow;
@@ -49,9 +54,7 @@ export class ChartsPage extends Adw.Bin
 
       this.activate_action(
         `navigator.replace`,
-        GLib.Variant.new_string(
-          `muzika:charts?country=${country.code}`,
-        ),
+        GLib.Variant.new_string(`muzika:charts?country=${country.code}`),
       );
     });
   }
@@ -88,6 +91,7 @@ export class ChartsPage extends Adw.Bin
 
   get_state() {
     return {
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       contents: this.contents!,
       vscroll: this._scrolled.get_vadjustment().get_value(),
     };
@@ -121,7 +125,7 @@ export class ChartsPage extends Adw.Bin
     const carousel = new Carousel();
 
     carousel.setup_more_button(
-      (show_more_button && data.browseId != null)
+      show_more_button && data.browseId != null
         ? data.params != null
           ? `navigator.visit("muzika:artist-albums:${data.browseId}:${data.params}")`
           : `navigator.visit("muzika:playlist:${data.browseId}")`
@@ -147,7 +151,7 @@ export class ChartsPage extends Adw.Bin
     const carousel = new Carousel();
 
     carousel.setup_more_button(
-      (show_more_button && data.browseId != null)
+      show_more_button && data.browseId != null
         ? data.params != null
           ? `navigator.visit("muzika:artist-albums:${data.browseId}:${data.params}")`
           : `navigator.visit("muzika:playlist:${data.browseId}")`
@@ -157,7 +161,8 @@ export class ChartsPage extends Adw.Bin
     carousel.show_content({
       title,
       display: "mood",
-      contents: data.results as any,
+      // @ts-expect-error TODO fix types
+      contents: data.results,
     });
 
     this._box.append(carousel);

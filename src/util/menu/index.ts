@@ -44,19 +44,15 @@ export type MenuProp =
   | MenuSubmenu
   | MenuSection;
 
-function is_gio_menu_item(item: any): item is Gio.MenuItem {
+function is_gio_menu_item(item: unknown): item is Gio.MenuItem {
   return typeof item === "object" && item instanceof Gio.MenuItem;
 }
 
-function is_submenu(
-  item: NonNullable<MenuProp>,
-): item is MenuSubmenu {
+function is_submenu(item: NonNullable<MenuProp>): item is MenuSubmenu {
   return typeof item === "object" && Object.hasOwn(item, "submenu");
 }
 
-function is_section(
-  item: NonNullable<MenuProp>,
-): item is MenuSection {
+function is_section(item: NonNullable<MenuProp>): item is MenuSection {
   return typeof item === "object" && Object.hasOwn(item, "section");
 }
 
@@ -90,26 +86,33 @@ function generate_menu_item(props: NonNullable<MenuItemProps>) {
   }
 }
 
-function filter_null<T extends any>(menu_props: T[]) {
+function filter_null<T>(menu_props: T[]) {
   return menu_props.filter((prop) => prop !== null) as NonNullable<T>[];
 }
 
-type PopoverChildren = Record<string, (popover: Gtk.Popover) => Gtk.Widget>;
+type PopoverChildFn = (popover: Gtk.Popover) => Gtk.Widget;
+
+type PopoverChildren = Record<string, PopoverChildFn>;
+
+export type MenuItemWithChild = Gio.MenuItem & { __child: PopoverChildFn };
+
+export type MenuWithChildren = Gio.Menu & { children: PopoverChildren };
 
 export function generate_menu(props: MenuProp[]) {
   const menu = new Gio.Menu();
 
   const children: PopoverChildren = {};
 
-  (menu as any).children = children;
+  (menu as MenuWithChildren).children = children;
 
   filter_null(props).forEach((item) => {
     if (is_gio_menu_item(item)) {
       menu.append_item(item);
 
       if (item.get_attribute_value("custom", GLib.VariantType.new("s"))) {
-        const child = item.get_attribute_value("custom", null)!.get_string()[0];
-        children[child] = (item as any)["__child"];
+        const child = item.get_attribute_value("custom", null)?.get_string()[0];
+        if (!child) return;
+        children[child] = (item as MenuItemWithChild)["__child"];
       }
     } else if (is_submenu(item)) {
       const submenu = new Gio.Menu();
@@ -229,7 +232,7 @@ export class MenuHelper {
     });
 
     // generate and set custom popover children
-    const children = (menu as any).children as PopoverChildren;
+    const children = (menu as MenuWithChildren).children as PopoverChildren;
     if (children && Object.keys(children).length > 0) {
       for (const [name, child] of Object.entries(children)) {
         this.popover_menu.add_child(child(this.popover_menu), name);

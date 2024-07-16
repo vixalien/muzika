@@ -26,8 +26,7 @@ function normalize_nodes(nodes?: string | (string | null)[]): string[] {
   } else if (typeof nodes === "string") {
     return [nodes];
   } else {
-    return nodes
-      .filter((node) => node != null) as string[];
+    return nodes.filter((node) => node != null) as string[];
   }
 }
 
@@ -39,9 +38,9 @@ export function pretty_subtitles(
   const { prefix, suffix = [] } = Array.isArray(options)
     ? { suffix: normalize_nodes(options), prefix: [] }
     : {
-      prefix: normalize_nodes(options.prefix),
-      suffix: normalize_nodes(options.suffix),
-    };
+        prefix: normalize_nodes(options.prefix),
+        suffix: normalize_nodes(options.suffix),
+      };
 
   const author_markup: string[] = [];
   const author_plain: string[] = [];
@@ -79,6 +78,6 @@ export function pretty_subtitles(
   return { markup: merge(author_markup), plain: merge(author_plain) };
 }
 
-function is_artist_run(node: any): node is ArtistRun {
-  return node && typeof node === "object" && "name" in node;
+function is_artist_run(node: unknown): node is ArtistRun {
+  return !!node && typeof node === "object" && "name" in node;
 }

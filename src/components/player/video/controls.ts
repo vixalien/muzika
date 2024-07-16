@@ -12,34 +12,37 @@ import { micro_to_string } from "src/util/time";
 
 export class VideoControls extends Adw.Bin {
   static {
-    GObject.registerClass({
-      GTypeName: "VideoControls",
-      Template:
-        "resource:///com/vixalien/muzika/ui/components/player/video/controls.ui",
-      InternalChildren: [
-        "multi_layout_view",
-        "play_button",
-        "progress_label",
-        "duration_label",
-        "menu_button",
-      ],
-      Properties: {
-        "show-mini": GObject.ParamSpec.boolean(
-          "show-mini",
-          "Show Mini",
-          "Show the minimal video player",
-          GObject.ParamFlags.READWRITE,
-          true,
-        ),
-        "inhibit-hide": GObject.ParamSpec.boolean(
-          "inhibit-hide",
-          "Inhibit Hide",
-          "Inhibit the hiding of the controls, for example when the mouse is over them.",
-          GObject.ParamFlags.READWRITE,
-          true,
-        ),
+    GObject.registerClass(
+      {
+        GTypeName: "VideoControls",
+        Template:
+          "resource:///com/vixalien/muzika/ui/components/player/video/controls.ui",
+        InternalChildren: [
+          "multi_layout_view",
+          "play_button",
+          "progress_label",
+          "duration_label",
+          "menu_button",
+        ],
+        Properties: {
+          "show-mini": GObject.ParamSpec.boolean(
+            "show-mini",
+            "Show Mini",
+            "Show the minimal video player",
+            GObject.ParamFlags.READWRITE,
+            true,
+          ),
+          "inhibit-hide": GObject.ParamSpec.boolean(
+            "inhibit-hide",
+            "Inhibit Hide",
+            "Inhibit the hiding of the controls, for example when the mouse is over them.",
+            GObject.ParamFlags.READWRITE,
+            true,
+          ),
+        },
       },
-    }, this);
+      this,
+    );
   }
 
   private _multi_layout_view!: Adw.MultiLayoutView;

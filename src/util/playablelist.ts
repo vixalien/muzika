@@ -90,57 +90,59 @@ function get_search_content_props(item: SearchContent) {
   return props;
 }
 
-export interface PlayableContainerProps<T extends Object = PlaylistItem> {
+export interface PlayableContainerProps<T = PlaylistItem> {
   object: T;
   video_id?: string;
   playlist_id?: string;
   is_playlist?: boolean;
 }
 
-export class PlayableContainer<T extends Object = PlaylistItem>
-  extends GObject.Object {
+export class PlayableContainer<T = PlaylistItem> extends GObject.Object {
   static {
-    GObject.registerClass({
-      GTypeName: "PlayableContainer",
-      Properties: {
-        object: GObject.ParamSpec.object(
-          "object",
-          "Contained Object",
-          "The contained object",
-          GObject.ParamFlags.READWRITE,
-          GObject.Object.$gtype,
-        ),
-        state: get_state_pspec(),
-        video_id: GObject.ParamSpec.string(
-          "video-id",
-          "Video ID",
-          "The video ID of the item",
-          GObject.ParamFlags.READWRITE,
-          null as any,
-        ),
-        playlist_id: GObject.ParamSpec.string(
-          "playlist-id",
-          "Playlist ID",
-          "The playlist ID of the item",
-          GObject.ParamFlags.READWRITE,
-          null as any,
-        ),
-        is_playlist: GObject.ParamSpec.boolean(
-          "is-playlist",
-          "Is Playlist",
-          "Whether the item is a playlist",
-          GObject.ParamFlags.READWRITE,
-          false,
-        ),
+    GObject.registerClass(
+      {
+        GTypeName: "PlayableContainer",
+        Properties: {
+          object: GObject.ParamSpec.object(
+            "object",
+            "Contained Object",
+            "The contained object",
+            GObject.ParamFlags.READWRITE,
+            GObject.Object.$gtype,
+          ),
+          state: get_state_pspec(),
+          video_id: GObject.param_spec_string(
+            "video-id",
+            "Video ID",
+            "The video ID of the item",
+            null,
+            GObject.ParamFlags.READWRITE,
+          ),
+          playlist_id: GObject.param_spec_string(
+            "playlist-id",
+            "Playlist ID",
+            "The playlist ID of the item",
+            null,
+            GObject.ParamFlags.READWRITE,
+          ),
+          is_playlist: GObject.ParamSpec.boolean(
+            "is-playlist",
+            "Is Playlist",
+            "Whether the item is a playlist",
+            GObject.ParamFlags.READWRITE,
+            false,
+          ),
+        },
       },
-    }, this);
+      this,
+    );
   }
 
   object: T;
   state: DynamicActionState;
   video_id: string | null = null;
   playlist_id: string | null = null;
-  is_playlist: boolean = false;
+  is_playlist = false;
 
   constructor(props: PlayableContainerProps<T>) {
     super();
@@ -153,7 +155,7 @@ export class PlayableContainer<T extends Object = PlaylistItem>
     if (props.is_playlist != null) this.is_playlist = props.is_playlist;
   }
 
-  static new<T extends Object>(object: T): PlayableContainer<T> {
+  static new<T>(object: T): PlayableContainer<T> {
     return new PlayableContainer({ object });
   }
 
@@ -180,29 +182,32 @@ export class PlayableContainer<T extends Object = PlaylistItem>
 }
 
 export interface SectionedPlayableContainerProps<
-  T extends Object = PlaylistItem,
-  Section extends Object = Object,
+  T = PlaylistItem,
+  Section = object,
 > extends PlayableContainerProps<T> {
   section?: ObjectContainer<Section> | null;
 }
 
 export class SectionedPlayableContainer<
-  T extends Object = PlaylistItem,
-  Section extends Object = Object,
+  T = PlaylistItem,
+  Section = object,
 > extends PlayableContainer<T> {
   static {
-    GObject.registerClass({
-      GTypeName: "SectionedPlayableContainer",
-      Properties: {
-        section: GObject.ParamSpec.object(
-          "section",
-          "Section",
-          "If this item starts a section, this property will be set to the section",
-          GObject.ParamFlags.READWRITE,
-          ObjectContainer.$gtype,
-        ),
+    GObject.registerClass(
+      {
+        GTypeName: "SectionedPlayableContainer",
+        Properties: {
+          section: GObject.ParamSpec.object(
+            "section",
+            "Section",
+            "If this item starts a section, this property will be set to the section",
+            GObject.ParamFlags.READWRITE,
+            ObjectContainer.$gtype,
+          ),
+        },
       },
-    }, this);
+      this,
+    );
   }
 
   constructor(props: SectionedPlayableContainerProps<T, Section>) {
@@ -232,7 +237,7 @@ export class SectionedPlayableContainer<
     return this.section?.object != null;
   }
 
-  static new<T extends Object, Section extends Object = Object>(
+  static new<T, Section>(
     item: T,
     section: Section | null = null,
   ): SectionedPlayableContainer<T, Section> {
@@ -242,7 +247,7 @@ export class SectionedPlayableContainer<
     });
   }
 
-  static new_from_playlist_item<Section extends Object = Object>(
+  static new_from_playlist_item<Section>(
     item: PlaylistItem,
     section: Section | null = null,
   ) {
@@ -253,7 +258,7 @@ export class SectionedPlayableContainer<
     });
   }
 
-  static new_from_mixed_card_item<Section extends Object = Object>(
+  static new_from_mixed_card_item<Section>(
     item: MixedCardItem,
     section: Section | null = null,
   ) {
@@ -263,7 +268,7 @@ export class SectionedPlayableContainer<
     });
   }
 
-  static new_from_search_content<Section extends Object = Object>(
+  static new_from_search_content<Section>(
     item: SearchContent,
     section: Section | null = null,
   ) {
@@ -279,34 +284,40 @@ export interface PlayableListProps {
 }
 
 export class PlayableList<
-  T extends Object = PlaylistItem,
-  Container extends PlayableContainer<T> = PlayableContainer<T>,
-> extends GObject.Object implements Gio.ListModel {
+    T = PlaylistItem,
+    Container extends PlayableContainer<T> = PlayableContainer<T>,
+  >
+  extends GObject.Object
+  implements Gio.ListModel
+{
   static {
-    GObject.registerClass({
-      GTypeName: "PlayableList",
-      Properties: {
-        item_type: GObject.ParamSpec.uint64(
-          "item-type",
-          "Item Type",
-          "The type of the items in the list",
-          GObject.ParamFlags.READWRITE,
-          0,
-          Number.MAX_SAFE_INTEGER,
-          0,
-        ),
-        n_items: GObject.ParamSpec.uint64(
-          "n-items",
-          "Number of Items",
-          "The number of items in the list",
-          GObject.ParamFlags.READABLE,
-          0,
-          Number.MAX_SAFE_INTEGER,
-          0,
-        ),
+    GObject.registerClass(
+      {
+        GTypeName: "PlayableList",
+        Properties: {
+          item_type: GObject.ParamSpec.uint64(
+            "item-type",
+            "Item Type",
+            "The type of the items in the list",
+            GObject.ParamFlags.READWRITE,
+            0,
+            Number.MAX_SAFE_INTEGER,
+            0,
+          ),
+          n_items: GObject.ParamSpec.uint64(
+            "n-items",
+            "Number of Items",
+            "The number of items in the list",
+            GObject.ParamFlags.READABLE,
+            0,
+            Number.MAX_SAFE_INTEGER,
+            0,
+          ),
+        },
+        Implements: [Gio.ListModel],
       },
-      Implements: [Gio.ListModel],
-    }, this);
+      this,
+    );
   }
 
   protected array = new Array<Container>();
@@ -351,9 +362,7 @@ export class PlayableList<
     return PlayableContainer.$gtype;
   }
 
-  find(
-    fn: (item: Container) => boolean,
-  ): number | null {
+  find(fn: (item: Container) => boolean): number | null {
     const index = this.array.findIndex(fn);
 
     return index === -1 ? null : index;
@@ -381,11 +390,7 @@ export class PlayableList<
     this.items_changed(position, 0, 1);
   }
 
-  splice(
-    position: number,
-    removed: number,
-    added: Container[],
-  ): void {
+  splice(position: number, removed: number, added: Container[]): void {
     this.array.splice(position, removed, ...added);
 
     this.items_changed(position, removed, added.length);
@@ -406,24 +411,24 @@ export class PlayableList<
 
     this.array.forEach((item) => {
       if (item.is_playlist) {
-        item.state = (item.playlist_id &&
-            player.queue.playlist_id ==
-              item.playlist_id)
-          ? player.playing
-            ? DynamicActionState.PLAYING
-            : DynamicActionState.PAUSED
-          : item.video_id && player.loading_track == item.video_id
-          ? DynamicActionState.LOADING
-          : DynamicActionState.DEFAULT;
+        item.state =
+          item.playlist_id && player.queue.playlist_id == item.playlist_id
+            ? player.playing
+              ? DynamicActionState.PLAYING
+              : DynamicActionState.PAUSED
+            : item.video_id && player.loading_track == item.video_id
+              ? DynamicActionState.LOADING
+              : DynamicActionState.DEFAULT;
       } else {
-        item.state = (item.video_id &&
-            player.now_playing?.object.track.videoId == item.video_id)
-          ? player.playing
-            ? DynamicActionState.PLAYING
-            : DynamicActionState.PAUSED
-          : player.loading_track == item.video_id
-          ? DynamicActionState.LOADING
-          : DynamicActionState.DEFAULT;
+        item.state =
+          item.video_id &&
+          player.now_playing?.object.track.videoId == item.video_id
+            ? player.playing
+              ? DynamicActionState.PLAYING
+              : DynamicActionState.PAUSED
+            : player.loading_track == item.video_id
+              ? DynamicActionState.LOADING
+              : DynamicActionState.DEFAULT;
       }
     });
   }
@@ -431,14 +436,11 @@ export class PlayableList<
   setup_listeners() {
     const player = get_player();
 
-    this.listeners.add(
-      player,
-      [
-        player.connect("notify::now-playing", this.reload_state.bind(this)),
-        player.connect("notify::playing", this.reload_state.bind(this)),
-        player.connect("notify::loading-track", this.reload_state.bind(this)),
-      ],
-    );
+    this.listeners.add(player, [
+      player.connect("notify::now-playing", this.reload_state.bind(this)),
+      player.connect("notify::playing", this.reload_state.bind(this)),
+      player.connect("notify::loading-track", this.reload_state.bind(this)),
+    ]);
 
     this.reload_state();
   }
@@ -448,17 +450,23 @@ export class PlayableList<
   }
 }
 
-export class SectionedPlayableList<T extends Object = PlaylistItem>
-  extends PlayableList<T, SectionedPlayableContainer<T>> {
+export class SectionedPlayableList<T = PlaylistItem> extends PlayableList<
+  T,
+  SectionedPlayableContainer<T>
+> {
   static {
-    GObject.registerClass({
-      GTypeName: "SectionedPlayableList",
-      Implements: [Gtk.SectionModel],
-    }, this);
+    GObject.registerClass(
+      {
+        GTypeName: "SectionedPlayableList",
+        Implements: [Gtk.SectionModel],
+      },
+      this,
+    );
   }
 
   vfunc_get_section(position: number) {
-    let start = -1, end = -1;
+    let start = -1,
+      end = -1;
 
     for (let i = position; i >= 0; i--) {
       if (this.array[i].has_section()) {

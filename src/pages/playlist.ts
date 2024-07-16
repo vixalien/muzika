@@ -39,7 +39,6 @@ import {
 } from "src/util/scrolled.js";
 import { add_toast, get_window } from "src/util/window.js";
 import { AnnotatedView } from "src/components/annotated-view.js";
-import { Rectangle } from "gi-types/gdk4.js";
 
 interface PlaylistState extends VScrollState {
   playlist: Playlist;
@@ -51,41 +50,46 @@ GObject.type_ensure(PlaylistItemView.$gtype);
 GObject.type_ensure(PlaylistBar.$gtype);
 GObject.type_ensure(AnnotatedView.$gtype);
 
-export class PlaylistPage extends Adw.Bin
-  implements MuzikaPageWidget<Playlist, PlaylistState> {
+export class PlaylistPage
+  extends Adw.Bin
+  implements MuzikaPageWidget<Playlist, PlaylistState>
+{
   static {
-    GObject.registerClass({
-      GTypeName: "PlaylistPage",
-      Template: "resource:///com/vixalien/muzika/ui/pages/playlist.ui",
-      InternalChildren: [
-        "trackCount",
-        "separator",
-        "duration",
-        "scrolled",
-        "data",
-        "playlist_item_view",
-        "paginator",
-        "header",
-        "bar",
-        "suggestions",
-        "suggestions_item_view",
-        "insights_clamp",
-        "insights",
-        "menu",
-        "shuffle_button",
-        "edit_playlist_button",
-        "add_to_library_button",
-      ],
-      Properties: {
-        "selection-mode": GObject.ParamSpec.boolean(
-          "selection-mode",
-          "Selection Mode",
-          "Whether this view is in selection mode",
-          GObject.ParamFlags.READWRITE | GObject.ParamFlags.EXPLICIT_NOTIFY,
-          false,
-        ),
+    GObject.registerClass(
+      {
+        GTypeName: "PlaylistPage",
+        Template: "resource:///com/vixalien/muzika/ui/pages/playlist.ui",
+        InternalChildren: [
+          "trackCount",
+          "separator",
+          "duration",
+          "scrolled",
+          "data",
+          "playlist_item_view",
+          "paginator",
+          "header",
+          "bar",
+          "suggestions",
+          "suggestions_item_view",
+          "insights_clamp",
+          "insights",
+          "menu",
+          "shuffle_button",
+          "edit_playlist_button",
+          "add_to_library_button",
+        ],
+        Properties: {
+          "selection-mode": GObject.ParamSpec.boolean(
+            "selection-mode",
+            "Selection Mode",
+            "Whether this view is in selection mode",
+            GObject.ParamFlags.READWRITE | GObject.ParamFlags.EXPLICIT_NOTIFY,
+            false,
+          ),
+        },
       },
-    }, this);
+      this,
+    );
   }
 
   playlist?: Playlist;
@@ -161,7 +165,7 @@ export class PlaylistPage extends Adw.Bin
     (group.add_action_entries as AddActionEntries)([
       {
         name: "delete",
-        activate: (__) => {
+        activate: () => {
           this.delete_playlist_cb();
         },
       },
@@ -194,7 +198,7 @@ export class PlaylistPage extends Adw.Bin
   }
 
   private async delete_playlist_cb() {
-    if (this.playlist?.editable !== true) return;
+    if (!this.playlist || this.playlist.editable !== true) return;
 
     const dialog = Adw.AlertDialog.new(
       _("Delete playlist"),
@@ -208,15 +212,18 @@ export class PlaylistPage extends Adw.Bin
       Adw.ResponseAppearance.DESTRUCTIVE,
     );
 
-    const response = await dialog.choose(get_window(), null)
+    const response = await dialog
+      .choose(get_window(), null)
+      // @ts-expect-error incorrect types
       .catch(console.error);
 
     if (response === "delete") {
-      delete_playlist(this.playlist!.id)
+      delete_playlist(this.playlist.id)
         .then(() => {
           add_toast(_("Playlist deleted"));
           this.activate_action("navigation.pop", null);
-        }).catch(() => {
+        })
+        .catch(() => {
           add_toast(_("Couldn't delete playlist"));
         });
     }
@@ -227,8 +234,8 @@ export class PlaylistPage extends Adw.Bin
 
     const items: Parameters<typeof remove_playlist_items>[1] = [];
 
-    for (let i = 0; i < positions.length; i++) {
-      const id = this.model.get_item(positions[i])?.object;
+    for (const position of positions) {
+      const id = this.model.get_item(position)?.object;
 
       if (!id) {
         continue;
@@ -236,7 +243,7 @@ export class PlaylistPage extends Adw.Bin
 
       items.push({
         videoId: id.videoId,
-        setVideoId: id.setVideoId!,
+        setVideoId: id.setVideoId ?? "",
       });
     }
 
@@ -260,7 +267,9 @@ export class PlaylistPage extends Adw.Bin
 
     const dialog = Adw.AlertDialog.new(
       _("Remove from playlist"),
-      _(" Are you sure that you want to remove the selected content from the playlist? "),
+      _(
+        " Are you sure that you want to remove the selected content from the playlist? ",
+      ),
     );
 
     dialog.add_response("cancel", _("Cancel"));
@@ -270,14 +279,18 @@ export class PlaylistPage extends Adw.Bin
       Adw.ResponseAppearance.DESTRUCTIVE,
     );
 
-    const response = await dialog.choose(get_window(), null)
+    const response = await dialog
+      .choose(get_window(), null)
+      // @ts-expect-error incorrect types
       .catch(console.error);
 
     if (response === "remove") {
-      const message = await remove_playlist_items(this.playlist!.id, items)
-        .catch((err) => {
-          console.error(err);
-        });
+      const message = await remove_playlist_items(
+        this.playlist.id,
+        items,
+      ).catch((err) => {
+        console.error(err);
+      });
 
       if (message?.status === "STATUS_SUCCEEDED") {
         success_toast();
@@ -300,7 +313,7 @@ export class PlaylistPage extends Adw.Bin
     _playlist_item_view: PlaylistItemView,
     container: PlayableContainer,
   ) {
-    if (!this.playlist) return;
+    if (!this.playlist || !this._suggestions_item_view.model) return;
 
     this.model.append(container);
     this.playlist.tracks.push(container.object);
@@ -328,7 +341,7 @@ export class PlaylistPage extends Adw.Bin
         add_toast(_("Failed to add suggestion"));
       });
 
-    if (this._suggestions_item_view.model!.get_n_items() <= 0) {
+    if (this._suggestions_item_view.model.get_n_items() <= 0) {
       this.refresh_suggestions_cb();
     }
   }
@@ -350,7 +363,7 @@ export class PlaylistPage extends Adw.Bin
 
     this.playlist.title = values.title;
     this.playlist.description = values.description;
-    this.playlist.privacy = values.privacy.id as any;
+    this.playlist.privacy = values.privacy.id as Playlist["privacy"];
 
     this._header.set_title(values.title);
     this._header.set_description(values.description);
@@ -384,8 +397,8 @@ export class PlaylistPage extends Adw.Bin
     this.playlist = playlist;
 
     this._playlist_item_view.playlist_id = playlist.id;
-    this._playlist_item_view.is_editable = this._bar.editable = playlist
-      .editable;
+    this._playlist_item_view.is_editable = this._bar.editable =
+      playlist.editable;
 
     this._bar.playlistId = this.playlist.id;
     this._suggestions.visible = this.playlist.editable;
@@ -433,7 +446,7 @@ export class PlaylistPage extends Adw.Bin
       0,
       this.suggestions_model.n_items,
       playlist.suggestions.map((suggestion) =>
-        PlayableContainer.new_from_playlist_item(suggestion)
+        PlayableContainer.new_from_playlist_item(suggestion),
       ),
     );
 
@@ -459,14 +472,16 @@ export class PlaylistPage extends Adw.Bin
         {},
       )
         .then((result) => {
-          this.playlist!.suggestions = result.suggestions;
-          this.playlist!.suggestions_continuation = result.continuation;
+          if (!this.playlist) return;
+
+          this.playlist.suggestions = result.suggestions;
+          this.playlist.suggestions_continuation = result.continuation;
 
           this.suggestions_model.splice(
             0,
             this.suggestions_model.n_items,
             result.suggestions.map((suggestion) =>
-              PlayableContainer.new(suggestion)
+              PlayableContainer.new(suggestion),
             ),
           );
         })
@@ -482,35 +497,34 @@ export class PlaylistPage extends Adw.Bin
   private setup_menu() {
     if (!this.playlist) return;
 
-    this._menu.set_menu_model(generate_menu([
-      [
-        _("Start Radio"),
-        `queue.play-playlist("${this.playlist.id}?radio=true")`,
-      ],
-      [_("Play Next"), `queue.add-playlist("${this.playlist.id}?next=true")`],
-      [_("Add to queue"), `queue.add-playlist("${this.playlist.id}")`],
-      {
-        section: null,
-        items: [
-          [
-            _("Select tracks…"),
-            `playlist.select`,
-          ],
-          this.playlist.editable
-            ? [_("Delete Playlist…"), `playlist.delete`]
-            : null,
+    this._menu.set_menu_model(
+      generate_menu([
+        [
+          _("Start Radio"),
+          `queue.play-playlist("${this.playlist.id}?radio=true")`,
         ],
-      },
-      {
-        section: null,
-        items: [
-          [
-            _("Copy Link"),
-            `win.copy-url("https://music.youtube.com/playlist?list=${this.playlist.id}")`,
+        [_("Play Next"), `queue.add-playlist("${this.playlist.id}?next=true")`],
+        [_("Add to queue"), `queue.add-playlist("${this.playlist.id}")`],
+        {
+          section: null,
+          items: [
+            [_("Select tracks…"), `playlist.select`],
+            this.playlist.editable
+              ? [_("Delete Playlist…"), `playlist.delete`]
+              : null,
           ],
-        ],
-      },
-    ]));
+        },
+        {
+          section: null,
+          items: [
+            [
+              _("Copy Link"),
+              `win.copy-url("https://music.youtube.com/playlist?list=${this.playlist.id}")`,
+            ],
+          ],
+        },
+      ]),
+    );
   }
 
   no_more = false;
@@ -566,6 +580,7 @@ export class PlaylistPage extends Adw.Bin
   get_state(): PlaylistState {
     return {
       playlist: {
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         ...this.playlist!,
         tracks: list_model_to_array(this.model)
           .map((container) => (container as PlayableContainer).object)

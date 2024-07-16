@@ -15,9 +15,12 @@ type LyricLine = TimedLyrics["timed_lyrics"][number];
 
 export class TimedLyricLineRow extends Gtk.ListBoxRow {
   static {
-    GObject.registerClass({
-      GTypeName: "TimedLyricLineRow",
-    }, this);
+    GObject.registerClass(
+      {
+        GTypeName: "TimedLyricLineRow",
+      },
+      this,
+    );
   }
 
   line: LyricLine;
@@ -38,21 +41,24 @@ export class TimedLyricLineRow extends Gtk.ListBoxRow {
 
 export class MuzikaNPLyrics extends Gtk.Stack {
   static {
-    GObject.registerClass({
-      GTypeName: "MuzikaNPLyrics",
-      Template:
-        "resource:///com/vixalien/muzika/ui/components/player/now-playing/details/lyrics.ui",
-      InternalChildren: [
-        "no_lyrics",
-        "loading",
-        "lyrics_window",
-        "view",
-        "buffer",
-        "timed_window",
-        "timed_listbox",
-        "timed_source",
-      ],
-    }, this);
+    GObject.registerClass(
+      {
+        GTypeName: "MuzikaNPLyrics",
+        Template:
+          "resource:///com/vixalien/muzika/ui/components/player/now-playing/details/lyrics.ui",
+        InternalChildren: [
+          "no_lyrics",
+          "loading",
+          "lyrics_window",
+          "view",
+          "buffer",
+          "timed_window",
+          "timed_listbox",
+          "timed_source",
+        ],
+      },
+      this,
+    );
   }
 
   private _no_lyrics!: Adw.StatusPage;
@@ -138,7 +144,8 @@ export class MuzikaNPLyrics extends Gtk.Stack {
     if (!lyrics.lyrics) {
       this.set_visible_child(this._no_lyrics);
     } else if (
-      lyrics.timed && Gtk.Settings.get_default()!.gtk_enable_animations === true
+      lyrics.timed &&
+      Gtk.Settings.get_default()?.gtk_enable_animations === true
     ) {
       lyrics.timed_lyrics.forEach((line) => {
         const row = new TimedLyricLineRow(line);
@@ -164,12 +171,8 @@ export class MuzikaNPLyrics extends Gtk.Stack {
 
   private pending_animation: Adw.Animation | null = null;
 
-  private scroll_to_row(
-    _: Gtk.ListBox,
-    row: Gtk.ListBoxRow,
-    force = false,
-  ) {
-    if (((this.get_state_flags() & Gtk.StateFlags.ACTIVE) !== 0) && !force) {
+  private scroll_to_row(_: Gtk.ListBox, row: Gtk.ListBoxRow, force = false) {
+    if ((this.get_state_flags() & Gtk.StateFlags.ACTIVE) !== 0 && !force) {
       return;
     }
 
@@ -182,7 +185,7 @@ export class MuzikaNPLyrics extends Gtk.Stack {
 
     if (success) {
       // this is where we want the row to be placed
-      const third_of_height = this._timed_window.get_height() * 1 / 3;
+      const third_of_height = (this._timed_window.get_height() * 1) / 3;
       const scroll_to = rect.get_y() - (third_of_height - row.get_height());
 
       const property_target = Adw.PropertyAnimationTarget.new(
@@ -198,7 +201,7 @@ export class MuzikaNPLyrics extends Gtk.Stack {
         property_target,
       );
 
-      let id = animation.connect("done", () => {
+      const id = animation.connect("done", () => {
         this.pending_animation = null;
         animation.disconnect(id);
       });
@@ -209,10 +212,7 @@ export class MuzikaNPLyrics extends Gtk.Stack {
     }
   }
 
-  private lyrics_row_activated(
-    _: Gtk.ListBox,
-    row: TimedLyricLineRow,
-  ) {
+  private lyrics_row_activated(_: Gtk.ListBox, row: TimedLyricLineRow) {
     const player = get_player();
 
     player.seek(row.line.start * 1000 + 1);

@@ -32,69 +32,73 @@ export function get_state_pspec() {
 
 export class DynamicAction extends Adw.Bin {
   static {
-    GObject.registerClass({
-      GTypeName: "DynamicAction",
-      Template:
-        "resource:///com/vixalien/muzika/ui/components/dynamic-action.ui",
-      InternalChildren: [
-        "stack",
-        "play",
-        "pause",
-        "persistent_play",
-        "loading",
-        "pause_image",
-        "play_image",
-        "persistent_play_image",
-        "wave",
-        "spinner",
-      ],
-      Properties: {
-        "size": GObject.ParamSpec.int(
-          "size",
-          "Size",
-          "The size of the dynamic action. This will only have effect if `fill` is set to `true`",
-          GObject.ParamFlags.READWRITE,
-          -1,
-          1000000,
-          48,
-        ),
-        "state": get_state_pspec(),
-        "fill": GObject.ParamSpec.boolean(
-          "fill",
-          "Fill",
-          "If this dynamic action should fill the container or just display at the bottom right edge",
-          GObject.ParamFlags.READWRITE,
-          false,
-        ),
-        "locked": GObject.ParamSpec.boolean(
-          "locked",
-          "Static",
-          "If this dynamic action should stop updating it's state",
-          GObject.ParamFlags.READWRITE,
-          false,
-        ),
-        "hovering": GObject.ParamSpec.boolean(
-          "hovering",
-          "Hovering",
-          "Whether the mouse is hovering over this dynamic action",
-          GObject.ParamFlags.READWRITE,
-          false,
-        ),
-        "persistent-play-button": GObject.ParamSpec.boolean(
-          "persistent-play-button",
-          "Persistent Play Button",
-          "Whether to show the play button even when the song is not paused",
-          GObject.ParamFlags.READWRITE,
-          false,
-        ),
+    GObject.registerClass(
+      {
+        GTypeName: "DynamicAction",
+        Template:
+          "resource:///com/vixalien/muzika/ui/components/dynamic-action.ui",
+        InternalChildren: [
+          "stack",
+          "play",
+          "pause",
+          "persistent_play",
+          "loading",
+          "pause_image",
+          "play_image",
+          "persistent_play_image",
+          "wave",
+          "spinner",
+        ],
+        Properties: {
+          size: GObject.ParamSpec.int(
+            "size",
+            "Size",
+            "The size of the dynamic action. This will only have effect if `fill` is set to `true`",
+            GObject.ParamFlags.READWRITE,
+            -1,
+            1000000,
+            48,
+          ),
+          state: get_state_pspec(),
+          fill: GObject.ParamSpec.boolean(
+            "fill",
+            "Fill",
+            "If this dynamic action should fill the container or just display at the bottom right edge",
+            GObject.ParamFlags.READWRITE,
+            false,
+          ),
+          locked: GObject.ParamSpec.boolean(
+            "locked",
+            "Static",
+            "If this dynamic action should stop updating it's state",
+            GObject.ParamFlags.READWRITE,
+            false,
+          ),
+          hovering: GObject.ParamSpec.boolean(
+            "hovering",
+            "Hovering",
+            "Whether the mouse is hovering over this dynamic action",
+            GObject.ParamFlags.READWRITE,
+            false,
+          ),
+          "persistent-play-button": GObject.ParamSpec.boolean(
+            "persistent-play-button",
+            "Persistent Play Button",
+            "Whether to show the play button even when the song is not paused",
+            GObject.ParamFlags.READWRITE,
+            false,
+          ),
+        },
+        Signals: {
+          play: {},
+          pause: {},
+        },
       },
-      Signals: {
-        play: {},
-        pause: {},
-      },
-    }, this);
+      this,
+    );
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-useless-constructor
   constructor(props?: Partial<DynamicActionConstructorProperties>) {
     super(props);
   }
@@ -177,7 +181,7 @@ export class DynamicAction extends Adw.Bin {
 
   // property: size
 
-  private _size: number = 48;
+  private _size = 48;
 
   get size() {
     return this._size;
@@ -307,11 +311,9 @@ function set_properties<
   Prop extends keyof T,
   Value extends T[Prop],
 >(object: T | T[], key: Prop | Prop[], value: Value) {
-  ([object].flat() as T[])
-    .forEach((object) => {
-      ([key].flat() as Prop[])
-        .forEach((key) => {
-          object[key] = value;
-        });
+  ([object].flat() as T[]).forEach((object) => {
+    ([key].flat() as Prop[]).forEach((key) => {
+      object[key] = value;
     });
+  });
 }

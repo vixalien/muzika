@@ -2,7 +2,7 @@ import GLib from "gi://GLib";
 import Gio from "gi://Gio";
 import GObject from "gi://GObject";
 
-export type ActionEntry = {
+export interface ActionEntry {
   name: string;
   parameter_type?: string;
   state?: string;
@@ -14,34 +14,33 @@ export type ActionEntry = {
     _source: Gio.SimpleAction,
     value: GLib.Variant | null,
   ) => void;
-};
+}
 
 export type AddActionEntries = (entries: ActionEntry[]) => void;
 
 export interface ActionDeclaration {
   name: string;
-  parameter_type: GLib.VariantType<any> | null;
-  state?: GLib.Variant<any> | null;
-  activate?(action: Gio.SimpleAction, parameter: GLib.Variant<any>): void;
+  parameter_type: GLib.VariantType | null;
+  state?: GLib.Variant | null;
+  activate?(action: Gio.SimpleAction, parameter: GLib.Variant): void;
   bind_state_full?: [
     object: GObject.Object,
     property: string,
     transform: (
       binding: GObject.Binding,
-      from_value: any,
+      from_value: unknown,
     ) => [boolean, GLib.Variant],
   ];
-  bind_enabled?: [
-    object: GObject.Object,
-    property: string,
-  ];
+  bind_enabled?: [object: GObject.Object, property: string];
 }
 
 export function build_action(decl: ActionDeclaration) {
   const action = new Gio.SimpleAction({
     name: decl.name,
-    parameter_type: decl.parameter_type ?? null as any,
-    state: decl.state ?? null as any,
+    // @ts-expect-error incorrect TS types
+    parameter_type: decl.parameter_type ?? null,
+    // @ts-expect-error incorrect TS types
+    state: decl.state ?? null,
   });
 
   if (decl.activate) action.connect("activate", decl.activate);

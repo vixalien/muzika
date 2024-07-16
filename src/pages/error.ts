@@ -8,26 +8,25 @@ import { escape_label, indent_stack } from "src/util/text";
 
 export function error_to_string(error: Error) {
   // must show error name, message, and stack
-  return `<b>${escape_label(error.name)}: </b>${escape_label(error.message)}\n${
-    indent_stack(error.stack ?? "")
-  }`;
+  return `<b>${escape_label(error.name)}: </b>${escape_label(error.message)}\n${indent_stack(
+    error.stack ?? "",
+  )}`;
 }
 
 export interface ErrorPageOptions {
-  error?: any;
+  error?: unknown;
 }
 
 export class ErrorPage extends Adw.Bin {
   static {
-    GObject.registerClass({
-      GTypeName: "ErrorPage",
-      Template: "resource:///com/vixalien/muzika/ui/pages/error.ui",
-      InternalChildren: [
-        "status",
-        "more",
-        "text_view",
-      ],
-    }, this);
+    GObject.registerClass(
+      {
+        GTypeName: "ErrorPage",
+        Template: "resource:///com/vixalien/muzika/ui/pages/error.ui",
+        InternalChildren: ["status", "more", "text_view"],
+      },
+      this,
+    );
   }
 
   _status!: Adw.StatusPage;
@@ -62,7 +61,7 @@ export class ErrorPage extends Adw.Bin {
     }
   }
 
-  set_error(error: any) {
+  set_error(error: unknown) {
     if (error instanceof GLib.Error) {
       if (
         error instanceof Gio.ResolverError &&

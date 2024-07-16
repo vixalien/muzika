@@ -24,14 +24,25 @@ export interface HomePageState extends VScrollState {
   home: Home;
 }
 
-export class HomePage extends Adw.Bin
-  implements MuzikaPageWidget<Home, HomePageState> {
+export class HomePage
+  extends Adw.Bin
+  implements MuzikaPageWidget<Home, HomePageState>
+{
   static {
-    GObject.registerClass({
-      GTypeName: "HomePage",
-      Template: "resource:///com/vixalien/muzika/ui/pages/home.ui",
-      InternalChildren: ["scrolled", "box", "paginator", "carousels", "moods"],
-    }, this);
+    GObject.registerClass(
+      {
+        GTypeName: "HomePage",
+        Template: "resource:///com/vixalien/muzika/ui/pages/home.ui",
+        InternalChildren: [
+          "scrolled",
+          "box",
+          "paginator",
+          "carousels",
+          "moods",
+        ],
+      },
+      this,
+    );
   }
 
   private _scrolled!: Gtk.ScrolledWindow;
@@ -78,6 +89,7 @@ export class HomePage extends Adw.Bin
 
   get_state() {
     return {
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       home: this.home!,
       vscroll: this._scrolled.get_vadjustment().get_value(),
     };
@@ -142,7 +154,8 @@ export class HomePage extends Adw.Bin
 
     if (
       vadjustment.get_upper() -
-          (vadjustment.get_value() + vadjustment.get_page_size()) < 300
+        (vadjustment.get_value() + vadjustment.get_page_size()) <
+      300
     ) {
       return true;
     }
@@ -158,7 +171,8 @@ export class HomePage extends Adw.Bin
     // scroll if the scrolled window is not full
     if (
       this._scrolled.get_vadjustment().get_upper() -
-          this._scrolled.get_vadjustment().get_page_size() < 0
+        this._scrolled.get_vadjustment().get_page_size() <
+      0
     ) {
       this.load_more();
     }
@@ -182,8 +196,10 @@ export class HomePage extends Adw.Bin
     if (this.home?.continuation) {
       return get_home({ continuation: this.home.continuation })
         .then((updated) => {
-          this.home!.continuation = updated.continuation;
-          this.home!.results.push(...updated.results);
+          if (!this.home) return;
+
+          this.home.continuation = updated.continuation;
+          this.home.results.push(...updated.results);
 
           this._paginator.can_paginate = updated.continuation != null;
           this.had_error_loading = false;
@@ -194,7 +210,9 @@ export class HomePage extends Adw.Bin
         })
         .catch(() => {
           add_toast(
-            _("Couldn't get more items from your home feed. Please try again later."),
+            _(
+              "Couldn't get more items from your home feed. Please try again later.",
+            ),
           );
 
           this._paginator.can_paginate = !!this.home?.continuation;

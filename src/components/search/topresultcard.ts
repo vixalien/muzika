@@ -29,28 +29,29 @@ GObject.type_ensure(DynamicImage.$gtype);
 
 export class TopResultCard extends Adw.Bin {
   static {
-    GObject.registerClass({
-      GTypeName: "TopResultCard",
-      Template:
-        "resource:///com/vixalien/muzika/ui/components/search/topresult.ui",
-      InternalChildren: [
-        "avatar",
-        "title",
-        "explicit",
-        "subtitle",
-        "primary",
-        "primary_content",
-        "secondary",
-        "secondary_content",
-        "image_stack",
-        "actions",
-        "meta",
-        "grid",
-      ],
-      Children: [
-        "dynamic_image",
-      ],
-    }, this);
+    GObject.registerClass(
+      {
+        GTypeName: "TopResultCard",
+        Template:
+          "resource:///com/vixalien/muzika/ui/components/search/topresult.ui",
+        InternalChildren: [
+          "avatar",
+          "title",
+          "explicit",
+          "subtitle",
+          "primary",
+          "primary_content",
+          "secondary",
+          "secondary_content",
+          "image_stack",
+          "actions",
+          "meta",
+          "grid",
+        ],
+        Children: ["dynamic_image"],
+      },
+      this,
+    );
   }
 
   private _avatar!: Adw.Avatar;
@@ -124,9 +125,7 @@ export class TopResultCard extends Adw.Bin {
           this.dynamic_image.state = DynamicActionState.LOADING;
           this.activate_action(
             "queue.play-song",
-            GLib.Variant.new_string(
-              this.result.videoId,
-            ),
+            GLib.Variant.new_string(this.result.videoId),
           );
         }
         break;
@@ -231,27 +230,27 @@ export class TopResultCard extends Adw.Bin {
         menuLikeRow(
           song.likeStatus,
           song.videoId,
-          (likeStatus) => song.likeStatus = likeStatus,
+          (likeStatus) => (song.likeStatus = likeStatus),
         ),
         [_("Start radio"), `queue.play-song("${song.videoId}?radio=true")`],
         [_("Play next"), `queue.add-song("${song.videoId}?next=true")`],
         [_("Add to queue"), `queue.add-song("${song.videoId}")`],
         menuLibraryRow(
           song.feedbackTokens,
-          (tokens) => song.feedbackTokens = tokens,
+          (tokens) => (song.feedbackTokens = tokens),
         ),
         [_("Save to playlist"), `win.add-to-playlist("${song.videoId}")`],
         song.album
           ? [
-            _("Go to album"),
-            `navigator.visit("muzika:album:${song.album.id}")`,
-          ]
+              _("Go to album"),
+              `navigator.visit("muzika:album:${song.album.id}")`,
+            ]
           : null,
         song.artists.length > 1
           ? [
-            _("Go to artist"),
-            `navigator.visit("muzika:artist:${song.artists[0].id}")`,
-          ]
+              _("Go to artist"),
+              `navigator.visit("muzika:artist:${song.artists[0].id}")`,
+            ]
           : null,
       ];
     });
@@ -268,21 +267,21 @@ export class TopResultCard extends Adw.Bin {
         menuLikeRow(
           video.likeStatus,
           video.videoId,
-          (likeStatus) => video.likeStatus = likeStatus,
+          (likeStatus) => (video.likeStatus = likeStatus),
         ),
         [_("Start radio"), `queue.play-song("${video.videoId}?radio=true")`],
         [_("Play next"), `queue.add-song("${video.videoId}?next=true")`],
         [_("Add to queue"), `queue.add-song("${video.videoId}")`],
         menuLibraryRow(
           video.feedbackTokens,
-          (tokens) => video.feedbackTokens = tokens,
+          (tokens) => (video.feedbackTokens = tokens),
         ),
         [_("Save to playlist"), `win.add-to-playlist("${video.videoId}")`],
         video.artists && video.artists.length > 1
           ? [
-            _("Go to artist"),
-            `navigator.visit("muzika:artist:${video.artists[0].id}")`,
-          ]
+              _("Go to artist"),
+              `navigator.visit("muzika:artist:${video.artists[0].id}")`,
+            ]
           : null,
       ];
     });
@@ -304,15 +303,15 @@ export class TopResultCard extends Adw.Bin {
     this.menu_helper.props = [
       album.shuffleId
         ? [
-          _("Shuffle play"),
-          `queue.play-playlist("${album.shuffleId}?next=true")`,
-        ]
+            _("Shuffle play"),
+            `queue.play-playlist("${album.shuffleId}?next=true")`,
+          ]
         : null,
       album.radioId
         ? [
-          _("Start radio"),
-          `queue.play-playlist("${album.radioId}?next=true")`,
-        ]
+            _("Start radio"),
+            `queue.play-playlist("${album.radioId}?next=true")`,
+          ]
         : null,
       // TODO: get album audioPlaylistId
       // [
@@ -326,9 +325,9 @@ export class TopResultCard extends Adw.Bin {
       // ],
       album.artists.length > 1
         ? [
-          _("Go to artist"),
-          `navigator.visit("muzika:artist:${album.artists[0].id}")`,
-        ]
+            _("Go to artist"),
+            `navigator.visit("muzika:artist:${album.artists[0].id}")`,
+          ]
         : null,
     ];
   }
@@ -368,15 +367,15 @@ export class TopResultCard extends Adw.Bin {
     this.menu_helper.props = [
       artist.shuffleId
         ? [
-          _("Shuffle play"),
-          `queue.play-playlist("${artist.shuffleId}?next=true")`,
-        ]
+            _("Shuffle play"),
+            `queue.play-playlist("${artist.shuffleId}?next=true")`,
+          ]
         : null,
       artist.radioId
         ? [
-          _("Start radio"),
-          `queue.play-playlist("${artist.radioId}?next=true")`,
-        ]
+            _("Start radio"),
+            `queue.play-playlist("${artist.radioId}?next=true")`,
+          ]
         : null,
     ];
   }
@@ -415,15 +414,15 @@ export class TopResultCard extends Adw.Bin {
       return [
         playlist.shuffleId
           ? [
-            _("Shuffle play"),
-            `queue.play-playlist("${playlist.shuffleId}?next=true")`,
-          ]
+              _("Shuffle play"),
+              `queue.play-playlist("${playlist.shuffleId}?next=true")`,
+            ]
           : null,
         playlist.radioId
           ? [
-            _("Start radio"),
-            `queue.play-playlist("${playlist.radioId}?next=true")`,
-          ]
+              _("Start radio"),
+              `queue.play-playlist("${playlist.radioId}?next=true")`,
+            ]
           : null,
         [
           _("Play next"),
@@ -433,7 +432,7 @@ export class TopResultCard extends Adw.Bin {
         menuPlaylistLibraryRow(
           playlist.browseId,
           playlist.libraryLikeStatus,
-          (status) => playlist.libraryLikeStatus = status,
+          (status) => (playlist.libraryLikeStatus = status),
         ),
         [
           _("Save to playlist"),
@@ -461,7 +460,10 @@ export class TopResultCard extends Adw.Bin {
         this.show_playlist(top_result);
         break;
       default:
-        console.error("Unknown top result type", (top_result as any).type);
+        console.error(
+          "Unknown top result type",
+          (top_result as TopResult).type,
+        );
         return;
     }
   }
@@ -475,36 +477,36 @@ export class TopResultCard extends Adw.Bin {
 
     // TODO: get album audioPlayistId
     const item = {
-      playlist_id: this.result.type == "playlist"
-        ? this.result.browseId
-        : undefined,
-      video_id: this.result.type == "song" || this.result.type == "video"
-        ? this.result.videoId
-        : undefined,
+      playlist_id:
+        this.result.type == "playlist" ? this.result.browseId : undefined,
+      video_id:
+        this.result.type == "song" || this.result.type == "video"
+          ? this.result.videoId
+          : undefined,
       is_playlist: false,
     };
 
     item.is_playlist = item.playlist_id != null;
 
     if (item.is_playlist) {
-      this.dynamic_image.state = (item.playlist_id &&
-          player.queue.playlist_id ==
-            item.playlist_id)
-        ? player.playing
-          ? DynamicActionState.PLAYING
-          : DynamicActionState.PAUSED
-        : item.video_id && player.loading_track == item.video_id
-        ? DynamicActionState.LOADING
-        : DynamicActionState.DEFAULT;
+      this.dynamic_image.state =
+        item.playlist_id && player.queue.playlist_id == item.playlist_id
+          ? player.playing
+            ? DynamicActionState.PLAYING
+            : DynamicActionState.PAUSED
+          : item.video_id && player.loading_track == item.video_id
+            ? DynamicActionState.LOADING
+            : DynamicActionState.DEFAULT;
     } else {
-      this.dynamic_image.state = (item.video_id &&
-          player.now_playing?.object.track.videoId == item.video_id)
-        ? player.playing
-          ? DynamicActionState.PLAYING
-          : DynamicActionState.PAUSED
-        : player.loading_track == item.video_id
-        ? DynamicActionState.LOADING
-        : DynamicActionState.DEFAULT;
+      this.dynamic_image.state =
+        item.video_id &&
+        player.now_playing?.object.track.videoId == item.video_id
+          ? player.playing
+            ? DynamicActionState.PLAYING
+            : DynamicActionState.PAUSED
+          : player.loading_track == item.video_id
+            ? DynamicActionState.LOADING
+            : DynamicActionState.DEFAULT;
     }
   }
 
@@ -515,14 +517,11 @@ export class TopResultCard extends Adw.Bin {
 
     if (!this.result) return;
 
-    this.listeners.add(
-      player,
-      [
-        player.connect("notify::now-playing", this.reload_state.bind(this)),
-        player.connect("notify::playing", this.reload_state.bind(this)),
-        player.connect("notify::loading-track", this.reload_state.bind(this)),
-      ],
-    );
+    this.listeners.add(player, [
+      player.connect("notify::now-playing", this.reload_state.bind(this)),
+      player.connect("notify::playing", this.reload_state.bind(this)),
+      player.connect("notify::loading-track", this.reload_state.bind(this)),
+    ]);
 
     this.reload_state();
   }

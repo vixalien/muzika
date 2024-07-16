@@ -5,7 +5,7 @@ import Gtk from "gi://Gtk?version=4.0";
 import { get_history } from "libmuse";
 import type { History, PlaylistItem } from "libmuse";
 
-import { MuzikaPageWidget, PageLoadContext } from "src/navigation.js";
+import { MuzikaPageWidget } from "src/navigation.js";
 import { PlaylistItemView } from "src/components/playlist/itemview.js";
 import {
   SectionedPlayableContainer,
@@ -26,9 +26,12 @@ interface HistoryState extends VScrollState {
 
 class HistoryTitle extends Gtk.Box {
   static {
-    GObject.registerClass({
-      GTypeName: "HistoryTitle",
-    }, this);
+    GObject.registerClass(
+      {
+        GTypeName: "HistoryTitle",
+      },
+      this,
+    );
   }
 
   private label_widget: Gtk.Label;
@@ -48,7 +51,7 @@ class HistoryTitle extends Gtk.Box {
     });
 
     this.label_widget = new Gtk.Label({
-      label: props.title ?? null as unknown as string,
+      label: props.title ?? (null as unknown as string),
       hexpand: true,
       xalign: 0,
     });
@@ -63,15 +66,20 @@ interface CategoryMeta {
   title: string;
 }
 
-export class HistoryPage extends Adw.Bin
-  implements MuzikaPageWidget<History, HistoryState> {
+export class HistoryPage
+  extends Adw.Bin
+  implements MuzikaPageWidget<History, HistoryState>
+{
   static {
-    GObject.registerClass({
-      GTypeName: "HistoryPage",
-      Template:
-        "resource:///com/vixalien/muzika/ui/components/library/history.ui",
-      InternalChildren: ["item_view", "scrolled"],
-    }, this);
+    GObject.registerClass(
+      {
+        GTypeName: "HistoryPage",
+        Template:
+          "resource:///com/vixalien/muzika/ui/components/library/history.ui",
+        InternalChildren: ["item_view", "scrolled"],
+      },
+      this,
+    );
   }
 
   private _item_view!: PlaylistItemView;
@@ -127,23 +135,22 @@ export class HistoryPage extends Adw.Bin
 
   private show_library(library: History) {
     const items = library.categories.reduce((acc, category) => {
-      return acc.concat(category.items.map((item, index) => {
-        return SectionedPlayableContainer.new_from_playlist_item<CategoryMeta>(
-          item,
-          index === 0 ? { title: category.title } : undefined,
-        );
-      }));
+      return acc.concat(
+        category.items.map((item, index) => {
+          return SectionedPlayableContainer.new_from_playlist_item<CategoryMeta>(
+            item,
+            index === 0 ? { title: category.title } : undefined,
+          );
+        }),
+      );
     }, [] as SectionedPlayableContainer[]);
 
-    this.model.splice(
-      this.model.n_items,
-      0,
-      items,
-    );
+    this.model.splice(this.model.n_items, 0, items);
   }
 
   get_state() {
     return {
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       results: this.results!,
       vscroll: this._scrolled.get_vadjustment().get_value(),
     };
@@ -154,7 +161,7 @@ export class HistoryPage extends Adw.Bin
     this.present(state.results);
   }
 
-  static load(context: PageLoadContext) {
+  static load() {
     return get_history();
   }
 }

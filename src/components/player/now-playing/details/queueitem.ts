@@ -12,17 +12,15 @@ import { load_thumbnails } from "src/components/webimage";
 
 export class MuzikaNPQueueItem extends Gtk.Box {
   static {
-    GObject.registerClass({
-      GTypeName: "MuzikaNPQueueItem",
-      Template:
-        "resource:///com/vixalien/muzika/ui/components/player/now-playing/details/queueitem.ui",
-      InternalChildren: [
-        "image",
-        "title",
-        "explicit",
-        "subtitle",
-      ],
-    }, this);
+    GObject.registerClass(
+      {
+        GTypeName: "MuzikaNPQueueItem",
+        Template:
+          "resource:///com/vixalien/muzika/ui/components/player/now-playing/details/queueitem.ui",
+        InternalChildren: ["image", "title", "explicit", "subtitle"],
+      },
+      this,
+    );
   }
 
   item?: QueueTrack;
@@ -61,27 +59,27 @@ export class MuzikaNPQueueItem extends Gtk.Box {
         menuLikeRow(
           item.likeStatus,
           item.videoId,
-          (likeStatus) => item.likeStatus = likeStatus,
+          (likeStatus) => (item.likeStatus = likeStatus),
         ),
         [_("Start radio"), `queue.play-song("${item.videoId}?radio=true")`],
         [_("Play next"), `queue.add-song("${item.videoId}?next=true")`],
         [_("Add to queue"), `queue.add-song("${item.videoId}")`],
         menuLibraryRow(
           item.feedbackTokens,
-          (tokens) => item.feedbackTokens = tokens,
+          (tokens) => (item.feedbackTokens = tokens),
         ),
         [_("Save to playlist"), `win.add-to-playlist("${item.videoId}")`],
         item.album
           ? [
-            _("Go to album"),
-            `navigator.visit("muzika:album:${item.album.id}")`,
-          ]
+              _("Go to album"),
+              `navigator.visit("muzika:album:${item.album.id}")`,
+            ]
           : null,
         item.artists.length > 0
           ? [
-            _("Go to artist"),
-            `navigator.visit("muzika:artist:${item.artists[0].id}")`,
-          ]
+              _("Go to artist"),
+              `navigator.visit("muzika:artist:${item.artists[0].id}")`,
+            ]
           : null,
       ];
     });

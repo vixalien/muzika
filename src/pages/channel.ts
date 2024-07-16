@@ -24,21 +24,26 @@ interface ChannelState extends VScrollState {
 GObject.type_ensure(PlaylistHeader.$gtype);
 GObject.type_ensure(PlaylistListView.$gtype);
 
-export class ChannelPage extends Adw.Bin
-  implements MuzikaPageWidget<Channel, ChannelState> {
+export class ChannelPage
+  extends Adw.Bin
+  implements MuzikaPageWidget<Channel, ChannelState>
+{
   static {
-    GObject.registerClass({
-      GTypeName: "ChannelPage",
-      Template: "resource:///com/vixalien/muzika/ui/pages/channel.ui",
-      InternalChildren: [
-        "songs_on_repeat",
-        "playlist_item_view",
-        "header",
-        "carousels",
-        "menu",
-        "scrolled",
-      ],
-    }, this);
+    GObject.registerClass(
+      {
+        GTypeName: "ChannelPage",
+        Template: "resource:///com/vixalien/muzika/ui/pages/channel.ui",
+        InternalChildren: [
+          "songs_on_repeat",
+          "playlist_item_view",
+          "header",
+          "carousels",
+          "menu",
+          "scrolled",
+        ],
+      },
+      this,
+    );
   }
 
   channel?: Channel;
@@ -137,7 +142,7 @@ export class ChannelPage extends Adw.Bin
     const carousel = new Carousel();
 
     carousel.setup_more_button(
-      (show_more_button && data.browseId != null && data.params != null)
+      show_more_button && data.browseId != null && data.params != null
         ? `navigator.visit("muzika:channel-playlists:${data.browseId}:${data.params}")`
         : null,
     );
@@ -163,6 +168,7 @@ export class ChannelPage extends Adw.Bin
 
   get_state(): ChannelState {
     return {
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       channel: this.channel!,
       vscroll: this._scrolled.get_vadjustment().get_value(),
     };

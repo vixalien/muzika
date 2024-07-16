@@ -14,35 +14,38 @@ GObject.type_ensure(MuzikaMaxHeight.$gtype);
 
 export class MuzikaNPSheet extends Adw.Bin {
   static {
-    GObject.registerClass({
-      GTypeName: "MuzikaNPSheet",
-      Template:
-        "resource:///com/vixalien/muzika/ui/components/player/now-playing/sheet.ui",
-      InternalChildren: ["switcher", "stack"],
-      Properties: {
-        details_stack: GObject.param_spec_object(
-          "details-stack",
-          "Detais View Stack",
-          "The view stack to show details switchers for",
-          Gtk.Widget.$gtype,
-          GObject.ParamFlags.READWRITE,
-        ),
-        details: GObject.param_spec_object(
-          "details",
-          "details",
-          "The view stack to show details switchers for",
-          Gtk.Widget.$gtype,
-          GObject.ParamFlags.READWRITE,
-        ),
-        show_details: GObject.param_spec_boolean(
-          "show-details",
-          "Show Details",
-          "If the details should be shown",
-          false,
-          GObject.ParamFlags.READWRITE,
-        ),
+    GObject.registerClass(
+      {
+        GTypeName: "MuzikaNPSheet",
+        Template:
+          "resource:///com/vixalien/muzika/ui/components/player/now-playing/sheet.ui",
+        InternalChildren: ["switcher", "stack"],
+        Properties: {
+          details_stack: GObject.param_spec_object(
+            "details-stack",
+            "Detais View Stack",
+            "The view stack to show details switchers for",
+            Gtk.Widget.$gtype,
+            GObject.ParamFlags.READWRITE,
+          ),
+          details: GObject.param_spec_object(
+            "details",
+            "details",
+            "The view stack to show details switchers for",
+            Gtk.Widget.$gtype,
+            GObject.ParamFlags.READWRITE,
+          ),
+          show_details: GObject.param_spec_boolean(
+            "show-details",
+            "Show Details",
+            "If the details should be shown",
+            false,
+            GObject.ParamFlags.READWRITE,
+          ),
+        },
       },
-    }, this);
+      this,
+    );
   }
 
   private _switcher!: MuzikaNPDetailsSwitcher;
@@ -87,7 +90,7 @@ export class MuzikaNPSheet extends Adw.Bin {
       if (prev) this._stack.remove(prev);
 
       if (this.details) {
-        this._stack.add_named(this.details!, "details");
+        this._stack.add_named(this.details, "details");
         if (this.show_details) this._stack.visible_child_name = "details";
       }
     });

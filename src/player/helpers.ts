@@ -1,12 +1,7 @@
 import GObject from "gi://GObject";
 import Gtk from "gi://Gtk?version=4.0";
 
-import { get_queue, get_queue_tracks } from "libmuse";
-import type { QueueOptions, QueueTrack } from "libmuse";
-
-import { omit } from "lodash-es";
-
-import { QueueSettings, RepeatMode } from "./queue";
+import { RepeatMode } from "./queue";
 import { get_player } from "src/application";
 import { escape_label, pretty_subtitles } from "src/util/text";
 
@@ -181,9 +176,9 @@ export function bind_track_title(label: Gtk.Label) {
         if (track.album) {
           return [
             true,
-            `<a href="muzika:album:${track.album.id}?track=${track.videoId}">${
-              escape_label(track.title)
-            }</a>`,
+            `<a href="muzika:album:${track.album.id}?track=${track.videoId}">${escape_label(
+              track.title,
+            )}</a>`,
           ];
         }
 

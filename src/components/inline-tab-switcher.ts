@@ -16,33 +16,33 @@ export class Tab extends GObject.Object {
       {
         GTypeName: "Tab",
         Properties: {
-          id: GObject.ParamSpec.string(
+          id: GObject.param_spec_string(
             "id",
             "ID",
             "The unique ID of the tab",
+            null,
             GObject.ParamFlags.READWRITE,
-            null as any,
           ),
-          title: GObject.ParamSpec.string(
+          title: GObject.param_spec_string(
             "title",
             "Title",
             "Title of the tab",
+            null,
             GObject.ParamFlags.READWRITE,
-            null as any,
           ),
-          icon: GObject.ParamSpec.string(
+          icon: GObject.param_spec_string(
             "icon",
             "Icon",
             "Icon that represents the tab",
+            null,
             GObject.ParamFlags.READWRITE,
-            null as any,
           ),
-          navigate: GObject.ParamSpec.string(
+          navigate: GObject.param_spec_string(
             "action-target",
             "Action Target",
             "The target string of the action to be executed when the tab is activated",
+            null,
             GObject.ParamFlags.READWRITE,
-            null as any,
           ),
         },
       },
@@ -78,7 +78,7 @@ export class InlineTabSwitcher extends Gtk.Widget {
       {
         GTypeName: "InlineTabSwitcher",
         Signals: {
-          "changed": {
+          changed: {
             param_types: [GObject.TYPE_STRING],
           },
         },
@@ -99,13 +99,12 @@ export class InlineTabSwitcher extends Gtk.Widget {
     this.tabs.set_model(this.model);
 
     this.tabs.connect("items-changed", this.items_changed_cb.bind(this));
-    this.tabs.connect(
-      "selection-changed",
-      (_, position, items) => {
-        this.emit("changed", this.tabs.get_item(this.tabs.selected)!.id);
-        this.selection_changed_cb(position, items);
-      },
-    );
+    this.tabs.connect("selection-changed", (_, position, items) => {
+      const tab = this.tabs.get_item(this.tabs.selected);
+      if (!tab) return;
+      this.emit("changed", tab.id);
+      this.selection_changed_cb(position, items);
+    });
 
     this.populate_switcher();
   }
@@ -122,9 +121,9 @@ export class InlineTabSwitcher extends Gtk.Widget {
     let current: null | number = null;
 
     for (let i = 0; i < this.tabs.get_n_items(); i++) {
-      const tab = this.tabs.get_item(i)!;
+      const tab = this.tabs.get_item(i);
 
-      if (tab.id === id) {
+      if (tab?.id === id) {
         current = i;
         break;
       }
@@ -156,8 +155,8 @@ export class InlineTabSwitcher extends Gtk.Widget {
   }
 
   private clear_switcher() {
-    this.buttons.forEach((button, tab) => {
-      const separator = (button as any).separator as Gtk.Widget;
+    this.buttons.forEach((button) => {
+      const separator = (button as ButtonWithSeparator).separator as Gtk.Widget;
       button.unparent();
       separator.unparent();
     });
@@ -173,7 +172,8 @@ export class InlineTabSwitcher extends Gtk.Widget {
   private selection_changed_cb(position: number, items: number) {
     for (let i = position; i < position + items; i++) {
       const tab = this.tabs.get_item(i);
-      const button = this.buttons.get(tab!);
+      if (!tab) return;
+      const button = this.buttons.get(tab);
 
       if (button != null) {
         const selected = this.tabs.is_selected(i);
@@ -231,7 +231,8 @@ export class InlineTabSwitcher extends Gtk.Widget {
 
     button.add_controller(controller);
 
-    const tab = this.tabs.get_item(index)!;
+    const tab = this.tabs.get_item(index);
+    if (!tab) return;
     this.update_button(tab, button);
 
     button.set_parent(this);
@@ -269,7 +270,7 @@ export class InlineTabSwitcher extends Gtk.Widget {
     const separator = Gtk.Separator.new(Gtk.Orientation.VERTICAL);
     separator.set_parent(this);
 
-    (button as any).separator = separator;
+    (button as ButtonWithSeparator).separator = separator;
 
     const separator_changed = () => {
       const prev_separator = button.get_prev_sibling();
@@ -289,8 +290,9 @@ export class InlineTabSwitcher extends Gtk.Widget {
     separator_changed();
   }
 
-  private tab_updated_cb(tab: Tab, pspec: GObject.ParamSpec) {
-    const button = this.buttons.get(tab)!;
+  private tab_updated_cb(tab: Tab) {
+    const button = this.buttons.get(tab);
+    if (!button) return;
 
     this.update_button(tab, button);
   }
@@ -328,8 +330,10 @@ export class InlineTabSwitcher extends Gtk.Widget {
 
     if (
       (flags &
-        (Gtk.StateFlags.PRELIGHT | Gtk.StateFlags.SELECTED |
-          Gtk.StateFlags.CHECKED)) != 0
+        (Gtk.StateFlags.PRELIGHT |
+          Gtk.StateFlags.SELECTED |
+          Gtk.StateFlags.CHECKED)) !=
+      0
     ) {
       return true;
     }
@@ -348,7 +352,7 @@ export class InlineTabSwitcher extends Gtk.Widget {
     const prev_button = separator.get_prev_sibling() as Gtk.Button;
     const next_button = separator.get_next_sibling() as Gtk.Button;
 
-    separator.visible = (prev_button != null) && (next_button != null);
+    separator.visible = prev_button != null && next_button != null;
 
     if (
       this.should_hide_separators(prev_button) ||
@@ -360,3 +364,5 @@ export class InlineTabSwitcher extends Gtk.Widget {
     }
   }
 }
+
+type ButtonWithSeparator = Gtk.ToggleButton & { separator: Gtk.Widget };

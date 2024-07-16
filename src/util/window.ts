@@ -4,8 +4,8 @@ import { Application } from "src/application";
 
 export function get_window() {
   // TODO: this will not always be defined
-  return (Gtk.Application.get_default() as Application)
-    .window!;
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+  return (Gtk.Application.get_default() as Application).window!;
 }
 
 export function add_toast(toast: string) {

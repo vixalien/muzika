@@ -19,14 +19,19 @@ export interface MoodPlaylistsPageState extends VScrollState {
   contents: MoodPlaylists;
 }
 
-export class MoodPlaylistsPage extends Adw.Bin
-  implements MuzikaPageWidget<MoodPlaylists, MoodPlaylistsPageState> {
+export class MoodPlaylistsPage
+  extends Adw.Bin
+  implements MuzikaPageWidget<MoodPlaylists, MoodPlaylistsPageState>
+{
   static {
-    GObject.registerClass({
-      GTypeName: "MoodPlaylistsPage",
-      Template: "resource:///com/vixalien/muzika/ui/pages/mood-playlists.ui",
-      InternalChildren: ["scrolled", "box"],
-    }, this);
+    GObject.registerClass(
+      {
+        GTypeName: "MoodPlaylistsPage",
+        Template: "resource:///com/vixalien/muzika/ui/pages/mood-playlists.ui",
+        InternalChildren: ["scrolled", "box"],
+      },
+      this,
+    );
   }
 
   private _scrolled!: Gtk.ScrolledWindow;
@@ -54,6 +59,7 @@ export class MoodPlaylistsPage extends Adw.Bin
 
   get_state() {
     return {
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       contents: this.contents!,
       vscroll: this._scrolled.get_vadjustment().get_value(),
     };
@@ -74,9 +80,7 @@ export class MoodPlaylistsPage extends Adw.Bin
     }
   }
 
-  private add_carousel(
-    data: MoodPlaylists["categories"][0],
-  ) {
+  private add_carousel(data: MoodPlaylists["categories"][0]) {
     if (!data || data.playlists.length === 0) return;
 
     const carousel = new Carousel();
