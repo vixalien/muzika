@@ -21,11 +21,11 @@ export function get_thumbnail_with_size(
       `=w${required_width}-h${required_height}`,
     );
 
-    return ({
+    return {
       url: new_url,
       width: required_width,
       height: required_height,
-    });
+    };
   } else {
     return thumbnail;
   }
@@ -131,10 +131,7 @@ export interface LoadOptions {
 
 const thumbnails_map = new Map<string, Gdk.Texture>();
 
-export function fetch_image(
-  href: string,
-  options: LoadOptions,
-) {
+export function fetch_image(href: string, options: LoadOptions) {
   const cache_key = JSON.stringify({ href, options });
 
   if (thumbnails_map.has(cache_key)) {
@@ -146,37 +143,35 @@ export function fetch_image(
   return fetch(url, {
     method: "GET",
     signal: options.signal,
-  }).then(async (response) => {
-    const buffer = await response.arrayBuffer();
+  })
+    .then(async (response) => {
+      const buffer = await response.arrayBuffer();
 
-    const texture = Gdk.Texture.new_from_bytes(new Uint8Array(buffer));
+      const texture = Gdk.Texture.new_from_bytes(new Uint8Array(buffer));
 
-    if (options.width && options.height) {
-      // pixbuf = pixbuf?.scale_simple(
-      //   options.width,
-      //   options.height,
-      //   // crop
-      //   GdkPixbuf.InterpType.HYPER,
-      // )!;
-    }
+      if (options.width && options.height) {
+        // pixbuf = pixbuf?.scale_simple(
+        //   options.width,
+        //   options.height,
+        //   // crop
+        //   GdkPixbuf.InterpType.HYPER,
+        // )!;
+      }
 
-    thumbnails_map.set(cache_key, texture);
+      thumbnails_map.set(cache_key, texture);
 
-    return texture;
-  }).catch((e) => {
-    if (e.name !== "AbortError") {
-      console.error("Couldn't load thumbnail:", e);
-    }
-    return null;
-  });
+      return texture;
+    })
+    .catch((e) => {
+      if (e.name !== "AbortError") {
+        console.error("Couldn't load thumbnail:", e);
+      }
+      return null;
+    });
 }
 
 export async function load_image(
-  image:
-    | Gtk.Image
-    | Gtk.Picture
-    | Adw.Avatar
-    | FixedRatioThumbnail,
+  image: Gtk.Image | Gtk.Picture | Adw.Avatar | FixedRatioThumbnail,
   href: string,
   options: LoadOptions,
 ) {

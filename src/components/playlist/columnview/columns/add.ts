@@ -7,12 +7,15 @@ interface AddColumnButton extends Gtk.Button {
 
 export class AddColumn extends Gtk.ColumnViewColumn {
   static {
-    GObject.registerClass({
-      GTypeName: "AddColumn",
-      Signals: {
-        "add": { param_types: [GObject.TYPE_INT] },
+    GObject.registerClass(
+      {
+        GTypeName: "AddColumn",
+        Signals: {
+          add: { param_types: [GObject.TYPE_INT] },
+        },
       },
-    }, this);
+      this,
+    );
   }
 
   constructor() {

@@ -15,18 +15,22 @@ import { list_model_to_array } from "src/util/list";
 
 export class MuzikaNPQueue extends Gtk.Stack {
   static {
-    GObject.registerClass({
-      GTypeName: "MuzikaNPQueue",
-      Template: "resource:///com/vixalien/muzika/ui/components/player/now-playing/details/queue.ui",
-      InternalChildren: [
-        "no_queue",
-        "list_view",
-        "queue_box",
-        "playlist_label",
-        "params",
-        "params_box",
-      ],
-    }, this);
+    GObject.registerClass(
+      {
+        GTypeName: "MuzikaNPQueue",
+        Template:
+          "resource:///com/vixalien/muzika/ui/components/player/now-playing/details/queue.ui",
+        InternalChildren: [
+          "no_queue",
+          "list_view",
+          "queue_box",
+          "playlist_label",
+          "params",
+          "params_box",
+        ],
+      },
+      this,
+    );
   }
 
   private _list_view!: Gtk.ListView;
@@ -121,7 +125,7 @@ export class MuzikaNPQueue extends Gtk.Stack {
 
     let first_param: Gtk.Widget | null = null;
 
-    while (first_param = this._params_box.get_first_child()) {
+    while ((first_param = this._params_box.get_first_child())) {
       this._params_box.remove(first_param);
     }
 

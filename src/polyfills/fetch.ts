@@ -9,11 +9,7 @@ import "./abortcontroller.js";
 import "./customevent.js";
 import "./domexception.js";
 
-Gio._promisify(
-  Soup.Session.prototype,
-  "send_async",
-  "send_finish",
-);
+Gio._promisify(Soup.Session.prototype, "send_async", "send_finish");
 
 Gio._promisify(
   Gio.InputStream.prototype,
@@ -21,11 +17,7 @@ Gio._promisify(
   "read_bytes_finish",
 );
 
-Gio._promisify(
-  Gio.InputStream.prototype,
-  "close_async",
-  "close_finish",
-);
+Gio._promisify(Gio.InputStream.prototype, "close_async", "close_finish");
 
 export interface FetchOptions {
   body?: string | Uint8Array;
@@ -145,7 +137,7 @@ export class GResponse {
 
   async arrayBuffer() {
     const reader = this._body.getReader();
-    let chunks: Uint8Array[] = [];
+    const chunks: Uint8Array[] = [];
 
     while (true) {
       const { done, value } = await reader.read();
@@ -196,7 +188,7 @@ export const cache = Soup.Cache.new(
   Soup.CacheType.SHARED,
 );
 // set max cache size to 16 megabytes
-cache.set_max_size(16e+6);
+cache.set_max_size(16e6);
 
 cache.load();
 
@@ -204,7 +196,7 @@ SESSION.add_feature(cache);
 SESSION.add_feature(new Soup.ContentSniffer());
 
 export async function fetch(url: string | URL, options: FetchOptions = {}) {
-  if (typeof url !== "string" && ("href" in (url as URL))) {
+  if (typeof url !== "string" && "href" in (url as URL)) {
     url = (url as URL).href;
   }
 
@@ -253,14 +245,11 @@ export async function fetch(url: string | URL, options: FetchOptions = {}) {
     GLib.PRIORITY_DEFAULT_IDLE,
     cancellable,
   ).catch((e) => {
-    if (
-      (e instanceof Gio.IOErrorEnum) &&
-      (e.code === Gio.IOErrorEnum.CANCELLED)
-    ) {
+    if (e instanceof Gio.IOErrorEnum && e.code === Gio.IOErrorEnum.CANCELLED) {
       if (options.signal && options.signal.reason instanceof DOMException) {
-        throw (options.signal.reason);
+        throw options.signal.reason;
       } else {
-        throw (new DOMException("The request was aborted", "AbortError"));
+        throw new DOMException("The request was aborted", "AbortError");
       }
     } else {
       throw e;
@@ -280,10 +269,7 @@ export async function fetch(url: string | URL, options: FetchOptions = {}) {
   const stream = new ReadableStream({
     async pull(controller) {
       async function close() {
-        await inputStream?.close_async(
-          GLib.PRIORITY_DEFAULT_IDLE,
-          cancellable,
-        );
+        await inputStream?.close_async(GLib.PRIORITY_DEFAULT_IDLE, cancellable);
         controller.close();
         clear_cancellable();
       }

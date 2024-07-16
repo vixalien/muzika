@@ -22,25 +22,28 @@ import { get_button_props } from "src/util/menu/like";
 
 export class MuzikaNPCover extends Adw.Bin {
   static {
-    GObject.registerClass({
-      GTypeName: "MuzikaNPCover",
-      Template:
-        "resource:///com/vixalien/muzika/ui/components/player/now-playing/cover.ui",
-      InternalChildren: [
-        "title",
-        "subtitle",
-        "picture",
-        "timestamp",
-        "duration",
-        "play_image",
-        "overlay_box",
-        "repeat_button",
-        "expand_button",
-        "fullscreen_button",
-        "like_button",
-        "dislike_button",
-      ],
-    }, this);
+    GObject.registerClass(
+      {
+        GTypeName: "MuzikaNPCover",
+        Template:
+          "resource:///com/vixalien/muzika/ui/components/player/now-playing/cover.ui",
+        InternalChildren: [
+          "title",
+          "subtitle",
+          "picture",
+          "timestamp",
+          "duration",
+          "play_image",
+          "overlay_box",
+          "repeat_button",
+          "expand_button",
+          "fullscreen_button",
+          "like_button",
+          "dislike_button",
+        ],
+      },
+      this,
+    );
   }
 
   private player: MuzikaPlayer;
@@ -66,10 +69,7 @@ export class MuzikaNPCover extends Adw.Bin {
 
   private activate_link_cb(_: Gtk.Label, uri: string) {
     if (uri && uri.startsWith("muzika:")) {
-      this.activate_action(
-        "navigator.visit",
-        GLib.Variant.new_string(uri),
-      );
+      this.activate_action("navigator.visit", GLib.Variant.new_string(uri));
 
       return true;
     }

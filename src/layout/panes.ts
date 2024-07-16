@@ -6,28 +6,31 @@ import { SignalListeners } from "src/util/signal-listener";
 
 export class MuzikaPanes extends Adw.BreakpointBin {
   static {
-    GObject.registerClass({
-      GTypeName: "MuzikaPanes",
-      Template: "resource:///com/vixalien/muzika/ui/layout/panes.ui",
-      InternalChildren: ["sidebar_page", "content_page", "split_view"],
-      Properties: {
-        sidebar: GObject.param_spec_object(
-          "sidebar",
-          "Sidebar",
-          "The widget to show as the sidebar",
-          Gtk.Widget.$gtype,
-          GObject.ParamFlags.READWRITE,
-        ),
-        content: GObject.param_spec_object(
-          "content",
-          "content",
-          "The widget to show as the content",
-          Gtk.Widget.$gtype,
-          GObject.ParamFlags.READWRITE,
-        ),
+    GObject.registerClass(
+      {
+        GTypeName: "MuzikaPanes",
+        Template: "resource:///com/vixalien/muzika/ui/layout/panes.ui",
+        InternalChildren: ["sidebar_page", "content_page", "split_view"],
+        Properties: {
+          sidebar: GObject.param_spec_object(
+            "sidebar",
+            "Sidebar",
+            "The widget to show as the sidebar",
+            Gtk.Widget.$gtype,
+            GObject.ParamFlags.READWRITE,
+          ),
+          content: GObject.param_spec_object(
+            "content",
+            "content",
+            "The widget to show as the content",
+            Gtk.Widget.$gtype,
+            GObject.ParamFlags.READWRITE,
+          ),
+        },
+        Implements: [Gtk.Buildable],
       },
-      Implements: [Gtk.Buildable],
-    }, this);
+      this,
+    );
   }
 
   private _split_view!: Adw.NavigationSplitView;
@@ -63,7 +66,7 @@ export class MuzikaPanes extends Adw.BreakpointBin {
     this.listeners.connect(
       get_navigator(this),
       "show-content",
-      () => this._split_view.show_content = true,
+      () => (this._split_view.show_content = true),
     );
   }
 

@@ -78,7 +78,7 @@ export class InlineTabSwitcher extends Gtk.Widget {
       {
         GTypeName: "InlineTabSwitcher",
         Signals: {
-          "changed": {
+          changed: {
             param_types: [GObject.TYPE_STRING],
           },
         },
@@ -99,13 +99,10 @@ export class InlineTabSwitcher extends Gtk.Widget {
     this.tabs.set_model(this.model);
 
     this.tabs.connect("items-changed", this.items_changed_cb.bind(this));
-    this.tabs.connect(
-      "selection-changed",
-      (_, position, items) => {
-        this.emit("changed", this.tabs.get_item(this.tabs.selected)!.id);
-        this.selection_changed_cb(position, items);
-      },
-    );
+    this.tabs.connect("selection-changed", (_, position, items) => {
+      this.emit("changed", this.tabs.get_item(this.tabs.selected)!.id);
+      this.selection_changed_cb(position, items);
+    });
 
     this.populate_switcher();
   }
@@ -328,8 +325,10 @@ export class InlineTabSwitcher extends Gtk.Widget {
 
     if (
       (flags &
-        (Gtk.StateFlags.PRELIGHT | Gtk.StateFlags.SELECTED |
-          Gtk.StateFlags.CHECKED)) != 0
+        (Gtk.StateFlags.PRELIGHT |
+          Gtk.StateFlags.SELECTED |
+          Gtk.StateFlags.CHECKED)) !=
+      0
     ) {
       return true;
     }
@@ -348,7 +347,7 @@ export class InlineTabSwitcher extends Gtk.Widget {
     const prev_button = separator.get_prev_sibling() as Gtk.Button;
     const next_button = separator.get_next_sibling() as Gtk.Button;
 
-    separator.visible = (prev_button != null) && (next_button != null);
+    separator.visible = prev_button != null && next_button != null;
 
     if (
       this.should_hide_separators(prev_button) ||

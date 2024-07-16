@@ -11,20 +11,23 @@ import type { LoginCode, Token } from "libmuse";
 
 export class LoginDialog extends Adw.Dialog {
   static {
-    GObject.registerClass({
-      GTypeName: "LoginDialog",
-      Template: "resource:///com/vixalien/muzika/ui/pages/login.ui",
-      InternalChildren: [
-        "stack",
-        "spinner",
-        "flow",
-        "qr",
-        "link",
-        "code",
-        "button",
-        "toast_overlay",
-      ],
-    }, this);
+    GObject.registerClass(
+      {
+        GTypeName: "LoginDialog",
+        Template: "resource:///com/vixalien/muzika/ui/pages/login.ui",
+        InternalChildren: [
+          "stack",
+          "spinner",
+          "flow",
+          "qr",
+          "link",
+          "code",
+          "button",
+          "toast_overlay",
+        ],
+      },
+      this,
+    );
   }
 
   _stack!: Gtk.Stack;
@@ -109,7 +112,7 @@ export class LoginDialog extends Adw.Dialog {
     const token = await get_option("auth")
       .load_token_with_code(this.code, this.waiting_controller.signal)
       .catch((error) => {
-        if ((error instanceof DOMException) && error.name === "AbortError") {
+        if (error instanceof DOMException && error.name === "AbortError") {
           return null;
         }
 
@@ -131,13 +134,11 @@ export class LoginDialog extends Adw.Dialog {
 
   private async reload_token(signal?: AbortSignal) {
     this.stop_waiting_for_token();
-    await this.generate_code()
-      .catch(this.onError);
+    await this.generate_code().catch(this.onError);
     return this.start_waiting_for_token(signal);
   }
 
   private async refresh_cb() {
-    this.reload_token(this.master_signal)
-      .catch(this.onError);
+    this.reload_token(this.master_signal).catch(this.onError);
   }
 }

@@ -12,9 +12,12 @@ export type RequiredMixedItem = NonNullable<MixedItem>;
 
 export class CarouselGridView extends Gtk.GridView {
   static {
-    GObject.registerClass({
-      GTypeName: "CarouselGridView",
-    }, this);
+    GObject.registerClass(
+      {
+        GTypeName: "CarouselGridView",
+      },
+      this,
+    );
   }
 
   private _items!: PlayableList<MixedCardItem>;
@@ -54,8 +57,7 @@ export class CarouselGridView extends Gtk.GridView {
     const card = new CarouselCard();
     card.dynamic_image.hexpand =
       card.dynamic_image.vexpand =
-      card.dynamic_image
-        .can_expand =
+      card.dynamic_image.can_expand =
         true;
     list_item.set_child(card);
   }

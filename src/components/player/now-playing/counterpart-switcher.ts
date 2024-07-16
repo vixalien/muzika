@@ -7,12 +7,15 @@ import { get_player } from "src/application";
 
 export class MuzikaNPCounterpartSwitcher extends Gtk.Box {
   static {
-    GObject.registerClass({
-      GTypeName: "MuzikaNPCounterpartSwitcher",
-      Template:
-        "resource:///com/vixalien/muzika/ui/components/player/now-playing/counterpart-switcher.ui",
-      InternalChildren: ["music_counterpart", "video_counterpart"],
-    }, this);
+    GObject.registerClass(
+      {
+        GTypeName: "MuzikaNPCounterpartSwitcher",
+        Template:
+          "resource:///com/vixalien/muzika/ui/components/player/now-playing/counterpart-switcher.ui",
+        InternalChildren: ["music_counterpart", "video_counterpart"],
+      },
+      this,
+    );
   }
 
   private _video_counterpart!: Gtk.ToggleButton;

@@ -14,15 +14,15 @@ GObject.type_ensure(PlayerProgressBar.$gtype);
 
 export class MiniPlayerView extends Gtk.Overlay {
   static {
-    GObject.registerClass({
-      GTypeName: "MiniPlayerView",
-      Template: "resource:///com/vixalien/muzika/ui/components/player/mini.ui",
-      InternalChildren: [
-        "title",
-        "subtitle",
-        "play_button",
-      ],
-    }, this);
+    GObject.registerClass(
+      {
+        GTypeName: "MiniPlayerView",
+        Template:
+          "resource:///com/vixalien/muzika/ui/components/player/mini.ui",
+        InternalChildren: ["title", "subtitle", "play_button"],
+      },
+      this,
+    );
   }
 
   private _title!: Gtk.Label;

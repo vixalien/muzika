@@ -10,32 +10,35 @@ import { list_model_to_array } from "src/util/list";
 
 export class MuzikaNPDetailsSwitcher extends Gtk.Box {
   static {
-    GObject.registerClass({
-      GTypeName: "MuzikaNPDetailsSwitcher",
-      Properties: {
-        show_buttons: GObject.param_spec_boolean(
-          "show-buttons",
-          "Show Buttons",
-          "Render buttons for the switcher instead of task switchers",
-          false,
-          GObject.ParamFlags.READWRITE,
-        ),
-        details_stack: GObject.param_spec_object(
-          "details-stack",
-          "Detais View Stack",
-          "The view stack to show details switchers for",
-          Adw.ViewStack.$gtype,
-          GObject.ParamFlags.READWRITE,
-        ),
-        show_details: GObject.param_spec_boolean(
-          "show-details",
-          "Show Details",
-          "If the details should be shown",
-          false,
-          GObject.ParamFlags.READWRITE,
-        ),
+    GObject.registerClass(
+      {
+        GTypeName: "MuzikaNPDetailsSwitcher",
+        Properties: {
+          show_buttons: GObject.param_spec_boolean(
+            "show-buttons",
+            "Show Buttons",
+            "Render buttons for the switcher instead of task switchers",
+            false,
+            GObject.ParamFlags.READWRITE,
+          ),
+          details_stack: GObject.param_spec_object(
+            "details-stack",
+            "Detais View Stack",
+            "The view stack to show details switchers for",
+            Adw.ViewStack.$gtype,
+            GObject.ParamFlags.READWRITE,
+          ),
+          show_details: GObject.param_spec_boolean(
+            "show-details",
+            "Show Details",
+            "If the details should be shown",
+            false,
+            GObject.ParamFlags.READWRITE,
+          ),
+        },
       },
-    }, this);
+      this,
+    );
   }
 
   // private navigation_view!: Adw.NavigationView;
@@ -74,15 +77,14 @@ export class MuzikaNPDetailsSwitcher extends Gtk.Box {
           const name = parameter?.get_string()[0];
           if (name === undefined) return;
 
-          this.show_details = this.details_stack.visible_child_name === name
-            ? !this.show_details
-            : true;
+          this.show_details =
+            this.details_stack.visible_child_name === name
+              ? !this.show_details
+              : true;
           this.details_stack.visible_child_name = name;
 
           // chore: updating state
-          source.set_state(
-            GLib.Variant.new_string(this.get_details_id()),
-          );
+          source.set_state(GLib.Variant.new_string(this.get_details_id()));
         },
       },
     ]);
@@ -125,7 +127,7 @@ export class MuzikaNPDetailsSwitcher extends Gtk.Box {
 
     // remove all children
     let child: Gtk.Widget | null;
-    while (child = this.get_first_child()) child.unparent();
+    while ((child = this.get_first_child())) child.unparent();
 
     // create already existing pages
     list_model_to_array(this.pages).forEach((page) => {
@@ -171,19 +173,17 @@ export class MuzikaNPDetailsSwitcher extends Gtk.Box {
     const removed_buttons = list_model_to_array(this.buttons).splice(
       position,
       position + removed,
-      ...(
-        new Array(added)
-          .fill(null)
-          .map((_, index) => {
-            const page = this.pages.get_item(position + index);
-            if (!page) return null;
+      ...(new Array(added)
+        .fill(null)
+        .map((_, index) => {
+          const page = this.pages.get_item(position + index);
+          if (!page) return null;
 
-            const button = this.create_switcher_button(page);
-            this.append(button);
-            return button;
-          })
-          .filter(Boolean) as Gtk.Button[]
-      ),
+          const button = this.create_switcher_button(page);
+          this.append(button);
+          return button;
+        })
+        .filter(Boolean) as Gtk.Button[]),
     );
 
     removed_buttons.forEach((button) => {

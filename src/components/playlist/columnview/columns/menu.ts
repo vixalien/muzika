@@ -11,9 +11,12 @@ import { get_button_props } from "src/util/menu/like";
 
 class ExtraMenuButtons extends Adw.Bin {
   static {
-    GObject.registerClass({
-      GTypeName: "MenuButtons",
-    }, this);
+    GObject.registerClass(
+      {
+        GTypeName: "MenuButtons",
+      },
+      this,
+    );
   }
 
   private item?: PlaylistItem;
@@ -81,21 +84,21 @@ class ExtraMenuButtons extends Adw.Bin {
       [_("Save to playlist"), `win.add-to-playlist("${this.item.videoId}")`],
       this.position > 0
         ? [
-          _("Remove from playlist"),
-          `playlist.remove-tracks([${this.position}])`,
-        ]
+            _("Remove from playlist"),
+            `playlist.remove-tracks([${this.position}])`,
+          ]
         : null,
       this.item.album
         ? [
-          _("Go to album"),
-          `navigator.visit("muzika:album:${this.item.album.id}")`,
-        ]
+            _("Go to album"),
+            `navigator.visit("muzika:album:${this.item.album.id}")`,
+          ]
         : null,
       this.item.artists.length > 0
         ? [
-          _("Go to artist"),
-          `navigator.visit("muzika:artist:${this.item.artists[0].id}")`,
-        ]
+            _("Go to artist"),
+            `navigator.visit("muzika:artist:${this.item.artists[0].id}")`,
+          ]
         : null,
     ]);
   }
@@ -123,9 +126,8 @@ class ExtraMenuButtons extends Adw.Bin {
     if (like) {
       newStatus = this.item.likeStatus === "LIKE" ? "INDIFFERENT" : "LIKE";
     } else {
-      newStatus = this.item.likeStatus === "DISLIKE"
-        ? "INDIFFERENT"
-        : "DISLIKE";
+      newStatus =
+        this.item.likeStatus === "DISLIKE" ? "INDIFFERENT" : "DISLIKE";
     }
 
     if (newStatus === this.item.likeStatus) return;
@@ -147,18 +149,21 @@ class ExtraMenuButtons extends Adw.Bin {
 
 export class MenuColumn extends Gtk.ColumnViewColumn {
   static {
-    GObject.registerClass({
-      GTypeName: "MenuColumn",
-      Properties: {
-        is_editable: GObject.param_spec_boolean(
-          "is-editable",
-          "Is editable",
-          "Whether the playlist items can be edited (or deleted)",
-          false,
-          GObject.ParamFlags.READWRITE,
-        ),
+    GObject.registerClass(
+      {
+        GTypeName: "MenuColumn",
+        Properties: {
+          is_editable: GObject.param_spec_boolean(
+            "is-editable",
+            "Is editable",
+            "Whether the playlist items can be edited (or deleted)",
+            false,
+            GObject.ParamFlags.READWRITE,
+          ),
+        },
       },
-    }, this);
+      this,
+    );
   }
 
   is_editable = false;

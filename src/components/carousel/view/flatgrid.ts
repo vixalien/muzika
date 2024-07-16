@@ -15,20 +15,23 @@ export interface FlatGridViewConstructorProperties
 
 export class FlatGridView extends Gtk.GridView {
   static {
-    GObject.registerClass({
-      GTypeName: "FlatGridView",
-      Properties: {
-        "child-type": GObject.ParamSpec.uint(
-          "child-type",
-          "Child Type",
-          "The type of children rendered by this listview",
-          GObject.ParamFlags.READWRITE,
-          FlatViewChildType.INLINE_SONG,
-          FlatViewChildType.MIXED_CARD,
-          FlatViewChildType.INLINE_SONG,
-        ),
+    GObject.registerClass(
+      {
+        GTypeName: "FlatGridView",
+        Properties: {
+          "child-type": GObject.ParamSpec.uint(
+            "child-type",
+            "Child Type",
+            "The type of children rendered by this listview",
+            GObject.ParamFlags.READWRITE,
+            FlatViewChildType.INLINE_SONG,
+            FlatViewChildType.MIXED_CARD,
+            FlatViewChildType.INLINE_SONG,
+          ),
+        },
       },
-    }, this);
+      this,
+    );
   }
 
   items = new PlayableList<FlatCardItem>();

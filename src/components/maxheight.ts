@@ -3,19 +3,22 @@ import GObject from "gi://GObject";
 
 export class MuzikaMaxHeight extends Gtk.Widget {
   static {
-    GObject.registerClass({
-      GTypeName: "MuzikaMaxHeight",
-      Properties: {
-        child: GObject.param_spec_object(
-          "child",
-          "Child",
-          "The displayed child",
-          Gtk.Widget.$gtype,
-          GObject.ParamFlags.READWRITE,
-        ),
+    GObject.registerClass(
+      {
+        GTypeName: "MuzikaMaxHeight",
+        Properties: {
+          child: GObject.param_spec_object(
+            "child",
+            "Child",
+            "The displayed child",
+            Gtk.Widget.$gtype,
+            GObject.ParamFlags.READWRITE,
+          ),
+        },
+        Implements: [Gtk.Buildable],
       },
-      Implements: [Gtk.Buildable],
-    }, this);
+      this,
+    );
   }
 
   private _child?: Gtk.Widget;

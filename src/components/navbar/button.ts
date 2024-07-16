@@ -9,10 +9,7 @@ export class NavbarButton extends Gtk.Box {
         GTypeName: "NavbarButton",
         Template:
           "resource:///com/vixalien/muzika/ui/components/navbar/button.ui",
-        InternalChildren: [
-          "image",
-          "label",
-        ],
+        InternalChildren: ["image", "label"],
         Properties: {
           "icon-name": GObject.ParamSpec.string(
             "icon-name",

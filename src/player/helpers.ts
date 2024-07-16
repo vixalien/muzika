@@ -181,9 +181,9 @@ export function bind_track_title(label: Gtk.Label) {
         if (track.album) {
           return [
             true,
-            `<a href="muzika:album:${track.album.id}?track=${track.videoId}">${
-              escape_label(track.title)
-            }</a>`,
+            `<a href="muzika:album:${track.album.id}?track=${track.videoId}">${escape_label(
+              track.title,
+            )}</a>`,
           ];
         }
 

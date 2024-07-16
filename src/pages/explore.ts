@@ -3,11 +3,7 @@ import GObject from "gi://GObject";
 import Adw from "gi://Adw";
 
 import { get_explore } from "libmuse";
-import type {
-  Category,
-  ExploreContents,
-  ParsedMoodOrGenre,
-} from "libmuse";
+import type { Category, ExploreContents, ParsedMoodOrGenre } from "libmuse";
 
 import { Carousel } from "../components/carousel/index.js";
 import { Loading } from "../components/loading.js";
@@ -24,14 +20,19 @@ export interface ExplorePageState extends VScrollState {
   contents: ExploreContents;
 }
 
-export class ExplorePage extends Adw.Bin
-  implements MuzikaPageWidget<ExploreContents, ExplorePageState> {
+export class ExplorePage
+  extends Adw.Bin
+  implements MuzikaPageWidget<ExploreContents, ExplorePageState>
+{
   static {
-    GObject.registerClass({
-      GTypeName: "ExplorePage",
-      Template: "resource:///com/vixalien/muzika/ui/pages/explore.ui",
-      InternalChildren: ["scrolled", "box"],
-    }, this);
+    GObject.registerClass(
+      {
+        GTypeName: "ExplorePage",
+        Template: "resource:///com/vixalien/muzika/ui/pages/explore.ui",
+        InternalChildren: ["scrolled", "box"],
+      },
+      this,
+    );
   }
 
   private _scrolled!: Gtk.ScrolledWindow;
@@ -91,7 +92,7 @@ export class ExplorePage extends Adw.Bin
     const carousel = new Carousel();
 
     carousel.setup_more_button(
-      (show_more_button && data.browseId != null)
+      show_more_button && data.browseId != null
         ? data.params != null
           ? `navigator.visit("muzika:artist-albums:${data.browseId}:${data.params}")`
           : `navigator.visit("muzika:playlist:${data.browseId}")`

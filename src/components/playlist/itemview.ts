@@ -13,136 +13,137 @@ import { get_opposite_orientation, orientedPair } from "src/util/orientation";
 
 export class PlaylistItemView extends Gtk.Widget {
   static {
-    GObject.registerClass({
-      GTypeName: "PlaylistItemView",
-      Properties: {
-        is_album: GObject.ParamSpec.boolean(
-          "is-album",
-          "Album",
-          "Whether this view represents an album",
-          GObject.ParamFlags.READWRITE,
-          false,
-        ),
-        is_editable: GObject.param_spec_boolean(
-          "is-editable",
-          "Is editable",
-          "Whether the playlist items can be edited (or deleted)",
-          false,
-          GObject.ParamFlags.READWRITE,
-        ),
-        header_factory: GObject.param_spec_object(
-          "header_factory",
-          "Header factory",
-          "The header factory to use for the view",
-          Gtk.SignalListItemFactory.$gtype,
-          GObject.ParamFlags.READWRITE,
-        ),
-        model: GObject.ParamSpec.object(
-          "model",
-          "Model",
-          "The list model this view is displaying",
-          GObject.ParamFlags.READWRITE,
-          Gio.ListModel.$gtype,
-        ),
-        playlist_id: GObject.param_spec_string(
-          "playlist-id",
-          "Playlist ID",
-          "The playlist ID",
-          null,
-          GObject.ParamFlags.READWRITE,
-        ),
-        selection_mode: GObject.ParamSpec.boolean(
-          "selection-mode",
-          "Selection Mode",
-          "Whether this view is in selection mode",
-          GObject.ParamFlags.READWRITE,
-          false,
-        ),
-        show_add_button: GObject.param_spec_boolean(
-          "show-add-button",
-          "Show add button",
-          "Show a button to trigger the 'Save to playlist' action",
-          true,
-          GObject.ParamFlags.READWRITE,
-        ),
-        show_artists: GObject.ParamSpec.boolean(
-          "show-artists",
-          "Show Artists",
-          "Whether to show the artists of each track",
-          GObject.ParamFlags.READWRITE,
-          true,
-        ),
-        show_column_view: GObject.ParamSpec.boolean(
-          "show-column-view",
-          "Show column view",
-          "Whether to show the column view instead of the list view",
-          GObject.ParamFlags.READWRITE,
-          false,
-        ),
-        show_duration: GObject.ParamSpec.boolean(
-          "show-duration",
-          "Show duration",
-          "Whether to show the duration of each track",
-          GObject.ParamFlags.READWRITE,
-          true,
-        ),
-        show_rank: GObject.ParamSpec.boolean(
-          "show-rank",
-          "Show Rank",
-          "Whether to show the rank of the playlist item",
-          GObject.ParamFlags.READWRITE,
-          false,
-        ),
-        // scrollable
-        hadjustment: GObject.param_spec_object(
-          "hadjustment",
-          "Hadjustment",
-          "Horizontal Adjustment",
-          Gtk.Adjustment.$gtype,
-          GObject.ParamFlags.READWRITE | GObject.ParamFlags.EXPLICIT_NOTIFY,
-        ),
-        vadjustment: GObject.param_spec_object(
-          "vadjustment",
-          "Vadjustment",
-          "Vertical Adjustment",
-          Gtk.Adjustment.$gtype,
-          GObject.ParamFlags.READWRITE | GObject.ParamFlags.EXPLICIT_NOTIFY,
-        ),
-        vscroll_policy: GObject.param_spec_enum(
-          "vscroll-policy",
-          "VScroll-Policy",
-          "Vertical Scroll Policy",
-          Gtk.ScrollablePolicy.$gtype,
-          Gtk.ScrollablePolicy.MINIMUM,
-          GObject.ParamFlags.READWRITE | GObject.ParamFlags.EXPLICIT_NOTIFY,
-        ),
-        hscroll_policy: GObject.param_spec_enum(
-          "hscroll-policy",
-          "HScroll-Policy",
-          "Horizontal Scroll Policy",
-          Gtk.ScrollablePolicy.$gtype,
-          Gtk.ScrollablePolicy.MINIMUM,
-          GObject.ParamFlags.READWRITE | GObject.ParamFlags.EXPLICIT_NOTIFY,
-        ),
-        spacing: GObject.param_spec_uint(
-          "spacing",
-          "Spacing",
-          "The separation between elements",
-          0,
-          GLib.MAXUINT32,
-          0,
-          GObject.ParamFlags.READWRITE | GObject.ParamFlags.EXPLICIT_NOTIFY,
-        ),
-      },
-      Signals: {
-        "add": {
-          param_types: [GObject.TYPE_OBJECT],
+    GObject.registerClass(
+      {
+        GTypeName: "PlaylistItemView",
+        Properties: {
+          is_album: GObject.ParamSpec.boolean(
+            "is-album",
+            "Album",
+            "Whether this view represents an album",
+            GObject.ParamFlags.READWRITE,
+            false,
+          ),
+          is_editable: GObject.param_spec_boolean(
+            "is-editable",
+            "Is editable",
+            "Whether the playlist items can be edited (or deleted)",
+            false,
+            GObject.ParamFlags.READWRITE,
+          ),
+          header_factory: GObject.param_spec_object(
+            "header_factory",
+            "Header factory",
+            "The header factory to use for the view",
+            Gtk.SignalListItemFactory.$gtype,
+            GObject.ParamFlags.READWRITE,
+          ),
+          model: GObject.ParamSpec.object(
+            "model",
+            "Model",
+            "The list model this view is displaying",
+            GObject.ParamFlags.READWRITE,
+            Gio.ListModel.$gtype,
+          ),
+          playlist_id: GObject.param_spec_string(
+            "playlist-id",
+            "Playlist ID",
+            "The playlist ID",
+            null,
+            GObject.ParamFlags.READWRITE,
+          ),
+          selection_mode: GObject.ParamSpec.boolean(
+            "selection-mode",
+            "Selection Mode",
+            "Whether this view is in selection mode",
+            GObject.ParamFlags.READWRITE,
+            false,
+          ),
+          show_add_button: GObject.param_spec_boolean(
+            "show-add-button",
+            "Show add button",
+            "Show a button to trigger the 'Save to playlist' action",
+            true,
+            GObject.ParamFlags.READWRITE,
+          ),
+          show_artists: GObject.ParamSpec.boolean(
+            "show-artists",
+            "Show Artists",
+            "Whether to show the artists of each track",
+            GObject.ParamFlags.READWRITE,
+            true,
+          ),
+          show_column_view: GObject.ParamSpec.boolean(
+            "show-column-view",
+            "Show column view",
+            "Whether to show the column view instead of the list view",
+            GObject.ParamFlags.READWRITE,
+            false,
+          ),
+          show_duration: GObject.ParamSpec.boolean(
+            "show-duration",
+            "Show duration",
+            "Whether to show the duration of each track",
+            GObject.ParamFlags.READWRITE,
+            true,
+          ),
+          show_rank: GObject.ParamSpec.boolean(
+            "show-rank",
+            "Show Rank",
+            "Whether to show the rank of the playlist item",
+            GObject.ParamFlags.READWRITE,
+            false,
+          ),
+          // scrollable
+          hadjustment: GObject.param_spec_object(
+            "hadjustment",
+            "Hadjustment",
+            "Horizontal Adjustment",
+            Gtk.Adjustment.$gtype,
+            GObject.ParamFlags.READWRITE | GObject.ParamFlags.EXPLICIT_NOTIFY,
+          ),
+          vadjustment: GObject.param_spec_object(
+            "vadjustment",
+            "Vadjustment",
+            "Vertical Adjustment",
+            Gtk.Adjustment.$gtype,
+            GObject.ParamFlags.READWRITE | GObject.ParamFlags.EXPLICIT_NOTIFY,
+          ),
+          vscroll_policy: GObject.param_spec_enum(
+            "vscroll-policy",
+            "VScroll-Policy",
+            "Vertical Scroll Policy",
+            Gtk.ScrollablePolicy.$gtype,
+            Gtk.ScrollablePolicy.MINIMUM,
+            GObject.ParamFlags.READWRITE | GObject.ParamFlags.EXPLICIT_NOTIFY,
+          ),
+          hscroll_policy: GObject.param_spec_enum(
+            "hscroll-policy",
+            "HScroll-Policy",
+            "Horizontal Scroll Policy",
+            Gtk.ScrollablePolicy.$gtype,
+            Gtk.ScrollablePolicy.MINIMUM,
+            GObject.ParamFlags.READWRITE | GObject.ParamFlags.EXPLICIT_NOTIFY,
+          ),
+          spacing: GObject.param_spec_uint(
+            "spacing",
+            "Spacing",
+            "The separation between elements",
+            0,
+            GLib.MAXUINT32,
+            0,
+            GObject.ParamFlags.READWRITE | GObject.ParamFlags.EXPLICIT_NOTIFY,
+          ),
         },
+        Signals: {
+          add: {
+            param_types: [GObject.TYPE_OBJECT],
+          },
+        },
+        Implements: [Gtk.Scrollable],
       },
-      Implements: [
-        Gtk.Scrollable,
-      ],
-    }, this);
+      this,
+    );
   }
 
   // scrollable interface
@@ -450,10 +451,10 @@ export class PlaylistItemView extends Gtk.Widget {
       this.add_cb(index);
     });
 
-    this.listview.vadjustment = this.columnview.vadjustment = this
-      .child_adjustment[Gtk.Orientation.VERTICAL];
-    this.listview.hadjustment = this.columnview.hadjustment = this
-      .child_adjustment[Gtk.Orientation.HORIZONTAL];
+    this.listview.vadjustment = this.columnview.vadjustment =
+      this.child_adjustment[Gtk.Orientation.VERTICAL];
+    this.listview.hadjustment = this.columnview.hadjustment =
+      this.child_adjustment[Gtk.Orientation.HORIZONTAL];
   }
 
   private get playable_list() {
@@ -505,7 +506,7 @@ export class PlaylistItemView extends Gtk.Widget {
 
     this.select_track(
       now_playing
-        ? this.playable_list?.find_by_video_id(now_playing) ?? null
+        ? (this.playable_list?.find_by_video_id(now_playing) ?? null)
         : null,
     );
   }
@@ -558,9 +559,8 @@ export class PlaylistItemView extends Gtk.Widget {
     let value = adjustment.value;
 
     // getting the handler ID registered while setting the adjustment
-    const handler = this.adjustment_listeners[orientation].listeners.get(
-      adjustment,
-    )?.[0];
+    const handler =
+      this.adjustment_listeners[orientation].listeners.get(adjustment)?.[0];
 
     if (handler) {
       GObject.signal_handler_block(adjustment, handler);

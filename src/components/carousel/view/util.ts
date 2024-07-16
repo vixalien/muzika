@@ -17,16 +17,11 @@ export enum FlatViewChildType {
   MIXED_CARD,
 }
 
-function activate_inline_song(
-  view: Gtk.Widget,
-  song: InlineSong,
-) {
+function activate_inline_song(view: Gtk.Widget, song: InlineSong) {
   if (song.videoId) {
     view.activate_action(
       "queue.play-song",
-      GLib.Variant.new_string(
-        song.videoId,
-      ),
+      GLib.Variant.new_string(song.videoId),
     );
   }
 }
@@ -93,10 +88,7 @@ export function flat_view_activate_cb<View extends FlatGridView | FlatListView>(
   }
 }
 
-function activate_mixed_card(
-  view: Gtk.Widget,
-  item: MixedCardItem,
-) {
+function activate_mixed_card(view: Gtk.Widget, item: MixedCardItem) {
   let uri: string | null = null;
 
   switch (item.type) {
@@ -105,7 +97,7 @@ function activate_mixed_card(
       uri = `playlist:${item.playlistId}`;
       break;
     case "artist":
-      // library channels are music channels
+    // library channels are music channels
     case "channel":
       uri = `artist:${item.browseId}`;
       break;
@@ -128,9 +120,7 @@ function activate_mixed_card(
       if (item.videoId) {
         view.activate_action(
           "queue.play-song",
-          GLib.Variant.new_string(
-            item.videoId,
-          ),
+          GLib.Variant.new_string(item.videoId),
         );
       }
       break;

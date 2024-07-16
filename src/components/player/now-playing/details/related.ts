@@ -15,17 +15,15 @@ export interface RelatedViewOptions {
 
 export class MuzikaNPRelated extends Gtk.Stack {
   static {
-    GObject.registerClass({
-      GTypeName: "MuzikaNPRelated",
-      Template:
-        "resource:///com/vixalien/muzika/ui/components/player/now-playing/details/related.ui",
-      InternalChildren: [
-        "no_related",
-        "loading",
-        "related_window",
-        "box",
-      ],
-    }, this);
+    GObject.registerClass(
+      {
+        GTypeName: "MuzikaNPRelated",
+        Template:
+          "resource:///com/vixalien/muzika/ui/components/player/now-playing/details/related.ui",
+        InternalChildren: ["no_related", "loading", "related_window", "box"],
+      },
+      this,
+    );
   }
 
   private _no_related!: Adw.StatusPage;
@@ -81,7 +79,7 @@ export class MuzikaNPRelated extends Gtk.Stack {
     if (!result) return;
 
     let child: Gtk.Widget | null = null;
-    while (child = this._box.get_first_child()) {
+    while ((child = this._box.get_first_child())) {
       this._box.remove(child);
     }
 

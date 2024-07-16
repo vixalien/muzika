@@ -46,9 +46,9 @@ export class AlbumColumn extends Gtk.ColumnViewColumn {
     if (playlist_item.album) {
       if (playlist_item.album.id) {
         label.set_markup(
-          `<a href="muzika:album:${playlist_item.album.id}?track=${playlist_item.videoId}">${
-            escape_label(playlist_item.album.name)
-          }</a>`,
+          `<a href="muzika:album:${playlist_item.album.id}?track=${playlist_item.videoId}">${escape_label(
+            playlist_item.album.name,
+          )}</a>`,
         );
       } else {
         label.use_markup = false;

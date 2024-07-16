@@ -74,8 +74,7 @@ export function menuPlaylistLibraryRow(
 ): MenuProp {
   if (!playlistId) return null;
 
-  let label: string,
-    newStatus: LikeStatus;
+  let label: string, newStatus: LikeStatus;
 
   if (likeStatus && likeStatus === "LIKE") {
     label = album

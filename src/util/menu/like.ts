@@ -26,10 +26,10 @@ export function menuLikeRow(
     const { like_button, dislike_button } = create_like_buttons({
       status,
       parent: popover,
-      cb: ((newStatus) => {
+      cb: (newStatus) => {
         popover.popdown();
         cb?.(newStatus);
-      }),
+      },
       videoId,
     });
 
@@ -49,9 +49,12 @@ export interface CreateLikeButtonsProps {
   cb?: LikeRowCallback;
 }
 
-export function create_like_buttons(
-  { status, parent, videoId, cb }: CreateLikeButtonsProps,
-) {
+export function create_like_buttons({
+  status,
+  parent,
+  videoId,
+  cb,
+}: CreateLikeButtonsProps) {
   const change_rating = (newStatus: LikeStatus) => {
     cb?.(newStatus);
     parent.activate_action(

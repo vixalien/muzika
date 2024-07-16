@@ -6,9 +6,12 @@ import { get_player } from "src/application";
 
 export class PlayerProgressBar extends Gtk.ProgressBar {
   static {
-    GObject.registerClass({
-      GTypeName: "PlayerProgressBar",
-    }, this);
+    GObject.registerClass(
+      {
+        GTypeName: "PlayerProgressBar",
+      },
+      this,
+    );
   }
 
   constructor() {
@@ -22,13 +25,14 @@ export class PlayerProgressBar extends Gtk.ProgressBar {
   private update_fraction() {
     const player = get_player();
 
-    this.fraction = Math.max(
-      Math.min(
-        (player.initial_seek_to ?? player.timestamp) / player.duration,
-        1,
-      ),
-      0,
-    ) || 0;
+    this.fraction =
+      Math.max(
+        Math.min(
+          (player.initial_seek_to ?? player.timestamp) / player.duration,
+          1,
+        ),
+        0,
+      ) || 0;
 
     const already_buffering = this.has_css_class("buffering");
 

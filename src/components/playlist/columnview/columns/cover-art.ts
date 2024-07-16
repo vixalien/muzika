@@ -15,25 +15,28 @@ interface DynamicImageWithListeners extends DynamicImage {
 
 export class CoverArtColumn extends Gtk.ColumnViewColumn {
   static {
-    GObject.registerClass({
-      GTypeName: "ImageColumn",
-      Properties: {
-        is_album: GObject.param_spec_boolean(
-          "is-album",
-          "Represents an album",
-          "Show the track number instead of the cover art",
-          false,
-          GObject.ParamFlags.READWRITE,
-        ),
-        "selection-mode": GObject.param_spec_boolean(
-          "selection-mode",
-          "Selection Mode",
-          "Whether the user can currently select the tracks",
-          false,
-          GObject.ParamFlags.READWRITE,
-        ),
+    GObject.registerClass(
+      {
+        GTypeName: "ImageColumn",
+        Properties: {
+          is_album: GObject.param_spec_boolean(
+            "is-album",
+            "Represents an album",
+            "Show the track number instead of the cover art",
+            false,
+            GObject.ParamFlags.READWRITE,
+          ),
+          "selection-mode": GObject.param_spec_boolean(
+            "selection-mode",
+            "Selection Mode",
+            "Whether the user can currently select the tracks",
+            false,
+            GObject.ParamFlags.READWRITE,
+          ),
+        },
       },
-    }, this);
+      this,
+    );
   }
 
   is_album = false;

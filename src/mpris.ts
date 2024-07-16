@@ -133,8 +133,7 @@ export class DBusInterface {
       for (const method of iface.methods) {
         this.method_outargs.set(
           method.name,
-          `(` + method.out_args.map((arg) => arg.signature).join("") +
-            `)`,
+          `(` + method.out_args.map((arg) => arg.signature).join("") + `)`,
         );
 
         this.method_inargs.set(
@@ -181,9 +180,7 @@ export class DBusInterface {
       }
     });
 
-    const method_snake_name = DBusInterface._camel_to_snake(
-      method_name,
-    );
+    const method_snake_name = DBusInterface._camel_to_snake(method_name);
 
     let result;
 
@@ -268,53 +265,42 @@ export class MPRIS extends DBusInterface {
         this._on_shuffle_changed.bind(this),
       ),
 
-      this.player.queue.connect(
-        "notify::can-play-next",
-        () => {
-          this._properties_changed(
-            this.MEDIA_PLAYER2_PLAYER_IFACE,
-            {
-              CanGoNext: GLib.Variant.new_boolean(
-                this.player.queue.can_play_next,
-              ),
-            },
-            [],
-          );
-        },
-      ),
+      this.player.queue.connect("notify::can-play-next", () => {
+        this._properties_changed(
+          this.MEDIA_PLAYER2_PLAYER_IFACE,
+          {
+            CanGoNext: GLib.Variant.new_boolean(
+              this.player.queue.can_play_next,
+            ),
+          },
+          [],
+        );
+      }),
 
-      this.player.queue.connect(
-        "notify::can-play-previous",
-        () => {
-          this._properties_changed(
-            this.MEDIA_PLAYER2_PLAYER_IFACE,
-            {
-              CanGoPrevious: GLib.Variant.new_boolean(
-                this.player.queue.can_play_previous,
-              ),
-            },
-            [],
-          );
-        },
-      ),
+      this.player.queue.connect("notify::can-play-previous", () => {
+        this._properties_changed(
+          this.MEDIA_PLAYER2_PLAYER_IFACE,
+          {
+            CanGoPrevious: GLib.Variant.new_boolean(
+              this.player.queue.can_play_previous,
+            ),
+          },
+          [],
+        );
+      }),
 
-      this.player.connect(
-        "notify::seeking",
-        () => {
-          if (!this.player.seeking) {
-            this._on_seek_finished(this as any, this.player.timestamp);
-          }
-        },
-      ),
+      this.player.connect("notify::seeking", () => {
+        if (!this.player.seeking) {
+          this._on_seek_finished(this as any, this.player.timestamp);
+        }
+      }),
     ]);
   }
 
   _get_playback_status() {
     if (this.player.playing) {
       return "Playing";
-    } else if (
-      this.player.state === GstPlay.PlayState.PAUSED
-    ) {
+    } else if (this.player.state === GstPlay.PlayState.PAUSED) {
       return "Paused";
     } else {
       return "Stopped";
@@ -355,8 +341,9 @@ export class MPRIS extends DBusInterface {
       .map((artist) => artist.name)
       .map((artist) => GLib.Variant.new_string(artist));
 
-    const largest_thumbnail = track.thumbnails
-      .sort((a, b) => b.width - a.width)[0];
+    const largest_thumbnail = track.thumbnails.sort(
+      (a, b) => b.width - a.width,
+    )[0];
 
     const metadata = {
       "mpris:trackid": GLib.Variant.new_object_path(song_dbus_path),
@@ -385,9 +372,9 @@ export class MPRIS extends DBusInterface {
     if (!this.player.queue.current?.object) {
       return "/org/mpris/MediaPlayer2/TrackList/NoTrack";
     } else {
-      return `/com/vixalien/muzika/TrackList/${
-        hex_encode(this.player.queue.current.object.videoId.replace(/-/g, "_"))
-      }`;
+      return `/com/vixalien/muzika/TrackList/${hex_encode(
+        this.player.queue.current.object.videoId.replace(/-/g, "_"),
+      )}`;
     }
   }
 
@@ -581,12 +568,9 @@ export class MPRIS extends DBusInterface {
    */
   _seeked(position: number) {
     // TODO: this doesn't work for some reason
-    this._dbus_emit_signal(
-      "Seeked",
-      {
-        Position: position,
-      },
-    );
+    this._dbus_emit_signal("Seeked", {
+      Position: position,
+    });
   }
 
   _get<Property extends keyof ReturnType<typeof this._get_all>>(
@@ -710,9 +694,9 @@ export class MPRIS extends DBusInterface {
     invalidated_properties: string[],
   ) {
     this._dbus_emit_signal("PropertiesChanged", {
-      "interface_name": interface_name,
-      "changed_properties": changed_properties,
-      "invalidated_properties": invalidated_properties,
+      interface_name: interface_name,
+      changed_properties: changed_properties,
+      invalidated_properties: invalidated_properties,
     });
   }
 
@@ -726,9 +710,9 @@ export class MPRIS extends DBusInterface {
 }
 
 function hex_encode(string: string) {
-  var hex, i;
+  let hex, i;
 
-  var result = "";
+  let result = "";
   for (i = 0; i < string.length; i++) {
     hex = string.charCodeAt(i).toString(16);
     result += ("000" + hex).slice(-4);

@@ -34,8 +34,10 @@ interface ArtistState extends VScrollState {
 GObject.type_ensure(PlaylistHeader.$gtype);
 GObject.type_ensure(PlaylistListView.$gtype);
 
-export class ArtistPage extends Adw.Bin
-  implements MuzikaPageWidget<Artist, ArtistState> {
+export class ArtistPage
+  extends Adw.Bin
+  implements MuzikaPageWidget<Artist, ArtistState>
+{
   static {
     GObject.registerClass(
       {
@@ -100,7 +102,7 @@ export class ArtistPage extends Adw.Bin
         n > 0 ? n - 1 : 0,
         0,
         songs.results.map((track) =>
-          PlayableContainer.new_from_playlist_item(track)
+          PlayableContainer.new_from_playlist_item(track),
         ),
       );
     } else {

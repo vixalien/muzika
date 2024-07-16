@@ -17,72 +17,75 @@ import { CoverArtColumn } from "./columns/cover-art";
 
 export class PlaylistColumnView extends Gtk.ColumnView {
   static {
-    GObject.registerClass({
-      GTypeName: "PlaylistColumnView",
-      Properties: {
-        is_album: GObject.param_spec_boolean(
-          "is-album",
-          "Represents an album",
-          "Whether this playlist represents an album",
-          false,
-          GObject.ParamFlags.READWRITE,
-        ),
-        is_editable: GObject.param_spec_boolean(
-          "is-editable",
-          "Is editable",
-          "Whether the playlist items can be edited (or deleted)",
-          false,
-          GObject.ParamFlags.READWRITE,
-        ),
-        playlist_id: GObject.param_spec_string(
-          "playlist-id",
-          "Playlist ID",
-          "The playlist ID",
-          null,
-          GObject.ParamFlags.READWRITE,
-        ),
-        selection_mode: GObject.param_spec_boolean(
-          "selection-mode",
-          "Selection mode",
-          "Whether the selection mode is toggled on",
-          false,
-          GObject.ParamFlags.READWRITE,
-        ),
-        show_add_column: GObject.param_spec_boolean(
-          "show-add-column",
-          "Show the add column",
-          "Show a button to trigger the 'Save to playlist' action",
-          false,
-          GObject.ParamFlags.READWRITE | GObject.ParamFlags.CONSTRUCT,
-        ),
-        show_artists_column: GObject.ParamSpec.boolean(
-          "show-artists-column",
-          "Show the artists column",
-          "Whether to show the artists of each track",
-          GObject.ParamFlags.READWRITE,
-          true,
-        ),
-        show_duration_column: GObject.ParamSpec.boolean(
-          "show-duration-column",
-          "Show the duration column",
-          "Whether to show the duration of each track",
-          GObject.ParamFlags.READWRITE,
-          true,
-        ),
-        show_rank_column: GObject.param_spec_boolean(
-          "show-rank-column",
-          "Show the rank column",
-          "Whether to show chart rank and trend change",
-          false,
-          GObject.ParamFlags.READWRITE,
-        ),
-      },
-      Signals: {
-        "add": {
-          param_types: [GObject.TYPE_INT],
+    GObject.registerClass(
+      {
+        GTypeName: "PlaylistColumnView",
+        Properties: {
+          is_album: GObject.param_spec_boolean(
+            "is-album",
+            "Represents an album",
+            "Whether this playlist represents an album",
+            false,
+            GObject.ParamFlags.READWRITE,
+          ),
+          is_editable: GObject.param_spec_boolean(
+            "is-editable",
+            "Is editable",
+            "Whether the playlist items can be edited (or deleted)",
+            false,
+            GObject.ParamFlags.READWRITE,
+          ),
+          playlist_id: GObject.param_spec_string(
+            "playlist-id",
+            "Playlist ID",
+            "The playlist ID",
+            null,
+            GObject.ParamFlags.READWRITE,
+          ),
+          selection_mode: GObject.param_spec_boolean(
+            "selection-mode",
+            "Selection mode",
+            "Whether the selection mode is toggled on",
+            false,
+            GObject.ParamFlags.READWRITE,
+          ),
+          show_add_column: GObject.param_spec_boolean(
+            "show-add-column",
+            "Show the add column",
+            "Show a button to trigger the 'Save to playlist' action",
+            false,
+            GObject.ParamFlags.READWRITE | GObject.ParamFlags.CONSTRUCT,
+          ),
+          show_artists_column: GObject.ParamSpec.boolean(
+            "show-artists-column",
+            "Show the artists column",
+            "Whether to show the artists of each track",
+            GObject.ParamFlags.READWRITE,
+            true,
+          ),
+          show_duration_column: GObject.ParamSpec.boolean(
+            "show-duration-column",
+            "Show the duration column",
+            "Whether to show the duration of each track",
+            GObject.ParamFlags.READWRITE,
+            true,
+          ),
+          show_rank_column: GObject.param_spec_boolean(
+            "show-rank-column",
+            "Show the rank column",
+            "Whether to show chart rank and trend change",
+            false,
+            GObject.ParamFlags.READWRITE,
+          ),
+        },
+        Signals: {
+          add: {
+            param_types: [GObject.TYPE_INT],
+          },
         },
       },
-    }, this);
+      this,
+    );
   }
 
   private _add_column = new AddColumn();
@@ -205,9 +208,9 @@ export class PlaylistColumnView extends Gtk.ColumnView {
     });
 
     this.connect("activate", (_, position) => {
-      const container = this.model.get_item(position) as ObjectContainer<
-        PlaylistItem
-      >;
+      const container = this.model.get_item(
+        position,
+      ) as ObjectContainer<PlaylistItem>;
 
       if (this.playlist_id) {
         this.activate_action(

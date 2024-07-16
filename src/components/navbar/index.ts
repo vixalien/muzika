@@ -20,10 +20,7 @@ export class NavbarView extends Gtk.Box {
         GTypeName: "NavbarView",
         Template:
           "resource:///com/vixalien/muzika/ui/components/navbar/index.ui",
-        InternalChildren: [
-          "search",
-          "list_view",
-        ],
+        InternalChildren: ["search", "list_view"],
         Signals: {
           activated: {
             param_types: [GObject.TYPE_STRING],
@@ -42,8 +39,8 @@ export class NavbarView extends Gtk.Box {
   private filter_model = Gtk.FilterListModel.new(
     this.model,
     Gtk.CustomFilter.new((obj: GObject.Object) => {
-      const button =
-        (obj as ObjectContainer<NavbarButtonContructorProperties>).object;
+      const button = (obj as ObjectContainer<NavbarButtonContructorProperties>)
+        .object;
 
       const logged_in = get_option("auth").has_token();
 
@@ -110,9 +107,8 @@ export class NavbarView extends Gtk.Box {
     list_view: Gtk.ListView,
     list_header: Gtk.ListHeader,
   ) {
-    const item = list_header.item as ObjectContainer<
-      NavbarButtonContructorProperties
-    >;
+    const item =
+      list_header.item as ObjectContainer<NavbarButtonContructorProperties>;
 
     if (!item?.object.title) return;
 
@@ -121,9 +117,8 @@ export class NavbarView extends Gtk.Box {
   }
 
   private header_bind_cb(list_view: Gtk.ListView, list_header: Gtk.ListHeader) {
-    const item = list_header.item as ObjectContainer<
-      NavbarButtonContructorProperties
-    >;
+    const item =
+      list_header.item as ObjectContainer<NavbarButtonContructorProperties>;
 
     if (item?.object.title) {
       const object = item.object;
@@ -239,7 +234,8 @@ export class NavbarView extends Gtk.Box {
               });
             }),
           );
-        }).catch((err) => {
+        })
+        .catch((err) => {
           this.clear_playlists();
 
           throw err;
@@ -260,10 +256,7 @@ export class NavbarView extends Gtk.Box {
       uri = `muzika:search:${encodeURIComponent(query)}`;
     }
 
-    this.activate_action(
-      "navigator.visit",
-      GLib.Variant.new_string(uri),
-    );
+    this.activate_action("navigator.visit", GLib.Variant.new_string(uri));
 
     this.emit("searched");
   }
@@ -308,33 +301,40 @@ export class NavbarView extends Gtk.Box {
 }
 
 export class NavbarListStore<
-  T extends NavbarButtonContructorProperties = NavbarButtonContructorProperties,
-> extends GObject.Object implements Gio.ListModel {
+    T extends
+      NavbarButtonContructorProperties = NavbarButtonContructorProperties,
+  >
+  extends GObject.Object
+  implements Gio.ListModel
+{
   static {
-    GObject.registerClass({
-      GTypeName: "NavbarListStore",
-      Properties: {
-        item_type: GObject.ParamSpec.uint64(
-          "item-type",
-          "Item Type",
-          "The type of the items in the list",
-          GObject.ParamFlags.READWRITE,
-          0,
-          Number.MAX_SAFE_INTEGER,
-          0,
-        ),
-        n_items: GObject.ParamSpec.uint64(
-          "n-items",
-          "Number of Items",
-          "The number of items in the list",
-          GObject.ParamFlags.READABLE,
-          0,
-          Number.MAX_SAFE_INTEGER,
-          0,
-        ),
+    GObject.registerClass(
+      {
+        GTypeName: "NavbarListStore",
+        Properties: {
+          item_type: GObject.ParamSpec.uint64(
+            "item-type",
+            "Item Type",
+            "The type of the items in the list",
+            GObject.ParamFlags.READWRITE,
+            0,
+            Number.MAX_SAFE_INTEGER,
+            0,
+          ),
+          n_items: GObject.ParamSpec.uint64(
+            "n-items",
+            "Number of Items",
+            "The number of items in the list",
+            GObject.ParamFlags.READABLE,
+            0,
+            Number.MAX_SAFE_INTEGER,
+            0,
+          ),
+        },
+        Implements: [Gio.ListModel, Gtk.SectionModel],
       },
-      Implements: [Gio.ListModel, Gtk.SectionModel],
-    }, this);
+      this,
+    );
   }
 
   private array = new Array<ObjectContainer<T>>();
@@ -379,9 +379,7 @@ export class NavbarListStore<
     return ObjectContainer.$gtype;
   }
 
-  find(
-    fn: (item: ObjectContainer<T>) => boolean,
-  ): number | null {
+  find(fn: (item: ObjectContainer<T>) => boolean): number | null {
     const index = this.array.findIndex(fn);
 
     return index === -1 ? null : index;
@@ -409,11 +407,7 @@ export class NavbarListStore<
     this.array.forEach(fn);
   }
 
-  splice(
-    position: number,
-    removed: number,
-    added: ObjectContainer<T>[],
-  ): void {
+  splice(position: number, removed: number, added: ObjectContainer<T>[]): void {
     this.array.splice(position, removed, ...added);
 
     this.items_changed(position, removed, added.length);
@@ -438,11 +432,12 @@ export class NavbarListStore<
   }
 
   vfunc_get_section(position: number) {
-    const first_index = position === 0
-      ? 0
-      : this.array.findLastIndex((container, index) => {
-        return index <= position && container.object.title;
-      });
+    const first_index =
+      position === 0
+        ? 0
+        : this.array.findLastIndex((container, index) => {
+            return index <= position && container.object.title;
+          });
     const last_index = this.array.findIndex((container, index) => {
       return index > position && container.object.title;
     });

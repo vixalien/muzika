@@ -8,10 +8,7 @@ export function setup_link_label(
   label: Gtk.Label,
   listeners?: SignalListeners,
 ) {
-  function connect<
-    Signal extends string,
-    Obj extends GObject.Object,
-  >(
+  function connect<Signal extends string, Obj extends GObject.Object>(
     widget: Obj,
     signal: Signal,
     fn: (...args: any[]) => any,
@@ -23,18 +20,11 @@ export function setup_link_label(
     return widget.connect(signal, fn);
   }
 
-  connect(
-    label,
-    "activate-link",
-    (_: Gtk.Label, uri: string) => {
-      if (uri && uri.startsWith("muzika:")) {
-        label.activate_action(
-          "navigator.visit",
-          GLib.Variant.new_string(uri),
-        );
+  connect(label, "activate-link", (_: Gtk.Label, uri: string) => {
+    if (uri && uri.startsWith("muzika:")) {
+      label.activate_action("navigator.visit", GLib.Variant.new_string(uri));
 
-        return true;
-      }
-    },
-  );
+      return true;
+    }
+  });
 }

@@ -3,13 +3,15 @@
 // EventTarget
 import "event-target-polyfill";
 
-export class CustomEvent<T = any> extends Event
-  implements globalThis.CustomEvent {
+export class CustomEvent<T = any>
+  extends Event
+  implements globalThis.CustomEvent
+{
   readonly detail: T;
 
   constructor(type: string, eventInitDict?: CustomEventInit<T>) {
     super(type);
-    this.detail = eventInitDict?.detail ?? null as T;
+    this.detail = eventInitDict?.detail ?? (null as T);
   }
 
   initCustomEvent(

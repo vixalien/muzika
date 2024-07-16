@@ -3,8 +3,8 @@ import GObject from "gi://GObject";
 import GLib from "gi://GLib";
 import GstPlay from "gi://GstPlay";
 
-type GTypeToType<Y extends GObject.GType> = Y extends GObject.GType<infer T> ? T
-  : never;
+type GTypeToType<Y extends GObject.GType> =
+  Y extends GObject.GType<infer T> ? T : never;
 
 type GTypeArrayToTypeArray<Y extends readonly GObject.GType[]> = {
   [K in keyof Y]: GTypeToType<Y[K]>;
@@ -12,10 +12,10 @@ type GTypeArrayToTypeArray<Y extends readonly GObject.GType[]> = {
 
 export class MuzikaPlaySignalAdapter extends GObject.Object {
   private static events = {
-    "buffering": [GObject.TYPE_INT],
+    buffering: [GObject.TYPE_INT],
     "duration-changed": [GObject.TYPE_INT],
     "end-of-stream": [],
-    "error": [GLib.Error.$gtype, Gst.Structure.$gtype],
+    error: [GLib.Error.$gtype, Gst.Structure.$gtype],
     "media-info-updated": [GstPlay.PlayMediaInfo.$gtype],
     "mute-changed": [GObject.TYPE_BOOLEAN],
     "position-updated": [GObject.TYPE_DOUBLE],
@@ -24,22 +24,24 @@ export class MuzikaPlaySignalAdapter extends GObject.Object {
     "uri-loaded": [GObject.TYPE_STRING],
     "video-dimensions-changed": [GObject.TYPE_INT, GObject.TYPE_INT],
     "volume-changed": [GObject.TYPE_INT],
-    "warning": [GLib.Error.$gtype, Gst.Structure.$gtype],
+    warning: [GLib.Error.$gtype, Gst.Structure.$gtype],
   } as const;
 
   static {
-    GObject.registerClass({
-      GTypeName: "MuzikaPlaySignalAdapter",
-      Signals: Object.fromEntries(
-        Object.entries(this.events)
-          .map(([name, types]) => [
+    GObject.registerClass(
+      {
+        GTypeName: "MuzikaPlaySignalAdapter",
+        Signals: Object.fromEntries(
+          Object.entries(this.events).map(([name, types]) => [
             name,
             {
               param_types: types,
             },
           ]),
-      ),
-    }, this);
+        ),
+      },
+      this,
+    );
   }
   private _play: GstPlay.Play;
 
@@ -140,12 +142,9 @@ export class MuzikaPlaySignalAdapter extends GObject.Object {
   }
 
   private emit_message<
-    Name extends keyof typeof MuzikaPlaySignalAdapter["events"],
-    Types extends typeof MuzikaPlaySignalAdapter["events"][Name],
-  >(
-    name: Name,
-    args: GTypeArrayToTypeArray<Types>,
-  ) {
-    this.emit(name as string, ...args as GTypeToType<Types[number]>[]);
+    Name extends keyof (typeof MuzikaPlaySignalAdapter)["events"],
+    Types extends (typeof MuzikaPlaySignalAdapter)["events"][Name],
+  >(name: Name, args: GTypeArrayToTypeArray<Types>) {
+    this.emit(name as string, ...(args as GTypeToType<Types[number]>[]));
   }
 }

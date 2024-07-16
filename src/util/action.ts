@@ -2,7 +2,7 @@ import GLib from "gi://GLib";
 import Gio from "gi://Gio";
 import GObject from "gi://GObject";
 
-export type ActionEntry = {
+export interface ActionEntry {
   name: string;
   parameter_type?: string;
   state?: string;
@@ -14,7 +14,7 @@ export type ActionEntry = {
     _source: Gio.SimpleAction,
     value: GLib.Variant | null,
   ) => void;
-};
+}
 
 export type AddActionEntries = (entries: ActionEntry[]) => void;
 
@@ -31,17 +31,14 @@ export interface ActionDeclaration {
       from_value: any,
     ) => [boolean, GLib.Variant],
   ];
-  bind_enabled?: [
-    object: GObject.Object,
-    property: string,
-  ];
+  bind_enabled?: [object: GObject.Object, property: string];
 }
 
 export function build_action(decl: ActionDeclaration) {
   const action = new Gio.SimpleAction({
     name: decl.name,
-    parameter_type: decl.parameter_type ?? null as any,
-    state: decl.state ?? null as any,
+    parameter_type: decl.parameter_type ?? (null as any),
+    state: decl.state ?? (null as any),
   });
 
   if (decl.activate) action.connect("activate", decl.activate);

@@ -9,17 +9,15 @@ import { error_to_string, ErrorPageOptions } from "./error.js";
 
 export class AuthenticationErrorPage extends Adw.Bin {
   static {
-    GObject.registerClass({
-      GTypeName: "AuthenticationErrorPage",
-      Template:
-        "resource:///com/vixalien/muzika/ui/pages/authentication-error.ui",
-      InternalChildren: [
-        "status",
-        "more",
-        "text_view",
-        "home_button",
-      ],
-    }, this);
+    GObject.registerClass(
+      {
+        GTypeName: "AuthenticationErrorPage",
+        Template:
+          "resource:///com/vixalien/muzika/ui/pages/authentication-error.ui",
+        InternalChildren: ["status", "more", "text_view", "home_button"],
+      },
+      this,
+    );
   }
 
   _status!: Adw.StatusPage;
@@ -69,7 +67,9 @@ export class AuthenticationErrorPage extends Adw.Bin {
 
     if (get_option("auth").has_token()) {
       this._status.set_description(
-        _("Your authentication details have expired. Please log in again or go to home."),
+        _(
+          "Your authentication details have expired. Please log in again or go to home.",
+        ),
       );
     } else {
       this._status.set_description(

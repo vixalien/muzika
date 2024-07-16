@@ -3,34 +3,33 @@ import GObject from "gi://GObject";
 
 export class Paginator extends Gtk.Revealer {
   static {
-    GObject.registerClass({
-      GTypeName: "Paginator",
-      Template: "resource:///com/vixalien/muzika/ui/components/paginator.ui",
-      InternalChildren: [
-        "stack",
-        "button",
-        "spinner",
-      ],
-      Signals: {
-        "activate": {},
+    GObject.registerClass(
+      {
+        GTypeName: "Paginator",
+        Template: "resource:///com/vixalien/muzika/ui/components/paginator.ui",
+        InternalChildren: ["stack", "button", "spinner"],
+        Signals: {
+          activate: {},
+        },
+        Properties: {
+          loading: GObject.ParamSpec.boolean(
+            "loading",
+            "Loading",
+            "Whether the button is loading",
+            GObject.ParamFlags.READWRITE,
+            false,
+          ),
+          "can-paginate": GObject.ParamSpec.boolean(
+            "can-paginate",
+            "Can Paginate",
+            "Whether the content can be paginated and the paginator is visible",
+            GObject.ParamFlags.READWRITE,
+            false,
+          ),
+        },
       },
-      Properties: {
-        "loading": GObject.ParamSpec.boolean(
-          "loading",
-          "Loading",
-          "Whether the button is loading",
-          GObject.ParamFlags.READWRITE,
-          false,
-        ),
-        "can-paginate": GObject.ParamSpec.boolean(
-          "can-paginate",
-          "Can Paginate",
-          "Whether the content can be paginated and the paginator is visible",
-          GObject.ParamFlags.READWRITE,
-          false,
-        ),
-      },
-    }, this);
+      this,
+    );
   }
 
   _stack!: Gtk.Stack;

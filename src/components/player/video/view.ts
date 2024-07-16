@@ -11,29 +11,32 @@ GObject.type_ensure(VideoControls.$gtype);
 
 export class VideoPlayerView extends Adw.Bin {
   static {
-    GObject.registerClass({
-      GTypeName: "VideoPlayerView",
-      Template:
-        "resource:///com/vixalien/muzika/ui/components/player/video/view.ui",
-      InternalChildren: [
-        "picture",
-        "fullscreen",
-        "toolbar_view",
-        "window_title",
-        "controls",
-      ],
-      Properties: {
-        bottom_bar_height: GObject.ParamSpec.uint(
-          "bottom-bar-height",
-          "Bottom Bar Height",
-          "The height of the video player controls",
-          GObject.ParamFlags.READWRITE,
-          0,
-          GLib.MAXUINT32,
-          0,
-        ),
+    GObject.registerClass(
+      {
+        GTypeName: "VideoPlayerView",
+        Template:
+          "resource:///com/vixalien/muzika/ui/components/player/video/view.ui",
+        InternalChildren: [
+          "picture",
+          "fullscreen",
+          "toolbar_view",
+          "window_title",
+          "controls",
+        ],
+        Properties: {
+          bottom_bar_height: GObject.ParamSpec.uint(
+            "bottom-bar-height",
+            "Bottom Bar Height",
+            "The height of the video player controls",
+            GObject.ParamFlags.READWRITE,
+            0,
+            GLib.MAXUINT32,
+            0,
+          ),
+        },
       },
-    }, this);
+      this,
+    );
   }
 
   private _picture!: Gtk.Picture;
@@ -193,9 +196,8 @@ export class VideoPlayerView extends Adw.Bin {
 
     if (!this.ui_is_visible) return;
 
-    this._toolbar_view.reveal_top_bars =
-      this._toolbar_view.reveal_bottom_bars =
-        false;
+    this._toolbar_view.reveal_top_bars = this._toolbar_view.reveal_bottom_bars =
+      false;
 
     this.set_cursor(Gdk.Cursor.new_from_name("none", null));
   }
@@ -205,9 +207,8 @@ export class VideoPlayerView extends Adw.Bin {
 
     if (this.ui_is_visible) return;
 
-    this._toolbar_view.reveal_top_bars =
-      this._toolbar_view.reveal_bottom_bars =
-        true;
+    this._toolbar_view.reveal_top_bars = this._toolbar_view.reveal_bottom_bars =
+      true;
 
     this.set_cursor(null);
   }

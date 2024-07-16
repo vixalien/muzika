@@ -39,32 +39,35 @@ if (!Gst.is_initialized()) {
 
 export class MuzikaPlayer extends MuzikaMediaStream {
   static {
-    GObject.registerClass({
-      GTypeName: "MuzikaPlayer",
-      Properties: {
-        queue: GObject.param_spec_object(
-          "queue",
-          "Queue",
-          "The queue",
-          Queue.$gtype,
-          GObject.ParamFlags.READABLE,
-        ),
-        now_playing: GObject.param_spec_object(
-          "now-playing",
-          "Now playing",
-          "The metadata of the currently playing song",
-          ObjectContainer.$gtype,
-          GObject.ParamFlags.READABLE,
-        ),
-        loading_track: GObject.param_spec_string(
-          "loading-track",
-          "Loading track",
-          "The videoId of track that is currently being loaded",
-          null,
-          GObject.ParamFlags.READABLE,
-        ),
+    GObject.registerClass(
+      {
+        GTypeName: "MuzikaPlayer",
+        Properties: {
+          queue: GObject.param_spec_object(
+            "queue",
+            "Queue",
+            "The queue",
+            Queue.$gtype,
+            GObject.ParamFlags.READABLE,
+          ),
+          now_playing: GObject.param_spec_object(
+            "now-playing",
+            "Now playing",
+            "The metadata of the currently playing song",
+            ObjectContainer.$gtype,
+            GObject.ParamFlags.READABLE,
+          ),
+          loading_track: GObject.param_spec_string(
+            "loading-track",
+            "Loading track",
+            "The videoId of track that is currently being loaded",
+            null,
+            GObject.ParamFlags.READABLE,
+          ),
+        },
       },
-    }, this);
+      this,
+    );
   }
 
   private _queue: Queue;
@@ -76,8 +79,8 @@ export class MuzikaPlayer extends MuzikaMediaStream {
   get duration() {
     // normalise duration when the media-info is not available
     if (super.duration <= 0) {
-      const duration_seconds = this.now_playing?.object.song.videoDetails
-        .lengthSeconds;
+      const duration_seconds =
+        this.now_playing?.object.song.videoDetails.lengthSeconds;
 
       if (duration_seconds) {
         // to microsecond
@@ -128,25 +131,14 @@ export class MuzikaPlayer extends MuzikaMediaStream {
 
     // restore state
 
-    this.load_settings_state()
-      .catch(console.error);
+    this.load_settings_state().catch(console.error);
 
     Settings.connect("changed::audio-quality", this.update_song_uri.bind(this));
     Settings.connect("changed::video-quality", this.update_song_uri.bind(this));
 
-    Settings.bind(
-      "volume",
-      this,
-      "volume",
-      Gio.SettingsBindFlags.DEFAULT,
-    );
+    Settings.bind("volume", this, "volume", Gio.SettingsBindFlags.DEFAULT);
 
-    Settings.bind(
-      "muted",
-      this,
-      "muted",
-      Gio.SettingsBindFlags.DEFAULT,
-    );
+    Settings.bind("muted", this, "muted", Gio.SettingsBindFlags.DEFAULT);
   }
 
   // property: current-meta
@@ -169,10 +161,9 @@ export class MuzikaPlayer extends MuzikaMediaStream {
     if (song) {
       if (!this.added_to_playback_history && get_option("auth").has_token()) {
         // add history entry, but don't wait for the promise to resolve
-        add_history_item(song)
-          .catch((err) => {
-            console.error("Couldn't add track to playback history", err);
-          });
+        add_history_item(song).catch((err) => {
+          console.error("Couldn't add track to playback history", err);
+        });
 
         this.added_to_playback_history = true;
       }
@@ -256,14 +247,16 @@ export class MuzikaPlayer extends MuzikaMediaStream {
 
     // we are switching counterparts (from track to video)
     if (
-      counterpart_videoId && counterpart_videoId === now_playing_videoId &&
+      counterpart_videoId &&
+      counterpart_videoId === now_playing_videoId &&
       current.duration_seconds
     ) {
       // try to seek to the same position (for example 40%)
       this.save_playback_state(
         undefined,
-        this.initial_seek_to = (this.timestamp / this.duration) *
-          (current.duration_seconds * Gst.MSECOND),
+        (this.initial_seek_to =
+          (this.timestamp / this.duration) *
+          (current.duration_seconds * Gst.MSECOND)),
       );
     }
 
@@ -293,13 +286,12 @@ export class MuzikaPlayer extends MuzikaMediaStream {
 
     const song = await get_song(track.videoId, {
       signal: this.loading_controller!.signal,
-    })
-      .catch((error) => {
-        if (error instanceof DOMException && error.name == "AbortError") return;
+    }).catch((error) => {
+      if (error instanceof DOMException && error.name == "AbortError") return;
 
-        this.unprepare();
-        console.error("Couldn't refresh URI", error);
-      });
+      this.unprepare();
+      console.error("Couldn't refresh URI", error);
+    });
 
     if (!song) return;
 
@@ -365,10 +357,10 @@ export class MuzikaPlayer extends MuzikaMediaStream {
   }
 
   private async load_settings_state() {
-    const tracks_ids = PlayerStateSettings.get_value<"as">("tracks")
-      .deep_unpack();
-    const original_ids = PlayerStateSettings.get_value<"as">("original")
-      .deep_unpack();
+    const tracks_ids =
+      PlayerStateSettings.get_value<"as">("tracks").deep_unpack();
+    const original_ids =
+      PlayerStateSettings.get_value<"as">("original").deep_unpack();
 
     if (tracks_ids.length == 0) return;
 
@@ -563,11 +555,11 @@ export class MuzikaPlayer extends MuzikaMediaStream {
   }
 }
 
-export type TrackMetadata = {
+export interface TrackMetadata {
   song: Song;
   track: QueueTrack;
   meta: Omit<MuseQueue, "tracks">;
-};
+}
 
 export function format_has_audio(format: Format): format is AudioFormat {
   return format.has_audio;
@@ -610,11 +602,15 @@ function get_song_formats<
     .filter((format) => {
       // filter requested manifests
       if (video && format_has_video(format)) {
-        return quality === VideoQuality.auto ||
-          format.video_quality == VideoQuality[quality];
+        return (
+          quality === VideoQuality.auto ||
+          format.video_quality == VideoQuality[quality]
+        );
       } else if (!video && format_has_audio(format)) {
-        return quality === AudioQuality.auto ||
-          format.audio_quality == AudioQuality[quality];
+        return (
+          quality === AudioQuality.auto ||
+          format.audio_quality == AudioQuality[quality]
+        );
       } else {
         return false;
       }
@@ -653,11 +649,7 @@ function get_best_formats(
   let best_formats: Format[] = [];
 
   while (best_quality >= 0) {
-    best_formats = get_song_formats(
-      video,
-      formats,
-      best_quality,
-    );
+    best_formats = get_song_formats(video, formats, best_quality);
 
     if (best_formats.length > 0) {
       return best_formats;
@@ -705,13 +697,13 @@ function get_song_uri(song: Song) {
     return total_formats[0].url;
   }
 
-  return `data:application/dash+xml;base64,${
-    btoa(convert_formats_to_dash({
+  return `data:application/dash+xml;base64,${btoa(
+    convert_formats_to_dash({
       ...song,
       adaptive_formats: [],
       formats: total_formats,
-    }))
-  }`;
+    }),
+  )}`;
 }
 
 export const VideoQualities: { name: string; value: string }[] = [
