@@ -81,7 +81,7 @@ export class PlayerPreview extends Gtk.Stack {
 
   teardown_player() {
     this.listeners.clear();
-    this._picture.paintable = null!;
+    this._picture.paintable = null;
   }
 
   /**

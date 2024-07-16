@@ -14,7 +14,7 @@ export function error_to_string(error: Error) {
 }
 
 export interface ErrorPageOptions {
-  error?: any;
+  error?: unknown;
 }
 
 export class ErrorPage extends Adw.Bin {
@@ -61,7 +61,7 @@ export class ErrorPage extends Adw.Bin {
     }
   }
 
-  set_error(error: any) {
+  set_error(error: unknown) {
     if (error instanceof GLib.Error) {
       if (
         error instanceof Gio.ResolverError &&

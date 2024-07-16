@@ -98,9 +98,7 @@ export class DOMException extends Error implements globalThis.DOMException {
     return `${this.name}: ${this.message}`;
   }
 
-  get [Symbol.toStringTag]() {
-    return "DOMException";
-  }
+  readonly [Symbol.toStringTag] = "DOMException";
 }
 
 if (!globalThis.DOMException) {

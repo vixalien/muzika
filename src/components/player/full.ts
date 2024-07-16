@@ -139,7 +139,7 @@ export class FullPlayerView extends Gtk.ActionBar {
         this._duration_label,
         "label",
         GObject.BindingFlags.DEFAULT | GObject.BindingFlags.SYNC_CREATE,
-        (_, __) => {
+        () => {
           return [true, micro_to_string(this.player.duration)];
         },
         null,
@@ -150,7 +150,7 @@ export class FullPlayerView extends Gtk.ActionBar {
         this._progress_label,
         "label",
         GObject.BindingFlags.DEFAULT | GObject.BindingFlags.SYNC_CREATE,
-        (_, __) => {
+        () => {
           return [
             true,
             micro_to_string(

@@ -96,7 +96,7 @@ export class MuzikaNPCover extends Adw.Bin {
         this._duration,
         "label",
         GObject.BindingFlags.DEFAULT | GObject.BindingFlags.SYNC_CREATE,
-        (_, __) => {
+        () => {
           return [true, micro_to_string(this.player.duration)];
         },
         null,
@@ -107,7 +107,7 @@ export class MuzikaNPCover extends Adw.Bin {
         this._timestamp,
         "label",
         GObject.BindingFlags.DEFAULT | GObject.BindingFlags.SYNC_CREATE,
-        (_, __) => {
+        () => {
           return [
             true,
             micro_to_string(
@@ -200,7 +200,10 @@ export class MuzikaNPCover extends Adw.Bin {
 
       this.abort_thumbnail = new AbortController();
 
-      const theme = Gtk.IconTheme.get_for_display(Gdk.Display.get_default()!);
+      const default_display = Gdk.Display.get_default();
+      if (!default_display) return;
+
+      const theme = Gtk.IconTheme.get_for_display(default_display);
       const icon = theme.lookup_icon(
         "image-missing-symbolic",
         [],

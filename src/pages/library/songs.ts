@@ -88,8 +88,10 @@ export class LibrarySongsPage
 
     this.loader({ continuation: this.results.continuation })
       .then((library) => {
-        this.results!.items.push(...library.items);
-        this.results!.continuation = library.continuation;
+        if (!this.results) return;
+
+        this.results.items.push(...library.items);
+        this.results.continuation = library.continuation;
 
         this.show_library(library);
       })
@@ -124,6 +126,7 @@ export class LibrarySongsPage
 
   get_state(): LibrarySongsState {
     return {
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       results: this.results!,
       order: this.order,
       vscroll: this._scrolled.get_vadjustment().get_value(),

@@ -23,10 +23,6 @@ export class VolumeControls extends Gtk.Box {
 
   listeners = new SignalListeners();
 
-  constructor() {
-    super();
-  }
-
   update_icon(muted: boolean, volume: number) {
     let icon_name: string;
 

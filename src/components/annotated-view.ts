@@ -103,10 +103,6 @@ export class AnnotatedView extends Gtk.Widget {
     );
   }
 
-  constructor() {
-    super();
-  }
-
   // property header
   private _header?: Gtk.Widget;
   get header() {
@@ -213,6 +209,7 @@ export class AnnotatedView extends Gtk.Widget {
 
   private clear_adjustment(orientation: Gtk.Orientation) {
     this.adjustment_listeners[orientation].clear();
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     this.adjustment[orientation] = null!;
   }
 
@@ -334,7 +331,7 @@ export class AnnotatedView extends Gtk.Widget {
     }
   }
 
-  vfunc_size_allocate(width: number, height: number, baseline: number): void {
+  vfunc_size_allocate(width: number, height: number): void {
     const children = [this._header, this._child, this._footer];
 
     this.adjustment[Gtk.Orientation.VERTICAL].freeze_notify();
@@ -361,13 +358,13 @@ export class AnnotatedView extends Gtk.Widget {
       totals[Gtk.Orientation.VERTICAL] + total_spacing,
     );
 
-    let x = this.adjustment[Gtk.Orientation.HORIZONTAL].value,
-      y = this.adjustment[Gtk.Orientation.VERTICAL].value;
+    const x = this.adjustment[Gtk.Orientation.HORIZONTAL].value;
+    let y = this.adjustment[Gtk.Orientation.VERTICAL].value;
 
     // give each child an allocation
     for (const child of children) {
       if (child && child.visible) {
-        const child_size = sizes.get(child)!;
+        const child_size = sizes.get(child);
 
         if (!child_size) throw new Error("oops...");
 
@@ -378,7 +375,8 @@ export class AnnotatedView extends Gtk.Widget {
         allocation.x = -x;
         allocation.y = -y;
 
-        let y_offset, visible_height;
+        let y_offset = 0,
+          visible_height = 0;
 
         // scroll the child widget direct using it's scrollable interface
         if (child === this._child && isScrollable(child)) {
@@ -413,8 +411,8 @@ export class AnnotatedView extends Gtk.Widget {
 
           if (child === this._child && isScrollable(child)) {
             // scroll the scrollable child after allocating
-            child_adjustment.value = y_offset!;
-            child_adjustment.page_size = visible_height!;
+            child_adjustment.value = y_offset;
+            child_adjustment.page_size = visible_height;
           }
         }
       }

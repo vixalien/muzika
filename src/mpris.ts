@@ -1,7 +1,6 @@
 import Gio from "gi://Gio";
 import GLib from "gi://GLib";
 import Gtk from "gi://Gtk?version=4.0";
-import GstPlay from "gi://GstPlay";
 
 import type { LikeStatus } from "libmuse";
 
@@ -170,12 +169,17 @@ export class DBusInterface {
     parameters: GLib.Variant,
     invocation: Gio.DBusMethodInvocation,
   ) {
-    const args = parameters.unpack() as any[];
+    const args = parameters.unpack() as unknown[];
 
-    this.method_inargs.get(method_name)!.forEach((sig, i) => {
+    const method_inargs = this.method_inargs.get(method_name);
+
+    if (!method_inargs) return;
+
+    method_inargs.forEach((sig, i) => {
       if (sig === "h") {
         const message = invocation.get_message();
-        const fd_list = message.get_unix_fd_list()!;
+        const fd_list = message.get_unix_fd_list();
+        if (!fd_list) return;
         args[i] = fd_list.get(0);
       }
     });
@@ -185,6 +189,7 @@ export class DBusInterface {
     let result;
 
     try {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       result = (this[method_snake_name as keyof this] as any)(...args);
     } catch (error) {
       invocation.return_dbus_error(
@@ -196,9 +201,9 @@ export class DBusInterface {
 
     result = [result].flat();
 
-    const out_args = this.method_outargs.get(method_name)!;
+    const out_args = this.method_outargs.get(method_name);
 
-    if (out_args != "()") {
+    if (out_args && out_args != "()") {
       const variant = GLib.Variant.new(out_args, result);
       invocation.return_value(variant);
     } else {
@@ -206,10 +211,12 @@ export class DBusInterface {
     }
   }
 
-  _dbus_emit_signal(signal_name: string, values: Record<string, any>) {
+  _dbus_emit_signal(signal_name: string, values: Record<string, unknown>) {
     if (this.signals.size === 0) return;
 
-    const signal = this.signals.get(signal_name)!;
+    const signal = this.signals.get(signal_name);
+
+    if (!signal) return;
 
     const parameters = [];
 
@@ -218,7 +225,8 @@ export class DBusInterface {
       parameters.push(GLib.Variant.new(signature, value));
     }
 
-    const variant = GLib.Variant.new_tuple(parameters as any);
+    // @ts-expect-error incorrect types
+    const variant = GLib.Variant.new_tuple(parameters);
 
     this.connection.emit_signal(
       null,
@@ -291,7 +299,7 @@ export class MPRIS extends DBusInterface {
 
       this.player.connect("notify::seeking", () => {
         if (!this.player.seeking) {
-          this._on_seek_finished(this as any, this.player.timestamp);
+          this._on_seek_finished(this, this.player.timestamp);
         }
       }),
     ]);
@@ -300,7 +308,7 @@ export class MPRIS extends DBusInterface {
   _get_playback_status() {
     if (this.player.playing) {
       return "Playing";
-    } else if (this.player.state === GstPlay.PlayState.PAUSED) {
+    } else if (this.player.media_info) {
       return "Paused";
     } else {
       return "Stopped";
@@ -336,7 +344,8 @@ export class MPRIS extends DBusInterface {
     }
 
     const length = (track.duration_seconds ?? 0) * 1e6;
-    const user_rating = this._like_rank.get(track.likeStatus ?? "INDIFFERENT")!;
+    const user_rating =
+      this._like_rank.get(track.likeStatus ?? "INDIFFERENT") ?? 0;
     const artists = track.artists
       .map((artist) => artist.name)
       .map((artist) => GLib.Variant.new_string(artist));
@@ -356,11 +365,11 @@ export class MPRIS extends DBusInterface {
       "xesam:album": GLib.Variant.new_string(track.album?.name ?? ""),
       "xesam:artist": GLib.Variant.new_array(
         GLib.VariantType.new("s"),
-        artists as any,
+        artists,
       ),
       "xesam:albumArtist": GLib.Variant.new_array(
         GLib.VariantType.new("s"),
-        artists as any,
+        artists,
       ),
       "mpris:artUrl": GLib.Variant.new_string(largest_thumbnail.url),
     };
@@ -396,7 +405,7 @@ export class MPRIS extends DBusInterface {
     this._on_player_model_changed(this.player.queue.list, 0, 0, 0);
   }
 
-  previous_state = new Map<string, any>();
+  previous_state = new Map<string, unknown>();
 
   _on_player_model_changed(
     model: Gio.ListStore,
@@ -467,7 +476,7 @@ export class MPRIS extends DBusInterface {
     );
   }
 
-  private _on_seek_finished(_: Gtk.Widget, position: number) {
+  private _on_seek_finished(_: DBusInterface, position: number) {
     this._seeked(Math.trunc(position));
   }
 
@@ -559,7 +568,7 @@ export class MPRIS extends DBusInterface {
    *
    * Not implemented
    */
-  open_uri(_uri: string) {
+  open_uri() {
     return;
   }
 
@@ -593,7 +602,7 @@ export class MPRIS extends DBusInterface {
     const iface = interface_name.get_string()[0];
 
     switch (iface) {
-      case this.MEDIA_PLAYER2_IFACE:
+      case this.MEDIA_PLAYER2_IFACE: {
         const application_id = this.app.get_application_id() ?? "";
 
         return {
@@ -607,7 +616,8 @@ export class MPRIS extends DBusInterface {
           SupportedUriSchemes: GLib.Variant.new_strv([]),
           SupportedMimeTypes: GLib.Variant.new_strv([]),
         };
-      case this.MEDIA_PLAYER2_PLAYER_IFACE:
+      }
+      case this.MEDIA_PLAYER2_PLAYER_IFACE: {
         const position_msecond = Math.trunc(this.player.timestamp);
         const playback_status = this._get_playback_status();
         const is_shuffle = this.player.queue.shuffle;
@@ -632,6 +642,7 @@ export class MPRIS extends DBusInterface {
           CanSeek: GLib.Variant.new_boolean(true),
           CanControl: GLib.Variant.new_boolean(true),
         };
+      }
       case "org.freedesktop.DBus.Properties":
         return {};
       case "org.freedesktop.DBus.Introspectable":
@@ -690,7 +701,7 @@ export class MPRIS extends DBusInterface {
 
   _properties_changed(
     interface_name: string,
-    changed_properties: Record<string, GLib.Variant<any>>,
+    changed_properties: Record<string, GLib.Variant>,
     invalidated_properties: string[],
   ) {
     this._dbus_emit_signal("PropertiesChanged", {

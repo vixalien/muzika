@@ -34,10 +34,10 @@ export function convert_formats_to_dash(song: Song) {
           "@name": "Period",
           "#children": [
             ...formats.reduce(
-              (acc, format, index) => {
+              (acc, format) => {
                 if (format.has_audio && format.has_video) return acc;
 
-                const representation: Record<string, any> = {
+                const representation: Record<string, unknown> = {
                   "@name": "Representation",
                   id: format.itag,
                   mimeType: escape_attribute(format.mime_type.split(";")[0]),
@@ -98,7 +98,7 @@ export function convert_formats_to_dash(song: Song) {
                   ).sample_rate;
                 }
 
-                const definition: Record<string, any> = {
+                const definition: Record<string, unknown> = {
                   "@name": "AdaptationSet",
                   mimeType: escape_attribute(format.mime_type.split(";")[0]),
                   segmentAlignment: "true",
@@ -117,14 +117,14 @@ export function convert_formats_to_dash(song: Song) {
                 });
 
                 if (existing) {
-                  existing["#children"].push(representation);
+                  (existing["#children"] as unknown[]).push(representation);
                 } else {
                   acc.push(definition);
                 }
 
                 return acc;
               },
-              [] as Record<string, any>[],
+              [] as Record<string, unknown>[],
             ),
             // see https://gitlab.freedesktop.org/gstreamer/gstreamer/-/issues/2872
             ...song.captions.map((caption, index) => {
@@ -213,6 +213,7 @@ function get_presentation_duration(media: Format[]) {
 }
 
 function escape_attribute(str: string) {
+  // eslint-disable-next-line no-useless-escape
   return str.replace(/\"/g, '\\"').replace(/\'/g, "\\'");
 }
 
@@ -231,8 +232,8 @@ function indent(str: string) {
     .join("\n");
 }
 
-function objectToSchema(obj: any) {
-  const attributes: Record<string, any> = {};
+function objectToSchema(obj: Record<string, unknown>) {
+  const attributes: Record<string, unknown> = {};
 
   const noindent = Object.hasOwn(obj, "@noindent");
 
@@ -249,7 +250,7 @@ function objectToSchema(obj: any) {
       if (Array.isArray(value)) {
         body += value.map((child) => indent(objectToSchema(child))).join("\n");
       } else {
-        body += (noindent ? "" : "  ") + value.toString();
+        body += (noindent ? "" : "  ") + value?.toString();
       }
       continue;
     }

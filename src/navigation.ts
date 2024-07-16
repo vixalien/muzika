@@ -31,13 +31,16 @@ export interface MuzikaPageMeta<Data = unknown, State = unknown> {
   title: string;
   uri: string;
   build(): MuzikaPageWidget<Data, State>;
-  load(context: PageLoadContext): void | Promise<void | Data>;
+  load(context: PageLoadContext): null | Promise<null | Data>;
 }
 
 export class Navigator extends GObject.Object {
   private _view: Adw.NavigationView;
 
-  private match_map = new Map<MatchFunction, MuzikaPageMeta>();
+  private match_map = new Map<
+    MatchFunction<Partial<Record<string, string | string[]>>>,
+    MuzikaPageMeta
+  >();
 
   private stacks = new Map<string, Adw.NavigationPage[]>();
 
@@ -155,7 +158,7 @@ export class Navigator extends GObject.Object {
       },
       {
         name: "back",
-        activate: (_) => {
+        activate: () => {
           this.back();
         },
       },
@@ -177,7 +180,7 @@ export class Navigator extends GObject.Object {
       this.abort_controller.abort();
     }
 
-    this.abort_controller = new AbortController();
+    return (this.abort_controller = new AbortController());
   }
 
   private reset_abort_controller() {
@@ -189,10 +192,10 @@ export class Navigator extends GObject.Object {
 
     if (!page || page.loading || !(page instanceof Page)) return;
 
-    this.abort_current();
+    const abort_controller = this.abort_current();
 
     return page
-      .reload(this.abort_controller!.signal)
+      .reload(abort_controller.signal)
       ?.catch((error) => {
         if (error instanceof DOMException && error.name == "AbortError") return;
         page.show_error(error);
@@ -207,12 +210,12 @@ export class Navigator extends GObject.Object {
     match: MatchResult<Record<string, string>>,
     meta: MuzikaPageMeta,
   ) {
-    this.abort_current();
+    const abort_controller = this.abort_current();
 
     const page = new Page(meta);
     this._view.push(page);
     page
-      .load(uri, match, this.abort_controller!.signal)
+      .load(uri, match, abort_controller.signal)
       .then(() => {
         this.reset_abort_controller();
       })
@@ -261,7 +264,7 @@ export class Navigator extends GObject.Object {
     if (search_match) {
       this.emit(
         "search-changed",
-        decodeURIComponent((search_match.params as any).query),
+        decodeURIComponent(search_match.params.query?.toString() ?? ""),
       );
     }
 
@@ -305,12 +308,11 @@ export class Navigator extends GObject.Object {
       return;
     }
 
-    this.abort_current();
+    const abort_controller = this.abort_current();
 
     if (match) {
-      page.load;
       return page
-        .load(uri, match.match, this.abort_controller!.signal)
+        .load(uri, match.match, abort_controller.signal)
         ?.then(() => {
           this.reset_abort_controller();
         })

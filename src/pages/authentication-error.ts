@@ -58,7 +58,7 @@ export class AuthenticationErrorPage extends Adw.Bin {
     }
   }
 
-  set_error(error: any) {
+  set_error(error: unknown) {
     if (error instanceof Error) {
       this.set_more(!!error, error_to_string(error));
     } else {

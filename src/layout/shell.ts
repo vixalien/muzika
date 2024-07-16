@@ -54,6 +54,7 @@ export class MuzikaShell extends Gtk.Box {
   private _lyrics_page!: MuzikaNPLyrics;
   private _related_page!: MuzikaNPRelated;
 
+  // eslint-disable-next-line @typescript-eslint/no-useless-constructor
   constructor(params?: Partial<Adw.Bin.ConstructorProperties>) {
     super(params);
   }
@@ -64,24 +65,24 @@ export class MuzikaShell extends Gtk.Box {
     const player = get_player();
 
     this.listeners.add_bindings(
-      // @ts-expect-error
+      // @ts-expect-error incorrect types
       player.bind_property_full(
         "now-playing",
         this._lyrics_page,
         "visible",
         GObject.BindingFlags.DEFAULT | GObject.BindingFlags.SYNC_CREATE,
-        (_, __) => {
+        () => {
           return [true, player.now_playing?.object?.meta.lyrics != null];
         },
         null,
       ),
-      // @ts-expect-error
+      // @ts-expect-error incorrect types
       player.bind_property_full(
         "now-playing",
         this._related_page,
         "visible",
         GObject.BindingFlags.DEFAULT | GObject.BindingFlags.SYNC_CREATE,
-        (_, __) => {
+        () => {
           return [true, player.now_playing?.object?.meta.related != null];
         },
         null,

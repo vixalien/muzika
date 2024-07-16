@@ -90,16 +90,14 @@ function get_search_content_props(item: SearchContent) {
   return props;
 }
 
-export interface PlayableContainerProps<T extends Object = PlaylistItem> {
+export interface PlayableContainerProps<T = PlaylistItem> {
   object: T;
   video_id?: string;
   playlist_id?: string;
   is_playlist?: boolean;
 }
 
-export class PlayableContainer<
-  T extends Object = PlaylistItem,
-> extends GObject.Object {
+export class PlayableContainer<T = PlaylistItem> extends GObject.Object {
   static {
     GObject.registerClass(
       {
@@ -113,19 +111,19 @@ export class PlayableContainer<
             GObject.Object.$gtype,
           ),
           state: get_state_pspec(),
-          video_id: GObject.ParamSpec.string(
+          video_id: GObject.param_spec_string(
             "video-id",
             "Video ID",
             "The video ID of the item",
+            null,
             GObject.ParamFlags.READWRITE,
-            null as any,
           ),
-          playlist_id: GObject.ParamSpec.string(
+          playlist_id: GObject.param_spec_string(
             "playlist-id",
             "Playlist ID",
             "The playlist ID of the item",
+            null,
             GObject.ParamFlags.READWRITE,
-            null as any,
           ),
           is_playlist: GObject.ParamSpec.boolean(
             "is-playlist",
@@ -157,7 +155,7 @@ export class PlayableContainer<
     if (props.is_playlist != null) this.is_playlist = props.is_playlist;
   }
 
-  static new<T extends Object>(object: T): PlayableContainer<T> {
+  static new<T>(object: T): PlayableContainer<T> {
     return new PlayableContainer({ object });
   }
 
@@ -184,15 +182,15 @@ export class PlayableContainer<
 }
 
 export interface SectionedPlayableContainerProps<
-  T extends Object = PlaylistItem,
-  Section extends Object = Object,
+  T = PlaylistItem,
+  Section = object,
 > extends PlayableContainerProps<T> {
   section?: ObjectContainer<Section> | null;
 }
 
 export class SectionedPlayableContainer<
-  T extends Object = PlaylistItem,
-  Section extends Object = Object,
+  T = PlaylistItem,
+  Section = object,
 > extends PlayableContainer<T> {
   static {
     GObject.registerClass(
@@ -239,7 +237,7 @@ export class SectionedPlayableContainer<
     return this.section?.object != null;
   }
 
-  static new<T extends Object, Section extends Object = Object>(
+  static new<T, Section>(
     item: T,
     section: Section | null = null,
   ): SectionedPlayableContainer<T, Section> {
@@ -249,7 +247,7 @@ export class SectionedPlayableContainer<
     });
   }
 
-  static new_from_playlist_item<Section extends Object = Object>(
+  static new_from_playlist_item<Section>(
     item: PlaylistItem,
     section: Section | null = null,
   ) {
@@ -260,7 +258,7 @@ export class SectionedPlayableContainer<
     });
   }
 
-  static new_from_mixed_card_item<Section extends Object = Object>(
+  static new_from_mixed_card_item<Section>(
     item: MixedCardItem,
     section: Section | null = null,
   ) {
@@ -270,7 +268,7 @@ export class SectionedPlayableContainer<
     });
   }
 
-  static new_from_search_content<Section extends Object = Object>(
+  static new_from_search_content<Section>(
     item: SearchContent,
     section: Section | null = null,
   ) {
@@ -286,7 +284,7 @@ export interface PlayableListProps {
 }
 
 export class PlayableList<
-    T extends Object = PlaylistItem,
+    T = PlaylistItem,
     Container extends PlayableContainer<T> = PlayableContainer<T>,
   >
   extends GObject.Object
@@ -452,9 +450,10 @@ export class PlayableList<
   }
 }
 
-export class SectionedPlayableList<
-  T extends Object = PlaylistItem,
-> extends PlayableList<T, SectionedPlayableContainer<T>> {
+export class SectionedPlayableList<T = PlaylistItem> extends PlayableList<
+  T,
+  SectionedPlayableContainer<T>
+> {
   static {
     GObject.registerClass(
       {

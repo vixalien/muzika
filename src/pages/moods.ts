@@ -55,6 +55,7 @@ export class MoodsPage
 
   get_state() {
     return {
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       contents: this.contents!,
       vscroll: this._scrolled.get_vadjustment().get_value(),
     };
@@ -85,7 +86,8 @@ export class MoodsPage
     carousel.show_content({
       title: data.title,
       display: "mood",
-      contents: data.items as any[],
+      // @ts-expect-error idk what's going on here
+      contents: data.items,
     });
 
     this._box.append(carousel);

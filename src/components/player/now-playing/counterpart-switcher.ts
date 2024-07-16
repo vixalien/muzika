@@ -1,5 +1,4 @@
 import GObject from "gi://GObject";
-import Adw from "gi://Adw";
 import Gtk from "gi://Gtk?version=4.0";
 
 import { SignalListeners } from "src/util/signal-listener";

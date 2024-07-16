@@ -135,6 +135,7 @@ export function fetch_image(href: string, options: LoadOptions) {
   const cache_key = JSON.stringify({ href, options });
 
   if (thumbnails_map.has(cache_key)) {
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     return Promise.resolve(thumbnails_map.get(cache_key)!);
   }
 

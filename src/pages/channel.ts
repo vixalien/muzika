@@ -168,6 +168,7 @@ export class ChannelPage
 
   get_state(): ChannelState {
     return {
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       channel: this.channel!,
       vscroll: this._scrolled.get_vadjustment().get_value(),
     };

@@ -89,6 +89,7 @@ export class HomePage
 
   get_state() {
     return {
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       home: this.home!,
       vscroll: this._scrolled.get_vadjustment().get_value(),
     };
@@ -195,8 +196,10 @@ export class HomePage
     if (this.home?.continuation) {
       return get_home({ continuation: this.home.continuation })
         .then((updated) => {
-          this.home!.continuation = updated.continuation;
-          this.home!.results.push(...updated.results);
+          if (!this.home) return;
+
+          this.home.continuation = updated.continuation;
+          this.home.results.push(...updated.results);
 
           this._paginator.can_paginate = updated.continuation != null;
           this.had_error_loading = false;

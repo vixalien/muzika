@@ -139,6 +139,7 @@ export class GResponse {
     const reader = this._body.getReader();
     const chunks: Uint8Array[] = [];
 
+    // eslint-disable-next-line no-constant-condition
     while (true) {
       const { done, value } = await reader.read();
       if (done) break;
@@ -184,7 +185,7 @@ const SESSION = new Soup.Session({
 });
 
 export const cache = Soup.Cache.new(
-  SOUP_CACHE_DIR.get_path()!,
+  SOUP_CACHE_DIR.get_path(),
   Soup.CacheType.SHARED,
 );
 // set max cache size to 16 megabytes
@@ -304,5 +305,5 @@ export async function fetch(url: string | URL, options: FetchOptions = {}) {
   return response;
 }
 
-// @ts-ignore
+// @ts-expect-error setting a global
 window.fetch = fetch;

@@ -90,7 +90,7 @@ export class MuzikaNPSheet extends Adw.Bin {
       if (prev) this._stack.remove(prev);
 
       if (this.details) {
-        this._stack.add_named(this.details!, "details");
+        this._stack.add_named(this.details, "details");
         if (this.show_details) this._stack.visible_child_name = "details";
       }
     });

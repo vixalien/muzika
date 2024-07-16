@@ -285,7 +285,7 @@ export class MuzikaPlayer extends MuzikaMediaStream {
     this.loading_controller = new AbortController();
 
     const song = await get_song(track.videoId, {
-      signal: this.loading_controller!.signal,
+      signal: this.loading_controller?.signal,
     }).catch((error) => {
       if (error instanceof DOMException && error.name == "AbortError") return;
 
@@ -295,11 +295,13 @@ export class MuzikaPlayer extends MuzikaMediaStream {
 
     if (!song) return;
 
-    this._now_playing = new ObjectContainer<TrackMetadata>({
-      ...this.now_playing?.object!,
-      song,
-    });
-    this.notify("now-playing");
+    if (this.now_playing) {
+      this._now_playing = new ObjectContainer<TrackMetadata>({
+        ...this.now_playing.object,
+        song,
+      });
+      this.notify("now-playing");
+    }
 
     this.refreshed_uri = true;
 
@@ -746,9 +748,4 @@ export enum AudioQuality {
   low = 2,
   medium = 3,
   high = 4,
-}
-
-// compare numbers of different precisions
-function compare_numbers(a: number, b: number): boolean {
-  return Math.abs(Math.fround(a) - Math.fround(b)) < 0.00001;
 }

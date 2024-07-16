@@ -154,6 +154,7 @@ export class AbstractLibraryPage<PageOrder extends LibraryOrder | Order = Order>
 
   get_state(): LibraryState {
     return {
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       results: this.results!,
       order: this.order,
       vscroll: this.view.scrolled.get_vadjustment().get_value(),
@@ -170,8 +171,10 @@ export class AbstractLibraryPage<PageOrder extends LibraryOrder | Order = Order>
         continuation: this.results.continuation,
       })
       .then((library) => {
-        this.results!.items.push(...library.items);
-        this.results!.continuation = library.continuation;
+        if (!this.results) return;
+
+        this.results.items.push(...library.items);
+        this.results.continuation = library.continuation;
 
         this.show_library(library);
       })

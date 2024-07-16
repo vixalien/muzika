@@ -91,6 +91,7 @@ export class ChartsPage
 
   get_state() {
     return {
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       contents: this.contents!,
       vscroll: this._scrolled.get_vadjustment().get_value(),
     };
@@ -160,7 +161,8 @@ export class ChartsPage
     carousel.show_content({
       title,
       display: "mood",
-      contents: data.results as any,
+      // @ts-expect-error TODO fix types
+      contents: data.results,
     });
 
     this._box.append(carousel);

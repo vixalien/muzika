@@ -11,7 +11,8 @@ export function setup_link_label(
   function connect<Signal extends string, Obj extends GObject.Object>(
     widget: Obj,
     signal: Signal,
-    fn: (...args: any[]) => any,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    fn: (...args: any[]) => unknown,
   ) {
     if (listeners) {
       return listeners.connect(widget, signal, fn);

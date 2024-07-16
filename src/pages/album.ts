@@ -112,7 +112,7 @@ export class AlbumPage
     this.track = track ?? null;
     this.album = album;
 
-    this._playlist_item_view.playlistId = album.audioPlaylistId ?? undefined;
+    this._playlist_item_view.playlist_id = album.audioPlaylistId ?? undefined;
     this._playlist_item_view.show_artists = album.tracks.some(
       (track) => track.artists.length > 0,
     );
@@ -226,6 +226,7 @@ export class AlbumPage
 
   get_state(): AlbumState {
     return {
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       album: this.album!,
       track: this.track ?? undefined,
       vscroll: this._scrolled.get_vadjustment().get_value(),

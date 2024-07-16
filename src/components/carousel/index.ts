@@ -61,6 +61,7 @@ export class Carousel<
 
   model = Gio.ListStore.new(GObject.TYPE_OBJECT);
 
+  // eslint-disable-next-line @typescript-eslint/no-useless-constructor
   constructor(params?: Partial<Gtk.Box.ConstructorProperties>) {
     super(params);
   }
@@ -139,7 +140,9 @@ export class Carousel<
       0,
       contents
         .filter((content) => content != null)
-        .map((content) => PlayableContainer.new_from_mixed_card_item(content!)),
+        .map((content) =>
+          PlayableContainer.new_from_mixed_card_item(content as MixedCardItem),
+        ),
     );
 
     this._scrolled.child = listview;
@@ -153,7 +156,9 @@ export class Carousel<
       0,
       contents
         .filter((content) => content != null)
-        .map((content) => PlayableContainer.new_from_mixed_card_item(content!)),
+        .map((content) =>
+          PlayableContainer.new_from_mixed_card_item(content as MixedCardItem),
+        ),
     );
 
     this._scrolled.child = flatsongview;
@@ -167,7 +172,7 @@ export class Carousel<
       0,
       contents
         .filter((content) => content != null)
-        .map((content) => PlayableContainer.new(content!)),
+        .map((content) => PlayableContainer.new(content as ParsedMoodOrGenre)),
     );
 
     this._scrolled.child = moodview;
@@ -196,7 +201,8 @@ export class Carousel<
       if (content.display == "list") {
         this.show_gridview(content.contents);
       } else if (content.display == "mood") {
-        this.show_moodview(content.contents as any[]);
+        // @ts-expect-error TODO fix this later
+        this.show_moodview(content.contents);
       } else {
         this.show_listview(content.contents);
       }

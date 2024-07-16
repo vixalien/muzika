@@ -3,7 +3,11 @@ import Gio from "gi://Gio";
 import GLib from "gi://GLib";
 import Gtk from "gi://Gtk?version=4.0";
 
-import { get_queue, get_queue_tracks } from "libmuse";
+import {
+  get_queue,
+  get_queue_tracks,
+  QueueChip as MuseQueueChip,
+} from "libmuse";
 import type { Queue as MuseQueue, QueueTrack } from "libmuse";
 
 import { ObjectContainer } from "../util/objectcontainer.js";
@@ -11,11 +15,6 @@ import { AddActionEntries, build_action } from "src/util/action.js";
 import { Application } from "src/application.js";
 import { list_model_to_array } from "src/util/list.js";
 import { ngettext } from "gettext";
-// import {
-//   get_track_queue,
-//   get_track_settings,
-//   get_tracklist,
-// } from "./helpers.js";
 import { add_toast } from "src/util/window.js";
 import { clone } from "lodash-es";
 
@@ -30,7 +29,7 @@ export enum RepeatMode {
 }
 
 // Durstenfeld's modification of Fisher-Yates shuffle
-function durstenfeld_shuffle<T extends any>(array: T[]) {
+function durstenfeld_shuffle<T>(array: T[]) {
   for (let i = array.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
     [array[i], array[j]] = [array[j], array[i]];
@@ -78,6 +77,7 @@ export class QueueChip extends GObject.Object {
     );
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-useless-constructor
   constructor(props: QueueChipsConstructorProperties) {
     super(props);
   }
@@ -156,7 +156,7 @@ export class Queue extends GObject.Object {
             "active-chip",
             "Active chip",
             "The active chip",
-            null as any,
+            null,
             GObject.ParamFlags.READWRITE,
           ),
           "preferred-media-type": GObject.param_spec_uint(
@@ -230,13 +230,13 @@ export class Queue extends GObject.Object {
     switch (this.preferred_media_type) {
       case PreferredMediaType.SONG: {
         if (is_track_video(track.object)) {
-          correct_track = this.get_counterpart(track.object)!;
+          correct_track = this.get_counterpart(track.object);
         }
         break;
       }
       case PreferredMediaType.VIDEO: {
         if (!is_track_video(track.object)) {
-          correct_track = this.get_counterpart(track.object)!;
+          correct_track = this.get_counterpart(track.object);
         }
         break;
       }
@@ -254,7 +254,14 @@ export class Queue extends GObject.Object {
     chips_model.splice(
       0,
       chips_model.n_items,
-      queue.chips.map((chip) => new QueueChip(chip as any)),
+      queue.chips.map(
+        (chip) =>
+          new QueueChip({
+            params: chip.params,
+            playlist_id: chip.playlistId,
+            title: chip.title,
+          }),
+      ),
     );
 
     this.notify("playlist-id");
@@ -266,7 +273,7 @@ export class Queue extends GObject.Object {
   }
 
   get playlist_name() {
-    return this.queue?.playlist ?? null;
+    return this.queue?.playlistName ?? null;
   }
 
   get current() {
@@ -514,7 +521,10 @@ export class Queue extends GObject.Object {
           this.chips,
           "selected-item",
           (_, chip) => {
-            return [true, GLib.Variant.new_string(chip?.playlist_id)];
+            return [
+              true,
+              GLib.Variant.new_string((chip as MuseQueueChip).playlistId),
+            ];
           },
         ],
       }),
@@ -646,10 +656,10 @@ export class Queue extends GObject.Object {
       queue = await get_queue(video_ids[0], null, { radio: options.radio });
     } else {
       // must already have a queue to add tracks
-      if (!this.queue) return this.queue!;
+      if (!this.queue) return this.queue;
 
       [queue, tracks] = await Promise.all([
-        options.play ? get_queue(video_ids[0], null) : clone(this.queue!),
+        options.play ? get_queue(video_ids[0], null) : clone(this.queue),
         // don't fetch the queue track again if it's only one. it will be got
         // from the above call
         video_ids.length === 1 ? [] : get_queue_tracks(video_ids),
@@ -882,9 +892,4 @@ interface AddPlaylist2Options {
 
 function is_track_video(track: QueueTrack) {
   return track.videoType !== "MUSIC_VIDEO_TYPE_ATV";
-}
-
-interface AddTracksOptions {
-  clear?: boolean;
-  remove_rest?: boolean;
 }

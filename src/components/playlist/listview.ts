@@ -159,7 +159,7 @@ export class PlaylistListView extends Gtk.ListView {
 
     listeners.add(
       item,
-      item.connect("add", (_) => {
+      item.connect("add", () => {
         this.emit("add", list_item.position);
       }),
     );

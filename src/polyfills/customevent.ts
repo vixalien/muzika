@@ -3,6 +3,7 @@
 // EventTarget
 import "event-target-polyfill";
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export class CustomEvent<T = any>
   extends Event
   implements globalThis.CustomEvent
@@ -14,12 +15,7 @@ export class CustomEvent<T = any>
     this.detail = eventInitDict?.detail ?? (null as T);
   }
 
-  initCustomEvent(
-    _type: string,
-    _bubbles?: boolean | undefined,
-    _cancelable?: boolean | undefined,
-    _detail?: any,
-  ): void {
+  initCustomEvent(): void {
     throw new Error("Method not implemented.");
   }
 }

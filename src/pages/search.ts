@@ -9,7 +9,7 @@ import type { Filter, SearchOptions, SearchResults, SearchRuns } from "libmuse";
 import { SearchSection } from "../components/search/section.js";
 import { TopResultSection } from "../components/search/topresultsection.js";
 import { Paginator } from "../components/paginator.js";
-import { InlineTabSwitcher, Tab } from "../components/inline-tab-switcher.js";
+import { InlineTabSwitcher } from "../components/inline-tab-switcher.js";
 import { MuzikaPageWidget, PageLoadContext } from "src/navigation.js";
 import { escape_label } from "src/util/text.js";
 import {
@@ -241,7 +241,9 @@ export class SearchPage
 
     get_more_search_results(this.results.continuation, this.args[1] ?? {})
       .then((results) => {
-        this.results!.continuation = results.continuation;
+        if (!this.results) return;
+
+        this.results.continuation = results.continuation;
 
         const first_section = this._sections.get_first_child() as SearchSection;
 
@@ -267,7 +269,8 @@ export class SearchPage
       decodeURIComponent(context.match.params.query),
       {
         signal: context.signal,
-        ...Object.fromEntries(context.url.searchParams as any),
+        // @ts-expect-error idk why tbh
+        ...Object.fromEntries(context.url.searchParams),
         autocorrect: autocorrect ? autocorrect === "true" : undefined,
       },
     ] as const;
@@ -282,6 +285,7 @@ export class SearchPage
 
   get_state(): SearchState {
     return {
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       results: this.results!,
       args: this.args,
       vscroll: this._scrolled.get_vadjustment().get_value(),
@@ -300,11 +304,9 @@ export function search_args_to_url(
   options: SearchOptions = {},
   replace = false,
 ) {
-  const opts = options as Record<string, any>;
-  if (replace) opts.replace = true;
   const params = new URLSearchParams(
-    Object.entries(opts)
-      .filter(([_, v]) => v != null)
+    Object.entries({ ...options, replace } as unknown as Record<string, string>)
+      .filter(([, v]) => v != null)
       .filter(([k]) => k !== "signal"),
   ).toString();
   let url_string = `muzika:search:${encodeURIComponent(query)}`;

@@ -24,10 +24,6 @@ export class AddToPlaylistItemCard extends Gtk.Box {
   private _subtitle!: Gtk.Label;
   private _image!: Gtk.Image;
 
-  constructor() {
-    super();
-  }
-
   show_item(item: AddToPlaylistItem) {
     this.item = item;
 

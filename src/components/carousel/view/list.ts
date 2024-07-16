@@ -55,7 +55,7 @@ export class CarouselListView extends Gtk.ListView {
     if (container.object) {
       card.show_item(container.object);
 
-      (container as any).binding = container.bind_property(
+      (container as ContainerWithBinding).binding = container.bind_property(
         "state",
         card,
         "state",
@@ -67,7 +67,7 @@ export class CarouselListView extends Gtk.ListView {
   unbind_cb(_factory: Gtk.ListItemFactory, list_item: Gtk.ListItem) {
     const container = list_item.item as PlayableContainer<MixedCardItem>;
 
-    ((container as any).binding as GObject.Binding)?.unbind();
+    ((container as ContainerWithBinding).binding as GObject.Binding)?.unbind();
   }
 
   vfunc_map(): void {
@@ -80,3 +80,7 @@ export class CarouselListView extends Gtk.ListView {
     super.vfunc_unmap();
   }
 }
+
+type ContainerWithBinding = PlayableContainer<MixedCardItem> & {
+  binding: GObject.Binding;
+};

@@ -5,7 +5,7 @@ import Gtk from "gi://Gtk?version=4.0";
 import { get_history } from "libmuse";
 import type { History, PlaylistItem } from "libmuse";
 
-import { MuzikaPageWidget, PageLoadContext } from "src/navigation.js";
+import { MuzikaPageWidget } from "src/navigation.js";
 import { PlaylistItemView } from "src/components/playlist/itemview.js";
 import {
   SectionedPlayableContainer,
@@ -150,6 +150,7 @@ export class HistoryPage
 
   get_state() {
     return {
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       results: this.results!,
       vscroll: this._scrolled.get_vadjustment().get_value(),
     };
@@ -160,7 +161,7 @@ export class HistoryPage
     this.present(state.results);
   }
 
-  static load(context: PageLoadContext) {
+  static load() {
     return get_history();
   }
 }

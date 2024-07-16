@@ -124,7 +124,7 @@ export class NavbarView extends Gtk.Box {
       const object = item.object;
 
       const title = new NavbarTitle();
-      title.label = object.title!;
+      title.label = object.title ?? "";
       list_header.child = title;
     } else {
       list_header.set_child(null);
@@ -338,10 +338,6 @@ export class NavbarListStore<
   }
 
   private array = new Array<ObjectContainer<T>>();
-
-  constructor() {
-    super();
-  }
 
   get_item_type(): GObject.GType<unknown> {
     return this.vfunc_get_item_type();

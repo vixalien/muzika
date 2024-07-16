@@ -98,6 +98,7 @@ export class DynamicAction extends Adw.Bin {
     );
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-useless-constructor
   constructor(props?: Partial<DynamicActionConstructorProperties>) {
     super(props);
   }

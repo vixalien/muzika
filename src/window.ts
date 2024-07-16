@@ -190,7 +190,7 @@ export class Window extends Adw.ApplicationWindow {
       },
       {
         name: "fullscreen",
-        activate: (_) => {
+        activate: () => {
           this.toggle_fullscreen_video();
         },
       },
@@ -357,6 +357,7 @@ export class Window extends Adw.ApplicationWindow {
       Adw.ResponseAppearance.DESTRUCTIVE,
     );
 
+    // @ts-expect-error incorrect types
     const response = await dialog.choose(this, null).catch(console.error);
 
     if (response === "logout") {
@@ -405,8 +406,8 @@ export class Window extends Adw.ApplicationWindow {
       .finally(() => {
         // it seems you can't quickyl close a dialog after opening it
         GLib.timeout_add(100, GLib.PRIORITY_LOW, () => {
-          this.login_dialog!.force_close();
-          this.login_dialog!.disconnect(listener);
+          this.login_dialog?.force_close();
+          this.login_dialog?.disconnect(listener);
 
           return GLib.SOURCE_REMOVE;
         });

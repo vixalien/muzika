@@ -1,6 +1,5 @@
 import Gtk from "gi://Gtk?version=4.0";
 import GObject from "gi://GObject";
-import GLib from "gi://GLib";
 
 import type {
   ArtistRun,
@@ -168,7 +167,7 @@ export class FlatCard extends Gtk.Box {
       return [
         menuLikeRow(
           song.likeStatus,
-          song.videoId!,
+          song.videoId ?? "",
           (likeStatus) => (song.likeStatus = likeStatus),
         ),
         [_("Start radio"), `queue.play-song("${song.videoId}?radio=true")`],
@@ -775,7 +774,7 @@ export class FlatCard extends Gtk.Box {
         this.show_video(content);
         break;
       default:
-        console.warn(`Unknown content type: ${(content as any).type}`);
+        console.warn(`Unknown content type: ${(content as InlineSong).type}`);
     }
   }
 
@@ -803,7 +802,10 @@ export class FlatCard extends Gtk.Box {
         this.show_search_radio(content);
         break;
       default:
-        console.error("Unknown search content type", (content as any).type);
+        console.error(
+          "Unknown search content type",
+          (content as SearchContent).type,
+        );
         return;
     }
   }
@@ -837,8 +839,11 @@ export class FlatCard extends Gtk.Box {
         break;
       case "flat-song":
         this.show_flat_song(content);
+        break;
       default:
-        console.warn(`Unknown content type: ${content.type}`);
+        console.warn(
+          `Unknown content type: ${(content as MixedCardItem).type}`,
+        );
     }
   }
 

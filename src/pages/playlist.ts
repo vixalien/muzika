@@ -39,7 +39,6 @@ import {
 } from "src/util/scrolled.js";
 import { add_toast, get_window } from "src/util/window.js";
 import { AnnotatedView } from "src/components/annotated-view.js";
-import { Rectangle } from "gi-types/gdk4.js";
 
 interface PlaylistState extends VScrollState {
   playlist: Playlist;
@@ -166,7 +165,7 @@ export class PlaylistPage
     (group.add_action_entries as AddActionEntries)([
       {
         name: "delete",
-        activate: (__) => {
+        activate: () => {
           this.delete_playlist_cb();
         },
       },
@@ -199,7 +198,7 @@ export class PlaylistPage
   }
 
   private async delete_playlist_cb() {
-    if (this.playlist?.editable !== true) return;
+    if (!this.playlist || this.playlist.editable !== true) return;
 
     const dialog = Adw.AlertDialog.new(
       _("Delete playlist"),
@@ -215,10 +214,11 @@ export class PlaylistPage
 
     const response = await dialog
       .choose(get_window(), null)
+      // @ts-expect-error incorrect types
       .catch(console.error);
 
     if (response === "delete") {
-      delete_playlist(this.playlist!.id)
+      delete_playlist(this.playlist.id)
         .then(() => {
           add_toast(_("Playlist deleted"));
           this.activate_action("navigation.pop", null);
@@ -234,8 +234,8 @@ export class PlaylistPage
 
     const items: Parameters<typeof remove_playlist_items>[1] = [];
 
-    for (let i = 0; i < positions.length; i++) {
-      const id = this.model.get_item(positions[i])?.object;
+    for (const position of positions) {
+      const id = this.model.get_item(position)?.object;
 
       if (!id) {
         continue;
@@ -243,7 +243,7 @@ export class PlaylistPage
 
       items.push({
         videoId: id.videoId,
-        setVideoId: id.setVideoId!,
+        setVideoId: id.setVideoId ?? "",
       });
     }
 
@@ -281,11 +281,12 @@ export class PlaylistPage
 
     const response = await dialog
       .choose(get_window(), null)
+      // @ts-expect-error incorrect types
       .catch(console.error);
 
     if (response === "remove") {
       const message = await remove_playlist_items(
-        this.playlist!.id,
+        this.playlist.id,
         items,
       ).catch((err) => {
         console.error(err);
@@ -312,7 +313,7 @@ export class PlaylistPage
     _playlist_item_view: PlaylistItemView,
     container: PlayableContainer,
   ) {
-    if (!this.playlist) return;
+    if (!this.playlist || !this._suggestions_item_view.model) return;
 
     this.model.append(container);
     this.playlist.tracks.push(container.object);
@@ -340,7 +341,7 @@ export class PlaylistPage
         add_toast(_("Failed to add suggestion"));
       });
 
-    if (this._suggestions_item_view.model!.get_n_items() <= 0) {
+    if (this._suggestions_item_view.model.get_n_items() <= 0) {
       this.refresh_suggestions_cb();
     }
   }
@@ -362,7 +363,7 @@ export class PlaylistPage
 
     this.playlist.title = values.title;
     this.playlist.description = values.description;
-    this.playlist.privacy = values.privacy.id as any;
+    this.playlist.privacy = values.privacy.id as Playlist["privacy"];
 
     this._header.set_title(values.title);
     this._header.set_description(values.description);
@@ -471,8 +472,10 @@ export class PlaylistPage
         {},
       )
         .then((result) => {
-          this.playlist!.suggestions = result.suggestions;
-          this.playlist!.suggestions_continuation = result.continuation;
+          if (!this.playlist) return;
+
+          this.playlist.suggestions = result.suggestions;
+          this.playlist.suggestions_continuation = result.continuation;
 
           this.suggestions_model.splice(
             0,
@@ -577,6 +580,7 @@ export class PlaylistPage
   get_state(): PlaylistState {
     return {
       playlist: {
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         ...this.playlist!,
         tracks: list_model_to_array(this.model)
           .map((container) => (container as PlayableContainer).object)

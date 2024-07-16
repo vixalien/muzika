@@ -192,6 +192,7 @@ export class PlaylistItemView extends Gtk.Widget {
 
   private clear_adjustment(orientation: Gtk.Orientation) {
     this.adjustment_listeners[orientation].clear();
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     this.adjustment[orientation] = null!;
   }
 
@@ -472,7 +473,7 @@ export class PlaylistItemView extends Gtk.Widget {
     this.emit("add", item);
   }
 
-  private select_track(index: number | null) {
+  select_track(index: number | null) {
     if (index == null) {
       return;
     }
@@ -589,7 +590,7 @@ export class PlaylistItemView extends Gtk.Widget {
     }
   }
 
-  vfunc_size_allocate(width: number, height: number, baseline: number): void {
+  vfunc_size_allocate(width: number, height: number): void {
     // if (!this.child.visible) return;
 
     const child_adjustment = this.child_adjustment[Gtk.Orientation.VERTICAL];
@@ -641,7 +642,6 @@ export class PlaylistItemView extends Gtk.Widget {
 
     const widget_height = child_size[Gtk.Orientation.VERTICAL],
       widget_width = child_size[Gtk.Orientation.HORIZONTAL],
-      x = this.adjustment[Gtk.Orientation.HORIZONTAL].value,
       y = this.adjustment[Gtk.Orientation.VERTICAL].value;
 
     const visible_height = Math.min(widget_height, height);

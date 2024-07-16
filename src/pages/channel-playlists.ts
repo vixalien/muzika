@@ -98,6 +98,7 @@ export class ChannelPlaylistsPage
 
   get_state() {
     return {
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       contents: this.results!,
       vscroll: this._scrolled.get_vadjustment().get_value(),
     };

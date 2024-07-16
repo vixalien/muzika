@@ -104,7 +104,7 @@ export class MuzikaMediaStream extends Gtk.MediaStream {
     const sink = Gst.ElementFactory.make(
       "gtk4paintablesink",
       "sink",
-    )! as GstVideo.VideoSink;
+    ) as GstVideo.VideoSink;
 
     if (!sink) {
       throw new Error(
@@ -284,7 +284,7 @@ export class MuzikaMediaStream extends Gtk.MediaStream {
     }
   }
 
-  private duration_changed_cb(_play: GstPlay.Play): void {
+  private duration_changed_cb(): void {
     this.notify("duration");
   }
 
@@ -303,6 +303,7 @@ export class MuzikaMediaStream extends Gtk.MediaStream {
     this.on_stream_error_cb(error);
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   protected eos_cb(_play: GstPlay.Play): boolean {
     if (this._play.duration - this._play.position >= Gst.SECOND) {
       // this means an error occured, we might need to refresh the uri
@@ -328,12 +329,12 @@ export class MuzikaMediaStream extends Gtk.MediaStream {
     this.notify("media-info");
   }
 
-  private volume_changed_cb(_play: GstPlay.Play): void {
+  private volume_changed_cb(): void {
     this.notify("volume");
     this.notify("cubic-volume");
   }
 
-  private mute_changed_cb(_play: GstPlay.Play): void {
+  private mute_changed_cb(): void {
     this.notify("muted");
   }
 
@@ -363,8 +364,6 @@ export class MuzikaMediaStream extends Gtk.MediaStream {
 
     this._play.uri = info.get_uri();
   }
-
-  protected start_playback() {}
 
   stop() {
     this._play.pipeline.set_state(Gst.State.NULL);
@@ -400,6 +399,7 @@ export class MuzikaMediaStream extends Gtk.MediaStream {
               const uri = info.get_uri();
               this._play.set_uri(uri);
               resolve(info);
+              break;
             }
             case GstPbUtils.DiscovererResult.MISSING_PLUGINS:
               reject(
@@ -411,6 +411,7 @@ export class MuzikaMediaStream extends Gtk.MediaStream {
                   ),
                 ),
               );
+              break;
             case GstPbUtils.DiscovererResult.ERROR:
               reject(
                 error ??
@@ -422,6 +423,7 @@ export class MuzikaMediaStream extends Gtk.MediaStream {
                     ),
                   ),
               );
+              break;
             case GstPbUtils.DiscovererResult.URI_INVALID:
               reject(
                 error ??
@@ -431,6 +433,7 @@ export class MuzikaMediaStream extends Gtk.MediaStream {
                     _("File uses an invalid URI"),
                   ),
               );
+              break;
             case GstPbUtils.DiscovererResult.TIMEOUT:
               reject(
                 error ??
@@ -442,6 +445,7 @@ export class MuzikaMediaStream extends Gtk.MediaStream {
                     ),
                   ),
               );
+              break;
           }
         },
       );

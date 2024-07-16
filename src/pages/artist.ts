@@ -192,7 +192,7 @@ export class ArtistPage
 
     this.subscribe_controller = new AbortController();
 
-    const old_subscribed = this.artist!.subscribed;
+    const old_subscribed = this.artist.subscribed;
 
     const options = [
       [this.artist.channelId],
@@ -209,16 +209,18 @@ export class ArtistPage
     }
 
     // being optimistic...
-    this.artist!.subscribed = !old_subscribed;
+    this.artist.subscribed = !old_subscribed;
     this.update_subscribe_button();
 
     const vprint_artist = (string: string) => {
-      return vprintf(string, [this.artist!.name]);
+      return vprintf(string, [this.artist?.name ?? _("Artist")]);
     };
 
     promise
       .then(() => {
-        this.artist!.subscribed = !old_subscribed;
+        if (!this.artist) return;
+
+        this.artist.subscribed = !old_subscribed;
         add_toast(
           old_subscribed
             ? vprint_artist(_("Unsubscribed from %s"))
@@ -226,7 +228,9 @@ export class ArtistPage
         );
       })
       .catch(() => {
-        this.artist!.subscribed = old_subscribed;
+        if (!this.artist) return;
+
+        this.artist.subscribed = old_subscribed;
         add_toast(
           old_subscribed
             ? vprint_artist(_("Couldn't unsubscribe from %s. Try again later"))
@@ -290,6 +294,7 @@ export class ArtistPage
 
   get_state(): ArtistState {
     return {
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       artist: this.artist!,
       vscroll: this._scrolled.vadjustment.value,
     };

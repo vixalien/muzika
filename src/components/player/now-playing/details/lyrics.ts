@@ -145,7 +145,7 @@ export class MuzikaNPLyrics extends Gtk.Stack {
       this.set_visible_child(this._no_lyrics);
     } else if (
       lyrics.timed &&
-      Gtk.Settings.get_default()!.gtk_enable_animations === true
+      Gtk.Settings.get_default()?.gtk_enable_animations === true
     ) {
       lyrics.timed_lyrics.forEach((line) => {
         const row = new TimedLyricLineRow(line);
