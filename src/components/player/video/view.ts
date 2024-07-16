@@ -196,7 +196,6 @@ export class VideoPlayerView extends Adw.Bin {
     }
 
     this.load_thumbnails();
-    return;
   }
 
   listeners = new SignalListeners();
