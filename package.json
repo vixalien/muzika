@@ -34,6 +34,7 @@
   "scripts": {
     "build": "node lib/build.js",
     "typecheck": "tsc --strict --noEmit",
-    "generate-sources": "flatpak-node-generator yarn yarn.lock -o build-aux/flatpak/modules/yarn-deps-sources.json"
+    "generate-sources": "flatpak-node-generator yarn yarn.lock -o build-aux/flatpak/modules/yarn-deps-sources.json",
+    "lint": "yarn eslint src"
   }
 }
