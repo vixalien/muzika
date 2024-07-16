@@ -213,8 +213,7 @@ function get_presentation_duration(media: Format[]) {
 }
 
 function escape_attribute(str: string) {
-  // eslint-disable-next-line no-useless-escape
-  return str.replace(/\"/g, '\\"').replace(/\'/g, "\\'");
+  return str.replace(/"/g, '\\"').replace(/'/g, "\\'");
 }
 
 function escape_uri(uri: string) {
