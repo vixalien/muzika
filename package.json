@@ -12,20 +12,24 @@
     "libmuse": "^0.0.102",
     "lodash-es": "^4.17.21",
     "path-to-regexp": "^7.1.0",
-    "typescript": "^5.5.3",
     "web-streams-polyfill": "^4.0.0"
   },
   "devDependencies": {
+    "@eslint/js": "^8.56.0",
     "@types/core-js": "^2.5.8",
+    "@types/eslint__js": "^8.42.3",
     "@types/lodash-es": "^4.17.12",
-    "@typescript-eslint/eslint-plugin": "^7.16.1",
-    "@typescript-eslint/parser": "^7.16.1",
     "core-js": "^3.35.1",
     "esbuild": "^0.23.0",
-    "eslint": "^9.7.0",
+    "eslint": "^8.56.0",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-prettier": "^5.1.3",
     "event-target-polyfill": "^0.0.4",
     "headers-polyfill": "^4.0.2",
-    "minimist": "^1.2.8"
+    "minimist": "^1.2.8",
+    "prettier": "3.3.3",
+    "typescript": "^5.5.3",
+    "typescript-eslint": "^7.16.1"
   },
   "scripts": {
     "build": "node lib/build.js",
