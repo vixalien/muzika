@@ -3,7 +3,7 @@ import GLib from "gi://GLib";
 import Gio from "gi://Gio";
 
 // streams polyfill
-import "web-streams-polyfill";
+import "web-streams-polyfill/polyfill/es5";
 
 import "./abortcontroller.js";
 import "./customevent.js";

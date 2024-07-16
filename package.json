@@ -11,18 +11,18 @@
     "@lemaik/qrcode-svg": "^1.2.0",
     "libmuse": "^0.0.102",
     "lodash-es": "^4.17.21",
-    "path-to-regexp": "^6.2.1",
-    "typescript": "^5.3.3",
-    "web-streams-polyfill": "^3.2.1"
+    "path-to-regexp": "^7.1.0",
+    "typescript": "^5.5.3",
+    "web-streams-polyfill": "^4.0.0"
   },
   "devDependencies": {
     "@types/core-js": "^2.5.8",
     "@types/lodash-es": "^4.17.12",
-    "@typescript-eslint/eslint-plugin": "^6.19.1",
-    "@typescript-eslint/parser": "^6.19.1",
+    "@typescript-eslint/eslint-plugin": "^7.16.1",
+    "@typescript-eslint/parser": "^7.16.1",
     "core-js": "^3.35.1",
-    "esbuild": "^0.20.0",
-    "eslint": "^8.56.0",
+    "esbuild": "^0.23.0",
+    "eslint": "^9.7.0",
     "event-target-polyfill": "^0.0.4",
     "headers-polyfill": "^4.0.2",
     "minimist": "^1.2.8"
