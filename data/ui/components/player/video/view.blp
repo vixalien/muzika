@@ -49,7 +49,9 @@ template $VideoPlayerView : Adw.Bin {
         }
 
         [bottom]
-        $VideoControls controls {}
+        $VideoControls controls {
+          notify::inhibit-hide => $extend_ui_visible_time();
+        }
       }
     }
   }

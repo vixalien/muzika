@@ -6,6 +6,8 @@ import GLib from "gi://GLib";
 
 import { get_player } from "src/application";
 import { VideoControls } from "./controls";
+import { load_thumbnails } from "src/components/webimage";
+import { SignalListeners } from "src/util/signal-listener";
 
 GObject.type_ensure(VideoControls.$gtype);
 
@@ -45,84 +47,16 @@ export class VideoPlayerView extends Adw.Bin {
   private _window_title!: Adw.WindowTitle;
   private _controls!: VideoControls;
 
+  private hover = new Gtk.EventControllerMotion();
+  private click = new Gtk.GestureClick({
+    propagation_phase: Gtk.PropagationPhase.TARGET,
+  });
+
   constructor() {
     super();
 
-    const player = get_player();
-
-    player.bind_property(
-      "paintable",
-      this._picture,
-      "paintable",
-      GObject.BindingFlags.SYNC_CREATE,
-    );
-
-    // @ts-expect-error incorrect types
-    player.bind_property_full(
-      "now-playing",
-      this._window_title,
-      "title",
-      GObject.BindingFlags.SYNC_CREATE,
-      () => {
-        const track = player.now_playing?.object.song;
-
-        if (!track) return [false, null];
-        return [true, track.videoDetails.title];
-      },
-      null,
-    );
-
-    // @ts-expect-error incorrect types
-    player.bind_property_full(
-      "now-playing",
-      this._window_title,
-      "subtitle",
-      GObject.BindingFlags.SYNC_CREATE,
-      () => {
-        const track = player.now_playing?.object.song;
-
-        if (!track) return [false, null];
-        return [true, track.videoDetails.author];
-      },
-      null,
-    );
-
-    // hover
-    const hover = new Gtk.EventControllerMotion();
-
-    hover.connect("enter", this.extend_ui_visible_time.bind(this));
-
-    // fix everytime cursor is inside the window, the ui will be shown
-    const last_motion = [0, 0] as [number, number];
-    hover.connect("motion", (_, x, y) => {
-      if (x == last_motion[0] && y == last_motion[1]) return;
-      last_motion[0] = x;
-      last_motion[1] = y;
-      this.extend_ui_visible_time();
-    });
-
-    hover.connect("leave", this.extend_ui_visible_time.bind(this));
-
-    // click
-    const click = new Gtk.GestureClick({
-      propagation_phase: Gtk.PropagationPhase.TARGET,
-    });
-    click.connect("released", (click, n) => {
-      if (n == 1) {
-        click.set_state(Gtk.EventSequenceState.CLAIMED);
-        this.queue_toggle_ui();
-      } else if (n == 2) {
-        click.set_state(Gtk.EventSequenceState.CLAIMED);
-        this.activate_action("win.fullscreen", null);
-      }
-    });
-
-    this.add_controller(hover);
-    this._picture.add_controller(click);
-
-    this._controls.connect("notify::inhibit-hide", () => {
-      this.extend_ui_visible_time();
-    });
+    this.add_controller(this.hover);
+    this._picture.add_controller(this.click);
   }
 
   vfunc_root(): void {
@@ -221,5 +155,126 @@ export class VideoPlayerView extends Adw.Bin {
     } else {
       this.show_ui();
     }
+  }
+
+  private load_controller: AbortController | null = null;
+  private last_id = "";
+
+  private async load_thumbnails() {
+    this.load_controller?.abort();
+    this.load_controller = new AbortController();
+
+    const current = get_player().queue.current?.object;
+
+    if (!current) return;
+    if (current.videoId == this.last_id) return;
+
+    await load_thumbnails(this._picture, current.thumbnails, {
+      width: 1000,
+      signal: this.load_controller.signal,
+    })
+      .then(() => {
+        this.last_id = current.videoId;
+      })
+      .catch(() => {
+        // do nothing
+      });
+  }
+
+  private update_paintable() {
+    const player = get_player();
+
+    this.load_controller?.abort();
+    this.load_controller = null;
+
+    if (
+      player.media_info &&
+      player.media_info.get_number_of_video_streams() > 0
+    ) {
+      this._picture.paintable = player.paintable;
+      return;
+    }
+
+    this.load_thumbnails();
+  }
+
+  listeners = new SignalListeners();
+
+  vfunc_map() {
+    super.vfunc_map();
+
+    const player = get_player();
+
+    this.listeners.connect(
+      player,
+      "notify::media-info",
+      this.update_paintable.bind(this),
+    );
+
+    this.update_paintable();
+
+    this.listeners.add_bindings(
+      // @ts-expect-error incorrect types
+      player.bind_property_full(
+        "now-playing",
+        this._window_title,
+        "title",
+        GObject.BindingFlags.SYNC_CREATE,
+        () => {
+          const track = player.now_playing?.object.song;
+
+          if (!track) return [false, null];
+          return [true, track.videoDetails.title];
+        },
+        null,
+      ),
+      // @ts-expect-error incorrect types
+      player.bind_property_full(
+        "now-playing",
+        this._window_title,
+        "subtitle",
+        GObject.BindingFlags.SYNC_CREATE,
+        () => {
+          const track = player.now_playing?.object.song;
+
+          if (!track) return [false, null];
+          return [true, track.videoDetails.author];
+        },
+        null,
+      ),
+    );
+
+    // fix everytime cursor is inside the window, the ui will be shown
+    const last_motion = [0, 0] as [number, number];
+    this.listeners.add(this.hover, [
+      this.hover.connect("enter", this.extend_ui_visible_time.bind(this)),
+
+      this.hover.connect("motion", (_, x, y) => {
+        if (x == last_motion[0] && y == last_motion[1]) return;
+        last_motion[0] = x;
+        last_motion[1] = y;
+        this.extend_ui_visible_time();
+      }),
+
+      this.hover.connect("leave", this.extend_ui_visible_time.bind(this)),
+    ]);
+
+    this.listeners.add(
+      this.click,
+      this.click.connect("released", (click, n) => {
+        if (n == 1) {
+          click.set_state(Gtk.EventSequenceState.CLAIMED);
+          this.queue_toggle_ui();
+        } else if (n == 2) {
+          click.set_state(Gtk.EventSequenceState.CLAIMED);
+          this.activate_action("win.fullscreen", null);
+        }
+      }),
+    );
+  }
+
+  vfunc_unmap() {
+    this.listeners.clear();
+    super.vfunc_unmap();
   }
 }
