@@ -50,6 +50,7 @@ template $MuzikaShell : Box {
           open: bind now_playing_tracker.active bidirectional;
 
           content: $MuzikaPanes {
+            margin-bottom: bind mobile_bottom_sheet.bottom-bar-height;
             sidebar: Adw.LayoutSlot {
               id: "sidebar";
             };
@@ -75,6 +76,7 @@ template $MuzikaShell : Box {
           full-width: true;
 
           content: $MuzikaPanes {
+            margin-bottom: bind desktop_bottom_sheet.bottom-bar-height;
             sidebar: Adw.LayoutSlot {
               id: "sidebar";
             };
