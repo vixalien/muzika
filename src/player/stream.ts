@@ -297,6 +297,13 @@ export class MuzikaMediaStream extends Gtk.MediaStream {
     } else if (this.is_buffering && state != GstPlay.PlayState.STOPPED) {
       this.is_buffering = false;
     }
+
+    // close to the tray when we are playing something
+    if (state == GstPlay.PlayState.PLAYING) {
+      hold_application();
+    } else {
+      release_application();
+    }
   }
 
   private error_cb(_play: GstPlay.Play, error: GLib.Error): void {
@@ -353,8 +360,6 @@ export class MuzikaMediaStream extends Gtk.MediaStream {
 
     this.refreshed_uri = false;
 
-    hold_application();
-
     this.stream_prepared(
       info.get_audio_streams().length > 0,
       info.get_video_streams().length > 0,
@@ -375,7 +380,6 @@ export class MuzikaMediaStream extends Gtk.MediaStream {
     }
 
     this.stop();
-    release_application();
   }
 
   protected async discover_uri(uri: string, signal?: AbortSignal) {
