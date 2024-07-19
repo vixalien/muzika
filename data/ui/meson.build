@@ -71,5 +71,3 @@ ui_xml = ''
 foreach blueprint_file : blueprint_files
   ui_xml += '<file preprocess="xml-stripblanks">ui/@0@</file>\n    '.format(blueprint_file.replace('.blp', '.ui'))
 endforeach
-
-message(ui_xml)
