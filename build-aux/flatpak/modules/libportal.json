@@ -7,7 +7,8 @@
     "-Dbackend-gtk3=disabled",
     "-Dbackend-gtk4=enabled",
     "-Dbackend-qt5=disabled",
-    "-Ddocs=false"
+    "-Ddocs=false",
+    "--libdir=lib"
   ],
   "sources": [
     {
