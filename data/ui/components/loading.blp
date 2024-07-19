@@ -1,4 +1,5 @@
 using Gtk 4.0;
+using Adw 1;
 
 template $Loading : Box {
   visible: true;
@@ -8,9 +9,10 @@ template $Loading : Box {
   margin-top: 32;
   margin-bottom: 32;
 
-  Spinner {
+  Adw.Spinner {
+    halign: center;
+    valign: center;
     width-request: 32;
     height-request: 32;
-    spinning: true;
   }
 }

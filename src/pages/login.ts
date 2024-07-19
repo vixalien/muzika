@@ -31,7 +31,7 @@ export class LoginDialog extends Adw.Dialog {
   }
 
   _stack!: Gtk.Stack;
-  _spinner!: Gtk.Spinner;
+  _spinner!: Adw.Spinner;
   _flow!: Gtk.FlowBox;
   _qr!: Gtk.Picture;
   _link!: Gtk.LinkButton;
@@ -43,7 +43,6 @@ export class LoginDialog extends Adw.Dialog {
 
   async show_code(code: LoginCode) {
     this._stack.visible_child = this._flow;
-    this._spinner.stop();
 
     const qr = new QRCode({
       content: code.verification_url,
@@ -85,7 +84,6 @@ export class LoginDialog extends Adw.Dialog {
 
   private async generate_code() {
     this._stack.visible_child = this._spinner;
-    this._spinner.start();
 
     const code = await get_option("auth").get_login_code();
     this.code = code;
