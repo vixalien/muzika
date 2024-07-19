@@ -27,7 +27,7 @@ import { AddActionEntries } from "src/util/action.js";
 import { list_model_to_array } from "src/util/list.js";
 import { convert_formats_to_dash } from "./mpd";
 
-import { Queue } from "./queue";
+import { Queue, RepeatMode } from "./queue";
 
 import { MuzikaMediaStream } from "./stream.js";
 
@@ -318,10 +318,13 @@ export class MuzikaPlayer extends MuzikaMediaStream {
 
     if (super.eos_cb(_play)) {
       const track = this.queue.repeat_or_next();
+      const is_repeating = this.queue.repeat === RepeatMode.ONE;
 
-      if (!track) {
-        // this means there is no track to play. Just reprepare the current track
+      if (!track || is_repeating) {
+        // Reprepare the current track if there is no next track, or if the current track will repeat
         this.stream_prepared(...previous_metadata);
+
+        if (is_repeating) this.resume();
       }
     }
 
