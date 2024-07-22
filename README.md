@@ -32,8 +32,8 @@ You can download a Flatpak bundle from the latest CI build. You will get updates
 automatically when new code is pushed to main thanks to
 [Flatter](https://github.com/andyholmes/flatter)
 
-- [Download x86-64 Nightly Flatpak](https://nightly.link/vixalien/muzika/workflows/ci/main/com.vixalien.muzika.Devel-x86_64.zip)
-- [Download ARM Nightly Flatpak](https://nightly.link/vixalien/muzika/workflows/ci/main/com.vixalien.muzika.Devel-aarch64.zip)
+- [Download x86-64 Nightly Flatpak](https://nightly.link/vixalien/muzika/workflows/cd/main/com.vixalien.muzika.Devel-x86_64.zip)
+- [Download ARM Nightly Flatpak](https://nightly.link/vixalien/muzika/workflows/cd/main/com.vixalien.muzika.Devel-aarch64.zip)
 
 Install it with:
 
