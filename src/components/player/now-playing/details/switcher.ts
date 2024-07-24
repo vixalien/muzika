@@ -208,12 +208,12 @@ export class MuzikaNPDetailsSwitcher extends Gtk.Box {
       action_target: GLib.Variant.new_string(page.name),
     });
 
-    // TODO: I don't know why this doesn't work
+    // TODO: using `sensitive` instead of `visible` doesn't seem to work
     this.switcher_listener.add_binding(
       page.bind_property(
         "visible",
         button,
-        "sensitive",
+        "visible",
         GObject.BindingFlags.SYNC_CREATE,
       ),
     );
