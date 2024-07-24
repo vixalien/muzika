@@ -21,25 +21,7 @@ Muzika is an elegant music streaming app.
 
 ### Using the latest Nightly Flatpak
 
-First, make sure the latest GNOME Nightly runtime is installed:
-
-```sh
-flatpak remote-add --if-not-exists --user gnome-nightly https://nightly.gnome.org/gnome-nightly.flatpakrepo
-flatpak install --user org.gnome.Platform//master
-```
-
-You can download a Flatpak bundle from the latest CI build. You will get updates
-automatically when new code is pushed to main thanks to
-[Flatter](https://github.com/andyholmes/flatter)
-
-- [Download x86-64 Nightly Flatpak](https://nightly.link/vixalien/muzika/workflows/cd/main/com.vixalien.muzika.Devel-x86_64.zip)
-- [Download ARM Nightly Flatpak](https://nightly.link/vixalien/muzika/workflows/cd/main/com.vixalien.muzika.Devel-aarch64.zip)
-
-Install it with:
-
-```bash
-flatpak install --user com.vixalien.muzika.flatpak
-```
+You can download the [latest Nightly flatpak](vixalien.github.io/muzika/muzika.flatpakref).
 
 ### From source
 
