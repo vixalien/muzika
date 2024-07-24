@@ -21,7 +21,7 @@ Muzika is an elegant music streaming app.
 
 ### Using the latest Nightly Flatpak
 
-You can download the [latest Nightly flatpak](vixalien.github.io/muzika/muzika.flatpakref).
+You can download the [latest Nightly flatpak](https://vixalien.github.io/muzika/muzika.flatpakref).
 
 ### From source
 
