@@ -171,6 +171,7 @@ export class VideoPlayerView extends Adw.Bin {
 
     await load_thumbnails(this._picture, current.thumbnails, {
       width: 1000,
+      upscale: true,
       signal: this.load_controller.signal,
     })
       .then(() => {
