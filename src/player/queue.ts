@@ -129,13 +129,6 @@ export class Queue extends GObject.Object {
             false,
             GObject.ParamFlags.READABLE,
           ),
-          "can-play-previous": GObject.param_spec_boolean(
-            "can-play-previous",
-            "Can play previous",
-            "Whether the previous song can be played",
-            false,
-            GObject.ParamFlags.READABLE,
-          ),
           repeat: GObject.param_spec_uint(
             "repeat",
             "Repeat",
@@ -290,11 +283,6 @@ export class Queue extends GObject.Object {
     return this.position < this.list.n_items - 1;
   }
 
-  get can_play_previous() {
-    if (this.repeat === RepeatMode.ALL) return true;
-    return this.position > 0;
-  }
-
   private _position = -1;
 
   get position() {
@@ -311,7 +299,6 @@ export class Queue extends GObject.Object {
       this.notify("current");
       this.notify("current-is-video");
       this.notify("can-play-next");
-      this.notify("can-play-previous");
     }
   }
 
@@ -492,7 +479,6 @@ export class Queue extends GObject.Object {
         name: "previous",
         parameter_type: null,
         activate: () => this.previous(),
-        bind_enabled: [this, "can-play-previous"],
       }),
     );
 
@@ -541,7 +527,6 @@ export class Queue extends GObject.Object {
     this.repeat = (this.repeat + 1) % 3;
 
     this.notify("can-play-next");
-    this.notify("can-play-previous");
   }
 
   private async active_chip_changed_cb() {
@@ -556,7 +541,6 @@ export class Queue extends GObject.Object {
 
       this.add_tracks("remaining", queue.tracks);
 
-      this.notify("can-play-previous");
       this.notify("can-play-next");
     }
   }
