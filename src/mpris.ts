@@ -285,18 +285,6 @@ export class MPRIS extends DBusInterface {
         );
       }),
 
-      this.player.queue.connect("notify::can-play-previous", () => {
-        this._properties_changed(
-          this.MEDIA_PLAYER2_PLAYER_IFACE,
-          {
-            CanGoPrevious: GLib.Variant.new_boolean(
-              this.player.queue.can_play_previous,
-            ),
-          },
-          [],
-        );
-      }),
-
       this.player.connect("notify::seeking", () => {
         if (!this.player.seeking) {
           this._on_seek_finished(this, this.player.timestamp);
@@ -396,7 +384,7 @@ export class MPRIS extends DBusInterface {
     // already started
     if (this.player.queue.repeat === RepeatMode.ONE) {
       this._seeked(0);
-      if (this.player.queue.can_play_previous) {
+      if (this.player.queue.position > 0) {
         return;
       }
     }
@@ -427,12 +415,6 @@ export class MPRIS extends DBusInterface {
     if (has_next != this.previous_state.get("can_go_next")) {
       properties.CanGoNext = GLib.Variant.new_boolean(has_next);
       this.previous_state.set("can_go_next", has_next);
-    }
-
-    const has_previous = this.player.queue.can_play_previous;
-    if (has_previous != this.previous_state.get("can_go_previous")) {
-      properties.CanGoPrevious = GLib.Variant.new_boolean(has_previous);
-      this.previous_state.set("can_go_previous", has_next);
     }
 
     if (this.previous_state.get("can_play") != true) {
@@ -633,10 +615,7 @@ export class MPRIS extends DBusInterface {
           MinimumRate: GLib.Variant.new_double(1.0),
           MaximumRate: GLib.Variant.new_double(1.0),
           CanGoNext: GLib.Variant.new_boolean(this.player.queue.can_play_next),
-          CanGoPrevious: GLib.Variant.new(
-            "b",
-            this.player.queue.can_play_previous,
-          ),
+          CanGoPrevious: GLib.Variant.new_boolean(true),
           CanPlay: GLib.Variant.new_boolean(can_play),
           CanPause: GLib.Variant.new_boolean(can_play),
           CanSeek: GLib.Variant.new_boolean(true),
