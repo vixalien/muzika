@@ -12,7 +12,7 @@ import type { Queue as MuseQueue, QueueTrack } from "libmuse";
 
 import { ObjectContainer } from "../util/objectcontainer.js";
 import { AddActionEntries, build_action } from "src/util/action.js";
-import { Application } from "src/application.js";
+import { Application, get_player } from "src/application.js";
 import { list_model_to_array } from "src/util/list.js";
 import { ngettext } from "gettext";
 import { add_toast } from "src/util/window.js";
@@ -816,10 +816,14 @@ export class Queue extends GObject.Object {
   previous(): QueueTrack | null {
     const [position, track] = this.peek_previous();
 
-    if (position > -1) {
-      this.change_position(position);
-      this.emit("play");
+    const player = get_player();
+    if (player.timestamp >= 5 * 1000000 || position === -1) {
+      player.seek(0);
+      return this.current?.object ?? null;
     }
+
+    this.change_position(position);
+    this.emit("play");
 
     return track;
   }
