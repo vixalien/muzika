@@ -380,15 +380,6 @@ export class MPRIS extends DBusInterface {
   }
 
   private _on_current_song_changed() {
-    // In repeat song mode, no metadata has changed if the player was
-    // already started
-    if (this.player.queue.repeat === RepeatMode.ONE) {
-      this._seeked(0);
-      if (this.player.queue.position > 0) {
-        return;
-      }
-    }
-
     // IDK
     this._on_player_model_changed(this.player.queue.list, 0, 0, 0);
   }
