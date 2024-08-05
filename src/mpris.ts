@@ -379,25 +379,9 @@ export class MPRIS extends DBusInterface {
     return [false, ["/", "", ""]];
   }
 
-  private _on_current_song_changed() {
-    // IDK
-    this._on_player_model_changed(this.player.queue.list, 0, 0, 0);
-  }
-
   previous_state = new Map<string, unknown>();
 
-  _on_player_model_changed(
-    model: Gio.ListStore,
-    _pos: number,
-    _removed: number,
-    added: number,
-  ) {
-    // Don't update the properties if the model has completely changed.
-    // These changes will be applied once a new song starts playing.
-    if (added == model.n_items) {
-      return;
-    }
-
+  private _on_current_song_changed() {
     const properties: Record<string, GLib.Variant> = {
       Metadata: GLib.Variant.new("a{sv}", this._get_metadata()),
     };
