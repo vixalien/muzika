@@ -653,7 +653,7 @@ msgstr "Subscripciones"
 #: src/components/navbar/index.ts:180 src/pages/artist.ts:148
 #: src/pages/search.ts:325
 msgid "Albums"
-msgstr "Albunes"
+msgstr "Albums"
 
 #: src/components/navbar/index.ts:186 src/pages/search.ts:331
 msgid "Songs"
