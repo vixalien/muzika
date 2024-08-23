@@ -12,7 +12,7 @@ import type { Queue as MuseQueue, QueueTrack } from "libmuse";
 
 import { ObjectContainer } from "../util/objectcontainer.js";
 import { AddActionEntries, build_action } from "src/util/action.js";
-import { Application } from "src/application.js";
+import { Application, get_player } from "src/application.js";
 import { list_model_to_array } from "src/util/list.js";
 import { ngettext } from "gettext";
 import { add_toast } from "src/util/window.js";
@@ -126,13 +126,6 @@ export class Queue extends GObject.Object {
             "can-play-next",
             "Can play next",
             "Whether the next song can be played",
-            false,
-            GObject.ParamFlags.READABLE,
-          ),
-          "can-play-previous": GObject.param_spec_boolean(
-            "can-play-previous",
-            "Can play previous",
-            "Whether the previous song can be played",
             false,
             GObject.ParamFlags.READABLE,
           ),
@@ -290,11 +283,6 @@ export class Queue extends GObject.Object {
     return this.position < this.list.n_items - 1;
   }
 
-  get can_play_previous() {
-    if (this.repeat === RepeatMode.ALL) return true;
-    return this.position > 0;
-  }
-
   private _position = -1;
 
   get position() {
@@ -311,7 +299,6 @@ export class Queue extends GObject.Object {
       this.notify("current");
       this.notify("current-is-video");
       this.notify("can-play-next");
-      this.notify("can-play-previous");
     }
   }
 
@@ -492,7 +479,6 @@ export class Queue extends GObject.Object {
         name: "previous",
         parameter_type: null,
         activate: () => this.previous(),
-        bind_enabled: [this, "can-play-previous"],
       }),
     );
 
@@ -541,7 +527,6 @@ export class Queue extends GObject.Object {
     this.repeat = (this.repeat + 1) % 3;
 
     this.notify("can-play-next");
-    this.notify("can-play-previous");
   }
 
   private async active_chip_changed_cb() {
@@ -556,7 +541,6 @@ export class Queue extends GObject.Object {
 
       this.add_tracks("remaining", queue.tracks);
 
-      this.notify("can-play-previous");
       this.notify("can-play-next");
     }
   }
@@ -816,10 +800,14 @@ export class Queue extends GObject.Object {
   previous(): QueueTrack | null {
     const [position, track] = this.peek_previous();
 
-    if (position > -1) {
-      this.change_position(position);
-      this.emit("play");
+    const player = get_player();
+    if (player.timestamp >= 5 * 1000000 || position === -1) {
+      player.seek(0);
+      return this.current?.object ?? null;
     }
+
+    this.change_position(position);
+    this.emit("play");
 
     return track;
   }
