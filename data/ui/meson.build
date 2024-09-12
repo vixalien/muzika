@@ -21,6 +21,7 @@ blueprint_files = [
   'components/player/now-playing/counterpart-switcher.blp',
   'components/player/now-playing/cover.blp',
   'components/player/now-playing/sheet.blp',
+  'components/player/now-playing/volume-control.blp',
   'components/player/video/controls.blp',
   'components/player/video/view.blp',
   'components/player/video/volume-controls.blp',

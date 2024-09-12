@@ -3,6 +3,7 @@ import GObject from "gi://GObject";
 
 import { SignalListeners } from "src/util/signal-listener";
 import { get_player } from "src/application";
+import { get_volume_icon_name } from "src/util/volume";
 
 export class VolumeControls extends Gtk.Box {
   static {
@@ -24,23 +25,7 @@ export class VolumeControls extends Gtk.Box {
   listeners = new SignalListeners();
 
   update_icon(muted: boolean, volume: number) {
-    let icon_name: string;
-
-    if (muted) {
-      icon_name = "audio-volume-muted-symbolic";
-    } else {
-      if (volume === 0) {
-        icon_name = "audio-volume-muted-symbolic";
-      } else if (volume < 0.33) {
-        icon_name = "audio-volume-low-symbolic";
-      } else if (volume < 0.66) {
-        icon_name = "audio-volume-medium-symbolic";
-      } else {
-        icon_name = "audio-volume-high-symbolic";
-      }
-    }
-
-    this._button.set_icon_name(icon_name);
+    this._button.set_icon_name(get_volume_icon_name(muted, volume));
   }
 
   private update_values() {

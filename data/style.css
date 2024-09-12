@@ -1,3 +1,7 @@
+:root {
+  --dimmed-color: rgb(from currentColor r g b / calc(alpha * 0.55));
+}
+
 .thumbnail {
   border-radius: 12px;
 }
@@ -200,7 +204,7 @@ label.bold-link link {
 }
 
 .playlist-column-view listview>row,
-.playlist-list-view >row {
+.playlist-list-view>row {
   border-radius: 9px;
 }
 
@@ -330,16 +334,33 @@ button.large {
   font-weight: 500;
 }
 
-.main-toast-overlay > toast {
+.main-toast-overlay>toast {
   margin-bottom: calc(var(--toast-margin, 0px) + 24px);
   transition: 0.3s margin-bottom;
 }
 
-.full-player-view > revealer > box {
+.full-player-view>revealer>box {
   padding-left: 9px;
   padding-right: 9px;
 }
 
 .counterpart-button {
   background-color: rgb(from var(--view-bg-color) r g b / calc(alpha * 0.80));
+}
+
+np-volume>scale {
+  color: var(--dimmed-color);
+}
+
+np-volume:hover>scale {
+  color: inherit;
+}
+
+np-volume>scale trough highlight {
+  min-height: 12px;
+  min-width: 12px;
+}
+
+np-volume>scale trough slider {
+  opacity: 0;
 }

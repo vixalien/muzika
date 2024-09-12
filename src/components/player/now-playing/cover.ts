@@ -12,6 +12,7 @@ import { SignalListeners } from "src/util/signal-listener";
 import { load_thumbnails } from "src/components/webimage";
 import { micro_to_string } from "src/util/time";
 import { FixedRatioThumbnail } from "src/components/fixed-ratio-thumbnail";
+import { MuzikaNPVolumeControl } from "./volume-control";
 import {
   bind_play_icon,
   bind_repeat_button,
@@ -19,6 +20,8 @@ import {
   bind_track_title,
 } from "src/player/helpers";
 import { get_button_props } from "src/util/menu/like";
+
+GObject.type_ensure(MuzikaNPVolumeControl.$gtype);
 
 export class MuzikaNPCover extends Adw.Bin {
   static {
