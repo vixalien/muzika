@@ -116,8 +116,9 @@ template $VideoControls : Adw.Bin {
         halign: center;
 
         Button {
-          icon-name: "skip-backwards-10-symbolic";
-          action-name: "player.skip-backwards";
+          icon-name: "media-skip-backward-symbolic";
+          tooltip-text: _("Previous");
+          action-name: "queue.previous";
 
           styles [
             "flat",
@@ -125,6 +126,7 @@ template $VideoControls : Adw.Bin {
         }
 
         Button play_button {
+          tooltip-text: _("Toggle Play/Pause");
           icon-name: "media-playback-start-symbolic";
           action-name: "player.play-pause";
 
@@ -132,10 +134,11 @@ template $VideoControls : Adw.Bin {
             "flat",
           ]
         }
-
+        
         Button {
-          icon-name: "skip-forward-10-symbolic";
-          action-name: "player.skip-forward";
+          icon-name: "media-skip-forward-symbolic";
+          tooltip-text: _("Next");
+          action-name: "queue.next";
 
           styles [
             "flat",
