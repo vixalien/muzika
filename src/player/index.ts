@@ -317,14 +317,13 @@ export class MuzikaPlayer extends MuzikaMediaStream {
     ] as const;
 
     if (super.eos_cb(_play)) {
-      const track = this.queue.repeat_or_next();
-      const is_repeating = this.queue.repeat === RepeatMode.ONE;
-
-      if (!track || is_repeating) {
+      // repeat the current track
+      if (this.queue.repeat === RepeatMode.ONE) {
         // Reprepare the current track if there is no next track, or if the current track will repeat
         this.stream_prepared(...previous_metadata);
-
-        if (is_repeating) this.resume();
+        this.play();
+      } else {
+        this.queue.next();
       }
     }
 

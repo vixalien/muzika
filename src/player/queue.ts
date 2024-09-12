@@ -751,30 +751,6 @@ export class Queue extends GObject.Object {
     return track;
   }
 
-  peek_repeat_or_next(): [number, QueueTrack | null] {
-    let position: number;
-
-    if (this.repeat === RepeatMode.ONE) {
-      position = this.position;
-    } else {
-      return this.peek_next();
-    }
-
-    return [position, this.get_track_at_position(position)?.object ?? null];
-  }
-
-  repeat_or_next(): QueueTrack | null {
-    const [position, track] = this.peek_repeat_or_next();
-    this.update_track_at_position(position, track);
-
-    if (position > -1) {
-      this.change_position(position);
-      this.emit("play");
-    }
-
-    return track;
-  }
-
   peek_previous(): [number, QueueTrack | null] {
     let position: number;
 
