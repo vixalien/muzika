@@ -218,24 +218,18 @@ export class Queue extends GObject.Object {
   private get_correct_counterpart(track: ObjectContainer<QueueTrack> | null) {
     if (!track?.object.counterpart) return null;
 
-    let correct_track: ObjectContainer<QueueTrack> | null = null;
-
-    switch (this.preferred_media_type) {
-      case PreferredMediaType.SONG: {
-        if (is_track_video(track.object)) {
-          correct_track = this.get_counterpart(track.object);
-        }
-        break;
-      }
-      case PreferredMediaType.VIDEO: {
-        if (!is_track_video(track.object)) {
-          correct_track = this.get_counterpart(track.object);
-        }
-        break;
-      }
+    if (
+      // the user prefers audio tracks, but we have a video
+      (this.preferred_media_type === PreferredMediaType.SONG &&
+        track_is_video(track.object)) ||
+      // the user prefers video tracks, but we have audio
+      (this.preferred_media_type === PreferredMediaType.VIDEO &&
+        !track_is_video(track.object))
+    ) {
+      return get_track_counterpart(track.object);
     }
 
-    return correct_track;
+    return null;
   }
 
   private queue?: MuseQueue;
@@ -742,11 +736,12 @@ export class Queue extends GObject.Object {
       }
     }
 
-    return [position, this.update_counterpart()?.object ?? null];
+    return [position, this.get_track_at_position(position)?.object ?? null];
   }
 
   next(): QueueTrack | null {
     const [position, track] = this.peek_next();
+    this.update_track_at_position(position, track);
 
     if (position > -1) {
       this.change_position(position);
@@ -765,11 +760,12 @@ export class Queue extends GObject.Object {
       return this.peek_next();
     }
 
-    return [position, this.list.get_item(position)?.object ?? null];
+    return [position, this.get_track_at_position(position)?.object ?? null];
   }
 
   repeat_or_next(): QueueTrack | null {
     const [position, track] = this.peek_repeat_or_next();
+    this.update_track_at_position(position, track);
 
     if (position > -1) {
       this.change_position(position);
@@ -794,11 +790,12 @@ export class Queue extends GObject.Object {
       position = this.position - 1;
     }
 
-    return [position, this.update_counterpart()?.object ?? null];
+    return [position, this.get_track_at_position(position)?.object ?? null];
   }
 
   previous(): QueueTrack | null {
     const [position, track] = this.peek_previous();
+    this.update_track_at_position(position, track);
 
     const player = get_player();
     if (player.timestamp >= 5 * 1000000 || position === -1) {
@@ -812,39 +809,39 @@ export class Queue extends GObject.Object {
     return track;
   }
 
-  private get_counterpart(track: QueueTrack) {
-    const counterpart = track.counterpart;
-
-    if (!counterpart) return null;
-
-    return new ObjectContainer({
-      ...counterpart,
-      counterpart: {
-        ...track,
-        counterpart: null,
-      },
-    });
-  }
-
   switch_counterpart() {
     this.preferred_media_type = this.current_is_video
       ? PreferredMediaType.SONG
       : PreferredMediaType.VIDEO;
 
-    this.update_counterpart();
+    this.update_current_track();
   }
 
-  private update_counterpart() {
-    const item = this.list.get_item(this.position);
-
-    const correct_item = this.get_correct_counterpart(item);
-
-    if (correct_item) {
-      this.list.splice(this.position, 1, [correct_item]);
-      this.change_position(this.position, true);
-    }
+  private get_track_at_position(position: number) {
+    const item = this.list.get_item(position);
+    const correct_item = item ? this.get_correct_counterpart(item) : null;
 
     return correct_item ?? item;
+  }
+
+  private update_track_at_position(position: number, track: QueueTrack | null) {
+    if (!track) return;
+
+    const current_track = this.list.get_item(position);
+
+    if (current_track?.object !== track) {
+      this.list.splice(position, 1, [new ObjectContainer(track)]);
+    }
+  }
+
+  private update_current_track() {
+    const track = this.list.get_item(this.position);
+    const counterpart = this.get_correct_counterpart(track);
+
+    if (counterpart) {
+      this.list.splice(this.position, 1, [counterpart]);
+      this.change_position(this.position, true);
+    }
   }
 
   private change_active_chip(playlist_id: string) {
@@ -878,6 +875,20 @@ interface AddPlaylist2Options {
   radio?: boolean;
 }
 
-function is_track_video(track: QueueTrack) {
+function track_is_video(track: QueueTrack) {
   return track.videoType !== "MUSIC_VIDEO_TYPE_ATV";
+}
+
+function get_track_counterpart(track: QueueTrack) {
+  const counterpart = track.counterpart;
+
+  if (!counterpart) return null;
+
+  return new ObjectContainer({
+    ...counterpart,
+    counterpart: {
+      ...track,
+      counterpart: null,
+    },
+  });
 }
