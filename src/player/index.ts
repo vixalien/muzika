@@ -109,26 +109,6 @@ export class MuzikaPlayer extends MuzikaMediaStream {
       this.save_playback_state(true, 0);
     });
 
-    // volume
-
-    Settings.connect("changed::volume", () => {
-      const settings_volume = Settings.get_double("volume");
-      if (settings_volume !== this.volume) {
-        this.volume = settings_volume;
-      }
-    });
-
-    super.volume = Settings.get_double("volume");
-
-    Settings.connect("changed::muted", () => {
-      const settings_muted = Settings.get_boolean("muted");
-      if (settings_muted !== this.muted) {
-        this.muted = settings_muted;
-      }
-    });
-
-    super.muted = Settings.get_boolean("muted");
-
     // restore state
 
     this.load_settings_state().catch(console.error);
