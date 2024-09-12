@@ -1,3 +1,4 @@
+import Adw from "gi://Adw";
 import Gtk from "gi://Gtk?version=4.0";
 import GObject from "gi://GObject";
 import GLib from "gi://GLib";
@@ -14,14 +15,14 @@ export interface MiniPlayerViewOptions {
 
 GObject.type_ensure(FixedRatioThumbnail.$gtype);
 
-export class PlayerPreview extends Gtk.Stack {
+export class PlayerPreview extends Adw.Bin {
   static {
     GObject.registerClass(
       {
         GTypeName: "PlayerPreview",
         Template:
           "resource:///com/vixalien/muzika/ui/components/player/preview.ui",
-        InternalChildren: ["image", "picture"],
+        InternalChildren: ["image"],
         Properties: {
           size: GObject.ParamSpec.int(
             "size",
@@ -41,34 +42,25 @@ export class PlayerPreview extends Gtk.Stack {
     );
   }
 
+  constructor(params: Partial<Adw.Bin.ConstructorProperties>) {
+    super(params);
+
+    this.bind_property(
+      "size",
+      this._image,
+      "pixel-size",
+      GObject.BindingFlags.SYNC_CREATE,
+    );
+  }
+
   private _image!: Gtk.Image;
-  private _picture!: FixedRatioThumbnail;
 
-  get size(): number {
-    return this._image.pixel_size;
-  }
-
-  set size(size: number) {
-    this._image.pixel_size =
-      this._picture.min_height =
-      this._picture.max_height =
-      this._picture.min_width =
-        size;
-  }
+  size = 0;
 
   private listeners = new SignalListeners();
 
   setup_player() {
     const player = get_player();
-
-    this.listeners.add_binding(
-      player.bind_property(
-        "paintable",
-        this._picture,
-        "paintable",
-        GObject.BindingFlags.SYNC_CREATE,
-      ),
-    );
 
     this.listeners.connect(
       player.queue,
@@ -81,7 +73,6 @@ export class PlayerPreview extends Gtk.Stack {
 
   teardown_player() {
     this.listeners.clear();
-    this._picture.paintable = null;
   }
 
   /**
@@ -104,20 +95,14 @@ export class PlayerPreview extends Gtk.Stack {
 
     // thumbnail
 
-    if (player.queue.current_is_video) {
-      this.visible_child = this._picture;
-    } else {
-      this.visible_child = this._image;
+    this._image.icon_name = "image-missing-symbolic";
 
-      this._image.icon_name = "image-missing-symbolic";
+    this.abort_thumbnail = new AbortController();
 
-      this.abort_thumbnail = new AbortController();
-
-      load_thumbnails(this._image, song.thumbnails, {
-        width: this.size,
-        signal: this.abort_thumbnail.signal,
-      });
-    }
+    load_thumbnails(this._image, song.thumbnails, {
+      width: this.size,
+      signal: this.abort_thumbnail.signal,
+    });
   }
 
   vfunc_map(): void {
