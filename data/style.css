@@ -339,3 +339,7 @@ button.large {
   padding-left: 9px;
   padding-right: 9px;
 }
+
+.counterpart-button {
+  background-color: rgb(from var(--view-bg-color) r g b / calc(alpha * 0.80));
+}

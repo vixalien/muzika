@@ -56,6 +56,7 @@ export class FullPlayerView extends Gtk.ActionBar {
           "duration_label",
           "volume_button",
           "switcher",
+          "counterpart_switcher",
         ],
       },
       this,
@@ -73,6 +74,7 @@ export class FullPlayerView extends Gtk.ActionBar {
   private _duration_label!: Gtk.Label;
   private _volume_button!: Gtk.VolumeButton;
   private _switcher!: MuzikaNPDetailsSwitcher;
+  private _counterpart_switcher!: Gtk.Button;
 
   player: MuzikaPlayer;
 
@@ -160,6 +162,49 @@ export class FullPlayerView extends Gtk.ActionBar {
         },
         null,
       ),
+      // @ts-expect-error incorrect types
+      this.player.queue.bind_property_full(
+        "current-is-video",
+        this._counterpart_switcher,
+        "icon-name",
+        GObject.BindingFlags.SYNC_CREATE,
+        () => {
+          return [
+            true,
+            this.player.queue.current_is_video
+              ? "emblem-music-symbolic"
+              : "emblem-videos-symbolic",
+          ];
+        },
+        null,
+      ),
+      // @ts-expect-error incorrect types
+      this.player.queue.bind_property_full(
+        "current-is-video",
+        this._counterpart_switcher,
+        "tooltip-text",
+        GObject.BindingFlags.SYNC_CREATE,
+        () => {
+          return [
+            true,
+            this.player.queue.current_is_video
+              ? _("Play the album version")
+              : _("Play the music video"),
+          ];
+        },
+        null,
+      ),
+      // @ts-expect-error incorrect types
+      this.player.queue.bind_property_full(
+        "current",
+        this._counterpart_switcher,
+        "visible",
+        GObject.BindingFlags.SYNC_CREATE,
+        () => {
+          return [true, !!this.player.queue.current?.object.counterpart];
+        },
+        null,
+      ),
     );
 
     this.listeners.connect(
@@ -188,6 +233,10 @@ export class FullPlayerView extends Gtk.ActionBar {
     gesture.set_state(Gtk.EventSequenceState.CLAIMED);
 
     this.activate_action("win.visible-view", GLib.Variant.new_string("video"));
+  }
+
+  private counterpart_switcher_clicked_cb() {
+    this.player.queue.current_is_video = !this.player.queue.current_is_video;
   }
 
   vfunc_map(): void {

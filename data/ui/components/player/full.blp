@@ -11,15 +11,34 @@ template $FullPlayerView : ActionBar {
   Box song_info_box {
     spacing: 12;
 
-    $PlayerPreview {
+    Overlay {
       valign: center;
-      size: 74;
-      cursor: Gdk.Cursor {
-        name: "pointer";
-      };
 
-      GestureClick {
-        pressed => $gesture_pressed_cb();
+      $PlayerPreview {
+        size: 74;
+        cursor: Gdk.Cursor {
+          name: "pointer";
+        };
+
+        GestureClick {
+          pressed => $gesture_pressed_cb();
+        }
+      }
+
+      [overlay]
+      Button counterpart_switcher {
+        icon-name: "emblem-videos-symbolic";
+        valign: start;
+        halign: end;
+        margin-end: 6;
+        margin-top: 6;
+        // imo it feels better if this is clickable too
+        cursor: Gdk.Cursor {
+          name: "pointer";
+        };
+        clicked => $counterpart_switcher_clicked_cb();
+
+        styles ["osd", "circular", "counterpart-button"]
       }
     }
 
