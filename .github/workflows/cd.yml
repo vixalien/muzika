@@ -45,7 +45,6 @@ jobs:
         run: |
           flatpak --system remote-add --if-not-exists flathub-beta https://flathub.org/beta-repo/flathub-beta.flatpakrepo
           flatpak --system install -y --noninteractive flathub-beta org.freedesktop.Sdk.Extension.node20/${{ matrix.arch }}/24.08beta
-          flatpak --system install -y --noninteractive flathub-beta org.freedesktop.Sdk.Extension.rust-stable/${{ matrix.arch }}/24.08beta
 
       - name: Build
         id: build

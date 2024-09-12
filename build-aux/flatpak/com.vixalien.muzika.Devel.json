@@ -4,14 +4,13 @@
   "runtime-version": "master",
   "sdk": "org.gnome.Sdk",
   "sdk-extensions": [
-    "org.freedesktop.Sdk.Extension.node20",
-    "org.freedesktop.Sdk.Extension.rust-stable"
+    "org.freedesktop.Sdk.Extension.node20"
   ],
   "tags": [
     "nightly"
   ],
   "build-options": {
-    "append-path": "/usr/lib/sdk/node20/bin:/usr/lib/sdk/rust-stable/bin:/app/bin"
+    "append-path": "/usr/lib/sdk/node20/bin:/app/bin"
   },
   "command": "com.vixalien.muzika.Devel",
   "finish-args": [
