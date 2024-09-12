@@ -7,13 +7,15 @@ template $MuzikaNPCounterpartSwitcher : Box {
   ToggleButton music_counterpart {
     label: _("Song");
 
-    clicked => $switch_counterpart_cb();
+    action-name: "queue.current-is-video";
+    action-target: "false";
   }
 
   ToggleButton video_counterpart {
     label: _("Video");
     group: music_counterpart;
 
-    clicked => $switch_counterpart_cb();
+    action-name: "queue.current-is-video";
+    action-target: "true";
   }
 }

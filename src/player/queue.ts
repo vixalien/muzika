@@ -11,7 +11,11 @@ import {
 import type { Queue as MuseQueue, QueueTrack } from "libmuse";
 
 import { ObjectContainer } from "../util/objectcontainer.js";
-import { AddActionEntries, build_action } from "src/util/action.js";
+import {
+  AddActionEntries,
+  build_action,
+  build_property_action,
+} from "src/util/action.js";
 import { Application, get_player } from "src/application.js";
 import { list_model_to_array } from "src/util/list.js";
 import { ngettext } from "gettext";
@@ -166,7 +170,7 @@ export class Queue extends GObject.Object {
             "Current Is Video",
             "Whether the currently playing track has a video",
             false,
-            GObject.ParamFlags.READABLE,
+            GObject.ParamFlags.READWRITE,
           ),
           "playlist-id": GObject.param_spec_string(
             "playlist-id",
@@ -270,6 +274,14 @@ export class Queue extends GObject.Object {
 
   get current_is_video() {
     return this.current?.object?.videoType !== "MUSIC_VIDEO_TYPE_ATV";
+  }
+
+  set current_is_video(value: boolean) {
+    this.preferred_media_type = value
+      ? PreferredMediaType.VIDEO
+      : PreferredMediaType.SONG;
+
+    this.update_current_track();
   }
 
   get can_play_next() {
@@ -447,6 +459,21 @@ export class Queue extends GObject.Object {
                 this.repeat == RepeatMode.NONE ? false : true,
               ),
             ];
+          },
+        ],
+      }),
+    );
+
+    action_group.add_action(
+      build_property_action({
+        name: "current-is-video",
+        object: this,
+        signature: "b",
+        bind_enabled_full: [
+          this,
+          "current",
+          () => {
+            return !!this.current?.object.counterpart;
           },
         ],
       }),
