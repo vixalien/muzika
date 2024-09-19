@@ -366,7 +366,6 @@ export class Window extends Adw.ApplicationWindow {
       Adw.ResponseAppearance.DESTRUCTIVE,
     );
 
-    // @ts-expect-error incorrect types
     const response = await dialog.choose(this, null).catch(console.error);
 
     if (response === "logout") {

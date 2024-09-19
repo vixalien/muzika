@@ -214,7 +214,6 @@ export class PlaylistPage
 
     const response = await dialog
       .choose(get_window(), null)
-      // @ts-expect-error incorrect types
       .catch(console.error);
 
     if (response === "delete") {
@@ -281,7 +280,6 @@ export class PlaylistPage
 
     const response = await dialog
       .choose(get_window(), null)
-      // @ts-expect-error incorrect types
       .catch(console.error);
 
     if (response === "remove") {
