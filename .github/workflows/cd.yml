@@ -41,6 +41,10 @@ jobs:
           gpg_private_key: ${{ secrets.GPG_PRIVATE_KEY }}
           passphrase: ${{ secrets.GPG_PASSPHRASE }}
 
+      - name: Setup Flatpak SDK Extensions
+        run: |
+          flatpak --system install -y --noninteractive flathub org.freedesktop.Sdk.Extension.node20/${{ matrix.arch }}/24.08
+
       - name: Build
         id: build
         uses: andyholmes/flatter@main
