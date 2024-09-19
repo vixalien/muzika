@@ -364,3 +364,7 @@ np-volume>scale trough highlight {
 np-volume>scale trough slider {
   opacity: 0;
 }
+
+.sharp-corners {
+  border-radius: 0;
+}

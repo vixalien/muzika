@@ -8,6 +8,7 @@ import { get_player } from "src/application";
 import { VideoControls } from "./controls";
 import { load_thumbnails } from "src/components/webimage";
 import { SignalListeners } from "src/util/signal-listener";
+import { isEqual } from "lodash-es";
 
 GObject.type_ensure(VideoControls.$gtype);
 
@@ -20,10 +21,10 @@ export class VideoPlayerView extends Adw.Bin {
           "resource:///com/vixalien/muzika/ui/components/player/video/view.ui",
         InternalChildren: [
           "picture",
-          "fullscreen",
-          "toolbar_view",
-          "window_title",
+          "button_fullscreen",
           "controls",
+          "toolbar_revealer",
+          "motion",
         ],
         Properties: {
           bottom_bar_height: GObject.ParamSpec.uint(
@@ -42,22 +43,10 @@ export class VideoPlayerView extends Adw.Bin {
   }
 
   private _picture!: Gtk.Picture;
-  private _fullscreen!: Gtk.Button;
-  private _toolbar_view!: Adw.ToolbarView;
-  private _window_title!: Adw.WindowTitle;
+  private _button_fullscreen!: Gtk.Button;
   private _controls!: VideoControls;
-
-  private hover = new Gtk.EventControllerMotion();
-  private click = new Gtk.GestureClick({
-    propagation_phase: Gtk.PropagationPhase.TARGET,
-  });
-
-  constructor() {
-    super();
-
-    this.add_controller(this.hover);
-    this._picture.add_controller(this.click);
-  }
+  private _toolbar_revealer!: Gtk.Revealer;
+  private _motion!: Gtk.EventControllerMotion;
 
   vfunc_root(): void {
     super.vfunc_root();
@@ -67,7 +56,7 @@ export class VideoPlayerView extends Adw.Bin {
     // @ts-expect-error incorrect types
     window.bind_property_full(
       "fullscreened",
-      this._fullscreen,
+      this._button_fullscreen,
       "icon-name",
       GObject.BindingFlags.SYNC_CREATE,
       (_, from) => {
@@ -80,81 +69,40 @@ export class VideoPlayerView extends Adw.Bin {
     );
   }
 
-  private timeout_id: number | null = null;
-
-  private remove_timeout() {
-    if (this.timeout_id) {
-      GLib.source_remove(this.timeout_id);
-      this.timeout_id = null;
-    }
-  }
-
-  private queue_toggle_ui() {
-    this.remove_timeout();
-
-    // wait a few seconds before hiding the UI elements
-    if (this._toolbar_view.reveal_top_bars) {
-      this.timeout_id = GLib.timeout_add(GLib.PRIORITY_DEFAULT, 200, () => {
-        this.hide_ui();
-
-        this.timeout_id = null;
-
-        return false;
-      });
-    } else {
-      this.show_ui();
-    }
-  }
-
-  private extend_ui_visible_time() {
-    this.show_ui();
-    this.remove_timeout();
-
+  private hide_revealers() {
+    // checks
     if (this._controls.inhibit_hide) return;
 
-    this.timeout_id = GLib.timeout_add_seconds(GLib.PRIORITY_DEFAULT, 3, () => {
-      this.hide_ui();
+    // if (this._motion.contains_pointer) return;
 
-      this.timeout_id = null;
+    // actions
 
-      return false;
-    });
+    this._toolbar_revealer.reveal_child = false;
+
+    this.set_cursor_from_name("none");
   }
 
-  get ui_is_visible() {
-    return this._toolbar_view.reveal_top_bars;
-  }
+  private last_timeout: null | number = null;
 
-  private hide_ui() {
-    this.remove_timeout();
+  private show_revealers() {
+    this._toolbar_revealer.reveal_child = true;
 
-    if (!this.ui_is_visible) return;
+    this.set_cursor_from_name(null);
 
-    this._toolbar_view.reveal_top_bars = this._toolbar_view.reveal_bottom_bars =
-      false;
-
-    this.set_cursor(Gdk.Cursor.new_from_name("none", null));
-  }
-
-  private show_ui() {
-    this.remove_timeout();
-
-    if (this.ui_is_visible) return;
-
-    this._toolbar_view.reveal_top_bars = this._toolbar_view.reveal_bottom_bars =
-      true;
-
-    this.set_cursor(null);
-  }
-
-  private toggle_ui() {
-    this.remove_timeout();
-
-    if (this.ui_is_visible) {
-      this.hide_ui();
-    } else {
-      this.show_ui();
+    if (this.last_timeout !== null) {
+      GLib.source_remove(this.last_timeout);
     }
+
+    this.last_timeout = GLib.timeout_add_seconds(
+      GLib.PRIORITY_DEFAULT,
+      2,
+      () => {
+        this.hide_revealers();
+
+        this.last_timeout = null;
+        return GLib.SOURCE_REMOVE;
+      },
+    );
   }
 
   private load_controller: AbortController | null = null;
@@ -199,7 +147,36 @@ export class VideoPlayerView extends Adw.Bin {
     this.load_thumbnails();
   }
 
-  listeners = new SignalListeners();
+  private listeners = new SignalListeners();
+
+  private last_coords = [0, 0];
+
+  private on_motion_cb(
+    _: Gtk.EventControllerMotion,
+    ...coords: [number, number]
+  ) {
+    if (isEqual(coords, this.last_coords)) return;
+    this.last_coords = coords;
+
+    this.show_revealers();
+  }
+
+  private on_primary_click_released_cb(gesture: Gtk.GestureClick, n: number) {
+    this.show_revealers();
+    gesture.set_state(Gtk.EventSequenceState.CLAIMED);
+
+    if (
+      gesture.get_current_event()?.get_device()?.source ===
+      Gdk.InputSource.TOUCHSCREEN
+    )
+      return;
+
+    get_player().play_pause();
+
+    if (n % 2 === 0) {
+      this.activate_action("win.fullscreen", null);
+    }
+  }
 
   private key_pressed_cb(_controller: Gtk.EventControllerKey, keyval: number) {
     const player = get_player();
@@ -218,6 +195,8 @@ export class VideoPlayerView extends Adw.Bin {
       player.cubic_volume += 0.1;
     } else if (keyval === Gdk.KEY_minus) {
       player.cubic_volume -= 0.1;
+    } else if (keyval === Gdk.KEY_f) {
+      this.activate_action("win.fullscreen", null);
     } else {
       return Gdk.EVENT_PROPAGATE;
     }
@@ -238,64 +217,20 @@ export class VideoPlayerView extends Adw.Bin {
 
     this.update_paintable();
 
-    this.listeners.add_bindings(
-      // @ts-expect-error incorrect types
-      player.bind_property_full(
-        "now-playing",
-        this._window_title,
-        "title",
-        GObject.BindingFlags.SYNC_CREATE,
-        () => {
-          const track = player.now_playing?.object.song;
+    // // fix everytime cursor is inside the window, the ui will be shown
+    // const last_motion = [0, 0] as [number, number];
+    // this.listeners.add(this.hover, [
+    //   this.hover.connect("enter", this.extend_ui_visible_time.bind(this)),
 
-          if (!track) return [false, null];
-          return [true, track.videoDetails.title];
-        },
-        null,
-      ),
-      // @ts-expect-error incorrect types
-      player.bind_property_full(
-        "now-playing",
-        this._window_title,
-        "subtitle",
-        GObject.BindingFlags.SYNC_CREATE,
-        () => {
-          const track = player.now_playing?.object.song;
+    //   this.hover.connect("motion", (_, x, y) => {
+    //     if (x == last_motion[0] && y == last_motion[1]) return;
+    //     last_motion[0] = x;
+    //     last_motion[1] = y;
+    //     this.extend_ui_visible_time();
+    //   }),
 
-          if (!track) return [false, null];
-          return [true, track.videoDetails.author];
-        },
-        null,
-      ),
-    );
-
-    // fix everytime cursor is inside the window, the ui will be shown
-    const last_motion = [0, 0] as [number, number];
-    this.listeners.add(this.hover, [
-      this.hover.connect("enter", this.extend_ui_visible_time.bind(this)),
-
-      this.hover.connect("motion", (_, x, y) => {
-        if (x == last_motion[0] && y == last_motion[1]) return;
-        last_motion[0] = x;
-        last_motion[1] = y;
-        this.extend_ui_visible_time();
-      }),
-
-      this.hover.connect("leave", this.extend_ui_visible_time.bind(this)),
-    ]);
-
-    this.listeners.add(
-      this.click,
-      this.click.connect("released", (click, n) => {
-        if (n == 1) {
-          click.set_state(Gtk.EventSequenceState.CLAIMED);
-          this.queue_toggle_ui();
-        } else if (n == 2) {
-          click.set_state(Gtk.EventSequenceState.CLAIMED);
-          this.activate_action("win.fullscreen", null);
-        }
-      }),
-    );
+    //   this.hover.connect("leave", this.extend_ui_visible_time.bind(this)),
+    // ]);
   }
 
   vfunc_unmap() {

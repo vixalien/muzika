@@ -1,6 +1,5 @@
 import GObject from "gi://GObject";
 import Adw from "gi://Adw";
-import GLib from "gi://GLib";
 import Gtk from "gi://Gtk?version=4.0";
 
 import { SignalListeners } from "src/util/signal-listener";
@@ -9,6 +8,9 @@ import { generate_song_menu } from "./util";
 import { VolumeControls } from "./volume-controls";
 import { bind_play_icon } from "src/player/helpers";
 import { micro_to_string } from "src/util/time";
+import { get_volume_icon_name } from "src/util/volume";
+
+GObject.type_ensure(VolumeControls.$gtype);
 
 export class VideoControls extends Adw.Bin {
   static {
@@ -18,11 +20,14 @@ export class VideoControls extends Adw.Bin {
         Template:
           "resource:///com/vixalien/muzika/ui/components/player/video/controls.ui",
         InternalChildren: [
-          "multi_layout_view",
           "play_button",
           "progress_label",
           "duration_label",
-          "menu_button",
+          "window_title",
+          "volume_button",
+          "more_button",
+          "toolbar_box",
+          "clamp",
         ],
         Properties: {
           "show-mini": GObject.ParamSpec.boolean(
@@ -36,7 +41,7 @@ export class VideoControls extends Adw.Bin {
             "inhibit-hide",
             "Inhibit Hide",
             "Inhibit the hiding of the controls, for example when the mouse is over them.",
-            GObject.ParamFlags.READWRITE,
+            GObject.ParamFlags.READABLE,
             true,
           ),
         },
@@ -45,20 +50,37 @@ export class VideoControls extends Adw.Bin {
     );
   }
 
-  private _multi_layout_view!: Adw.MultiLayoutView;
   private _play_button!: Gtk.Button;
   private _progress_label!: Gtk.Label;
   private _duration_label!: Gtk.Label;
-  private _menu_button!: Gtk.MenuButton;
+  private _window_title!: Adw.WindowTitle;
+  private _volume_button!: Gtk.MenuButton;
+  private _more_button!: Gtk.MenuButton;
+  private _toolbar_box!: Gtk.Box;
+  private _clamp!: Adw.Clamp;
 
-  inhibit_hide = false;
-
-  get show_mini(): boolean {
-    return this._multi_layout_view.layout_name === "mini";
+  get show_mini() {
+    return this._toolbar_box.has_css_class("sharp-corners");
   }
 
-  set show_mini(show: boolean) {
-    this._multi_layout_view.layout_name = show ? "mini" : "full";
+  set show_mini(value: boolean) {
+    if (this.show_mini == value) return;
+
+    if (value) {
+      this._toolbar_box.add_css_class("sharp-corners");
+
+      this._clamp.margin_bottom =
+        this._clamp.margin_start =
+        this._clamp.margin_end =
+          0;
+    } else {
+      this._toolbar_box.remove_css_class("sharp-corners");
+
+      this._clamp.margin_bottom =
+        this._clamp.margin_start =
+        this._clamp.margin_end =
+          6;
+    }
   }
 
   private setup_player() {
@@ -91,18 +113,13 @@ export class VideoControls extends Adw.Bin {
       /// @ts-expect-error incorrect types
       player.bind_property_full(
         "media-info",
-        this._menu_button,
+        this._more_button,
         "menu-model",
         GObject.BindingFlags.SYNC_CREATE,
         (_, media_info) => {
           const song = player.now_playing?.object.song;
 
           if (media_info && song) {
-            GLib.idle_add(GLib.PRIORITY_DEFAULT_IDLE, () => {
-              const popover = this._menu_button.popover as Gtk.PopoverMenu;
-              popover.add_child(new VolumeControls(), "volume-controls");
-              return GLib.SOURCE_REMOVE;
-            });
             return [true, generate_song_menu(song, media_info)];
           } else {
             return [true, null];
@@ -110,20 +127,56 @@ export class VideoControls extends Adw.Bin {
         },
         null,
       ),
-      this._menu_button.bind_property(
-        "active",
-        this,
-        "inhibit-hide",
+      // @ts-expect-error incorrect types
+      player.bind_property_full(
+        "now-playing",
+        this._window_title,
+        "title",
         GObject.BindingFlags.SYNC_CREATE,
+        () => {
+          const track = player.now_playing?.object.song;
+
+          if (!track) return [false, null];
+          return [true, track.videoDetails.title];
+        },
+        null,
+      ),
+      // @ts-expect-error incorrect types
+      player.bind_property_full(
+        "now-playing",
+        this._window_title,
+        "subtitle",
+        GObject.BindingFlags.SYNC_CREATE,
+        () => {
+          const track = player.now_playing?.object.song;
+
+          if (!track) return [false, null];
+          return [true, track.videoDetails.author];
+        },
+        null,
+      ),
+      // @ts-expect-error incorrect types
+      player.bind_property_full(
+        "volume",
+        this._volume_button,
+        "icon-name",
+        GObject.BindingFlags.SYNC_CREATE,
+        (_, value) => {
+          return [true, get_volume_icon_name(false, value)];
+        },
+        null,
       ),
     );
+  }
+
+  get inhibit_hide() {
+    return this._volume_button.active || this._more_button.active;
   }
 
   private listeners = new SignalListeners();
 
   vfunc_unmap(): void {
     this.listeners.clear();
-    this.inhibit_hide = false;
     super.vfunc_unmap();
   }
 

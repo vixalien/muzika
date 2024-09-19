@@ -1,8 +1,12 @@
 using Gtk 4.0;
 using Adw 1;
 
+Popover volume_popover {
+  $VolumeControls {}
+}
+
 template $VideoControls : Adw.Bin {
-  Adw.Clamp {
+  Adw.Clamp clamp {
     margin-end: 6;
     margin-bottom: 6;
     margin-start: 6;
@@ -10,150 +14,106 @@ template $VideoControls : Adw.Bin {
     maximum-size: 800;
     tightening-threshold: 600;
 
-    Adw.MultiLayoutView multi_layout_view {
-      Adw.Layout {
-        name: "mini";
-        content: Box {
-          orientation: vertical;
+    Box toolbar_box {
+      valign: end;
+      orientation: vertical;
+
+      styles ["osd", "toolbar"]
+
+      CenterBox {
+        margin-top: 3;
+
+        [start]
+        Label progress_label {
+          margin-start: 12;
+          margin-end: 3;
 
           styles [
-            "osd",
-            "toolbar",
+            "numeric",
+            "caption",
           ]
+        }
 
-          Box {
-            orientation: vertical;
+        [center]
+        Adw.WindowTitle window_title {
+          halign: center;
+          hexpand: true;
+          margin-start: 12;
+          margin-end: 12;
+        }
 
-            Adw.LayoutSlot {
-              id: "scale";
-            }
-
-            Box {
-              Adw.LayoutSlot {
-                id: "progress";
-              }
-
-              Separator {
-                hexpand: true;
-
-                styles ["spacer"]
-              }
-
-              Adw.LayoutSlot {
-                id: "duration";
-              }
-            }
-          }
-
-          CenterBox {
-            [center]
-            Adw.LayoutSlot {
-              id: "controls";
-            }
-
-            [end]
-            Adw.LayoutSlot {
-              id: "menu";
-            }
-          }
-        };
-      }
-
-      Adw.Layout {
-        name: "full";
-        content: Box {
-          orientation: horizontal;
+        [end]
+        Label duration_label {
+          margin-start: 3;
+          margin-end: 3;
 
           styles [
-            "osd",
-            "toolbar",
+            "numeric",
+            "caption",
           ]
-
-          Adw.LayoutSlot {
-            id: "controls";
-          }
-
-          Adw.LayoutSlot {
-            id: "progress";
-          }
-
-          Adw.LayoutSlot {
-            id: "scale";
-          }
-
-          Adw.LayoutSlot {
-            id: "duration";
-          }
-
-          Adw.LayoutSlot {
-            id: "menu";
-          }
-        };
+        }
       }
-
-      [scale]
+      
       $PlayerScale scale {}
 
-      [progress]
-      Label progress_label {
-        styles [
-          "numeric",
-          "caption",
-        ]
-      }
-
-      [duration]
-      Label duration_label {
-        styles [
-          "numeric",
-          "caption",
-        ]
-      }
-
-      [controls]
-      Box {
-        spacing: 6;
-        halign: center;
-
-        Button {
-          icon-name: "media-skip-backward-symbolic";
-          tooltip-text: _("Previous");
-          action-name: "queue.previous";
+      CenterBox {
+        [start]
+        MenuButton volume_button {
+          icon-name: "audio-volume-high-symbolic";
+          direction: up;
+          popover: volume_popover;
+          tooltip-text: _("Adjust Volume");
 
           styles [
             "flat",
           ]
         }
 
-        Button play_button {
-          tooltip-text: _("Toggle Play/Pause");
-          icon-name: "media-playback-start-symbolic";
-          action-name: "player.play-pause";
+        [center]
+        Box {
+          spacing: 6;
+
+          Button {
+            icon-name: "media-skip-backward-symbolic";
+            tooltip-text: _("Previous");
+            action-name: "queue.previous";
+
+            styles [
+              "flat",
+            ]
+          }
+
+          Button play_button {
+            tooltip-text: _("Toggle Play/Pause");
+            icon-name: "media-playback-start-symbolic";
+            action-name: "player.play-pause";
+
+            styles [
+              "flat",
+            ]
+          }
+          
+          Button {
+            icon-name: "media-skip-forward-symbolic";
+            tooltip-text: _("Next");
+            action-name: "queue.next";
+
+            styles [
+              "flat",
+            ]
+          }
+        }
+
+        [end]
+        MenuButton more_button {
+          icon-name: "view-more-symbolic";
+          direction: up;
+          tooltip-text: _("More Options");
 
           styles [
             "flat",
           ]
         }
-        
-        Button {
-          icon-name: "media-skip-forward-symbolic";
-          tooltip-text: _("Next");
-          action-name: "queue.next";
-
-          styles [
-            "flat",
-          ]
-        }
-      }
-
-      [menu]
-      MenuButton menu_button {
-        icon-name: "view-more-symbolic";
-        direction: up;
-
-        styles [
-          "flat",
-        ]
       }
     }
   }

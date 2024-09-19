@@ -2,58 +2,132 @@ using Gtk 4.0;
 using Adw 1;
 
 template $VideoPlayerView : Adw.Bin {
-  bottom-bar-height: bind toolbar_view.bottom-bar-height;
+  // bottom-bar-height: bind toolbar_view.bottom-bar-height;
+  bottom-bar-height: 150;
 
-  WindowHandle {
-    Adw.BreakpointBin {
-      width-request: 200;
-      height-request: 200;
-      
-      Adw.Breakpoint {
-        condition ("min-width: 700sp")
+  Adw.BreakpointBin {
+    width-request: 1;
+    height-request: 1;
 
-        setters {
-          controls.show-mini: false;
+    WindowHandle {
+      Overlay {
+        [overlay]
+        Revealer toolbar_revealer {
+          valign: end;
+          transition-type: crossfade;
+
+          $VideoControls controls {
+            show-mini: false;
+          }        
         }
-      }
 
-      Adw.ToolbarView toolbar_view {
-        extend-content-to-top-edge: true;
-        extend-content-to-bottom-edge: true;
-        
-        content: Picture picture {
-          styles ["black-bg"]
-        };
+        [overlay]
+        Revealer header_revealer_start {
+          transition-type: crossfade;
+          valign: start;
+          halign: start;
+          reveal-child: bind toolbar_revealer.reveal-child;
 
-        [top]
-        Adw.Bin {
-          styles ["osd"]
+          WindowHandle {
+            Box header_start {
+              margin-top: 6;
+              margin-bottom: 3;
+              margin-start: 6;
+              margin-end: 3;
+              spacing: 6;
 
-          Adw.HeaderBar {
-            [start]
-            Button collapse {
-              icon-name: "go-down-symbolic";
-              action-name: "win.visible-view";
-              action-target: "'down'";
+              WindowControls window_controls_start {
+                halign: start;
+                visible: bind window_controls_start.empty inverted;
+                side: start;
+
+                styles [
+                  "window-controls-osd"
+                ]
+              }
+              
+              Button button_collapse {
+                hexpand: true;
+                valign: start;
+                halign: start;
+                icon-name: "go-down-symbolic";
+                tooltip-text: _("Exit Video View");
+                action-name: "win.visible-view";
+                action-target: '"down"';
+
+                styles [
+                  "osd",
+                  "circular"
+                ]
+              }
+
+              Button button_fullscreen {
+                hexpand: true;
+                valign: start;
+                halign: start;
+                icon-name: "view-fullscreen-symbolic";
+                tooltip-text: _("Toggle Fullscreen");
+                action-name: "win.fullscreen";
+
+                styles [
+                  "osd",
+                  "circular"
+                ]
+              }
             }
-
-            [end]
-            Button fullscreen {
-              icon-name: "view-fullscreen-symbolic";
-              action-name: "win.fullscreen";
-            }
-
-            title-widget: Adw.WindowTitle window_title {
-            };
           }
         }
 
-        [bottom]
-        $VideoControls controls {
-          notify::inhibit-hide => $extend_ui_visible_time();
+        [overlay]
+        Revealer header_revealer_end {
+          transition-type: crossfade;
+          valign: start;
+          halign: end;
+          reveal-child: bind toolbar_revealer.reveal-child;
+
+          WindowHandle {
+            Box header_end {
+              margin-top: 6;
+              margin-bottom: 3;
+              margin-end: 6;
+              margin-start: 3;
+              spacing: 6;
+
+              WindowControls window_controls_end {
+                halign: end;
+                visible: bind window_controls_end.empty inverted;
+                side: end;
+
+                styles [
+                  "window-controls-osd"
+                ]
+              }
+            }
+          }
+        }
+        
+        Picture picture {
+          styles ["black-bg"]
         }
       }
     }
+
+    Adw.Breakpoint {
+      condition ("max-width: 520sp")
+
+      setters {
+        controls.show-mini: true;
+      }
+    }
+  }
+
+  GestureClick {
+    button: 1;
+    released => $on_primary_click_released_cb();
+  }
+
+  EventControllerMotion motion {
+    motion => $on_motion_cb();
   }
 
   EventControllerKey {

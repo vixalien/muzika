@@ -9,10 +9,10 @@ export function seconds_to_string(seconds: number) {
   let string = "";
 
   if (hours > 0) {
-    string += hours.toString().padStart(2, "0") + ":";
+    string += hours.toString().padStart(2, "0") + "∶";
   }
 
-  string += minutes.toString().padStart(2, "0") + ":";
+  string += minutes.toString().padStart(2, "0") + "∶";
 
   string += seconds.toString().padStart(2, "0");
 
