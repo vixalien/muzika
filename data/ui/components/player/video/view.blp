@@ -56,28 +56,18 @@ template $VideoPlayerView : Adw.Bin {
     }
   }
 
+  EventControllerKey {
+    propagation-phase: capture;
+    key-pressed => $key_pressed_cb();
+  }
+
   ShortcutController {
     scope: managed;
-
-    Shortcut {
-      trigger: "p";
-      action: "action(player.play-pause)";
-    }
 
     Shortcut {
       trigger: "Escape";
       action: "action(win.visible-view)";
       arguments: "'main'";
-    }
-
-    Shortcut {
-      trigger: "plus";
-      action: "action(player.volume-up)";
-    }
-
-    Shortcut {
-      trigger: "minus";
-      action: "action(player.volume-down)";
     }
   }
 }

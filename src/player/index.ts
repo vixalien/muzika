@@ -465,8 +465,12 @@ export class MuzikaPlayer extends MuzikaMediaStream {
         },
       },
       {
-        name: "volume-up",
-        activate: () => {
+        name: "increase-volume",
+        parameter_type: "i",
+        activate: (_, param) => {
+          if (param) {
+            this.increase_volume(param.get_int32());
+          }
           this.cubic_volume = Math.min(1, this.cubic_volume + 0.1);
         },
       },
@@ -474,24 +478,6 @@ export class MuzikaPlayer extends MuzikaMediaStream {
         name: "volume-down",
         activate: () => {
           this.cubic_volume = Math.max(0, this.cubic_volume - 0.1);
-        },
-      },
-      {
-        name: "skip-backwards",
-        activate: () => {
-          this.seek(Math.max(this.timestamp - 10000000, 0));
-        },
-      },
-      {
-        name: "skip-forward",
-        activate: () => {
-          const new_timestamp = this.timestamp + 10000000;
-
-          if (new_timestamp < this.duration) {
-            this.seek(new_timestamp);
-          } else {
-            this.queue.next();
-          }
         },
       },
     ]);
@@ -507,6 +493,20 @@ export class MuzikaPlayer extends MuzikaMediaStream {
     this._action_group = action_group;
 
     return action_group;
+  }
+
+  skip_seconds(seconds: number) {
+    const new_timestamp = Math.max(this.timestamp + seconds * Gst.MSECOND, 0);
+
+    if (new_timestamp < this.duration) {
+      this.seek(new_timestamp);
+    } else {
+      this.queue.next();
+    }
+  }
+
+  increase_volume(value: number) {
+    this.cubic_volume += value;
   }
 
   private set_subtitle_index(index: number) {

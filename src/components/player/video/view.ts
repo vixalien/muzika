@@ -201,6 +201,30 @@ export class VideoPlayerView extends Adw.Bin {
 
   listeners = new SignalListeners();
 
+  private key_pressed_cb(_controller: Gtk.EventControllerKey, keyval: number) {
+    const player = get_player();
+
+    if (keyval === Gdk.KEY_space || keyval === Gdk.KEY_p) {
+      player.play_pause();
+    } else if (keyval === Gdk.KEY_Left) {
+      player.skip_seconds(-10);
+    } else if (keyval === Gdk.KEY_Right) {
+      player.skip_seconds(10);
+    } else if (keyval === Gdk.KEY_n) {
+      player.queue.next();
+    } else if (keyval === Gdk.KEY_b) {
+      player.queue.previous();
+    } else if (keyval === Gdk.KEY_plus) {
+      player.cubic_volume += 0.1;
+    } else if (keyval === Gdk.KEY_minus) {
+      player.cubic_volume -= 0.1;
+    } else {
+      return Gdk.EVENT_PROPAGATE;
+    }
+
+    return Gdk.EVENT_STOP;
+  }
+
   vfunc_map() {
     super.vfunc_map();
 
