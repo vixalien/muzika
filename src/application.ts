@@ -2,6 +2,7 @@ import GObject from "gi://GObject";
 import Gio from "gi://Gio";
 import Adw from "gi://Adw";
 import GLib from "gi://GLib";
+import GLibUnix from "gi://GLibUnix";
 import Gtk from "gi://Gtk?version=4.0";
 
 import "src/muse.js";
@@ -94,7 +95,7 @@ export class Application extends Adw.Application {
 
     this.init_actions();
 
-    GLib.unix_signal_add(
+    GLibUnix.signal_add_full(
       GLib.PRIORITY_DEFAULT,
       // SIGINT
       2,
