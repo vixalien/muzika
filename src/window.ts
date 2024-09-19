@@ -48,7 +48,7 @@ import { VideoPlayerView } from "./components/player/video/view.js";
 import { SaveToPlaylistDialog } from "./components/playlist/save-to-playlist.js";
 import { MuzikaShell } from "./layout/shell.js";
 import { WindowSidebar } from "./layout/sidebar.js";
-import { set_background_status } from "./util/portals.js";
+import { MuzikaBackgroundController } from "./util/controllers/background.js";
 
 GObject.type_ensure(MuzikaShell.$gtype);
 GObject.type_ensure(PlayerView.$gtype);
@@ -95,6 +95,8 @@ export class Window extends Adw.ApplicationWindow {
   private _navigation_view!: Adw.NavigationView;
   private _main_stack!: Gtk.Stack;
   private toast_css_provider: Gtk.CssProvider;
+
+  private background_controller = new MuzikaBackgroundController();
 
   navigator: Navigator;
   toast_overlay!: Adw.ToastOverlay;
@@ -154,11 +156,18 @@ export class Window extends Adw.ApplicationWindow {
 
     this.add_actions();
 
-    this.connect("notify::visible", () => {
-      if (!this.visible) {
-        set_background_status();
-      }
-    });
+    // Hide the window when we have an application hold
+    player.hold.bind_property(
+      "active",
+      this,
+      "hide-on-close",
+      GObject.BindingFlags.SYNC_CREATE,
+    );
+  }
+
+  request_background() {
+    this.background_controller.request(this);
+    this.background_controller.set_status();
   }
 
   add_actions() {

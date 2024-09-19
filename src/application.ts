@@ -14,7 +14,6 @@ import { MuzikaPlayer } from "./player/index.js";
 import { MPRIS } from "./mpris.js";
 import { MuzikaPreferencesDialog } from "./pages/preferences.js";
 import { get_language_string, set_muse_lang } from "./util/language.js";
-import { request_background } from "./util/portals.js";
 
 export class Application extends Adw.Application {
   window?: Window;
@@ -166,8 +165,7 @@ export class Application extends Adw.Application {
     }
 
     this.window.present();
-
-    request_background();
+    this.window.request_background();
   }
 }
 

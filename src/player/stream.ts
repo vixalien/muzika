@@ -9,7 +9,7 @@ import GstAudio from "gi://GstAudio";
 import GstPbUtils from "gi://GstPbutils";
 
 import { add_toast } from "src/util/window";
-import { hold_application, release_application } from "src/util/hold";
+import { MuzikaHoldController } from "src/util/controllers/hold";
 
 import { MuzikaPlaySignalAdapter } from "./signal-adapter";
 
@@ -65,6 +65,7 @@ export class MuzikaMediaStream extends Gtk.MediaStream {
   }
 
   paintable!: Gdk.Paintable;
+  hold = new MuzikaHoldController();
 
   constructor() {
     super();
@@ -299,11 +300,9 @@ export class MuzikaMediaStream extends Gtk.MediaStream {
     }
 
     // close to the tray when we are playing something
-    if (state == GstPlay.PlayState.PLAYING) {
-      hold_application();
-    } else {
-      release_application();
-    }
+    this.hold.active =
+      state == GstPlay.PlayState.BUFFERING ||
+      state == GstPlay.PlayState.PLAYING;
   }
 
   private error_cb(_play: GstPlay.Play, error: GLib.Error): void {
