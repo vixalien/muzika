@@ -43,6 +43,7 @@ jobs:
 
       - name: Setup Flatpak SDK Extensions
         run: |
+          flatpak --system update -y --noninteractive
           flatpak --system install -y --noninteractive flathub org.freedesktop.Sdk.Extension.node20/${{ matrix.arch }}/24.08
 
       - name: Build
