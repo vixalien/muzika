@@ -422,6 +422,7 @@ export class Queue extends GObject.Object {
           return this.add_song_action_cb(url.pathname.split(","), {
             next: params.has("next"),
             shuffle: params.has("shuffle"),
+            radio: true,
             play: true,
           });
         },
@@ -438,6 +439,7 @@ export class Queue extends GObject.Object {
           return this.add_song_action_cb(url.pathname.split(","), {
             next: params.has("next"),
             shuffle: params.has("shuffle"),
+            radio: params.has("radio"),
           }).catch(console.error);
         },
       },
