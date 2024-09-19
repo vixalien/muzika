@@ -13,7 +13,12 @@ export class MuzikaPreferencesDialog extends Adw.PreferencesDialog {
       {
         GTypeName: "MuzikaPreferencesDialog",
         Template: "resource:///com/vixalien/muzika/ui/pages/preferences.ui",
-        InternalChildren: ["audio_quality", "video_quality", "background_play"],
+        InternalChildren: [
+          "audio_quality",
+          "video_quality",
+          "background_play",
+          "inhibit_suspend",
+        ],
       },
       this,
     );
@@ -22,6 +27,7 @@ export class MuzikaPreferencesDialog extends Adw.PreferencesDialog {
   private _video_quality!: Adw.ComboRow;
   private _audio_quality!: Adw.ComboRow;
   private _background_play!: Adw.SwitchRow;
+  private _inhibit_suspend!: Adw.SwitchRow;
 
   constructor() {
     super();
@@ -32,6 +38,13 @@ export class MuzikaPreferencesDialog extends Adw.PreferencesDialog {
     Settings.bind(
       "background-play",
       this._background_play,
+      "active",
+      Gio.SettingsBindFlags.DEFAULT,
+    );
+
+    Settings.bind(
+      "inhibit-suspend",
+      this._inhibit_suspend,
       "active",
       Gio.SettingsBindFlags.DEFAULT,
     );

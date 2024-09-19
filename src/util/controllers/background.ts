@@ -18,7 +18,7 @@ Gio._promisify(
 );
 
 export class MuzikaBackgroundController {
-  portal = new Xdp.Portal();
+  private portal = new Xdp.Portal();
 
   request(window: Gtk.Window) {
     const parent = window ? XdpGtk4.parent_new_gtk(window) : null;

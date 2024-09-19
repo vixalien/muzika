@@ -47,6 +47,11 @@
 			<summary>Background Playback</summary>
 			<description>Keep playing in the background after the main window is closed</description>
 		</key>
+		<key name="inhibit-suspend" type="b">
+			<default>true</default>
+			<summary>Inhibit Suspend</summary>
+			<description>Request that the device does not suspend while playing</description>
+		</key>
 		<key name="width" type="i">
 			<default>1000</default>
 		</key>

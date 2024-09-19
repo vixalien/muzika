@@ -14,6 +14,7 @@ import { MuzikaHoldController } from "src/util/controllers/hold";
 import { MuzikaPlaySignalAdapter } from "./signal-adapter";
 
 import { Queue } from "./queue";
+import { MuzikaInhibitController } from "src/util/controllers/inhibit";
 
 export class MuzikaMediaStream extends Gtk.MediaStream {
   static {
@@ -65,7 +66,8 @@ export class MuzikaMediaStream extends Gtk.MediaStream {
   }
 
   paintable!: Gdk.Paintable;
-  hold = new MuzikaHoldController();
+  hold_controller = new MuzikaHoldController();
+  inhibit_controller = new MuzikaInhibitController();
 
   constructor() {
     super();
@@ -300,7 +302,8 @@ export class MuzikaMediaStream extends Gtk.MediaStream {
     }
 
     // close to the tray when we are playing something
-    this.hold.active =
+    // TODO: should inhibit IDLE when we are playing video
+    this.hold_controller.active = this.inhibit_controller.active =
       state == GstPlay.PlayState.BUFFERING ||
       state == GstPlay.PlayState.PLAYING;
   }

@@ -157,7 +157,7 @@ export class Window extends Adw.ApplicationWindow {
     this.add_actions();
 
     // Hide the window when we have an application hold
-    player.hold.bind_property(
+    player.hold_controller.bind_property(
       "active",
       this,
       "hide-on-close",

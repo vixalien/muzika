@@ -12,6 +12,11 @@ template $MuzikaPreferencesDialog : Adw.PreferencesDialog {
       Adw.SwitchRow background_play {
         title: _("Background Playback");
       }
+      
+      Adw.SwitchRow inhibit_suspend {
+        title: _("Inhibit Suspend");
+        subtitle: _("Request that the device does not suspend while playing");
+      }
     }
 
     Adw.PreferencesGroup {
