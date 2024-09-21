@@ -2,6 +2,7 @@ import Gtk from "gi://Gtk?version=4.0";
 import GObject from "gi://GObject";
 import GLib from "gi://GLib";
 import Adw from "gi://Adw";
+import Graphene from "gi://Graphene";
 
 import { get_more_search_results, get_option, search } from "libmuse";
 import type { Filter, SearchOptions, SearchResults, SearchRuns } from "libmuse";
@@ -48,9 +49,9 @@ export class SearchPage
           "scrolled",
           "context_label",
           "scope_window",
-          "toggle_group",
           "filter_window",
-          "filter_box",
+          "scope_toggles",
+          "filter_toggles",
         ],
       },
       this,
@@ -65,10 +66,11 @@ export class SearchPage
   private _scrolled!: Gtk.ScrolledWindow;
   private _context_label!: Gtk.Label;
   private _scope_window!: Gtk.ScrolledWindow;
-  /// @ts-expect-error needs updated types
-  private _toggle_group!: Adw.ToggleGroup;
   private _filter_window!: Gtk.ScrolledWindow;
-  private _filter_box!: Gtk.Box;
+  /// @ts-expect-error needs updated types
+  private _scope_toggles!: Adw.ToggleGroup;
+  /// @ts-expect-error needs updated types
+  private _filter_toggles!: Adw.ToggleGroup;
 
   results?: SearchResults;
   args: Parameters<typeof search> = [""];
@@ -85,15 +87,15 @@ export class SearchPage
     }
 
     this._scope_window.visible = true;
-    this._toggle_group.active_name = this.get_active_scope();
+    this._scope_toggles.active_name = this.get_active_scope();
   }
 
   private get_active_scope() {
     return this.args[1]?.scope ?? "catalog";
   }
 
-  private on_active_toggle_group_changed_cb() {
-    const scope = this._toggle_group.active_name;
+  private on_scope_changed_cb() {
+    const scope = this._scope_toggles.active_name;
     if (scope === this.get_active_scope()) return;
 
     const url = search_args_to_url(
@@ -106,43 +108,51 @@ export class SearchPage
       true,
     );
 
-    this.activate_action("navigator.visit", GLib.Variant.new_string(url));
+    this.activate_action("navigator.replace", GLib.Variant.new_string(url));
   }
 
   show_filter_tabs() {
     if (!this.results?.filters || this.results?.filters.length === 0) return;
 
-    this._filter_window.visible = true;
-
     this.results.filters
       // sort selected first
       .sort((a, b) => {
-        if (a === this.args[1]?.filter) return -1;
-        if (b === this.args[1]?.filter) return 1;
+        /// @ts-expect-error we alaways want this first
+        if (a === "all") return -1;
+        if (a === this.get_active_filter()) return -1;
+        if (b === this.get_active_filter()) return 1;
         return 0;
       })
       .forEach((filter) => {
-        const selected = this.args[1]?.filter === filter;
-
-        const url = search_args_to_url(
-          this.args[0],
-          {
-            ...this.args[1],
-            filter: selected ? undefined : (filter ?? undefined),
-          },
-          true,
-        );
-
-        this._filter_box.append(
-          new Gtk.ToggleButton({
-            label: filter_to_string(filter),
-            css_classes: ["chip"],
-            action_name: "navigator.replace",
-            action_target: GLib.Variant.new("s", url),
-            active: selected,
-          }),
-        );
+        const toggle = new Adw.Toggle({
+          name: filter,
+          label: filter_to_string(filter),
+        });
+        this._filter_toggles.add(toggle);
       });
+
+    this._filter_window.visible = true;
+    this._filter_toggles.active_name = this.get_active_filter();
+  }
+
+  private get_active_filter() {
+    return this.args[1]?.filter ?? "all";
+  }
+
+  private on_filter_changed_cb() {
+    const filter = this._filter_toggles.active_name;
+    if (filter === this.get_active_filter()) return;
+
+    const url = search_args_to_url(
+      this.args[0],
+      {
+        ...this.args[1],
+        filter: filter === "all" ? undefined : filter,
+      },
+      true,
+    );
+
+    this.activate_action("navigator.replace", GLib.Variant.new_string(url));
   }
 
   show_did_you_mean() {
