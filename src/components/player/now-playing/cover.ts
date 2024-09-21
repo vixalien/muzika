@@ -20,8 +20,10 @@ import {
   bind_track_title,
 } from "src/player/helpers";
 import { get_button_props } from "src/util/menu/like";
+import { MuzikaMarquee } from "src/components/marquee";
 
 GObject.type_ensure(MuzikaNPVolumeControl.$gtype);
+GObject.type_ensure(MuzikaMarquee.$gtype);
 
 export class MuzikaNPCover extends Adw.Bin {
   static {

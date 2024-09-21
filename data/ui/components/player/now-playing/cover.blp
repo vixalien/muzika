@@ -92,19 +92,13 @@ template $MuzikaNPCover : Adw.Bin {
               spacing: 3;
               hexpand: true;
 
-              Label title {
-                use-markup: true;
-                xalign: 0;
-                wrap: true;
+              $MuzikaMarquee title {
                 activate-link => $activate_link_cb();
 
                 styles ["song-title", "flat-links"]
               }
 
-              Label subtitle {
-                use-markup: true;
-                xalign: 0;
-                wrap: true;
+              $MuzikaMarquee subtitle {
                 activate-link => $activate_link_cb();
 
                 styles ["song-artist", "flat-links", "dim-label"]
