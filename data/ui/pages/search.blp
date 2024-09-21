@@ -30,10 +30,27 @@ template $SearchPage : Adw.Bin {
           // don't show the scrollbar, but allow scrolling
           hscrollbar-policy: external;
 
-          $InlineTabSwitcher scope_switcher {
+          Adw.ToggleGroup toggle_group {
             halign: start;
             margin-start: 12;
             margin-end: 12;
+
+            Adw.Toggle {
+              name: "catalog";
+              label: _("Catalog");
+            }
+
+            Adw.Toggle {
+              name: "library";
+              label: _("Library");
+            }
+
+            Adw.Toggle {
+              name: "uploads";
+              label: _("Uploads");
+            }
+
+            notify::active-name => $on_active_toggle_group_changed_cb();
           }
         }
 

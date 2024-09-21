@@ -9,7 +9,6 @@ import type { Filter, SearchOptions, SearchResults, SearchRuns } from "libmuse";
 import { SearchSection } from "../components/search/section.js";
 import { TopResultSection } from "../components/search/topresultsection.js";
 import { Paginator } from "../components/paginator.js";
-import { InlineTabSwitcher } from "../components/inline-tab-switcher.js";
 import { MuzikaPageWidget, PageLoadContext } from "src/navigation.js";
 import { escape_label } from "src/util/text.js";
 import {
@@ -31,8 +30,6 @@ interface SearchData {
   args: Parameters<typeof search>;
 }
 
-GObject.type_ensure(InlineTabSwitcher.$gtype);
-
 export class SearchPage
   extends Adw.Bin
   implements MuzikaPageWidget<SearchData, SearchState>
@@ -51,7 +48,7 @@ export class SearchPage
           "scrolled",
           "context_label",
           "scope_window",
-          "scope_switcher",
+          "toggle_group",
           "filter_window",
           "filter_box",
         ],
@@ -68,7 +65,8 @@ export class SearchPage
   private _scrolled!: Gtk.ScrolledWindow;
   private _context_label!: Gtk.Label;
   private _scope_window!: Gtk.ScrolledWindow;
-  private _scope_switcher!: InlineTabSwitcher;
+  /// @ts-expect-error needs updated types
+  private _toggle_group!: Adw.ToggleGroup;
   private _filter_window!: Gtk.ScrolledWindow;
   private _filter_box!: Gtk.Box;
 
@@ -87,43 +85,28 @@ export class SearchPage
     }
 
     this._scope_window.visible = true;
-    this._scope_switcher.model.remove_all();
+    this._toggle_group.active_name = this.get_active_scope();
+  }
 
-    const scopes = [
-      [_("Catalog"), undefined],
-      [_("Library"), "library"],
-      [_("Uploads"), "uploads"],
-    ] as const;
+  private get_active_scope() {
+    return this.args[1]?.scope ?? "catalog";
+  }
 
-    scopes.forEach(([label, scope]) => {
-      const selected = this.args[1]?.scope === scope;
+  private on_active_toggle_group_changed_cb() {
+    const scope = this._toggle_group.active_name;
+    if (scope === this.get_active_scope()) return;
 
-      const url = search_args_to_url(
-        this.args[0],
-        {
-          ...this.args[1],
-          scope: scope ?? undefined,
-          filter: undefined,
-        },
-        true,
-      );
+    const url = search_args_to_url(
+      this.args[0],
+      {
+        ...this.args[1],
+        scope: scope ?? undefined,
+        filter: undefined,
+      },
+      true,
+    );
 
-      this._scope_switcher.add_tab({
-        id: label.toLowerCase(),
-        title: label,
-        navigate: !selected ? url : undefined,
-      });
-    });
-
-    const search_options = this.args[1];
-
-    if (search_options?.scope) {
-      if (search_options.scope === "library") {
-        this._scope_switcher.select("library");
-      } else {
-        this._scope_switcher.select("uploads");
-      }
-    }
+    this.activate_action("navigator.visit", GLib.Variant.new_string(url));
   }
 
   show_filter_tabs() {
