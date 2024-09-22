@@ -1,7 +1,7 @@
 import Gtk from "gi://Gtk?version=4.0";
 import GObject from "gi://GObject";
-import GLib from "gi://GLib";
 import Adw from "gi://Adw";
+import Gio from "gi://Gio";
 
 import type { QueueTrack } from "libmuse";
 
@@ -11,7 +11,7 @@ import { MuzikaPlayer } from "src/player";
 import { escape_label } from "src/util/text";
 import { get_player } from "src/application";
 import { setup_link_label } from "src/util/label";
-import { list_model_to_array } from "src/util/list";
+import { QueueChip } from "src/player/queue";
 
 export class MuzikaNPQueue extends Gtk.Stack {
   static {
@@ -25,8 +25,8 @@ export class MuzikaNPQueue extends Gtk.Stack {
           "list_view",
           "queue_box",
           "playlist_label",
-          "params",
-          "params_box",
+          "params_window",
+          "param_toggles",
         ],
       },
       this,
@@ -37,12 +37,11 @@ export class MuzikaNPQueue extends Gtk.Stack {
   private _queue_box!: Gtk.Box;
   private _no_queue!: Adw.StatusPage;
   private _playlist_label!: Gtk.Label;
-  private _params!: Gtk.Box;
-  private _params_box!: Gtk.Box;
+  private _params_window!: Gtk.Box;
+  /// @ts-expect-error outdated types
+  private _param_toggles!: Adw.ToggleGroup;
 
-  player: MuzikaPlayer;
-
-  params_map = new Map<string, Gtk.Widget>();
+  private player: MuzikaPlayer;
 
   constructor() {
     super();
@@ -92,13 +91,24 @@ export class MuzikaNPQueue extends Gtk.Stack {
       null,
     );
 
-    this.player.queue.connect("notify::position", () => {
-      if (this.player.queue.position < 0) {
-        this._list_view.model.unselect_all();
-      } else {
-        this._list_view.model.select_item(this.player.queue.position, true);
-      }
-    });
+    /// @ts-expect-error incorrect types here
+    this.player.queue.chips.bind_property_full(
+      "n-items",
+      this._params_window,
+      "visible",
+      GObject.BindingFlags.SYNC_CREATE,
+      (_, n_items) => {
+        return [true, n_items > 0];
+      },
+      null,
+    );
+
+    this.player.queue.bind_property(
+      "active-chip",
+      this._param_toggles,
+      "active-name",
+      GObject.BindingFlags.SYNC_CREATE | GObject.BindingFlags.BIDIRECTIONAL,
+    );
 
     this.player.queue.chips.connect(
       "items-changed",
@@ -111,7 +121,7 @@ export class MuzikaNPQueue extends Gtk.Stack {
     factory.connect("bind", this.bind_cb.bind(this));
     this._list_view.connect("activate", this.activate_cb.bind(this));
 
-    this._list_view.model = Gtk.SingleSelection.new(this.player.queue.list);
+    this._list_view.model = this.player.queue.selection_list;
     this._list_view.factory = factory;
 
     this._list_view.remove_css_class("view");
@@ -120,31 +130,28 @@ export class MuzikaNPQueue extends Gtk.Stack {
     setup_link_label(this._playlist_label);
   }
 
-  update_chips() {
-    this.params_map.clear();
-
-    let first_param: Gtk.Widget | null = null;
-
-    while ((first_param = this._params_box.get_first_child())) {
-      this._params_box.remove(first_param);
+  update_chips(
+    model: Gio.ListModel,
+    position: number,
+    removed: number,
+    added: number,
+  ) {
+    // remove removed items
+    for (let i = 0; i < removed; i++) {
+      this._param_toggles.remove(this._param_toggles.get_toggle(position));
     }
 
-    const chips = list_model_to_array(this.player.queue.chips);
+    // add added items
+    for (let i = 0; i < added; i++) {
+      const chip = model.get_item(position + i) as QueueChip;
 
-    if (chips.length > 0) {
-      this._params.show();
-
-      chips.forEach((chip) => {
-        const button = new Gtk.ToggleButton({
-          label: chip.title,
-          action_target: GLib.Variant.new_string(chip.playlist_id),
-          action_name: `queue.active-chip`,
-        });
-
-        this._params_box.append(button);
+      /// @ts-expect-error outdated types
+      const toggle = new Adw.Toggle({
+        name: chip.playlist_id,
+        label: chip.title,
       });
-    } else {
-      this._params.hide();
+
+      this._param_toggles.add(toggle);
     }
   }
 

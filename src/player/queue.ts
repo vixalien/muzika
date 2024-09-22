@@ -210,6 +210,8 @@ export class Queue extends GObject.Object {
   // original is used to store unshuffled list
   _original: Gio.ListStore<ObjectContainer<QueueTrack>> = new Gio.ListStore();
 
+  selection_list = Gtk.SingleSelection.new(this._list);
+
   get list() {
     return this._list;
   }
@@ -290,24 +292,22 @@ export class Queue extends GObject.Object {
     return this.position < this.list.n_items - 1;
   }
 
-  private _position = -1;
-
   get position() {
-    return this._position;
+    return this.selection_list.selected;
   }
 
-  change_position(position: number, force = false) {
-    if (position === -1) return null;
+  change_position(value: number) {
+    if (value < 0 || value >= this.list.n_items) return null;
 
-    if (position != this._position || force) {
-      this._position = position;
-
-      this.notify("position");
-      this.notify("current");
-      this.notify("current-is-video");
-      this.notify("can-play-next");
-      this.update_action_state();
+    if (value != this.position) {
+      this.selection_list.selected = value;
     }
+
+    this.notify("position");
+    this.notify("current");
+    this.notify("current-is-video");
+    this.notify("can-play-next");
+    this.update_action_state();
   }
 
   _shuffle = false;
@@ -546,11 +546,9 @@ export class Queue extends GObject.Object {
         activate: (_, param) => {
           const playlist_id = param.get_string()[0];
 
-          if (playlist_id) this.change_active_chip(playlist_id);
+          if (playlist_id) this.active_chip = playlist_id;
         },
-        state: GLib.Variant.new_string(
-          this.get_active_chip()?.playlist_id ?? "",
-        ),
+        state: GLib.Variant.new_string(this.active_chip ?? ""),
         bind_state_full: [
           this.chips,
           "selected-item",
@@ -667,7 +665,7 @@ export class Queue extends GObject.Object {
 
     if (options.play) {
       this.preferred_media_type = PreferredMediaType.AUTO;
-      this.change_position(queue.current?.index ?? 0, true);
+      this.change_position(queue.current?.index ?? 0);
     }
 
     return queue;
@@ -709,7 +707,7 @@ export class Queue extends GObject.Object {
 
     if (options.play) {
       this.preferred_media_type = PreferredMediaType.AUTO;
-      this.change_position(0, true);
+      this.change_position(0);
     }
 
     return queue;
@@ -870,22 +868,31 @@ export class Queue extends GObject.Object {
 
     if (counterpart) {
       this.list.splice(this.position, 1, [counterpart]);
-      this.change_position(this.position, true);
+      this.change_position(this.position);
     }
   }
 
-  private change_active_chip(playlist_id: string) {
+  set active_chip(playlist_id: string | null) {
+    if (playlist_id == this.active_chip) return;
+
+    if (playlist_id === null) {
+      this.chips.unselect_all();
+      this.notify("active-chip");
+      return;
+    }
+
     const index = list_model_to_array(this.chips).findIndex((chip) => {
       return chip.playlist_id === playlist_id;
     });
 
-    if (index >= 0) {
-      this.chips.select_item(index, true);
-    }
+    if (index < 0) return;
+
+    this.chips.select_item(index, true);
+    this.notify("active-chip");
   }
 
-  private get_active_chip() {
-    return this._chips.selected_item as QueueChip;
+  get active_chip() {
+    return (this._chips.selected_item as QueueChip)?.playlist_id ?? null;
   }
 
   private update_action_state() {

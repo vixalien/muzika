@@ -45,19 +45,16 @@ template $MuzikaNPQueue : Stack {
       }
     }
 
-    ScrolledWindow params {
+    ScrolledWindow params_window {
       vscrollbar-policy: never;
       hscrollbar-policy: external;
 
-      Box params_box {
+      Adw.ToggleGroup param_toggles {
         valign: start;
         margin-start: 9;
         margin-end: 9;
         margin-bottom: 9;
-
-        styles [
-          "linked",
-        ]
+        can-shrink: false;
       }
     }
 
