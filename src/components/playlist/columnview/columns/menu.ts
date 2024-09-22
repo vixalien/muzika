@@ -56,7 +56,7 @@ class ExtraMenuButtons extends Adw.Bin {
     const box = new Gtk.Box({
       orientation: Gtk.Orientation.HORIZONTAL,
       spacing: 3,
-      margin_end: 14
+      margin_end: 14,
     });
 
     box.append(this.like);
