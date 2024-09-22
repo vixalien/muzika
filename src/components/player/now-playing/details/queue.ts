@@ -2,6 +2,7 @@ import Gtk from "gi://Gtk?version=4.0";
 import GObject from "gi://GObject";
 import Adw from "gi://Adw";
 import Gio from "gi://Gio";
+import GLib from "gi://GLib";
 
 import type { QueueTrack } from "libmuse";
 
@@ -12,6 +13,7 @@ import { escape_label } from "src/util/text";
 import { get_player } from "src/application";
 import { setup_link_label } from "src/util/label";
 import { QueueChip } from "src/player/queue";
+import { list_model_to_array } from "src/util/list";
 
 export class MuzikaNPQueue extends Gtk.Stack {
   static {
@@ -184,5 +186,12 @@ export class MuzikaNPQueue extends Gtk.Stack {
       null,
     );
     super.vfunc_map();
+  }
+
+  private on_queue_saved_cb() {
+    const tracks = list_model_to_array(this.player.queue.list);
+    const ids = tracks.map((track) => track.object.videoId).join(",");
+
+    this.activate_action("win.add-to-playlist", GLib.Variant.new_string(ids));
   }
 }
