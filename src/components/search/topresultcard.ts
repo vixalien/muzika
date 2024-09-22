@@ -80,8 +80,6 @@ export class TopResultCard extends Adw.Bin {
     this._result = result;
     this.setup_listeners();
 
-    this._result?.type;
-
     // only show dynamic image
     this.dynamic_image.action_locked = this._result
       ? !["song", "video", "playlist"].includes(this._result.type)

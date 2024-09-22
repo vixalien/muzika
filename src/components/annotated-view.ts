@@ -286,9 +286,9 @@ export class AnnotatedView extends Gtk.Widget {
   }
 
   vfunc_snapshot(snapshot: Gtk.Snapshot): void {
-    this._header && this.snapshot_child(this._header, snapshot);
-    this._child && this.snapshot_child(this._child, snapshot);
-    this._footer && this.snapshot_child(this._footer, snapshot);
+    if (this._header) this.snapshot_child(this._header, snapshot);
+    if (this._child) this.snapshot_child(this._child, snapshot);
+    if (this._footer) this.snapshot_child(this._footer, snapshot);
   }
 
   private set_adjustment_values(

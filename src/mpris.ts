@@ -548,9 +548,9 @@ export class MPRIS extends DBusInterface {
 
     try {
       return this._get_all(interface_name)?.[prop as Property];
-    } catch (e) {
+    } catch (error) {
       const message = `MPRIS does not handle ${iface}.${prop}`;
-      console.warn(message);
+      console.warn(message, error);
       throw new GLib.Error(GLib.LOG_DOMAIN, 0, message);
     }
   }

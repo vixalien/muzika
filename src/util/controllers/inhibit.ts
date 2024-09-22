@@ -44,7 +44,7 @@ export class MuzikaInhibitController extends GObject.Object {
   inhibit(video = false) {
     if (this.active === true) {
       // only re-inhibit if we are now inhibiting video
-      if (this.last_was_video !== video) this.uninhibit;
+      if (this.last_was_video !== video) this.uninhibit();
       else return;
     }
 
