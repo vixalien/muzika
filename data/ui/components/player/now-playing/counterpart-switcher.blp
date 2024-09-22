@@ -1,21 +1,16 @@
 using Gtk 4.0;
 using Adw 1;
 
-template $MuzikaNPCounterpartSwitcher : Box {
-  styles ["linked"]
+template $MuzikaNPCounterpartSwitcher : Adw.Bin {
+  Adw.ToggleGroup toggle_group {
+    Adw.Toggle {
+      name: "song";
+      label: _("Song");
+    }
 
-  ToggleButton music_counterpart {
-    label: _("Song");
-
-    action-name: "queue.current-is-video";
-    action-target: "false";
-  }
-
-  ToggleButton video_counterpart {
-    label: _("Video");
-    group: music_counterpart;
-
-    action-name: "queue.current-is-video";
-    action-target: "true";
+    Adw.Toggle {
+      name: "video";
+      label: _("Video");
+    }
   }
 }
