@@ -17,10 +17,23 @@ template $HomePage : Adw.Bin {
       vscrollbar-policy: never;
       hscrollbar-policy: external;
 
-      Box moods {
+      Adw.ToggleGroup moods {
         visible: false;
+        margin-start: 6;
+        margin-end: 6;
+        margin-bottom: 6;
+        margin-top: 6;
+        can-shrink: false;
+        halign: start;
 
-        styles ["toolbar"]
+        notify::active-name => $on_mood_changed_cb();
+
+        styles ["flat"]
+
+        Adw.Toggle {
+          name: "home";
+          label: _("Home");
+        }
       }
     }
   

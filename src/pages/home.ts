@@ -49,7 +49,8 @@ export class HomePage
   private _box!: Gtk.Box;
   private _paginator!: Paginator;
   private _carousels!: Gtk.Box;
-  private _moods!: Gtk.Box;
+  /// @ts-expect-error outdated types
+  private _moods!: Adw.ToggleGroup;
 
   home?: Home;
 
@@ -79,12 +80,12 @@ export class HomePage
     this.loading = false;
     this._paginator.can_paginate = home.continuation != null;
 
+    this.home = home;
+
     this.append_contents(home.results);
     this.show_moods(home.moods);
 
     // this.check_height_and_load();
-
-    this.home = home;
   }
 
   get_state() {
@@ -136,17 +137,37 @@ export class HomePage
     this._moods.visible = true;
 
     for (const mood of moods) {
-      const button = new Gtk.ToggleButton({
+      /// @ts-expect-error outdated types
+      const toggle = new Adw.Toggle({
+        name: mood.params,
         label: mood.name,
-        action_name: "navigator.replace",
-        action_target: GLib.Variant.new_string(
-          mood.selected ? "muzika:home" : `muzika:home?params=${mood.params}`,
-        ),
-        active: mood.selected,
       });
 
-      this._moods.append(button);
+      this._moods.add(toggle);
     }
+
+    this._moods.active_name = this.get_active_mood_param();
+  }
+
+  private get_active_mood_param() {
+    return (
+      this.home?.moods.find((mood) => mood.selected === true)?.params ?? "home"
+    );
+  }
+
+  private on_mood_changed_cb() {
+    const param = this._moods.active_name;
+
+    if (param === this.get_active_mood_param()) return;
+
+    console.log("navigating");
+
+    this.activate_action(
+      "navigator.replace",
+      GLib.Variant.new_string(
+        param === "home" ? "muzika:home" : `muzika:home?params=${param}`,
+      ),
+    );
   }
 
   check_if_almost_scrolled() {
