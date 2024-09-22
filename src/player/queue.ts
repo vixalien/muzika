@@ -8,7 +8,7 @@ import {
   get_queue_tracks,
   QueueChip as MuseQueueChip,
 } from "libmuse";
-import type { Queue as MuseQueue, QueueTrack } from "libmuse";
+import type { LikeStatus, Queue as MuseQueue, QueueTrack } from "libmuse";
 
 import { ObjectContainer } from "../util/objectcontainer.js";
 import {
@@ -19,8 +19,9 @@ import {
 import { Application, get_player } from "src/application.js";
 import { list_model_to_array } from "src/util/list.js";
 import { ngettext } from "gettext";
-import { add_toast } from "src/util/window.js";
+import { add_toast, add_toast_full } from "src/util/window.js";
 import { clone } from "lodash-es";
+import { change_song_rating } from "src/util/menu/like.js";
 
 const vprintf = imports.format.vprintf;
 
@@ -305,6 +306,7 @@ export class Queue extends GObject.Object {
       this.notify("current");
       this.notify("current-is-video");
       this.notify("can-play-next");
+      this.update_action_state();
     }
   }
 
@@ -367,7 +369,9 @@ export class Queue extends GObject.Object {
     );
   }
 
-  get_action_group() {
+  action_group = this.get_action_group();
+
+  private get_action_group() {
     const action_group = Gio.SimpleActionGroup.new();
 
     (action_group.add_action_entries as AddActionEntries)([
@@ -388,7 +392,7 @@ export class Queue extends GObject.Object {
               shuffle: params.has("shuffle"),
               play: true,
             },
-          );
+          ).catch(console.log);
         },
       },
       {
@@ -407,7 +411,7 @@ export class Queue extends GObject.Object {
               next: params.has("next"),
               shuffle: params.has("shuffle"),
             },
-          );
+          ).catch(console.log);
         },
       },
       {
@@ -441,6 +445,27 @@ export class Queue extends GObject.Object {
             shuffle: params.has("shuffle"),
             radio: params.has("radio"),
           }).catch(console.error);
+        },
+      },
+      {
+        name: "like-song",
+        state: "false",
+        parameter_type: "b",
+        change_state: (action) => {
+          const state = action.get_state()?.get_boolean();
+          if (state === undefined) return;
+          this.rate_song(!state ? "LIKE" : "INDIFFERENT");
+        },
+      },
+      {
+        name: "dislike-song",
+        state: "false",
+        parameter_type: "b",
+        change_state: (action) => {
+          const state = action.get_state()?.get_boolean();
+          if (state === undefined) return;
+          this.rate_song(!state ? "DISLIKE" : "INDIFFERENT");
+          if (!state) this.next();
         },
       },
     ]);
@@ -861,6 +886,50 @@ export class Queue extends GObject.Object {
 
   private get_active_chip() {
     return this._chips.selected_item as QueueChip;
+  }
+
+  private update_action_state() {
+    if (!this.current?.object) return;
+
+    (
+      this.action_group.lookup_action("like-song") as Gio.SimpleAction
+    ).set_state(
+      GLib.Variant.new_boolean(this.current.object.likeStatus === "LIKE"),
+    );
+
+    (
+      this.action_group.lookup_action("dislike-song") as Gio.SimpleAction
+    ).set_state(
+      GLib.Variant.new_boolean(this.current.object.likeStatus === "DISLIKE"),
+    );
+  }
+
+  private async rate_song(status: LikeStatus) {
+    if (!this.current?.object) return;
+
+    const oldStatus = this.current.object.likeStatus,
+      videoId = this.current.object.videoId;
+
+    this.current.object.likeStatus = status;
+    this.update_action_state();
+
+    const toast = await change_song_rating(
+      videoId,
+      status,
+      oldStatus ?? undefined,
+    )
+      .catch((error) => {
+        if (!this.current) return;
+        this.current.object.likeStatus = oldStatus;
+        this.update_action_state();
+
+        console.error("An error happened while rating song", error);
+
+        add_toast(_("An error happened while rating song"));
+      })
+      .then();
+
+    if (toast) add_toast_full(toast);
   }
 }
 

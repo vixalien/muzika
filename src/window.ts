@@ -30,12 +30,7 @@ import Adw from "gi://Adw";
 import GLib from "gi://GLib";
 import Gio from "gi://Gio";
 
-import {
-  edit_song_library_status,
-  get_option,
-  rate_playlist,
-  rate_song,
-} from "libmuse";
+import { edit_song_library_status, get_option, rate_playlist } from "libmuse";
 import type { LikeStatus } from "libmuse";
 
 import { Navigator } from "./navigation.js";
@@ -49,6 +44,7 @@ import { SaveToPlaylistDialog } from "./components/playlist/save-to-playlist.js"
 import { MuzikaShell } from "./layout/shell.js";
 import { WindowSidebar } from "./layout/sidebar.js";
 import { MuzikaBackgroundController } from "./util/controllers/background.js";
+import { change_song_rating } from "./util/menu/like.js";
 
 GObject.type_ensure(MuzikaShell.$gtype);
 GObject.type_ensure(PlayerView.$gtype);
@@ -152,7 +148,7 @@ export class Window extends Adw.ApplicationWindow {
 
     this.insert_action_group("navigator", this.navigator.get_action_group());
     this.insert_action_group("player", player.get_action_group());
-    this.insert_action_group("queue", player.queue.get_action_group());
+    this.insert_action_group("queue", player.queue.action_group);
 
     this.add_actions();
 
@@ -485,35 +481,14 @@ export class Window extends Adw.ApplicationWindow {
     status: LikeStatus,
     oldStatus?: LikeStatus,
   ) {
-    rate_song(videoId, status as LikeStatus)
-      .then(() => {
-        const toast = new Adw.Toast();
-
-        switch (status as LikeStatus) {
-          case "DISLIKE":
-            toast.title = _("Added to disliked songs");
-            break;
-          case "LIKE":
-            toast.title = _("Added to liked songs");
-            toast.button_label = _("Liked songs");
-            toast.action_name = "navigator.visit";
-            toast.action_target = GLib.Variant.new_string("muzika:playlist:LM");
-            break;
-          case "INDIFFERENT":
-            if (oldStatus === "LIKE") {
-              toast.title = _("Removed from liked songs");
-            } else {
-              toast.title = _("Removed from disliked songs");
-            }
-            break;
-        }
-
+    change_song_rating(videoId, status, oldStatus)
+      .then((toast) => {
         this.add_toast_full(toast);
       })
       .catch((error) => {
-        this.add_toast(_("An error happened while rating song"));
-
         console.error("An error happened while rating song", error);
+
+        this.add_toast(_("An error happened while rating song"));
       });
   }
 

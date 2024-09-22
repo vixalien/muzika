@@ -4,8 +4,6 @@ import GObject from "gi://GObject";
 import GLib from "gi://GLib";
 import Adw from "gi://Adw";
 
-import type { LikeStatus } from "libmuse";
-
 import { get_player } from "src/application";
 import { MuzikaPlayer } from "src/player";
 import { SignalListeners } from "src/util/signal-listener";
@@ -19,7 +17,6 @@ import {
   bind_track_artists,
   bind_track_title,
 } from "src/player/helpers";
-import { get_button_props } from "src/util/menu/like";
 import { MuzikaMarquee } from "src/components/marquee";
 
 GObject.type_ensure(MuzikaNPVolumeControl.$gtype);
@@ -43,8 +40,6 @@ export class MuzikaNPCover extends Adw.Bin {
           "repeat_button",
           "expand_button",
           "fullscreen_button",
-          "like_button",
-          "dislike_button",
         ],
       },
       this,
@@ -63,8 +58,6 @@ export class MuzikaNPCover extends Adw.Bin {
   private _repeat_button!: Gtk.ToggleButton;
   private _expand_button!: Gtk.Button;
   private _fullscreen_button!: Gtk.Button;
-  private _like_button!: Gtk.ToggleButton;
-  private _dislike_button!: Gtk.ToggleButton;
 
   constructor() {
     super();
@@ -136,11 +129,17 @@ export class MuzikaNPCover extends Adw.Bin {
     }
   }
 
-  private _pending_animation: Adw.Animation | null = null;
+  private animation = Adw.TimedAnimation.new(
+    this._picture,
+    0,
+    1,
+    400,
+    Adw.PropertyAnimationTarget.new(this._picture, "aspect-ratio"),
+  );
 
   private animate_aspect_ratio() {
-    if (this._pending_animation) {
-      this._pending_animation.skip();
+    if (this.animation.state === Adw.AnimationState.PLAYING) {
+      this.animation.skip();
     }
 
     const current_ratio = this._picture.aspect_ratio;
@@ -148,19 +147,10 @@ export class MuzikaNPCover extends Adw.Bin {
 
     if (new_ratio == current_ratio) return;
 
-    this._pending_animation = Adw.TimedAnimation.new(
-      this._picture,
-      current_ratio,
-      new_ratio,
-      400,
-      Adw.PropertyAnimationTarget.new(this._picture, "aspect-ratio"),
-    );
+    this.animation.value_from = current_ratio;
+    this.animation.value_to = new_ratio;
 
-    this._pending_animation.connect("done", () => {
-      this._pending_animation = null;
-    });
-
-    this._pending_animation.play();
+    this.animation.play();
   }
 
   show_song() {
@@ -168,7 +158,6 @@ export class MuzikaNPCover extends Adw.Bin {
 
     this._overlay_box.visible = this.player.queue.current_is_video;
     this.animate_aspect_ratio();
-    this.update_like_buttons();
   }
 
   /**
@@ -260,72 +249,5 @@ export class MuzikaNPCover extends Adw.Bin {
         return GLib.SOURCE_REMOVE;
       });
     }
-  }
-
-  private updating_like_buttons = false;
-
-  private update_like_buttons() {
-    const song = this.player.queue.current?.object;
-    if (!song) return;
-
-    this.updating_like_buttons = true;
-
-    if (song.likeStatus) {
-      this._like_button.sensitive = this._dislike_button.sensitive = true;
-
-      const props = get_button_props(song.likeStatus || "INDIFFERENT");
-
-      Object.assign(this._like_button, props.like);
-      Object.assign(this._dislike_button, props.dislike);
-    } else {
-      this._like_button.sensitive = this._dislike_button.sensitive = false;
-    }
-
-    this.updating_like_buttons = false;
-  }
-
-  private like_button_toggled(
-    like = true,
-    cb?: (newStatus: LikeStatus) => void,
-  ) {
-    const song = this.player.queue.current?.object;
-    if (!song || this.updating_like_buttons) return;
-
-    let newStatus: LikeStatus;
-
-    if (like) {
-      newStatus = song.likeStatus === "LIKE" ? "INDIFFERENT" : "LIKE";
-    } else {
-      newStatus = song.likeStatus === "DISLIKE" ? "INDIFFERENT" : "DISLIKE";
-    }
-
-    if (newStatus === song.likeStatus) return;
-
-    this.activate_action(
-      "win.rate-song",
-      GLib.Variant.new("(sss)", [
-        song.videoId,
-        newStatus,
-        song.likeStatus ?? "",
-      ]),
-    );
-
-    song.likeStatus = newStatus;
-
-    this.update_like_buttons();
-
-    cb?.(newStatus);
-  }
-
-  private like_cb() {
-    this.like_button_toggled();
-  }
-
-  private dislike_cb() {
-    this.like_button_toggled(false, (status) => {
-      if (status === "DISLIKE") {
-        this.player.queue.next();
-      }
-    });
   }
 }

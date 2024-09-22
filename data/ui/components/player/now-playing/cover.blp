@@ -105,10 +105,11 @@ template $MuzikaNPCover : Adw.Bin {
               }
             }
 
-            ToggleButton like_button {
+            ToggleButton {
               icon-name: "thumbs-up-symbolic";
               valign: center;
-              toggled => $like_cb();
+              action-name: "queue.like-song";
+              action-target: "true";
 
               styles [
                 "circular",
@@ -117,10 +118,11 @@ template $MuzikaNPCover : Adw.Bin {
               ]
             }
 
-            ToggleButton dislike_button {
+            ToggleButton {
               icon-name: "thumbs-down-symbolic";
               valign: center;
-              toggled => $dislike_cb();
+              action-name: "queue.dislike-song";
+              action-target: "true";
 
               styles [
                 "circular",
