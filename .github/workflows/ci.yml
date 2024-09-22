@@ -24,3 +24,6 @@ jobs:
 
       - name: Code Linting
         run: yarn lint
+
+      - name: Typechecking
+        run: yarn typecheck
