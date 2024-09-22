@@ -293,7 +293,9 @@ export class Queue extends GObject.Object {
   }
 
   get position() {
-    return this.selection_list.selected;
+    const selected = this.selection_list.selected;
+    if (selected === Gtk.INVALID_LIST_POSITION) return 0;
+    return selected;
   }
 
   change_position(value: number) {
@@ -626,6 +628,8 @@ export class Queue extends GObject.Object {
         insert = position;
         break;
     }
+
+    insert = Math.min(insert, this.list.n_items);
 
     this.list.splice(
       insert,
