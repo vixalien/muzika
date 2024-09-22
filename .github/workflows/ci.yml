@@ -18,6 +18,8 @@ jobs:
 
       - name: Code Checkout
         uses: actions/checkout@v4
+        with:
+          submodules: recursive
 
       - name: Install Dependencies
         run: yarn install --frozen-lockfile
