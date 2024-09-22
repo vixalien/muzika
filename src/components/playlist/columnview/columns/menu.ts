@@ -53,8 +53,11 @@ class ExtraMenuButtons extends Adw.Bin {
       this.like_button_toggled(false);
     });
 
-    const box = Gtk.Box.new(Gtk.Orientation.HORIZONTAL, 3);
-    box.set_margin_end(14);
+    const box = new Gtk.Box({
+      orientation: Gtk.Orientation.HORIZONTAL,
+      spacing: 3,
+      margin_end: 14
+    });
 
     box.append(this.like);
     box.append(this.dislike);
