@@ -83,7 +83,7 @@ export class MuzikaMarquee extends Gtk.Widget {
             this._animation.play();
           }
 
-          return GLib.SOURCE_CONTINUE;
+          return GLib.SOURCE_REMOVE;
         },
       );
     });
@@ -271,5 +271,5 @@ export class MuzikaMarquee extends Gtk.Widget {
   }
 
   static SPACING = 12;
-  static DELAY = 5;
+  static DELAY = 3;
 }
