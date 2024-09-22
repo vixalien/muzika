@@ -34,6 +34,7 @@ export class Paginator extends Gtk.Revealer {
 
   _stack!: Gtk.Stack;
   _button!: Gtk.Button;
+  /// @ts-expect-error outdated types
   _spinner!: Adw.Spinner;
 
   private _loading = false;

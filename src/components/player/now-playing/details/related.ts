@@ -27,6 +27,7 @@ export class MuzikaNPRelated extends Gtk.Stack {
   }
 
   private _no_related!: Adw.StatusPage;
+  /// @ts-expect-error outdated types
   private _loading!: Adw.Spinner;
   private _related_window!: Gtk.ScrolledWindow;
   private _box!: Gtk.Box;

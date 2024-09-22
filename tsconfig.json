@@ -6,6 +6,7 @@
       "ESNext",
       "DOM"
     ],
+    "skipLibCheck": true,
     "allowJs": true,
     "checkJs": true,
     "outDir": "_build",
@@ -28,5 +29,5 @@
     "gi-types/gi.d.ts",
     "types/ambient.d.ts",
     "src/**/*"
-  ]
+  ],
 }

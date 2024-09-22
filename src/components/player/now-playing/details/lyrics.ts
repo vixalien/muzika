@@ -62,6 +62,7 @@ export class MuzikaNPLyrics extends Gtk.Stack {
   }
 
   private _no_lyrics!: Adw.StatusPage;
+  /// @ts-expect-error outdated types
   private _loading!: Adw.Spinner;
   private _lyrics_window!: Gtk.ScrolledWindow;
   private _view!: Gtk.TextView;

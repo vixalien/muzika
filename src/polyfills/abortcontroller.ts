@@ -93,6 +93,7 @@ export class AbortController implements globalThis.AbortController {
 }
 
 if (!globalThis.AbortSignal) {
+  // @ts-expect-error overriding a global
   globalThis.AbortSignal = AbortSignal;
 }
 

@@ -31,6 +31,7 @@ export class LoginDialog extends Adw.Dialog {
   }
 
   _stack!: Gtk.Stack;
+  /// @ts-expect-error outdated types
   _spinner!: Adw.Spinner;
   _flow!: Gtk.FlowBox;
   _qr!: Gtk.Picture;

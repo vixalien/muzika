@@ -112,6 +112,7 @@ export class DynamicAction extends Adw.Bin {
   private _play_image!: Gtk.Image;
   private _persistent_play_image!: Gtk.Image;
   private _wave!: Gtk.Image;
+  /// @ts-expect-error outdated types
   private _spinner!: Adw.Spinner;
 
   private images = [

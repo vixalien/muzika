@@ -2,7 +2,6 @@ import Gtk from "gi://Gtk?version=4.0";
 import GObject from "gi://GObject";
 import GLib from "gi://GLib";
 import Adw from "gi://Adw";
-import Graphene from "gi://Graphene";
 
 import { get_more_search_results, get_option, search } from "libmuse";
 import type { Filter, SearchOptions, SearchResults, SearchRuns } from "libmuse";
@@ -124,6 +123,7 @@ export class SearchPage
         return 0;
       })
       .forEach((filter) => {
+        // @ts-expect-error outdated types
         const toggle = new Adw.Toggle({
           name: filter,
           label: filter_to_string(filter),
