@@ -78,11 +78,6 @@ menubutton.small-pill>button {
   background-color: transparent;
 }
 
-button.chip {
-  padding: 3px 12px;
-  border-radius: 9999px;
-}
-
 expander-widget.inverted expander:checked {
   -gtk-icon-source: -gtk-icontheme("pan-up-symbolic");
 }
