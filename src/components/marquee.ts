@@ -271,5 +271,5 @@ export class MuzikaMarquee extends Gtk.Widget {
   }
 
   static SPACING = 12;
-  static DELAY = 3;
+  static DELAY = 5;
 }
