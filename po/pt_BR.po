@@ -90,7 +90,7 @@ msgstr "O volume do tocador"
 
 #: data/com.vixalien.muzika.gschema.xml:37
 msgid "Muted"
-msgstr ""
+msgstr "Mudo"
 
 #: data/com.vixalien.muzika.gschema.xml:38
 msgid "Whether to mute all media"
@@ -106,19 +106,19 @@ msgstr ""
 
 #: data/com.vixalien.muzika.gschema.xml:47
 msgid "Audio Quality"
-msgstr ""
+msgstr "Qualidade de Áudio"
 
 #: data/com.vixalien.muzika.gschema.xml:48
 msgid "Preferred audio quality."
-msgstr ""
+msgstr "Qualidade de audio preferida"
 
 #: data/com.vixalien.muzika.gschema.xml:52
 msgid "Video Quality"
-msgstr ""
+msgstr "Qualidade de Vídeo"
 
 #: data/com.vixalien.muzika.gschema.xml:53
 msgid "Preferred video quality."
-msgstr ""
+msgstr "Qualidade de vídeo preferida"
 
 #: data/ui/components/carousel/carousel.blp:44
 #: data/ui/components/search/section.blp:23 data/ui/pages/artist.blp:64
@@ -212,7 +212,7 @@ msgstr "Não conseguimos encontrar músicas relacionadas a esta."
 #: data/ui/components/playlist/edit.blp:6
 #: data/ui/components/playlist/edit.blp:11 src/pages/playlist.ts:307
 msgid "Edit Playlist"
-msgstr "Editar playlist"
+msgstr "Editar Playlist"
 
 #: data/ui/components/playlist/edit.blp:14
 msgid "General"
@@ -283,12 +283,12 @@ msgstr "Ir ao Início"
 
 #: data/ui/pages/authentication-error.blp:39 data/ui/pages/error.blp:16
 msgid "Error Details"
-msgstr "Detalhes do erro"
+msgstr "Detalhes do Erro"
 
 #: data/ui/pages/channel.blp:57 src/pages/channel.ts:95
 #: src/pages/channel.ts:100
 msgid "Last 7 days"
-msgstr ""
+msgstr "Últimos 7 dias"
 
 #: data/ui/pages/channel.blp:65
 msgid "Songs on Repeat"
@@ -300,7 +300,7 @@ msgstr "Um erro ocorreu"
 
 #: data/ui/pages/explore.blp:40
 msgid "New releases"
-msgstr ""
+msgstr "Novos lançamentos"
 
 #: data/ui/pages/explore.blp:52 src/endpoints.ts:123
 msgid "Charts"
@@ -308,7 +308,7 @@ msgstr ""
 
 #: data/ui/pages/explore.blp:64 src/endpoints.ts:129 src/pages/explore.ts:48
 msgid "Moods and genres"
-msgstr ""
+msgstr "Climas e gêneros"
 
 #: data/ui/pages/login.blp:14
 msgid "Login"
@@ -344,7 +344,7 @@ msgstr "Tente uma busca diferente"
 
 #: data/ui/window.blp:35
 msgid "Navigation"
-msgstr ""
+msgstr "Navegação"
 
 #: data/ui/window.blp:117
 msgid "Log In"
@@ -425,11 +425,11 @@ msgstr "Repetir todas as canções"
 
 #: src/components/player/full.ts:326
 msgid "Repeat the Current Song"
-msgstr "Repetir a canção atual"
+msgstr "Repetir a Canção Atual"
 
 #: src/components/player/full.ts:330
 msgid "Enable Repeat"
-msgstr "Ativar repetição"
+msgstr "Ativar Repetição"
 
 #: src/components/player/queue.ts:113 src/components/player/queue.ts:123
 msgid "Queue"
@@ -455,7 +455,7 @@ msgstr "Desfazer"
 
 #: src/components/playlist/bar.ts:231
 msgid "Play next"
-msgstr "Tocar próximo"
+msgstr "Tocar na sequência"
 
 #: src/components/playlist/bar.ts:232 src/pages/album.ts:174
 #: src/pages/playlist.ts:331
@@ -535,36 +535,36 @@ msgstr "Playlist"
 
 #: src/endpoints.ts:51
 msgid "Search Results"
-msgstr "Buscar resultados"
+msgstr "Buscar Resultados"
 
 #: src/endpoints.ts:63
 msgid "Library Playlists"
-msgstr "Playlists da biblioteca"
+msgstr "Playlists da Biblioteca"
 
 #: src/endpoints.ts:69
 msgid "Library Albums"
-msgstr "Álbuns da biblioteca"
+msgstr "Álbuns da Biblioteca"
 
 #: src/endpoints.ts:75
 msgid "Library Artists"
-msgstr "Artistas da biblioteca"
+msgstr "Artistas da Biblioteca"
 
 #: src/endpoints.ts:81
 msgid "Library Subscriptions"
-msgstr "Inscrições da biblioteca"
+msgstr "Inscrições da Biblioteca"
 
 #: src/endpoints.ts:87
 msgid "Library Songs"
-msgstr "Canções da biblioteca"
+msgstr "Canções da Biblioteca"
 
 #: src/endpoints.ts:99
 #, fuzzy
 msgid "Artist Albums"
-msgstr "Artistas"
+msgstr "Álbuns do Artista"
 
 #: src/endpoints.ts:105
 msgid "Channel"
-msgstr ""
+msgstr "Canal"
 
 #: src/endpoints.ts:111
 #, fuzzy
@@ -573,11 +573,11 @@ msgstr "Todas as Playlists"
 
 #: src/endpoints.ts:135
 msgid "Mood"
-msgstr ""
+msgstr "Clima"
 
 #: src/endpoints.ts:141
 msgid "New Releases"
-msgstr ""
+msgstr "Novos Lançamentos"
 
 #: src/pages/album.ts:89
 msgid "Other versions"
@@ -627,13 +627,13 @@ msgstr "Top músicas"
 
 #: src/pages/charts.ts:77
 msgid "Top music videos"
-msgstr ""
+msgstr "Top vídeos musicais"
 
 #. TODO: Top artists
 #. this.add_carousel(_("Top artists"), charts.results.artists, true);
 #: src/pages/charts.ts:84
 msgid "Genres"
-msgstr ""
+msgstr "Gêneros"
 
 #: src/pages/charts.ts:85 src/pages/explore.ts:49
 msgid "Trending"
@@ -648,7 +648,7 @@ msgstr ""
 
 #: src/pages/authentication-error.ts:75
 msgid "The page you were trying to access requires you to log in."
-msgstr "A página que você estava tentando acessar requer que você faça login."
+msgstr "A página que você tentou acessar requer que você faça login."
 
 #: src/pages/error.ts:68
 msgid "Unknown error"
@@ -657,7 +657,7 @@ msgstr "Erro desconhecido"
 #. TODO: New albums & singles more
 #: src/pages/explore.ts:46
 msgid "New albums & singles"
-msgstr ""
+msgstr "Novos álbuns e singles"
 
 #: src/pages/library/base.ts:14
 msgid "Recent activity"
@@ -728,7 +728,7 @@ msgstr "Playlists em destaque"
 
 #: src/pages/search.ts:389
 msgid "Profiles"
-msgstr ""
+msgstr "Perfis"
 
 #: src/player/queue.ts:453
 #, c-format
