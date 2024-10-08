@@ -75,9 +75,9 @@ export class MuzikaMediaStream extends Gtk.MediaStream {
     this._play = new GstPlay.Play();
 
     const pipeline = this._play.get_pipeline() as Gst.Pipeline;
-    const flags = pipeline.flags;
+    let flags = pipeline.flags;
     // add download flag
-    // flags |= 0x00000080;
+    flags |= 0x00000080;
     pipeline.flags = flags;
 
     const play_config = this._play.get_config();
