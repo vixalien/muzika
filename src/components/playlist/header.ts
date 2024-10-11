@@ -116,6 +116,8 @@ export class PlaylistHeader extends Gtk.Box {
             ? Gtk.Justification.RIGHT
             : Gtk.Justification.LEFT
           : Gtk.Justification.CENTER;
+
+    this._avatar.size = this._image.pixel_size = value ? 240 : 180;
   }
 
   private on_expander_activate() {
