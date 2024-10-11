@@ -2,11 +2,11 @@ using Gtk 4.0;
 using Adw 1;
 
 template $PlaylistHeader : Box {
-  spacing: 24;
   hexpand: true;
   valign: start;
   margin-start: 12;
   margin-end: 12;
+  spacing: 12;
 
   Stack stack {
     Image image {
@@ -37,6 +37,7 @@ template $PlaylistHeader : Box {
     valign: end;
     orientation: vertical;
     hexpand: true;
+    spacing: 12;
 
     Box {
       orientation: vertical;
@@ -68,7 +69,6 @@ template $PlaylistHeader : Box {
     }
 
     Box submeta {
-      margin-top: 3;
       spacing: 6;
 
       styles [
@@ -97,7 +97,6 @@ template $PlaylistHeader : Box {
     Stack description_stack {
       vhomogeneous: false;
       hhomogeneous: false;
-      margin-top: 24;
 
       Label description {
         hexpand: true;
@@ -117,7 +116,6 @@ template $PlaylistHeader : Box {
 
     Expander more {
       label: _("Read more");
-      margin-top: 10;
       activate => $on_expander_activate();
 
       styles [
@@ -127,7 +125,6 @@ template $PlaylistHeader : Box {
     }
 
     Box buttons {
-      margin-top: 12;
       spacing: 6;
 
       Box primary_buttons {

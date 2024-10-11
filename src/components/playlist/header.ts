@@ -107,16 +107,6 @@ export class PlaylistHeader extends Gtk.Box {
       this._secondary_buttons.halign =
         value ? Gtk.Align.FILL : Gtk.Align.CENTER;
 
-    this._title.justify =
-      this._subtitle.justify =
-      this._description.justify =
-      this._description_long.justify =
-        value
-          ? this.get_direction() === Gtk.TextDirection.RTL
-            ? Gtk.Justification.RIGHT
-            : Gtk.Justification.LEFT
-          : Gtk.Justification.CENTER;
-
     this._avatar.size = this._image.pixel_size = value ? 240 : 180;
   }
 
