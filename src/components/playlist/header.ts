@@ -54,8 +54,6 @@ export class PlaylistHeader extends Gtk.Box {
           "image",
           "explicit",
           "avatar",
-          "primary_buttons",
-          "secondary_buttons",
           "buttons",
         ],
       },
@@ -77,9 +75,8 @@ export class PlaylistHeader extends Gtk.Box {
   private _image!: Gtk.Image;
   private _explicit!: Gtk.Image;
   private _avatar!: Adw.Avatar;
-  private _primary_buttons!: Gtk.Box;
-  private _secondary_buttons!: Gtk.Box;
-  private _buttons!: Gtk.Box;
+  // @ts-expect-error outdated types
+  private _buttons!: Adw.WrapBox;
 
   constructor() {
     super();
@@ -94,18 +91,31 @@ export class PlaylistHeader extends Gtk.Box {
   set show_large_header(value: boolean) {
     if (this.show_large_header === value) return;
 
-    this.orientation = this._buttons.orientation = value
+    this.orientation = value
       ? Gtk.Orientation.HORIZONTAL
       : Gtk.Orientation.VERTICAL;
-
-    this._buttons.spacing = value ? 6 : 12;
 
     this._stack.halign =
       this._submeta.halign =
       this._more.halign =
-      this._primary_buttons.halign =
-      this._secondary_buttons.halign =
         value ? Gtk.Align.FILL : Gtk.Align.CENTER;
+
+    this._buttons.align =
+      this._title.xalign =
+      this._subtitle.xalign =
+      this._description.xalign =
+      this._description_long.xalign =
+        value ? 0 : 0.5;
+
+    this._title.justify =
+      this._subtitle.justify =
+      this._description.justify =
+      this._description_long.justify =
+        value
+          ? this.get_direction() == Gtk.TextDirection.LTR
+            ? Gtk.Justification.LEFT
+            : Gtk.Justification.RIGHT
+          : Gtk.Justification.CENTER;
 
     this._avatar.size = this._image.pixel_size = value ? 240 : 180;
   }
@@ -219,12 +229,8 @@ export class PlaylistHeader extends Gtk.Box {
     child: GObject.Object,
     type?: string | null | undefined,
   ): void {
-    if (type === "primary-button" && child instanceof Gtk.Widget) {
-      this._primary_buttons.visible = true;
-      this._primary_buttons.append(child);
-    } else if (type === "secondary-button" && child instanceof Gtk.Widget) {
-      this._secondary_buttons.visible = true;
-      this._secondary_buttons.append(child);
+    if (type === "button" && child instanceof Gtk.Widget) {
+      this._buttons.append(child);
     } else {
       super.vfunc_add_child(_builder, child, type);
     }

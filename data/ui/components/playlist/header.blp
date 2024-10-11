@@ -9,6 +9,8 @@ template $PlaylistHeader : Box {
   spacing: 12;
 
   Stack stack {
+    halign: center;
+
     Image image {
       valign: start;
       pixel-size: 240;
@@ -124,18 +126,10 @@ template $PlaylistHeader : Box {
       ]
     }
 
-    Box buttons {
-      spacing: 6;
-
-      Box primary_buttons {
-        visible: false;
-        spacing: 6;
-      }
-
-      Box secondary_buttons {
-        visible: false;
-        spacing: 6;
-      }
+    Adw.WrapBox buttons {
+      orientation: horizontal;
+      child-spacing: 6;
+      line-spacing: 6;
     }
   }
 }

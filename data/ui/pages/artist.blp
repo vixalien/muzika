@@ -20,15 +20,6 @@ template $ArtistPage : Adw.Bin {
     content: Adw.BreakpointBin {
       width-request: 200;
       height-request: 200;
-
-      Adw.Breakpoint {
-        condition ("min-width: 800sp")
-
-        setters {
-          shuffle_content.label: _("Shuffle");
-          radio_content.label: _("Radio");
-        }
-      }
       
       Adw.Breakpoint {
         condition ("max-width: 700sp")
@@ -36,9 +27,6 @@ template $ArtistPage : Adw.Bin {
         setters {
           header.show_large_header: false;
           playlist_item_view.show-column-view: false;
-
-          shuffle_content.label: _("Shuffle");
-          radio_content.label: _("Radio");
         }
       }
 
@@ -49,7 +37,6 @@ template $ArtistPage : Adw.Bin {
 
         Adw.Clamp {
           margin-top: 12;
-          margin-bottom: 12;
           tightening-threshold: 1200;
           maximum-size: 1400;
 
@@ -63,7 +50,7 @@ template $ArtistPage : Adw.Bin {
               show-meta: false;
               show-avatar: true;
 
-              [primary-button]
+              [button]
               Button subscribe_button {
                 clicked => $toggle_subscribe_cb();
 
@@ -82,7 +69,7 @@ template $ArtistPage : Adw.Bin {
                 }
               }
 
-              [secondary-button]
+              [button]
               Button shuffle_button {
                 action-name: "queue.play-playlist";
                 tooltip-text: _("Shuffle");
@@ -91,10 +78,11 @@ template $ArtistPage : Adw.Bin {
 
                 Adw.ButtonContent shuffle_content {
                   icon-name: "media-playlist-shuffle-symbolic";
+                  label: _("Shuffle");
                 }
               }
 
-              [secondary-button]
+              [button]
               Button radio_button {
                 action-name: "queue.play-playlist";
                 tooltip-text: _("Radio");
@@ -103,6 +91,7 @@ template $ArtistPage : Adw.Bin {
 
                 Adw.ButtonContent radio_content {
                   icon-name: "sonar-symbolic";
+                  label: _("Radio");
                 }
               }
             }
