@@ -210,6 +210,12 @@ export class PlaylistHeader extends Gtk.Box {
       subtitle_nodes,
     );
 
+    if (!plain) {
+      this._subtitle.visible = false;
+      return;
+    }
+
+    this._subtitle.visible = true;
     this._subtitle.label = markup;
     this._subtitle.tooltip_text = plain;
   }
