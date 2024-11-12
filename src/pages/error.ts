@@ -7,10 +7,15 @@ import Gio from "gi://Gio";
 import { escape_label, indent_stack } from "src/util/text";
 
 export function error_to_string(error: Error) {
-  // must show error name, message, and stack
-  return `<b>${escape_label(error.name)}: </b>${escape_label(error.message)}\n${indent_stack(
-    error.stack ?? "",
-  )}`;
+  let message = `<b>${escape_label(error.name)}: </b>${escape_label(error.message)}\n`;
+
+  if (error.cause) {
+    message += `${error.cause}\n`;
+  }
+
+  message += `${indent_stack(error.stack ?? "")}`;
+
+  return message;
 }
 
 export interface ErrorPageOptions {
