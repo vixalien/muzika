@@ -303,6 +303,3 @@ export async function fetch(url: string | URL, options: FetchOptions = {}) {
 
   return response;
 }
-
-// @ts-expect-error setting a global
-window.fetch = fetch;
