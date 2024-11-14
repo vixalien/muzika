@@ -57,14 +57,15 @@ export class WindowSidebar extends Adw.Bin {
       console.error("Couldn't get logged in user");
     });
 
-    if (!account) return;
-
     const menu = Gio.Menu.new();
 
-    menu.append(
-      account.name,
-      `navigator.visit("muzika:channel:${account.channel_id}")`,
-    );
+    if (account) {
+      menu.append(
+        account.name,
+        `navigator.visit("muzika:channel:${account.channel_id}")`,
+      );
+    }
+
     menu.append(_("Logout"), "win.logout");
 
     this._account.menu_model = menu;
