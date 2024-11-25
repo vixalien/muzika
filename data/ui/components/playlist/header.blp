@@ -2,13 +2,15 @@ using Gtk 4.0;
 using Adw 1;
 
 template $PlaylistHeader : Box {
-  spacing: 24;
   hexpand: true;
   valign: start;
   margin-start: 12;
   margin-end: 12;
+  spacing: 12;
 
   Stack stack {
+    halign: center;
+
     Image image {
       valign: start;
       pixel-size: 240;
@@ -37,6 +39,7 @@ template $PlaylistHeader : Box {
     valign: end;
     orientation: vertical;
     hexpand: true;
+    spacing: 12;
 
     Box {
       orientation: vertical;
@@ -58,6 +61,7 @@ template $PlaylistHeader : Box {
         max-width-chars: 1;
         xalign: 0;
         wrap: true;
+        visible: false;
 
         styles [
           "title-3",
@@ -67,7 +71,6 @@ template $PlaylistHeader : Box {
     }
 
     Box submeta {
-      margin-top: 3;
       spacing: 6;
 
       styles [
@@ -96,7 +99,6 @@ template $PlaylistHeader : Box {
     Stack description_stack {
       vhomogeneous: false;
       hhomogeneous: false;
-      margin-top: 24;
 
       Label description {
         hexpand: true;
@@ -116,7 +118,6 @@ template $PlaylistHeader : Box {
 
     Expander more {
       label: _("Read more");
-      margin-top: 10;
       activate => $on_expander_activate();
 
       styles [
@@ -125,19 +126,10 @@ template $PlaylistHeader : Box {
       ]
     }
 
-    Box buttons {
-      margin-top: 12;
-      spacing: 6;
-
-      Box primary_buttons {
-        visible: false;
-        spacing: 6;
-      }
-
-      Box secondary_buttons {
-        visible: false;
-        spacing: 6;
-      }
+    Adw.WrapBox buttons {
+      orientation: horizontal;
+      child-spacing: 6;
+      line-spacing: 6;
     }
   }
 }
