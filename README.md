@@ -1,5 +1,8 @@
 # Muzika
 
+> [!CAUTION]
+> Muzika is currently unmaintained. See #220 for more details.
+
 Muzika is an elegant music streaming app.
 
 ![Muzika home page](data/resources/screenshots/home.png)
