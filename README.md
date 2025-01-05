@@ -1,7 +1,7 @@
 # Muzika
 
 > [!CAUTION]
-> Muzika is currently unmaintained. See #220 for more details.
+> Muzika is currently unmaintained, and will be archived in the future. See https://github.com/vixalien/muzika/issues/220 for more details.
 
 Muzika is an elegant music streaming app.
 
