@@ -38,14 +38,14 @@ template $AlbumPage : Adw.Bin {
 
           [header]
           Adw.Clamp {
-            margin-top: 24;
+            margin-top: 12;
             tightening-threshold: 1200;
             maximum-size: 1400;
 
             $PlaylistHeader header {
               show-large-header: true;
 
-              [primary-button]
+              [button]
               Button play_button {
                 action-name: "queue.play-playlist";
 
@@ -57,7 +57,7 @@ template $AlbumPage : Adw.Bin {
                 }
               }
 
-              [primary-button]
+              [button]
               Button shuffle_button {
                 action-name: "queue.play-playlist";
 
